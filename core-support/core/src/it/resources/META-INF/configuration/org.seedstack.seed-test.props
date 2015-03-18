@@ -1,0 +1,67 @@
+#
+# Copyright (c) 2013-2015 by The SeedStack authors. All rights reserved.
+#
+# This file is part of SeedStack, An enterprise-oriented full development stack.
+#
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+#
+
+[org.seedstack.seed.core]
+application-id = seed-it
+additional-jndi-contexts = test1, test2
+additional-jndi-context.test1 = /jndi-test1.properties
+additional-jndi-context.test2 = /jndi-test2.properties
+
+[org.seedstack.seed.test]
+debug-mode=off
+
+[org.seedstack.seed.test<debug>]
+debug-mode=on
+
+[org.seedstack.seed.test]
+test-property=base-value
+
+[org.seedstack.seed.test<dev>]
+test-property=dev-value
+
+[org.seedstack.seed.test<preprod>]
+test-property=preprod-value
+
+[org.seedstack.seed.test<prod>]
+test-property=prod-value
+
+[]
+root-property=the-root-value
+person1=Alice
+person2=Bob
+index1=1
+index2=2
+secret1=**I am ${person${index1}}**
+secret2=**I am ${person${index2}}**
+anInt=5
+someShorts=2,3,4
+someEnum=FOO
+systemProperty=${sys:java.vendor}
+environmentVariable=${env:JAVA_HOME}
+constantValue=${const:org.seedstack.seed.core.SeedApplicationPluginIT.CONSTANT_TEST}
+emptyValue=
+overriddenValue=I'm overridden
+appendedValue+=val1
+automaticallyAppendedValue=val1
+removedValue=I'm removed
+emptiedValue=I'm emptied
+sysJsonValue=${sys:org.seedstack.seed.test.json-value}
+indirectJsonValue={ "test": ${sysJsonValue} }
+jsonValue='''{
+    "string": "toto"\,
+    "object": {
+        "array": [ 1\, 2\, 3 ]
+    }
+}'''
+configuredJsonPath=object.array[1]
+extractedFromJsonValue=${json:jsonValue|object.array[1]}
+extractedFromIndirectJsonValue=${json:indirectJsonValue|test.key2}
+extractedFromJsonValueWithDollar=yop_${json:jsonValue|\$.object.array[2]}
+extractedFromJsonValueWithConfiguredPath=yip_${json:jsonValue|${configuredJsonPath}}

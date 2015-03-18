@@ -1,0 +1,2 @@
+org.seedstack.seed.web.internal.WebPlugin
+org.seedstack.seed.web.internal.WebCorsPlugin

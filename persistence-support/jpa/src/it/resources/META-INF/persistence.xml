@@ -1,0 +1,31 @@
+<!--
+
+    Copyright (c) 2013-2015 by The SeedStack authors. All rights reserved.
+
+    This file is part of SeedStack, An enterprise-oriented full development stack.
+
+    This Source Code Form is subject to the terms of the Mozilla Public
+    License, v. 2.0. If a copy of the MPL was not distributed with this
+    file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+-->
+<persistence xmlns="http://java.sun.com/xml/ns/persistence"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd"
+	version="2.0">
+
+	<persistence-unit name="unit1" transaction-type="RESOURCE_LOCAL">
+        <class>org.seedstack.seed.persistence.jpa.sample.Item1</class>
+        <exclude-unlisted-classes>true</exclude-unlisted-classes>
+	</persistence-unit>
+
+    <persistence-unit name="unit2" transaction-type="RESOURCE_LOCAL">
+        <class>org.seedstack.seed.persistence.jpa.sample.Item2</class>
+        <exclude-unlisted-classes>true</exclude-unlisted-classes>
+    </persistence-unit>
+
+    <persistence-unit name="unit3" transaction-type="RESOURCE_LOCAL">
+        <class>org.seedstack.seed.persistence.jpa.sample.Item3</class>
+        <exclude-unlisted-classes>true</exclude-unlisted-classes>
+    </persistence-unit>
+</persistence>

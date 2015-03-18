@@ -1,0 +1,10 @@
+language: java
+
+jdk: oraclejdk7
+
+notifications:
+  irc: "chat.freenode.net#seedstack-dev"
+
+after_success:
+  - echo "<settings><servers><server><id>sonatype-nexus-snapshots</id><username>\${env.SONATYPE_USER}</username><password>\${env.SONATYPE_PASS}</password></server></servers></settings>" > ~/settings.xml
+  - "[[ $TRAVIS_BRANCH == \"master\" ]] && mvn deploy --settings ~/settings.xml"

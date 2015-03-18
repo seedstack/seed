@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Copyright (c) 2013-2015 by The SeedStack authors. All rights reserved.
+
+    This file is part of SeedStack, An enterprise-oriented full development stack.
+
+    This Source Code Form is subject to the terms of the Mozilla Public
+    License, v. 2.0. If a copy of the MPL was not distributed with this
+    file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+-->
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:seed="http://seedstack.org/xml-schemas/spring-support"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+       http://seedstack.org/xml-schemas/spring-support http://seedstack.org/xml-schemas/spring-support/spring-support-1.1.xsd">
+
+    <seed:instance id="service1" class="org.seedstack.seed.spring.fixtures.Service"/>
+
+    <seed:instance id="service2" class="org.seedstack.seed.spring.fixtures.Service"/>
+
+    <seed:instance id="service3" class="org.seedstack.seed.spring.fixtures.Service" proxy="false"/>
+
+    <bean id="service4" class="org.seedstack.seed.spring.fixtures.DummyService">
+        <property name="configurationValue">
+            <seed:configuration key="org.seedstack.seed.spring.test-value"/>
+        </property>
+        <property name="otherConfigurationValue">
+            <seed:configuration key="org.seedstack.seed.spring.test-other-value"/>
+        </property>
+        <property name="defaultConfigurationValue">
+            <seed:configuration key="org.seedstack.seed.spring.test-default-value" default="1.5"/>
+        </property>
+    </bean>
+</beans>
+

@@ -1,0 +1,41 @@
+#
+# Copyright (c) 2013-2015 by The SeedStack authors. All rights reserved.
+#
+# This file is part of SeedStack, An enterprise-oriented full development stack.
+#
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+#
+
+[org.seedstack.seed]
+persistence.jpa.units=unit1, unit2, unit3
+
+[org.seedstack.seed.persistence.jpa.unit.unit1]
+property.javax.persistence.jdbc.driver=org.hsqldb.jdbcDriver
+property.javax.persistence.jdbc.url=jdbc:hsqldb:mem:testdb1
+property.javax.persistence.jdbc.user=sa
+property.javax.persistence.jdbc.password=
+property.hibernate.dialect=org.hibernate.dialect.HSQLDialect
+property.hibernate.hbm2ddl.auto=create
+property.sql.enforce_strict_size=true
+
+[org.seedstack.seed.persistence.jpa.unit.unit2]
+property.javax.persistence.jdbc.driver=org.hsqldb.jdbcDriver
+property.javax.persistence.jdbc.url=jdbc:hsqldb:mem:testdb2
+property.javax.persistence.jdbc.user=sa
+property.javax.persistence.jdbc.password=
+property.hibernate.dialect=org.hibernate.dialect.HSQLDialect
+property.hibernate.hbm2ddl.auto=create
+property.sql.enforce_strict_size=true
+
+[org.seedstack.seed.persistence.jpa.unit.unit3]
+exception-handler=org.seedstack.seed.persistence.jpa.sample.Unit3ExceptionHandler
+property.javax.persistence.jdbc.driver=org.hsqldb.jdbcDriver
+property.javax.persistence.jdbc.url=jdbc:hsqldb:mem:testdb3
+property.javax.persistence.jdbc.user=sa
+property.javax.persistence.jdbc.password=
+property.hibernate.dialect=org.hibernate.dialect.HSQLDialect
+property.hibernate.hbm2ddl.auto=create
+property.sql.enforce_strict_size=true
+

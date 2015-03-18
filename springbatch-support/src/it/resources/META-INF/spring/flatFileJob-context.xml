@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Copyright (c) 2013-2015 by The SeedStack authors. All rights reserved.
+
+    This file is part of SeedStack, An enterprise-oriented full development stack.
+
+    This Source Code Form is subject to the terms of the Mozilla Public
+    License, v. 2.0. If a copy of the MPL was not distributed with this
+    file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+-->
+<beans xmlns="http://www.springframework.org/schema/beans"
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+		xmlns:batch="http://www.springframework.org/schema/batch"
+		xsi:schemaLocation="
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/batch http://www.springframework.org/schema/batch/spring-batch-2.2.xsd">
+		
+	<batch:job id="flatFileJob" xmlns="http://www.springframework.org/schema/batch">
+		<batch:step id="readFlatFileStep">
+			<batch:tasklet>
+				<batch:chunk reader="flatFileReader" writer="systemOutWriter" commit-interval="2" skip-limit="1">
+					<batch:skippable-exception-classes>
+						<batch:include class="org.springframework.batch.item.file.FlatFileParseException" />
+					</batch:skippable-exception-classes>
+				</batch:chunk>
+			</batch:tasklet>
+		</batch:step>
+	</batch:job>
+	
+	<bean id="flatFileReader" class="org.springframework.batch.item.file.FlatFileItemReader" scope="step">
+		<property name="comments" value="#" />
+		<property name="encoding" value="ISO-8859-1" />
+		<property name="linesToSkip" value="0" />
+		<property name="resource" value="#{jobParameters['file']}" />
+		<property name="lineMapper">
+			<bean class="org.springframework.batch.item.file.mapping.DefaultLineMapper">
+				<property name="lineTokenizer">
+					<bean class="org.springframework.batch.item.file.transform.DelimitedLineTokenizer">
+						<constructor-arg value="," />
+						<property name="names">
+							<list>
+								<value>id</value>
+								<value>name</value>
+								<value>telephone</value>
+							</list>
+						</property>
+					</bean>
+				</property>
+				<property name="fieldSetMapper">
+					<bean class="org.seedstack.seed.springbatch.sample.EmployeeMapper" />
+				</property>
+			</bean>
+		</property>
+	</bean>
+
+	<bean id="systemOutWriter" class="org.seedstack.seed.springbatch.sample.SystemOutItemWriter" />
+	
+</beans>

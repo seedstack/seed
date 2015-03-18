@@ -1,0 +1,155 @@
+/**
+ * Copyright (c) 2013-2015 by The SeedStack authors. All rights reserved.
+ *
+ * This file is part of SeedStack, An enterprise-oriented full development stack.
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+/*
+ * Creation : 17 févr. 2015
+ */
+package org.seedstack.seed.persistence.jdbc.internal;
+
+import io.nuun.kernel.api.Plugin;
+import io.nuun.kernel.api.plugin.InitState;
+import io.nuun.kernel.api.plugin.PluginException;
+import io.nuun.kernel.api.plugin.context.InitContext;
+import io.nuun.kernel.api.plugin.request.ClasspathScanRequest;
+import io.nuun.kernel.core.AbstractPlugin;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Properties;
+
+import javax.naming.Context;
+import javax.naming.NamingException;
+import javax.sql.DataSource;
+
+import org.apache.commons.configuration.Configuration;
+import org.seedstack.seed.core.internal.application.ApplicationPlugin;
+import org.seedstack.seed.core.internal.jndi.JndiPlugin;
+import org.seedstack.seed.persistence.jdbc.api.JdbcExceptionHandler;
+import org.seedstack.seed.persistence.jdbc.internal.datasource.PlainDataSourceProvider;
+import org.seedstack.seed.persistence.jdbc.spi.DataSourceProvider;
+import org.seedstack.seed.transaction.internal.TransactionPlugin;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+/**
+ * JDBC support plugin
+ */
+public class JdbcPlugin extends AbstractPlugin {
+
+    public static final String JDBC_PLUGIN_CONFIGURATION_PREFIX = "org.seedstack.seed.persistence.jdbc";
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(JdbcPlugin.class);
+
+    private final Map<String, DataSource> dataSources = new HashMap<String, DataSource>();
+    private final Map<String, Class<? extends JdbcExceptionHandler>> exceptionHandlerClasses = new HashMap<String, Class<? extends JdbcExceptionHandler>>();
+
+    @Override
+    public String name() {
+        return "seed-persistence-jdbc-plugin";
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public InitState init(InitContext initContext) {
+        Configuration jdbcConfiguration = null;
+        TransactionPlugin transactionPlugin = null;
+        JndiPlugin jndiPlugin = null;
+        for (Plugin plugin : initContext.pluginsRequired()) {
+            if (plugin instanceof ApplicationPlugin) {
+                jdbcConfiguration = ((ApplicationPlugin) plugin).getApplication().getConfiguration().subset(JDBC_PLUGIN_CONFIGURATION_PREFIX);
+            } else if (plugin instanceof TransactionPlugin) {
+                transactionPlugin = ((TransactionPlugin) plugin);
+            } else if (plugin instanceof JndiPlugin) {
+                jndiPlugin = ((JndiPlugin) plugin);
+            }
+        }
+        Map<String, Class<? extends DataSourceProvider>> dataSourceProviders = new HashMap<String, Class<? extends DataSourceProvider>>();
+        for (Class<?> clazz : initContext.scannedSubTypesByParentClass().get(DataSourceProvider.class)) {
+            dataSourceProviders.put(clazz.getSimpleName(), (Class<? extends DataSourceProvider>) clazz);
+        }
+
+        String[] datasourceNames = jdbcConfiguration.getStringArray("datasources");
+        if (datasourceNames.length > 0) {
+            for (String datasourceName : datasourceNames) {
+                Configuration dataSourceConfig = jdbcConfiguration.subset("datasource." + datasourceName);
+                DataSource dataSource;
+                String dataSourceContextName = dataSourceConfig.getString("context");
+                if (dataSourceContextName != null) {
+                    try {
+                        Context context = jndiPlugin.getJndiContexts().get("default");
+                        dataSource = (DataSource) context.lookup(dataSourceContextName);
+                    } catch (NamingException e) {
+                        throw new PluginException("Wrong JNDI name for datasource " + datasourceName, e);
+                    }
+                } else {
+                    String dataSourceProviderName = dataSourceConfig.getString("provider", PlainDataSourceProvider.class.getSimpleName());
+                    try {
+                        Class<? extends DataSourceProvider> providerClass = dataSourceProviders.get(dataSourceProviderName);
+                        if (providerClass == null) {
+                            throw new PluginException("Could not find a matching DataSourceProvider for configured value : " + dataSourceProviderName);
+                        }
+                        DataSourceProvider provider = providerClass.newInstance();
+                        Iterator<String> it = dataSourceConfig.getKeys("property");
+                        Properties otherProperties = new Properties();
+                        while (it.hasNext()) {
+                            String name = it.next();
+                            otherProperties.put(name.substring(9), dataSourceConfig.getString(name));
+                        }
+                        dataSource = provider.provideDataSource(dataSourceConfig.getString("driver"), dataSourceConfig.getString("url"),
+                                dataSourceConfig.getString("user"), dataSourceConfig.getString("password"), otherProperties);
+                    } catch (InstantiationException e) {
+                        throw new PluginException("Unable to load class " + dataSourceProviderName, e);
+                    } catch (IllegalAccessException e) {
+                        throw new PluginException("Unable to load class " + dataSourceProviderName, e);
+                    }
+                }
+                dataSources.put(datasourceName, dataSource);
+
+                String exceptionHandler = dataSourceConfig.getString("exception-handler");
+                if (exceptionHandler != null && !exceptionHandler.isEmpty()) {
+                    try {
+                        exceptionHandlerClasses.put(datasourceName, (Class<? extends JdbcExceptionHandler>) Class.forName(exceptionHandler));
+                    } catch (Exception e) {
+                        throw new PluginException("Unable to load class " + exceptionHandler, e);
+                    }
+                }
+            }
+
+            if (datasourceNames.length == 1) {
+                JdbcTransactionMetadataResolver.defaultJdbc = datasourceNames[0];
+            }
+            transactionPlugin.registerTransactionHandler(JdbcTransactionHandler.class);
+        } else {
+            LOGGER.info("No JDBC datasource configured, jdbc support disabled");
+        }
+        return InitState.INITIALIZED;
+    }
+
+    @Override
+    public Collection<Class<? extends Plugin>> requiredPlugins() {
+        Collection<Class<? extends Plugin>> plugins = new ArrayList<Class<? extends Plugin>>();
+        plugins.add(ApplicationPlugin.class);
+        plugins.add(TransactionPlugin.class);
+        plugins.add(JndiPlugin.class);
+        return plugins;
+    }
+
+    @Override
+    public Object nativeUnitModule() {
+        return new JdbcModule(dataSources, exceptionHandlerClasses);
+    }
+
+    @Override
+    public Collection<ClasspathScanRequest> classpathScanRequests() {
+        return classpathScanRequestBuilder().subtypeOf(DataSourceProvider.class).build();
+    }
+}

@@ -1,0 +1,30 @@
+#
+# Copyright (c) 2013-2015 by The SeedStack authors. All rights reserved.
+#
+# This file is part of SeedStack, An enterprise-oriented full development stack.
+#
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+#
+
+[org.seedstack.seed.security.ldap]
+server-host = 
+server-port = 53800
+account-dn = cn=admin, ou=people, dc=example,dc=com
+account-password = admin
+user-base = ou=people, dc=example,dc=com
+user-identity-attribute = sn
+group-base = ou=groups, dc=example,dc=com
+
+
+[org.seedstack.seed.security]
+realms = LDAPRealm
+
+[org.seedstack.seed.security.roles]
+jedi = SEED.JEDI
+
+[org.seedstack.seed.security.permissions]
+jedi = lightSaber:*, academy:*
+padawan = academy:learn
+ghost = site:haunt

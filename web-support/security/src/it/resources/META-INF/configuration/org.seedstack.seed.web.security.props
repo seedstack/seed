@@ -1,0 +1,35 @@
+#
+# Copyright (c) 2013-2015 by The SeedStack authors. All rights reserved.
+#
+# This file is part of SeedStack, An enterprise-oriented full development stack.
+#
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+#
+
+[org.seedstack.seed.security.users]
+Obiwan = yodarulez, SEED.JEDI
+Anakin = imsodark, SEED.PADAWAN
+
+[org.seedstack.seed.security.roles]
+padawan = SEED.PADAWAN
+jedi = SEED.JEDI
+
+[org.seedstack.seed.security.permissions]
+jedi = lightSaber:*, academy:*
+padawan = academy:learn
+
+[org.seedstack.seed.security.urls]
+/testServlet1 = anon
+/testServlet2 = anon
+/testFilter1 = anon
+/testFilter2 = anon
+/resources/** = anon
+/ = anon
+/index.html = anon
+/jediCouncil.html = authcBasic, perms[lightSaber:wield, academy:learn]
+/jediAcademy.html = authcBasic, perms[academy:learn]
+/logout = logout
+/teapot = teapot
+/** = authcBasic

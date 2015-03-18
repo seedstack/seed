@@ -1,0 +1,32 @@
+dn: dc=example,dc=com
+dc: example
+description: Serveur exemple
+objectClass: dcObject
+objectClass: organization
+o: Serveur exemple
+
+dn: ou=people, dc=example,dc=com
+ou: people
+objectClass: organizationalUnit
+
+dn: ou=groups, dc=example,dc=com
+ou: groups
+objectClass: organizationalUnit
+
+dn: cn=admin, ou=people, dc=example,dc=com
+description: Administrateur LDAP
+objectClass: person
+cn: admin
+sn: admin
+
+dn: cn=John Doe - 123456, ou=people, dc=example,dc=com
+description: Utilisateur
+objectClass: person
+cn: John Doe - 123456
+sn: jdoe
+
+
+dn: cn=SEED.JEDI,ou=groups,dc=example,dc=com
+objectclass: groupOfNames
+cn: SEED.JEDI
+member: cn=John Doe - 123456, ou=people, dc=example,dc=com

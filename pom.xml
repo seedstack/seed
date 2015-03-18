@@ -1,0 +1,88 @@
+<!--
+
+    Copyright (c) 2013-2015 by The SeedStack authors. All rights reserved.
+
+    This file is part of SeedStack, An enterprise-oriented full development stack.
+
+    This Source Code Form is subject to the terms of the Mozilla Public
+    License, v. 2.0. If a copy of the MPL was not distributed with this
+    file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>org.seedstack</groupId>
+        <artifactId>java-parent</artifactId>
+        <version>2.0.0-M1-SNAPSHOT</version>
+    </parent>
+
+    <groupId>org.seedstack.seed</groupId>
+    <artifactId>seed</artifactId>
+    <version>2.0.0-M1-SNAPSHOT</version>
+    <packaging>pom</packaging>
+
+    <modules>
+        <module>core-support</module>
+        <module>unittest-support</module>
+        <module>integrationtest-support</module>
+        <module>el-support</module>
+        <module>security-support</module>
+        <module>web-support</module>
+        <module>rest-support</module>
+        <module>validation-support</module>
+        <module>transaction-support</module>
+        <module>persistence-support</module>
+        <module>cache-support</module>
+        <module>cli-support</module>
+        <module>jms-support</module>
+        <module>mail-support</module>
+        <module>metrics-support</module>
+        <module>scheduling-support</module>
+        <module>shell-support</module>
+        <module>spring-support</module>
+        <module>springbatch-support</module>
+        <module>ws-support</module>
+
+        <module>doc</module>
+        <module>bom</module>
+    </modules>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.fusesource.jansi</groupId>
+                <artifactId>jansi</artifactId>
+                <version>1.11</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <repositories>
+        <repository>
+            <id>sonatype-nexus-snapshots</id>
+            <name>Sonatype Nexus Snapshots</name>
+            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
+    <pluginRepositories>
+        <pluginRepository>
+            <id>sonatype-nexus-snapshots</id>
+            <name>Sonatype Nexus Snapshots</name>
+            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </pluginRepository>
+    </pluginRepositories>
+</project>

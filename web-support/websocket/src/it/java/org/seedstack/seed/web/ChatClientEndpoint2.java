@@ -1,0 +1,45 @@
+/**
+ * Copyright (c) 2013-2015 by The SeedStack authors. All rights reserved.
+ *
+ * This file is part of SeedStack, An enterprise-oriented full development stack.
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+package org.seedstack.seed.web;
+
+import org.seedstack.seed.web.internal.SeedClientEndpointConfigurator;
+
+import javax.websocket.ClientEndpoint;
+import javax.websocket.OnMessage;
+import javax.websocket.OnOpen;
+import javax.websocket.Session;
+import java.io.IOException;
+import java.util.concurrent.CountDownLatch;
+
+/**
+ * @author pierre.thirouin@ext.mpsa.com
+ *         Date: 19/12/13
+ */
+@ClientEndpoint(configurator = SeedClientEndpointConfigurator.class)
+public class ChatClientEndpoint2 {
+    public static final String TEXT = "Client2 joins";
+    public static CountDownLatch latch;
+    public static String response;
+
+    @OnOpen
+    public void onOpen(Session session) {
+        try {
+            session.getBasicRemote().sendText(TEXT);
+        } catch (IOException ioe) {
+            ioe.printStackTrace();
+        }
+    }
+
+    @OnMessage
+    public void processMessage(String message) {
+        response = message;
+        latch.countDown();
+    }
+}
