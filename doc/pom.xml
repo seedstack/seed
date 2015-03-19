@@ -38,6 +38,7 @@
                             <additionalparam>-umltypegen -umlpackagegen</additionalparam>
                             <additionalJOption>-J-Djava.awt.headless=true</additionalJOption>
                             <doctitle>SeedStack Java framework</doctitle>
+                            <detectOfflineLinks>false</detectOfflineLinks>
                             <includeDependencySources>true</includeDependencySources>
                             <includeTransitiveDependencySources>false</includeTransitiveDependencySources>
                             <excludePackageNames>*.internal.*</excludePackageNames>
