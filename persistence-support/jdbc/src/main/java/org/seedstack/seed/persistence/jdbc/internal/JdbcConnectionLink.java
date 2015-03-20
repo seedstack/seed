@@ -33,13 +33,13 @@ public class JdbcConnectionLink implements TransactionalLink<Connection> {
 
     @Override
     public Connection get() {
-        Connection connection = this.perThreadObjectContainer.get().peek().getConnection();
+        JdbcTransaction transaction = this.perThreadObjectContainer.get().peek();
 
-        if (connection == null) {
+        if (transaction == null) {
             throw SeedException.createNew(JdbcErrorCode.ACCESSING_JDBC_CONNECTION_OUTSIDE_TRANSACTION);
         }
 
-        return connection;
+        return transaction.getConnection();
     }
 
     Connection getCurrentConnection() {

@@ -52,6 +52,8 @@ public class JdbcPlugin extends AbstractPlugin {
     private final Map<String, DataSource> dataSources = new HashMap<String, DataSource>();
     private final Map<String, Class<? extends JdbcExceptionHandler>> exceptionHandlerClasses = new HashMap<String, Class<? extends JdbcExceptionHandler>>();
 
+    private Map<Class<?>, String> registeredClasses = new HashMap<Class<?>, String>();
+
     @Override
     public String name() {
         return "seed-persistence-jdbc-plugin";
@@ -83,10 +85,19 @@ public class JdbcPlugin extends AbstractPlugin {
                 Configuration dataSourceConfig = jdbcConfiguration.subset("datasource." + datasourceName);
                 DataSource dataSource;
                 String dataSourceContextName = dataSourceConfig.getString("context");
-                if (dataSourceContextName != null) {
+                Context context;
+                if(dataSourceContextName != null){
+                	context = jndiPlugin.getJndiContexts().get(dataSourceContextName);
+                	if(context == null){
+                        throw new PluginException("Wrong context [" + dataSourceContextName + "] name for datasource " + dataSourceContextName);
+                	}
+                }else{
+                	context = jndiPlugin.getJndiContexts().get("default");
+                }
+                String dataSourceJndiName = dataSourceConfig.getString("jndi-name");
+                if (dataSourceJndiName != null) {
                     try {
-                        Context context = jndiPlugin.getJndiContexts().get("default");
-                        dataSource = (DataSource) context.lookup(dataSourceContextName);
+                        dataSource = (DataSource) context.lookup(dataSourceJndiName);
                     } catch (NamingException e) {
                         throw new PluginException("Wrong JNDI name for datasource " + datasourceName, e);
                     }
@@ -145,11 +156,35 @@ public class JdbcPlugin extends AbstractPlugin {
 
     @Override
     public Object nativeUnitModule() {
-        return new JdbcModule(dataSources, exceptionHandlerClasses);
+        return new JdbcModule(dataSources, exceptionHandlerClasses, registeredClasses);
     }
 
     @Override
     public Collection<ClasspathScanRequest> classpathScanRequests() {
         return classpathScanRequestBuilder().subtypeOf(DataSourceProvider.class).build();
+    }
+
+    /**
+     * This method allows to automatically use a datasource for the given class when it asks for the injection of a connection.
+     * 
+     * @param dataSourceName the datasource to use
+     * @param clazz the class requiring a connection
+     */
+    public void registerDataSourceForClass(Class<?> clazz, String dataSourceName) {
+        if (!dataSources.containsKey(dataSourceName)) {
+            throw new PluginException("DataSource [" + dataSourceName
+                    + "] Does not exist. Make sure it corresponds to a DataSource declared under configuration " + JDBC_PLUGIN_CONFIGURATION_PREFIX
+                    + ".datasources");
+        }
+        registeredClasses.put(clazz, dataSourceName);
+    }
+
+    /**
+     * Provides the configured datasources by their names
+     * 
+     * @return a Map of Datasource indexed by their name.
+     */
+    public Map<String, DataSource> getDataSources() {
+        return dataSources;
     }
 }

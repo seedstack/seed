@@ -32,10 +32,17 @@ public class JdbcPersistenceIT {
     @Inject
     private Repository repository;
 
+    private static boolean alreadyInited;
+
     @Transactional
     @Jdbc
     @Before
     public void init() throws SQLException {
+        if (alreadyInited) {
+            repository.drop();
+        } else {
+            alreadyInited = true;
+        }
         repository.init();
     }
 
