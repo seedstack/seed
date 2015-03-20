@@ -25,8 +25,8 @@ import org.apache.shiro.authz.AuthorizationInfo;
 import org.apache.shiro.mgt.RealmSecurityManager;
 import org.apache.shiro.realm.Realm;
 import org.apache.shiro.session.Session;
+import org.apache.shiro.subject.PrincipalCollection;
 import org.apache.shiro.subject.Subject;
-
 import org.seedstack.seed.security.api.Domain;
 import org.seedstack.seed.security.api.RealmProvider;
 import org.seedstack.seed.security.api.Role;
@@ -61,7 +61,11 @@ public class ShiroSecuritySupport implements RealmProvider {
     @Override
     public Collection<PrincipalProvider<?>> getOtherPrincipals() {
         Collection<PrincipalProvider<?>> principals = new ArrayList<PrincipalProvider<?>>();
-        for (Object shiroPrincipal : SecurityUtils.getSubject().getPrincipals().asList()) {
+        PrincipalCollection principalCollection = SecurityUtils.getSubject().getPrincipals();
+        if (principalCollection == null) {
+            return Collections.emptyList();
+        }
+        for (Object shiroPrincipal : principalCollection.asList()) {
             if (shiroPrincipal instanceof PrincipalProvider) {
                 principals.add((PrincipalProvider<?>) shiroPrincipal);
             }
