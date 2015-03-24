@@ -9,7 +9,11 @@
 #
 
 [org.seedstack.seed]
-persistence.jpa.units=unit1, unit2, unit3
+persistence.jpa.units=unit1, unit2, unit3, unit4
+
+[org.seedstack.seed.persistence.jdbc]
+datasources=datasource1
+
 
 [org.seedstack.seed.persistence.jpa.unit.unit1]
 property.javax.persistence.jdbc.driver=org.hsqldb.jdbcDriver
@@ -39,3 +43,21 @@ property.hibernate.dialect=org.hibernate.dialect.HSQLDialect
 property.hibernate.hbm2ddl.auto=create
 property.sql.enforce_strict_size=true
 
+[org.seedstack.seed.persistence.jpa.unit.unit4]
+datasource=datasource1
+#jta-datasource=datasource1
+mapping-file = META-INF/otherItem.xml
+property.hibernate.dialect=org.hibernate.dialect.HSQLDialect
+property.hibernate.hbm2ddl.auto=create
+
+[org.seedstack.seed.persistence.jdbc.datasource.datasource1]
+#context=someContext
+#jndi-name=java:/myAppDS
+driver=org.hsqldb.jdbcDriver
+url=jdbc:hsqldb:mem:testdb4
+user=sa
+password=
+property.sql.enforce_strict_size=true
+
+[org.seedstack.seed.persistence.jpa.sample2.*]
+jpa-unit = unit4

@@ -12,6 +12,11 @@
  */
 package org.seedstack.seed.persistence.jdbc.internal;
 
+import java.util.Map;
+
+import javax.inject.Inject;
+import javax.inject.Named;
+
 import org.aopalliance.intercept.MethodInvocation;
 import org.seedstack.seed.core.utils.SeedReflectionUtils;
 import org.seedstack.seed.persistence.jdbc.api.Jdbc;
@@ -26,15 +31,15 @@ public class JdbcTransactionMetadataResolver implements TransactionMetadataResol
 
     static String defaultJdbc;
 
+    @Inject
+    @Named("jdbc-registered-classes")
+    private Map<Class<?>, String> registeredClasses;
+
     @Override
     public TransactionMetadata resolve(MethodInvocation methodInvocation, TransactionMetadata defaults) {
         Jdbc jdbc = SeedReflectionUtils.getMethodOrAncestorMetaAnnotatedWith(methodInvocation.getMethod(), Jdbc.class);
-
+        String resourceName = resolveResourceName(jdbc, methodInvocation);
         if (jdbc != null || JdbcTransactionHandler.class.equals(defaults.getHandler())) {
-            String resourceName = defaultJdbc;
-            if (jdbc != null && !"".equals(jdbc.value())) {
-                resourceName = jdbc.value();
-            }
             TransactionMetadata result = new TransactionMetadata();
             result.setHandler(JdbcTransactionHandler.class);
             result.setExceptionHandler(JdbcExceptionHandler.class);
@@ -44,4 +49,13 @@ public class JdbcTransactionMetadataResolver implements TransactionMetadataResol
         return null;
     }
 
+    private String resolveResourceName(Jdbc jdbc, MethodInvocation methodInvocation) {
+        String resourceName = defaultJdbc;
+        if (jdbc != null && !"".equals(jdbc.value())) {
+            resourceName = jdbc.value();
+        } else if (registeredClasses.containsKey(methodInvocation.getMethod().getDeclaringClass())) {
+            resourceName = registeredClasses.get(methodInvocation.getMethod().getDeclaringClass());
+        }
+        return resourceName;
+    }
 }

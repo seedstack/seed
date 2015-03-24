@@ -21,21 +21,28 @@ import org.seedstack.seed.persistence.jdbc.api.JdbcExceptionHandler;
 import org.seedstack.seed.transaction.utils.TransactionalProxy;
 
 import com.google.inject.PrivateModule;
+import com.google.inject.TypeLiteral;
 import com.google.inject.name.Names;
 import com.google.inject.util.Providers;
 
 /**
  * JDBC support module
  */
-public class JdbcModule extends PrivateModule {
+class JdbcModule extends PrivateModule {
+
+    private static final String JDBC_REGISTERED_CLASSES = "jdbc-registered-classes";
 
     private Map<String, DataSource> dataSources;
 
     private Map<String, Class<? extends JdbcExceptionHandler>> jdbcExceptionHandlerClasses;
 
-    JdbcModule(Map<String, DataSource> dataSources, Map<String, Class<? extends JdbcExceptionHandler>> jdbcExceptionHandlerClasses) {
+    private Map<Class<?>, String> registeredClasses;
+
+    JdbcModule(Map<String, DataSource> dataSources, Map<String, Class<? extends JdbcExceptionHandler>> jdbcExceptionHandlerClasses,
+            Map<Class<?>, String> registeredClasses) {
         this.dataSources = dataSources;
         this.jdbcExceptionHandlerClasses = jdbcExceptionHandlerClasses;
+        this.registeredClasses = registeredClasses;
     }
 
     @Override
@@ -46,8 +53,9 @@ public class JdbcModule extends PrivateModule {
         for (Map.Entry<String, DataSource> entry : dataSources.entrySet()) {
             bindDataSource(entry.getKey(), entry.getValue(), jdbcLink);
         }
-
+        bind(new TypeLiteral<Map<Class<?>, String>>() {}).annotatedWith(Names.named(JDBC_REGISTERED_CLASSES)).toInstance(registeredClasses);
         expose(Connection.class);
+        expose(new TypeLiteral<Map<Class<?>, String>>() {}).annotatedWith(Names.named(JDBC_REGISTERED_CLASSES));
     }
 
     private void bindDataSource(String name, DataSource dataSource, JdbcConnectionLink jdbcLink) {

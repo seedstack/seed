@@ -31,22 +31,13 @@ public class Repository {
     @Inject
     private Connection connection;
 
-    public void init() throws SQLException {
-        try {
-            drop();
-        } catch (SQLException e) {
-            // Table already exists
-        }
-        createTable();
-    }
-
     public void drop() throws SQLException {
         Statement stmnt = connection.createStatement();
         String sql = "DROP TABLE FOO";
         stmnt.executeUpdate(sql);
     }
 
-    public void createTable() throws SQLException {
+    public void init() throws SQLException {
         Statement stmnt = connection.createStatement();
         String sql = "CREATE TABLE FOO (id INTEGER not NULL, bar varchar(255), PRIMARY KEY (id))";
         stmnt.executeUpdate(sql);
