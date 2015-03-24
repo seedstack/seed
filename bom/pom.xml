@@ -87,7 +87,17 @@
             </dependency>
             <dependency>
                 <groupId>org.seedstack.seed</groupId>
+                <artifactId>seed-cryptography-support</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.seedstack.seed</groupId>
                 <artifactId>seed-security-support-core</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.seedstack.seed</groupId>
+                <artifactId>seed-security-support-ldap</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
