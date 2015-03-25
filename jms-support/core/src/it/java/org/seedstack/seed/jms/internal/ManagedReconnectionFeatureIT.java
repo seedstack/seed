@@ -60,6 +60,10 @@ public class ManagedReconnectionFeatureIT {
     @Inject
     @Named("connection5")
     private Connection connection5;
+    
+    @Inject
+    @Named("connection6")
+    private Connection connection6;
 
     @Test
     public void reset_then_refresh_connection_should_works() throws Exception {
@@ -178,6 +182,18 @@ public class ManagedReconnectionFeatureIT {
         ExceptionListener exceptionListenerMC = Whitebox.getInternalState(managedConnection, "exceptionListener");
         Assertions.assertThat(exceptionListenerAQ).isNotEqualTo(exceptionListenerMC);
         Assertions.assertThat(exceptionListenerMC).isEqualTo(exceptionListener);       
+        
+    }
+    
+    @Test
+    public void test_that_wraped_exceptionlistener_from_managedConnection_is_declared_using_props() throws InterruptedException, JMSException {
+        ManagedConnection managedConnection = ((ManagedConnection)connection6);
+        managedConnection.onException(new JMSException("test"));
+        ExceptionListener exceptionListenerMC = Whitebox.getInternalState(managedConnection, "exceptionListener");
+        Assertions.assertThat(exceptionListenerMC).isInstanceOf(MyExceptionListener.class);
+        Logger logger = Whitebox.getInternalState(exceptionListenerMC, "LOGGER");
+        Assertions.assertThat(logger).isNotNull();
+
         
     }
 

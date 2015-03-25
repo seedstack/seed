@@ -10,28 +10,33 @@
 package org.seedstack.seed.jms.internal;
 
 
-import com.google.inject.AbstractModule;
-import com.google.inject.name.Names;
-import com.google.inject.util.Providers;
+import java.util.Map;
+
+import javax.jms.Connection;
+import javax.jms.ExceptionListener;
+import javax.jms.Session;
+
 import org.seedstack.seed.jms.spi.JmsExceptionHandler;
 import org.seedstack.seed.jms.spi.MessageListenerDefinition;
 import org.seedstack.seed.transaction.utils.TransactionalProxy;
 
-import javax.jms.Connection;
-import javax.jms.Session;
-import java.util.Map;
+import com.google.inject.AbstractModule;
+import com.google.inject.name.Names;
+import com.google.inject.util.Providers;
 
 class JmsModule extends AbstractModule {
 
     private final Map<String, MessageListenerDefinition> messageListenerDefinitions;
     private final Map<String, Connection> connectionMap;
     private final Map<String, Class<? extends JmsExceptionHandler>> jmsExceptionHandlerClasses;
+	private final Map<String, Class<? extends ExceptionListener>> exceptionListenerClassMap;
 
     JmsModule(Map<String, Connection> connectionMap, Map<String, MessageListenerDefinition> messageListenerDefinitions,
-              Map<String, Class<? extends JmsExceptionHandler>> jmsExceptionHandlerClasses) {
+              Map<String, Class<? extends JmsExceptionHandler>> jmsExceptionHandlerClasses, Map<String, Class<? extends ExceptionListener>> exceptionListenerClassMap) {
         this.connectionMap = connectionMap;
         this.messageListenerDefinitions = messageListenerDefinitions;
         this.jmsExceptionHandlerClasses = jmsExceptionHandlerClasses;
+        this.exceptionListenerClassMap = exceptionListenerClassMap;
     }
 
     @Override
@@ -64,8 +69,14 @@ class JmsModule extends AbstractModule {
         } else {
             bind(JmsExceptionHandler.class).annotatedWith(Names.named(name)).toProvider(Providers.<JmsExceptionHandler>of(null));
         }
-
+        Class<? extends ExceptionListener> exceptionListenerClass = exceptionListenerClassMap.get(name);
+        if(exceptionListenerClass != null){
+        	bind(ExceptionListener.class).annotatedWith(Names.named(name)).to(exceptionListenerClass);
+        } else {
+        	bind(ExceptionListener.class).annotatedWith(Names.named(name)).toProvider(Providers.<ExceptionListener>of(null));
+        }
         bind(Connection.class).annotatedWith(Names.named(name)).toInstance(connection);
+        requestInjection(connection);
         JmsTransactionHandler transactionHandler = new JmsTransactionHandler(jmsSessionLink, connection);
         bind(JmsTransactionHandler.class).annotatedWith(Names.named(name)).toInstance(transactionHandler);
     }

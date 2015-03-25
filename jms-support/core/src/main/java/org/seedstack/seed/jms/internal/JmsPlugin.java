@@ -10,11 +10,14 @@
 package org.seedstack.seed.jms.internal;
 
 import com.google.inject.Injector;
+
 import io.nuun.kernel.api.Plugin;
 import io.nuun.kernel.api.plugin.InitState;
+import io.nuun.kernel.api.plugin.PluginException;
 import io.nuun.kernel.api.plugin.context.InitContext;
 import io.nuun.kernel.api.plugin.request.ClasspathScanRequest;
 import io.nuun.kernel.core.AbstractPlugin;
+
 import org.apache.commons.configuration.BaseConfiguration;
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.lang.StringUtils;
@@ -36,6 +39,7 @@ import javax.inject.Inject;
 import javax.jms.Connection;
 import javax.jms.ConnectionFactory;
 import javax.jms.Destination;
+import javax.jms.ExceptionListener;
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageConsumer;
@@ -43,6 +47,7 @@ import javax.jms.MessageListener;
 import javax.jms.Session;
 import javax.naming.Context;
 import javax.naming.NamingException;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -66,6 +71,8 @@ public class JmsPlugin extends AbstractPlugin {
     private final Specification<Class<?>> messageListenerSpecs = and(classImplements(MessageListener.class), classAnnotatedWith(JmsMessageListener.class));
 
     private final ConcurrentMap<String, Connection> connectionMap = new ConcurrentHashMap<String, Connection>();
+    
+    private final ConcurrentMap<String, Class<? extends ExceptionListener>> exceptionListenerClassMap = new ConcurrentHashMap<String, Class<? extends ExceptionListener>>();
 
     private final ConcurrentMap<String, MessageListenerDefinition> messageListenerDefinitions = new ConcurrentHashMap<String, MessageListenerDefinition>();
 
@@ -247,7 +254,11 @@ public class JmsPlugin extends AbstractPlugin {
                 } catch (JMSException e) {
                     throw SeedException.wrap(e, SeedJmsErrorCodes.UNABLE_TO_CREATE_JMS_CONNECTION).put("connectionName", connectionName);
                 }
-
+                // Add exceptionListenerClass for current connectionName
+                Class<? extends ExceptionListener> exceptionListenerClass = getExceptionListenerClass(connectionConfiguration.getString("exceptionListener"));
+                if(exceptionListenerClass !=null){                	
+                	exceptionListenerClassMap.put(connectionName, exceptionListenerClass);
+                }
                 // Create exception handler
                 String exceptionHandler = connectionConfiguration.getString("exception-handler");
                 if (exceptionHandler != null && !exceptionHandler.isEmpty()) {
@@ -355,7 +366,7 @@ public class JmsPlugin extends AbstractPlugin {
 
     @Override
     public Object nativeUnitModule() {
-        return new JmsModule(connectionMap, messageListenerDefinitions, jmsExceptionHandlerClasses);
+        return new JmsModule(connectionMap, messageListenerDefinitions, jmsExceptionHandlerClasses, exceptionListenerClassMap);
     }
 
     /**
@@ -432,4 +443,16 @@ public class JmsPlugin extends AbstractPlugin {
             configuration.getInt("reconnection-delay", DEFAULT_RECONNECTION_DELAY)
         );
     }
+    
+    public Class<? extends ExceptionListener> getExceptionListenerClass(String className){
+   	 Class<? extends ExceptionListener> exceptionListenerClass = null;
+       if (StringUtils.isNotBlank(className)) {
+           try {
+           	exceptionListenerClass = (Class<? extends ExceptionListener>) Class.forName(className);
+           } catch (ClassNotFoundException e) {
+               throw new PluginException("Unable to load default jms exceptionListener class " + className, e);
+           }
+       }
+       return exceptionListenerClass;
+   }
 }
