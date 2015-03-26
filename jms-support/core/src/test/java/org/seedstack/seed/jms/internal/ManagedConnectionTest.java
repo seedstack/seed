@@ -10,6 +10,7 @@
 package org.seedstack.seed.jms.internal;
 
 import com.google.common.collect.Lists;
+
 import org.assertj.core.api.Assertions;
 import org.junit.Before;
 import org.junit.Test;
@@ -22,6 +23,7 @@ import org.seedstack.seed.jms.spi.ConnectionDefinition;
 
 import javax.jms.Connection;
 import javax.jms.ConnectionFactory;
+import javax.jms.ExceptionListener;
 import javax.jms.JMSException;
 import javax.jms.Session;
 
@@ -59,6 +61,13 @@ public class ManagedConnectionTest {
 
         // Failure
         Whitebox.setInternalState(underTest, "connectionFactory", new FakeConnectionFactory());
+        underTest.setExceptionListener(new ExceptionListener() {
+			
+			@Override
+			public void onException(JMSException exception) {
+				
+			}
+		});
         underTest.onException(new JMSException("Connection closed"));
 
         // Reset 

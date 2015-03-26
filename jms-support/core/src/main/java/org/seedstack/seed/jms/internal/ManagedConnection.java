@@ -14,7 +14,13 @@ import org.seedstack.seed.jms.spi.ConnectionDefinition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.inject.Injector;
+import com.google.inject.Key;
+import com.google.inject.name.Names;
+
+import javax.inject.Inject;
 import javax.jms.*;
+
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -39,6 +45,10 @@ class ManagedConnection implements Connection, ExceptionListener {
     private final boolean shouldSetClientId;
     private String clientId;
     private final AtomicBoolean scheduleInProgress;
+    
+    @Inject
+    private Injector injector;
+    
     private ExceptionListener exceptionListener;
     private Connection connection;
     private ReentrantReadWriteLock connectionLock = new ReentrantReadWriteLock();
@@ -157,7 +167,10 @@ class ManagedConnection implements Connection, ExceptionListener {
     	if(exception != null && LOGGER.isDebugEnabled()){
     		LOGGER.debug(exception.getMessage(), exception);
     	}
-        // call initial exception listener if any
+        if(exceptionListener == null){
+        	//inject declarative exception Listener
+            this.exceptionListener = injector.getInstance(Key.get(ExceptionListener.class, Names.named(connectionName)));
+        }
         if (exceptionListener != null) {
             exceptionListener.onException(exception);
         }
