@@ -26,7 +26,7 @@
             <dependency>
                 <groupId>org.seedstack</groupId>
                 <artifactId>unittest-bom</artifactId>
-                <version>${seedstack-poms.version}</version>
+                <version>${seedstack.poms.version}</version>
                 <scope>import</scope>
                 <type>pom</type>
             </dependency>

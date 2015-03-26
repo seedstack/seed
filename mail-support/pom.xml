@@ -26,21 +26,21 @@
             <dependency>
                 <groupId>org.seedstack</groupId>
                 <artifactId>java-bom</artifactId>
-                <version>${seedstack-poms.version}</version>
+                <version>${seedstack.poms.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
             <dependency>
                 <groupId>org.seedstack</groupId>
                 <artifactId>logging-bom</artifactId>
-                <version>${seedstack-poms.version}</version>
+                <version>${seedstack.poms.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
             <dependency>
                 <groupId>org.seedstack</groupId>
                 <artifactId>integrationtest-bom</artifactId>
-                <version>${seedstack-poms.version}</version>
+                <version>${seedstack.poms.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>

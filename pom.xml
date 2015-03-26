@@ -14,8 +14,8 @@
 
     <parent>
         <groupId>org.seedstack</groupId>
-        <artifactId>java-parent</artifactId>
-        <version>2.0.0-M1-SNAPSHOT</version>
+        <artifactId>parent</artifactId>
+        <version>2.0.0-M1</version>
     </parent>
 
     <groupId>org.seedstack.seed</groupId>
@@ -45,7 +45,6 @@
         <module>spring-support</module>
         <module>springbatch-support</module>
         <module>ws-support</module>
-
         <module>doc</module>
         <module>bom</module>
     </modules>
@@ -60,30 +59,25 @@
         </dependencies>
     </dependencyManagement>
 
+    <scm>
+        <url>https://github.com/seedstack/seed</url>
+        <connection>scm:git:git://github.com/seedstack/seed.git</connection>
+        <developerConnection>scm:git:git@github.com:seedstack/seed.git</developerConnection>
+        <tag>HEAD</tag>
+    </scm>
+
     <repositories>
         <repository>
-            <id>sonatype-nexus-snapshots</id>
-            <name>Sonatype Nexus Snapshots</name>
-            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-            <releases>
-                <enabled>false</enabled>
-            </releases>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
+            <id>sonatype-nexus-staging</id>
+            <name>Sonatype Nexus Staging</name>
+            <url>https://oss.sonatype.org/content/groups/staging</url>
         </repository>
     </repositories>
     <pluginRepositories>
         <pluginRepository>
-            <id>sonatype-nexus-snapshots</id>
-            <name>Sonatype Nexus Snapshots</name>
-            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-            <releases>
-                <enabled>false</enabled>
-            </releases>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
+            <id>sonatype-nexus-staging</id>
+            <name>Sonatype Nexus Staging</name>
+            <url>https://oss.sonatype.org/content/groups/staging</url>
         </pluginRepository>
     </pluginRepositories>
 </project>
