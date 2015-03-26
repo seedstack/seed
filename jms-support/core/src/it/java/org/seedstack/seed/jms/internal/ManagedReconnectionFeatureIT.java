@@ -42,6 +42,9 @@ public class ManagedReconnectionFeatureIT {
 
     @Inject
     MyManagedMessageSender3 myManagedMessageSender3;
+    
+    @Inject
+    MyManagedMessageSender5 myManagedMessageSender5;
 
     static CountDownLatch latchConnect1 = new CountDownLatch(1);
     static CountDownLatch latchReconnect1 = new CountDownLatch(1);
@@ -53,6 +56,10 @@ public class ManagedReconnectionFeatureIT {
     @Inject
     @Named("connection3")
     private Connection connection3;
+    
+    @Inject
+    @Named("connection5")
+    private Connection connection5;
 
     @Test
     public void reset_then_refresh_connection_should_works() throws Exception {
@@ -68,6 +75,7 @@ public class ManagedReconnectionFeatureIT {
 
         // Refresh connection and resend message
         myManagedMessageSender3.send("RECONNECTED1");
+
         latchReconnect1.await(200, TimeUnit.MILLISECONDS);
         Assertions.assertThat(text).isEqualTo("RECONNECTED1"); // message is successfully received
     }
@@ -151,6 +159,26 @@ public class ManagedReconnectionFeatureIT {
         }
         latchConnect1.await(10, TimeUnit.SECONDS);
         Assertions.assertThat(text).isEqualTo(message);
+    }
+    
+    
+    @Test
+    public void test_that_wraped_exceptionlistener_from_managedConnection_differs_from_jmsbroker_connection() throws InterruptedException, JMSException {
+        Whitebox.setInternalState(connection5, "connectionFactory", new FakeConnectionFactory());
+        ExceptionListener exceptionListener = new ExceptionListener() {        	
+        	@Override
+        	public void onException(JMSException e) {
+        		logger.info("test");
+        	}
+        };
+        ManagedConnection managedConnection = ((ManagedConnection)connection5);
+        managedConnection.setExceptionListener(exceptionListener);
+        Connection jmsConnection = Whitebox.getInternalState(connection5, "connection");
+        ExceptionListener exceptionListenerAQ = Whitebox.getInternalState(jmsConnection, "exceptionListener");
+        ExceptionListener exceptionListenerMC = Whitebox.getInternalState(managedConnection, "exceptionListener");
+        Assertions.assertThat(exceptionListenerAQ).isNotEqualTo(exceptionListenerMC);
+        Assertions.assertThat(exceptionListenerMC).isEqualTo(exceptionListener);       
+        
     }
 
 }
