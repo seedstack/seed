@@ -15,7 +15,9 @@ package org.seedstack.seed.crypto.internal;
 import io.nuun.kernel.core.AbstractPlugin;
 
 /**
- * Plugin for cryptography support
+ * Plugin for cryptography support.
+ *
+ * @author yves.dautremay@mpsa.com
  */
 public class CryptoSupportPlugin extends AbstractPlugin {
 

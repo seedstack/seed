@@ -19,6 +19,7 @@ import javax.xml.bind.DatatypeConverter;
  * the salt used to generate it. When comparing two hashes made with the same salt, it has to be also through the same algorithm
  * with the same parameters.
  *
+ * @author yves.dautremay@mpsa.com
  */
 public class Hash {
 

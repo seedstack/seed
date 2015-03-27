@@ -158,6 +158,11 @@
         </dependency>
         <dependency>
             <groupId>org.seedstack.seed</groupId>
+            <artifactId>seed-security-support-ldap</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.seedstack.seed</groupId>
             <artifactId>seed-security-support-specs</artifactId>
             <version>${project.version}</version>
         </dependency>
@@ -254,6 +259,11 @@
         <dependency>
             <groupId>org.seedstack.seed</groupId>
             <artifactId>seed-metrics-support</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.seedstack.seed</groupId>
+            <artifactId>seed-cryptography-support</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>

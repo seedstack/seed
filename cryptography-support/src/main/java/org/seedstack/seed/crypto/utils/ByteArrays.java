@@ -10,9 +10,17 @@
 /*
  * Creation : 27 févr. 2015
  */
-package org.seedstack.seed.crypto;
+package org.seedstack.seed.crypto.utils;
 
-public class ByteArrays {
+/**
+ * Utility class to manipulate byte arrays.
+ *
+ * @author yves.dautremay@mpsa.com
+ */
+public final class ByteArrays {
+
+    private ByteArrays() {
+    }
 
     /**
      * Compares two byte arrays in length-constant time. This comparison method is used so that password hashes cannot be extracted from an on-line

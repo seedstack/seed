@@ -13,7 +13,6 @@
 package org.seedstack.seed.crypto.internal;
 
 import org.seedstack.seed.crypto.api.hash.HashingSupport;
-import org.seedstack.seed.crypto.internal.hash.PBKDF2HashingSupport;
 
 import com.google.inject.AbstractModule;
 

@@ -17,6 +17,7 @@ package org.seedstack.seed.crypto.api.hash;
  * When creating a hash from a string or char[], a random salt will be generated and
  * given with the hash through a {@link Hash} object.
  *
+ * @author yves.dautremay@mpsa.com
  */
 public interface HashingSupport {
 

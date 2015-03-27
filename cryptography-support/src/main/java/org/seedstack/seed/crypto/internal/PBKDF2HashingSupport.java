@@ -10,7 +10,7 @@
 /*
  * Creation : 27 févr. 2015
  */
-package org.seedstack.seed.crypto.internal.hash;
+package org.seedstack.seed.crypto.internal;
 
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
@@ -19,11 +19,11 @@ import java.security.spec.InvalidKeySpecException;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
 
-import org.seedstack.seed.crypto.ByteArrays;
+import org.seedstack.seed.crypto.utils.ByteArrays;
 import org.seedstack.seed.crypto.api.hash.Hash;
 import org.seedstack.seed.crypto.api.hash.HashingSupport;
 
-public class PBKDF2HashingSupport implements HashingSupport {
+class PBKDF2HashingSupport implements HashingSupport {
     private static final String PBKDF2_ALGORITHM = "PBKDF2WithHmacSHA1";
 
     private static final int SALT_BYTE_SIZE = 24;
@@ -67,8 +67,6 @@ public class PBKDF2HashingSupport implements HashingSupport {
      * 
      * @param password the password to hash.
      * @param salt the salt
-     * @param iterations the iteration count (slowness factor)
-     * @param bytes the length of the hash to compute in bytes
      * @return the PBDKF2 hash of the password
      */
     private byte[] pbkdf2(char[] password, byte[] salt) {

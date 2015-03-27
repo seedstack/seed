@@ -10,13 +10,14 @@
 /*
  * Creation : 27 févr. 2015
  */
-package org.seedstack.seed.crypto.internal.hash;
+package org.seedstack.seed.crypto.internal;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.seedstack.seed.crypto.api.hash.Hash;
+import org.seedstack.seed.crypto.internal.PBKDF2HashingSupport;
 
 public class PBKDF2HashingSupportTest {
 
