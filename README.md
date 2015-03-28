@@ -1,4 +1,4 @@
-# SeedStack Java Framework
+# SeedStack Java Framework [![Build status](https://travis-ci.org/seedstack/seed.svg?branch=master)](https://travis-ci.org/seedstack/seed)
 
 Also known as Seed, the Java framework provides support for a large range of technologies and standards from the Java world.
 
