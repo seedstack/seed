@@ -196,22 +196,6 @@
             </dependency>
             <dependency>
                 <groupId>org.seedstack.seed</groupId>
-                <artifactId>seed-spring-support-core</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.seedstack.seed</groupId>
-                <artifactId>seed-spring-support-test</artifactId>
-                <version>${project.version}</version>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.seedstack.seed</groupId>
-                <artifactId>seed-springbatch-support</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.seedstack.seed</groupId>
                 <artifactId>seed-ws-support-core</artifactId>
                 <version>${project.version}</version>
             </dependency>

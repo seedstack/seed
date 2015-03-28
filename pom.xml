@@ -42,8 +42,6 @@
         <module>metrics-support</module>
         <module>scheduling-support</module>
         <module>shell-support</module>
-        <module>spring-support</module>
-        <module>springbatch-support</module>
         <module>ws-support</module>
         <module>doc</module>
         <module>bom</module>

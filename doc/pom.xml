@@ -33,9 +33,6 @@
                             <goal>javadoc</goal>
                         </goals>
                         <configuration>
-                            <doclet>ydoc.doclets.YStandard</doclet>
-                            <docletPath>${project.basedir}/yworks-uml-doclet/lib/ydoc.jar:${project.basedir}/yworks-uml-doclet/resources</docletPath>
-                            <additionalparam>-umltypegen -umlpackagegen</additionalparam>
                             <additionalJOption>-J-Djava.awt.headless=true</additionalJOption>
                             <doctitle>SeedStack Java framework</doctitle>
                             <detectOfflineLinks>false</detectOfflineLinks>
@@ -76,11 +73,6 @@
     </build>
 
     <dependencies>
-        <dependency>
-            <groupId>org.seedstack.seed</groupId>
-            <artifactId>seed-springbatch-support</artifactId>
-            <version>${project.version}</version>
-        </dependency>
         <dependency>
             <groupId>org.seedstack.seed</groupId>
             <artifactId>seed-cli-support-core</artifactId>
@@ -169,16 +161,6 @@
         <dependency>
             <groupId>org.seedstack.seed</groupId>
             <artifactId>seed-security-support-test</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.seedstack.seed</groupId>
-            <artifactId>seed-spring-support-core</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.seedstack.seed</groupId>
-            <artifactId>seed-spring-support-test</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
