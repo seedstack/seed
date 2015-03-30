@@ -28,9 +28,9 @@ import java.util.regex.Pattern;
 
 /**
  * {@link com.google.inject.grapher.InjectorGrapher} implementation that writes out a Graphviz DOT file of the graph.
- * <p/>
+ * <p>
  * Specify the {@link PrintWriter} to output to with {@link #setOut(PrintWriter)}.
- * <p/>
+ * <p>
  * Based on {@link com.google.inject.grapher.graphviz.GraphvizGrapher} which is licensed under Apache 2.0 terms
  * (http://www.apache.org/licenses/LICENSE-2.0).
  *

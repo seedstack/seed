@@ -52,7 +52,8 @@ public class TransactionalClassProxy<T> implements MethodHandler {
 
 	/**
 	 * Create a transactional proxy around the provided {@link TransactionalLink}.
-	 * 
+	 *
+	 * @param <T> the interface used to create the proxy.
 	 * @param clazz the class representing the transacted resource.
 	 * @param transactionalLink the link to access the instance of the transacted resource.
 	 * @return the proxy.

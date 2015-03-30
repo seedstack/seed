@@ -26,7 +26,7 @@ import java.lang.annotation.Target;
 public @interface SecurityFilter {
 
 	/**
-	 * Name of the filter. To be used when declaring the chain.
+	 * @return Name of the filter. To be used when declaring the chain.
 	 */
 	String value();
 }

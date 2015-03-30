@@ -38,19 +38,19 @@ public interface SecuritySupport {
     Collection<PrincipalProvider<?>> getOtherPrincipals();
 
     /**
-     * Gets all the PrincipalProviders corresponding to a type of PrincialProvider.<br>
+     * Gets all the PrincipalProviders corresponding to a type of PrincipalProvider.<br>
      * <br>
      * For example, you can use this method to get the LDAPUser by calling :<br>
-     * <code>getPrincipalsByType(LDAPUser.class)</code>.<br>
+     * {@code getPrincipalsByType(LDAPUser.class)}.<br>
      * <br>
      * Then on the first element of the collection : <br>
-     * <code>LDAPUser user =
-     * ldapUserPrincipalProvider.getPrincipal()</code>.
+     * {@code LDAPUser user =
+     * ldapUserPrincipalProvider.getPrincipal()}.
      * 
      * @param <T> type of the principal
      * @param principalClass the Principal type, not null
      * @return A collection of the user's PrincipalProviders of type principalProviderClass. Not null.
-     * @see {@link org.seedstack.seed.security.api.principals.Principals#getPrincipalsByType(Collection, Class)};
+     * @see org.seedstack.seed.security.api.principals.Principals#getPrincipalsByType(Collection, Class)
      */
     <T extends Serializable> Collection<PrincipalProvider<T>> getPrincipalsByType(Class<T> principalClass);
 
@@ -60,7 +60,7 @@ public interface SecuritySupport {
      * {@link org.seedstack.seed.security.api.principals.Principals}.
      * 
      * @return the list of the user's SimplePrincipalProviders. Not null
-     * @see {@link org.seedstack.seed.security.api.principals.Principals#getSimplePrincipals(Collection)};
+     * @see org.seedstack.seed.security.api.principals.Principals#getSimplePrincipals(Collection)
      */
     Collection<SimplePrincipalProvider> getSimplePrincipals();
 
@@ -69,16 +69,14 @@ public interface SecuritySupport {
      * 
      * @param principalName the name of the principal. Null returns null.
      * @return the SimplePrincipalProvider identified by principalName. Null if none found.
-     * @see {@link org.seedstack.seed.security.api.principals.Principals#getSimplePrincipalByName(Collection, String)};
+     * @see org.seedstack.seed.security.api.principals.Principals#getSimplePrincipalByName(Collection, String)
      */
     SimplePrincipalProvider getSimplePrincipalByName(String principalName);
 
     /**
      * Tells if the connected user has the given permission.<br>
-     * The permission is given as a String in the form "object:action[:id]" (e.g. door:open or document:print).<br>
-     * <br>
-     * To test a complex permission (like a ScopePemrission) use {@link SecuritySupport#isPermitted(Permission)}.
-     * 
+     * The permission is given as a String in the form "object:action[:id]" (e.g. door:open or document:print).
+     *
      * @param permission the string permission to test. Not null
      * @return true if user has the given permission, false otherwise.
      */
@@ -86,10 +84,8 @@ public interface SecuritySupport {
 
     /**
      * Tells if the connected user has the given permission on the given scopes.<br>
-     * The permission is given as a String in the form "object:action[:id]" (e.g. door:open or document:print).<br>
-     * <br>
-     * To test a complex permission (like a ScopePemrission) use {@link SecuritySupport#isPermitted(Permission)}.
-     * 
+     * The permission is given as a String in the form "object:action[:id]" (e.g. door:open or document:print).
+     *
      * @param permission the string permission to test. Not null
      * @param scopes the scopes to verify the permission on. optional
      * @return true if user has the given permission, false otherwise.
@@ -98,10 +94,8 @@ public interface SecuritySupport {
 
     /**
      * Tells if the connected user has all of the given permissions.<br>
-     * The permissions are given as Strings in the form "object:action[:id]" (e.g. door:open or document:print).<br>
-     * <br>
-     * To test complex permissions (like a ScopePemrission) use {@link SecuritySupport#isPermittedAll(Permission...)}.
-     * 
+     * The permissions are given as Strings in the form "object:action[:id]" (e.g. door:open or document:print).
+     *
      * @param permissions the string permissions to test. not null
      * @return true if user has all the given permissions, false otherwise.
      */
@@ -109,10 +103,8 @@ public interface SecuritySupport {
 
     /**
      * Tells if the connected user has at least one of the given permissions.<br>
-     * The permissions are given as Strings in the form "object:action[:id]" (e.g. door:open or document:print).<br>
-     * <br>
-     * To test complex permissions (like a ScopePemrission) use {@link SecuritySupport#isPermittedAny(Permission...)}.
-     * 
+     * The permissions are given as Strings in the form "object:action[:id]" (e.g. door:open or document:print).
+     *
      * @param permissions the string permissions to test. Not null
      * @return true if user has at least one of the given permissions, false otherwise.
      */
@@ -122,10 +114,8 @@ public interface SecuritySupport {
      * Checks if the connected user has the given permission on the given scopes : if the user does not have the permission, throws an exception to
      * block execution.<br>
      * <br>
-     * The permission is given as a String in the form "object:action[:id]" (e.g. door:open or document:print).<br>
-     * <br>
-     * To test a complex permission (like a ScopePemrission) use {@link SecuritySupport#isPermitted(Permission)}.
-     * 
+     * The permission is given as a String in the form "object:action[:id]" (e.g. door:open or document:print).
+     *
      * @param permission the string permission to test. Not null.
      * @param scopes the scopes to verify the permission on. optional
      * @throws org.seedstack.seed.security.api.exceptions.AuthorizationException if the user does not have the permission.
@@ -135,10 +125,8 @@ public interface SecuritySupport {
     /**
      * Checks if the connected user has the given permission : if the user does not have the permission, throws an exception to block execution.<br>
      * <br>
-     * The permission is given as a String in the form "object:action[:id]" (e.g. door:open or document:print).<br>
-     * <br>
-     * To test a complex permission (like a ScopePemrission) use {@link SecuritySupport#isPermitted(Permission)}.
-     * 
+     * The permission is given as a String in the form "object:action[:id]" (e.g. door:open or document:print).
+     *
      * @param permission the string permission to test. Not null.
      * @throws org.seedstack.seed.security.api.exceptions.AuthorizationException if the user does not have the permission.
      */
@@ -147,10 +135,8 @@ public interface SecuritySupport {
     /**
      * Checks if the connected user has the given permissions : if the user does not have all the permissions, throws an exception to block execution.<br>
      * <br>
-     * The permissions are given as Strings in the form "object:action[:id]" (e.g. door:open or document:print).<br>
-     * <br>
-     * To test complex permissions (like a ScopePemrission) use {@link SecuritySupport#isPermitted(Permission)}.
-     * 
+     * The permissions are given as Strings in the form "object:action[:id]" (e.g. door:open or document:print).
+     *
      * @param permissions the string permissions to test. Not null.
      * @throws org.seedstack.seed.security.api.exceptions.AuthorizationException if the user does not have all of the given permissions.
      */
@@ -243,10 +229,9 @@ public interface SecuritySupport {
      * Calling this method in web environments will usually remove any associated session cookie as part of session invalidation. Because cookies are
      * part of the HTTP header, and headers can only be set before the response body (html, image, etc) is sent, this method in web environments must
      * be called before <em>any</em> content has been rendered.
-     * <p/>
+     * <p>
      * The typical approach most applications use in this scenario is to redirect the user to a different location (e.g. home page) immediately after
      * calling this method. This is an effect of the HTTP protocol itself and not a reflection of the implementation.
-     * <p/>
      */
     void logout();
 

@@ -26,12 +26,12 @@ import java.lang.annotation.Target;
 @Retention(value= RetentionPolicy.RUNTIME)
 public @interface WebInitParam {
     /**
-     * The name of the initialization parameter.
+     * @return The name of the initialization parameter.
      */
     String name();
 
     /**
-     * The value of the initialization parameter
+     * @return The value of the initialization parameter.
      */
     String value();
 }

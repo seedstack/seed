@@ -11,20 +11,20 @@ package org.seedstack.seed.security.api.data;
 
 /**
  * DataSecurityService is the SEED interface that offers data security related services .
- * <p/>
+ * <p>
  * It offers methods that helps dealing with data access restriction according to permissions and roles.
- * <p/>
+ * <p>
  * DataSecurityService is used in conjunction with {@link org.seedstack.seed.security.spi.data.DataSecurityHandler}.
- * {@link org.seedstack.seed.security.spi.data.DataSecurityHandler} will help functions developpers to add behaviour on annotation.
+ * {@link org.seedstack.seed.security.spi.data.DataSecurityHandler} will help functions developers to add behaviour on annotation.
  *
  * @author epo.jemba@ext.mpsa.com
- * @see {@link org.seedstack.seed.security.spi.data.DataSecurityHandler}
+ * @see org.seedstack.seed.security.spi.data.DataSecurityHandler
  */
 public interface DataSecurityService {
 
     /**
      * This method will modify the state of c according the role and permissions of the current user.
-     * <p/>
+     * <p>
      * It means data will be modified accordingly.
      *
      * @param <C>       the type of the candidate.

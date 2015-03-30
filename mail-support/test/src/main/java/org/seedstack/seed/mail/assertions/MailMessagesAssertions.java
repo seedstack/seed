@@ -173,6 +173,9 @@ public class MailMessagesAssertions<S extends Message> extends AbstractAssert<Ma
 
     /**
      * Utility method to throw exceptions.
+     *
+     * @param e The throwable to wrap.
+     * @param errorCode The error code to use for wrapping.
      */
     protected void throwException(Throwable e, MailAssertionsErrorCodes errorCode) {
         throw SeedException

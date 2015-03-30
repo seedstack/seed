@@ -17,9 +17,9 @@ import javax.inject.Inject;
 
 /**
  * This class is an entry point for the security expression language.
- * <p/>
+ * <p>
  * It is mainly a static gateway to {@link SecuritySupport}.
- * <p/>
+ * <p>
  * It is not meant to be used by projects directly.
  *
  * @author epo.jemba@ext.mpsa.com

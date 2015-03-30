@@ -40,6 +40,7 @@ public final class MockMailServerAssertions {
     /**
      * Creates an assertion over a java mail session.
      *
+     * @param <S> The type of java mail session.
      * @param session the session to assert.
      * @return the assertion.
      */

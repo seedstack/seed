@@ -20,7 +20,6 @@ import java.util.Set;
  * can apply rules considering them.
  * 
  * @author yves.dautremay@mpsa.com
- * 
  */
 public interface RoleMapping {
 
@@ -42,7 +41,7 @@ public interface RoleMapping {
 	 *            Not null
 	 * @return A collection of the {@code Role}s resolved from the data. Not
 	 *         null.
-	 * @see {@link org.seedstack.seed.security.api.principals.Principals} for utility methods to extract principalProviders
+	 * @see org.seedstack.seed.security.api.principals.Principals for utility methods to extract principalProviders
 	 *      from a collection.
 	 */
 	Collection<Role> resolveRoles(Set<String> realmData, Collection<PrincipalProvider<?>> principalProviders);

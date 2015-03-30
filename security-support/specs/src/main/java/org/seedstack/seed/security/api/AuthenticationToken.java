@@ -12,36 +12,30 @@ package org.seedstack.seed.security.api;
 import java.io.Serializable;
 
 /**
- * <p>
  * An <tt>AuthenticationToken</tt> is a consolidation of an account's principals
  * and supporting credentials submitted by a user during an authentication
  * attempt.
- * <p/>
  * <p>
  * Because applications represent user data and credentials in different ways,
  * implementations of this interface are application-specific. You are free to
  * acquire a user's principals and credentials however you wish (e.g. web form,
  * Swing form, fingerprint identification, etc) and then submit them to the
  * framework in the form of an implementation of this interface.
- * <p/>
  * <p>
  * If your application's authentication process is username/password based (like
  * most), instead of implementing this interface yourself, take a look at the
  * {@link UsernamePasswordToken UsernamePasswordToken} class, as it is probably
  * sufficient for your needs.
- * <p/>
  */
 public interface AuthenticationToken extends Serializable {
 
 	/**
 	 * Returns the account identity submitted during the authentication process.
-	 * <p/>
 	 * <p>
 	 * Most application authentications are username/password based and have
 	 * this object represent a username. If this is the case for your
 	 * application, take a look at the {@link UsernamePasswordToken
 	 * UsernamePasswordToken}, as it is probably sufficient for your use.
-	 * <p/>
 	 * <p>
 	 * Ultimately, the object returned is application specific and can represent
 	 * any account identity.
@@ -55,13 +49,11 @@ public interface AuthenticationToken extends Serializable {
 	 * Returns the credentials submitted by the user during the authentication
 	 * process that verifies the submitted {@link #getPrincipal() account
 	 * identity}.
-	 * <p/>
 	 * <p>
 	 * Most application authentications are username/password based and have
 	 * this object represent a submitted password. If this is the case for your
 	 * application, take a look at the {@link UsernamePasswordToken
 	 * UsernamePasswordToken}, as it is probably sufficient for your use.
-	 * <p/>
 	 * <p>
 	 * Ultimately, the credentials Object returned is application specific and
 	 * can represent any credential mechanism.

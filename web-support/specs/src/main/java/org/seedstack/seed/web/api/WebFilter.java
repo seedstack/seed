@@ -26,18 +26,17 @@ import java.lang.annotation.Target;
 @Retention(value= RetentionPolicy.RUNTIME)
 public @interface WebFilter {
     /**
-     * Name of the servlet filter.
+     * @return Name of the servlet filter.
      */
     String filterName() default "";
 
     /**
-     * Array of the filter initialization parameters (equivalent to an <init-params></init-params>
-     * section in the web.xml).
+     * @return Array of the filter initialization parameters (equivalent to an &lt;init-params&gt;&lt;/init-params&gt; section in the web.xml).
      */
     WebInitParam[] initParams() default {};
 
     /**
-     * The url pattern(s) that the filter is configured to intercept.
+     * @return The url pattern(s) that the filter is configured to intercept.
      */
     String[] value() default {};
 }

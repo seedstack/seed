@@ -31,8 +31,7 @@ public @interface WebServlet {
     String name() default "";
 
     /**
-     * @return initialization parameters of the servlet (equivalent to an <init-params></init-params>
-     * section in the web.xml).
+     * @return initialization parameters of the servlet (equivalent to an &lt;init-params&gt;&lt;/init-params&gt; section in the web.xml).
      */
     WebInitParam[] initParams() default {};
 

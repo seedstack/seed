@@ -24,7 +24,7 @@ import org.seedstack.seed.it.api.ITBind;
 import org.seedstack.seed.security.api.WithUser;
 
 /**
- * MethodRule used to connect a user to seed security if annotation {@literal @} {@link org.seedstack.seed.security.api.WithUser} is present on method or on target class.
+ * MethodRule used to connect a user to seed security if annotation @ {@link org.seedstack.seed.security.api.WithUser} is present on method or on target class.
  * 
  * @author U236838
  */

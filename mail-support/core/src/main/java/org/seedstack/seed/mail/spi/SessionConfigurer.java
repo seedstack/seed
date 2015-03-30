@@ -14,7 +14,7 @@ import java.util.Map;
 
 /**
  * interface for handling session configuration.
- * <p/>
+ * <p>
  * must be implemented by classes which wishes to provide configured sessions to be used elsewhere
  * Created by E442250 on 05/05/2014.
  */

@@ -13,11 +13,13 @@ package org.seedstack.seed.security.api;
  * A Permission is represented by a String witch describes actions that can be
  * done on a type of objects. A Permission can be limited to one or more
  * {@link Scope}s.
- * <p/>
+ * <p>
  * Some examples of Permissions :
- * <li>door:close,open
- * <li>document:print
- * <li>user:modify:u236838
+ * <ul>
+ * <li>door:close,open</li>
+ * <li>document:print</li>
+ * <li>user:modify:u236838</li>
+ * </ul>
  * 
  * @author yves.dautremay@mpsa.com
  */

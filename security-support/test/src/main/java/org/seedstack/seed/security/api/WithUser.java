@@ -22,17 +22,15 @@ import java.lang.annotation.Target;
  * unless the method is itself annotated with a different id/pwd.
  *
  * @author yves.dautremay@mpsa.com
- * 
  */
 @Target({ ElementType.TYPE, ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Inherited
 public @interface WithUser {
-
-    /** id of the user */
+    /** @return id of the user */
     String id();
 
-    /** password of the user */
+    /** @return password of the user */
     String password();
 }

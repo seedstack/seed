@@ -35,11 +35,10 @@ public final class WSTools {
     /**
      * This methods creates a username token header from two strings.
      *
-     * @param userName
-     *         the username.
-     * @param password
-     *         the password.
+     * @param userName the username.
+     * @param password the password.
      * @return the header.
+     * @throws SOAPException if unable to create the header.
      */
     public static Header createUserNameTokenHeader(String userName, String password) throws SOAPException {
         SOAPFactory soapFactory = SOAPFactory.newInstance();

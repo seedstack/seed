@@ -10,7 +10,6 @@
 package org.seedstack.seed.ws.internal.jms;
 
 import org.apache.commons.lang.StringUtils;
-import org.seedstack.seed.ws.tools.UrlEncodedQueryString;
 
 import javax.jms.Destination;
 import javax.jms.JMSException;
@@ -18,10 +17,10 @@ import javax.jms.Session;
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
+import java.net.URLDecoder;
+import java.util.*;
 
 final class SoapJmsUri {
     public static final String JNDI_LOOKUP_VARIANT = "jndi";
@@ -30,14 +29,71 @@ final class SoapJmsUri {
 
     private final String lookupVariant;
     private final String destinationName;
-    private final Map<String, List<String>> params;
+    private final Map<String, String[]> params;
     private final String uri2string;
 
-    private SoapJmsUri(String lookupVariant, String destinationName, Map<String, List<String>> params, String uri2string) {
+    private SoapJmsUri(String lookupVariant, String destinationName, Map<String, String[]> params, String uri2string) {
         this.lookupVariant = lookupVariant;
         this.destinationName = destinationName;
         this.params = params;
         this.uri2string = uri2string;
+    }
+
+    static Map<String, String[]> parseUrlQueryString(String s) {
+        if (s == null) return new HashMap<String, String[]>(0);
+        // In map1 we use strings and ArrayLists to collect the parameter values.
+        HashMap<String, Object> map1 = new HashMap<String, Object>();
+        int p = 0;
+        while (p < s.length()) {
+            int p0 = p;
+            while (p < s.length() && s.charAt(p) != '=' && s.charAt(p) != '&') p++;
+            String name = urlDecode(s.substring(p0, p));
+            if (p < s.length() && s.charAt(p) == '=') p++;
+            p0 = p;
+            while (p < s.length() && s.charAt(p) != '&') p++;
+            String value = urlDecode(s.substring(p0, p));
+            if (p < s.length() && s.charAt(p) == '&') p++;
+            Object x = map1.get(name);
+            if (x == null) {
+                // The first value of each name is added directly as a string to the map.
+                map1.put(name, value);
+            } else if (x instanceof String) {
+                // For multiple values, we use an ArrayList.
+                ArrayList<String> a = new ArrayList<String>();
+                a.add((String) x);
+                a.add(value);
+                map1.put(name, a);
+            } else {
+                @SuppressWarnings("unchecked")
+                ArrayList<String> a = (ArrayList<String>) x;
+                a.add(value);
+            }
+        }
+        // Copy map1 to map2. Map2 uses string arrays to store the parameter values.
+        HashMap<String, String[]> map2 = new HashMap<String, String[]>(map1.size());
+        for (Map.Entry<String, Object> e : map1.entrySet()) {
+            String name = e.getKey();
+            Object x = e.getValue();
+            String[] v;
+            if (x instanceof String) {
+                v = new String[]{(String) x};
+            } else {
+                @SuppressWarnings("unchecked")
+                ArrayList<String> a = (ArrayList<String>) x;
+                v = new String[a.size()];
+                v = a.toArray(v);
+            }
+            map2.put(name, v);
+        }
+        return map2;
+    }
+
+    static String urlDecode(String s) {
+        try {
+            return URLDecoder.decode(s, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException("Error in urlDecode.", e);
+        }
     }
 
     static SoapJmsUri parse(URI uri) {
@@ -58,7 +114,7 @@ final class SoapJmsUri {
             throw new IllegalArgumentException("Invalid SOAP JMS URI " + splitSsp[1]);
         }
 
-        return new SoapJmsUri(splitSsp[0], splitSecondPart[0], UrlEncodedQueryString.parse(splitSecondPart[1]).getMap(), uri.toASCIIString());
+        return new SoapJmsUri(splitSsp[0], splitSecondPart[0], parseUrlQueryString(splitSecondPart[1]), uri.toASCIIString());
     }
 
     static Context getContext(SoapJmsUri soapJmsUri) throws NamingException {
@@ -128,10 +184,10 @@ final class SoapJmsUri {
     }
 
     String getParameter(String name) {
-        List<String> values = params.get(name);
+        String[] values = params.get(name);
 
-        if (values != null && !values.isEmpty()) {
-            return params.get(name).get(0);
+        if (values != null && values.length > 0) {
+            return params.get(name)[0];
         }
 
         return null;

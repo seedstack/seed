@@ -25,7 +25,7 @@ import java.util.List;
 
 /**
  * Simple implementation of the @Link MessageRetriever.
- * <p/>
+ * <p>
  * Created by E442250 on 19/05/2014.
  */
 class WiserMessageRetriever implements MessageRetriever {

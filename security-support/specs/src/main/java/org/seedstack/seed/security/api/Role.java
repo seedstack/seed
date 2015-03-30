@@ -77,9 +77,9 @@ public class Role {
 
     /**
      * Filters the scopes corresponding to a type
-     * 
-     * @param scopeType
-     *            the type of scope
+     *
+     * @param <S> the type of the scope to filter.
+     * @param scopeType the type of scope
      * @return the scopes of the given type
      */
     @SuppressWarnings("unchecked")
@@ -113,7 +113,7 @@ public class Role {
     }
 
     /**
-     * Convinient method to get an unmodifiable role from a role
+     * Convenient method to get an unmodifiable role from a role
      * 
      * @param role
      *            the role to protect

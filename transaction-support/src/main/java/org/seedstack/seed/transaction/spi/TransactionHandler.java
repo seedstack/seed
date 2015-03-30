@@ -21,7 +21,6 @@ public interface TransactionHandler<T> {
      * <p>This method is called before the transaction creation and is responsible to execution any initialization
      * code necessary to the underlying implementation. If this method fails, no cleanup is performed so implementations
      * must ensure that its behavior is atomic (all or nothing).
-     * <p/>
      * <p> The transactionMetadata is given by the {@link TransactionManager}.
      *
      * @param transactionMetadata The associated transaction metadata.

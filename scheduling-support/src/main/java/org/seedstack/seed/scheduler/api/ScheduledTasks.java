@@ -17,7 +17,7 @@ package org.seedstack.seed.scheduler.api;
  *     ...
  *     scheduledTasks.scheduledTask(MyTask.class).cron("* * 0/1 * * ?").schedule();
  * </pre>
- * <p/>
+ * <p>
  * This class should be injected.
  *
  * @author pierre.thirouin@ext.mpsa.com

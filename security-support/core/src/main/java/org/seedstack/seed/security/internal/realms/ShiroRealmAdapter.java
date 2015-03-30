@@ -42,9 +42,6 @@ import org.seedstack.seed.security.internal.authorization.SeedAuthorizationInfo;
  * Uses a Realm from the api and is functional with Shiro.
  * 
  * @author yves.dautremay@mpsa.com
- * 
- * @param <R>
- *            the API Realm type
  */
 public class ShiroRealmAdapter extends AuthorizingRealm {
 
@@ -159,8 +156,7 @@ public class ShiroRealmAdapter extends AuthorizingRealm {
     /**
      * Setter realm
      * 
-     * @param realm
-     *            the realm to set
+     * @param realm the realm to set
      */
     public void setRealm(Realm realm) {
         this.realm = realm;

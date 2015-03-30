@@ -14,8 +14,7 @@ import org.seedstack.seed.core.api.ErrorCode;
 /**
  * JMS error codes.
  *
- * @author Pierre Thirouin <pierre.thirouin@ext.mpsa.com>
- *         03/11/2014
+ * @author pierre.thirouin@ext.mpsa.com
  */
 public enum SeedJmsErrorCodes implements ErrorCode {
     UNEXPECTED_EXCEPTION,

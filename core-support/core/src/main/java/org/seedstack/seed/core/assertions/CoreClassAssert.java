@@ -31,7 +31,7 @@ public class CoreClassAssert<S extends CoreClassAssert<S>> extends AbstractClass
      * Creates the assertion with the specified types.
      *
      * @param actual   the class to test
-     * @param selfType the self type of this assertion class ({@see AbstractClassAssert}
+     * @param selfType the self type of this assertion class ({@link AbstractClassAssert}
      */
     protected CoreClassAssert(Class<?> actual, Class<?> selfType) {
         super(actual, selfType);

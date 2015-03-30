@@ -91,8 +91,7 @@ public interface ScheduledTaskBuilder {
     /**
      * Sets the {@code Trigger} that will be used to schedule
      * the {@code Task}.
-     * <p/>
-     * <p/>
+     * <p>
      * Be aware that using using this method will override any other
      * {@code Trigger}-related operation, like {@link #withTriggerName(String)}
      * or {@link #withTimeZone(java.util.TimeZone)}
@@ -112,8 +111,6 @@ public interface ScheduledTaskBuilder {
 
     /**
      * Bind a {@code Task} to a trigger and schedule.
-     *
-     * @throws Exception If any error occurs
      */
     void schedule();
 
@@ -126,19 +123,17 @@ public interface ScheduledTaskBuilder {
      * <p>
      * Arguments provide the previous trigger identification to be replaced
      *
-     * @param triggerName
-     * @throws Exception
+     * @param triggerName the name of the trigger to reschedule.
      */
-	void reschedule(String triggerName) ;
+	void reschedule(String triggerName);
 
 
     /**
      * Unschedule the {@code Task} with provided trigger identification.<br>
      * triggerGroup is the Class of the {@code Task} implementation
-     * <p>
-     * @param triggerName
-     * @throws Exception
+     *
+     * @param triggerName the name of the trigger to unschedule.
      */
-	void unschedule(String triggerName) ;
+	void unschedule(String triggerName);
 
 }

@@ -21,18 +21,18 @@ public interface SchedulingContext {
 
     /**
      * TaskName is either :
-     * <li>provided through (@Scheduled) annotation
-     * <li>generated though (@ScheduledTaskBuilder) instantiation
-     * <li>provided through (@ScheduledTaskBuilder) DSL withTaskName method
+     * <ul>
+     * <li>provided through ({@literal @}Scheduled) annotation</li>
+     * <li>generated though ({@literal @}ScheduledTaskBuilder) instantiation</li>
+     * <li>provided through ({@literal @}ScheduledTaskBuilder) DSL withTaskName method</li>
+     * </ul>
      *
      * @return the task name
      */
     String getTaskName();
 
     /**
-     * requestRecovery notify the Scheduler whether or not the Task <br>
-     * should be re-executed if a recovery or fail-over situation is <br>
-     * encountered.
+     * RequestRecovery notify the Scheduler whether or not the Task should be re-executed if a recovery or fail-over situation is encountered.
      *
      * @return true if recovery should be attempted, false otherwise
      */
@@ -48,9 +48,11 @@ public interface SchedulingContext {
 
     /**
      * triggerName is either :
-     * <li>provided through (@Scheduled) annotation
-     * <li>generated though (@ScheduledTaskBuilder) instantiation
-     * <li>provided through (@ScheduledTaskBuilder) DSL withTriggerName method
+     * <ul>
+     * <li>provided through ({@literal @}Scheduled) annotation</li>
+     * <li>generated though ({@literal @}ScheduledTaskBuilder) instantiation</li>
+     * <li>provided through ({@literal @}ScheduledTaskBuilder) DSL withTriggerName method</li>
+     * </ul>
      *
      * @return the trigger name
      */

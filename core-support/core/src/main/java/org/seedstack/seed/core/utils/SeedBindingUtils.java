@@ -7,9 +7,6 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-/**
- *
- */
 package org.seedstack.seed.core.utils;
 
 import com.google.common.reflect.TypeToken;
@@ -43,35 +40,35 @@ public final class SeedBindingUtils {
 
     /**
      * Construct a checked map of bindable key with the corresponding implementation class.
-     * <p/>
+     * <p>
      * Given the following injectee class and implementation classes :
      * <pre>
-     * interface Sort{@literal <}T{@literal >} {...}
+     * interface Sort&lt;T&gt; {...}
      *
      * {@literal @}Named("quick")
-     * class StringQuickSort implements Sort{@literal <}String{@literal >} {...}
+     * class StringQuickSort implements Sort&lt;String&gt; {...}
      *
      * {@literal @}Named("bubble")
-     * class BubbleSort implements Sort{@literal <}String{@literal >} {...}
+     * class BubbleSort implements Sort&lt;String&gt; {...}
      *
-     * class LongQuickSort implements Sort{@literal <}Long{@literal >} {...}
+     * class LongQuickSort implements Sort&lt;Long&gt; {...}
      * </pre>
      * The method will return a map with:
      * <pre>
-     * Key[type=Sort{@literal <}String{@literal >}, annotation = Named[value = "quick"]] -> StringQuickSort
-     * Key[type=Sort{@literal <}String{@literal >}, annotation = Named[value = "bubble"]] -> BubbleSort
-     * Key[type=Sort{@literal <}Long{@literal >}] -> LongQuickSort
+     * Key[type=Sort&lt;String&gt;, annotation = Named[value = "quick"]] -&gt; StringQuickSort
+     * Key[type=Sort&lt;String&gt;, annotation = Named[value = "bubble"]] -&gt; BubbleSort
+     * Key[type=Sort&lt;Long&gt;] -&gt; LongQuickSort
      * </pre>
      * Possible injection patterns will be:
      * <pre>
      * {@literal @}Inject {@literal @}Name("quick")
-     * Sort{@literal <}String{@literal >} stringQuickSort;
+     * Sort@lt;String&gt; stringQuickSort;
      *
      * {@literal @}Inject {@literal @}Name("bubble")
-     * Sort{@literal <}String{@literal >} bubbleSort;
+     * Sort@lt;String&gt; bubbleSort;
      *
      * {@literal @}Inject
-     * Sort{@literal <}Long{@literal >} longQuickSort;
+     * Sort@lt;Long&gt; longQuickSort;
      * </pre>
      *
      * @param injecteeClass   the parent class to reach
@@ -129,7 +126,6 @@ public final class SeedBindingUtils {
      * @param injecteeClass the parent class to reach
      * @param implClasses   the sub classes collection
      * @return a multimap with typeliterals for keys and a list of associated subclasses for values
-     * @see #resolveBindingDefinitions(Class, Collection)
      */
     public static Map<Key<?>, Class<?>> resolveBindingDefinitions(Class<?> injecteeClass, Collection<Class<?>> implClasses) {
         if (implClasses != null && !implClasses.isEmpty()) {
@@ -151,7 +147,7 @@ public final class SeedBindingUtils {
 
     /**
      * Resolve the key for injectee class, including qualifier from implClass and resolved type variables.
-     * <p/>
+     * <p>
      * Useful when we can not resolve type variable from one implementation.
      *
      * @param injecteeClass       the injectee class

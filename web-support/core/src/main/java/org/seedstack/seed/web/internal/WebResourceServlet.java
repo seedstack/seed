@@ -35,7 +35,7 @@ import java.util.zip.GZIPOutputStream;
 /**
  * This web resource servlet provides automatic static resource serving from the classpath and the docroot with some
  * benefits over the container default resource serving:
- * <p/>
+ * <p>
  * <ul>
  * <li>Multiples locations can be aggregated and served under the same path,</li>
  * <li>Automatic serving of pre-minified and/or pre-gzipped versions of resources,</li>

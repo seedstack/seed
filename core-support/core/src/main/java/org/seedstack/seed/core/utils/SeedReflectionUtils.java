@@ -44,17 +44,18 @@ public final class SeedReflectionUtils {
      * This methods take as parameter an annotatedElement (Class, Field, Method,
      * Constructor ) and an annotation class. It returns an annotation instance
      * that meet the requirement : instance of the class annotationClassToFind.
-     * <p/>
+     * <p>
      * If annotatedElement is a class the method will reach all super type and
      * for each of those type, it will reach all implemented interfaces and for
      * each implemented interfaces it will reach all super interfaces
-     * <p/>
+     * <p>
      * If annotatedElement is not a class the method will look for the
      * annotation class only in this element, other all the hierarchy.
-     * <p/>
+     * <p>
      * From this list, the method will reach for the annotation class in all
      * annotation hierarchy.
      *
+     * @param <T> the annotation type to retrieve
      * @param annotatedElement      The annotated element from where to start.
      * @param annotationClassToFind The annotation class to find.
      * @return ? extends Annotation
@@ -94,17 +95,18 @@ public final class SeedReflectionUtils {
      * This methods take as parameter an annotatedElement (Class, Field, Method,
      * Constructor ) and an annotation class. It returns an annotation instance
      * that meet the requirement : instance of the class annotationClassToFind.
-     * <p/>
+     * <p>
      * If annotatedElement is a class the method will reach all super type and
      * for each of those type, it will reach all implemented interfaces and for
      * each implemented interfaces it will reach all super interfaces
-     * <p/>
+     * <p>
      * If annotatedElement is not a class the method will look for the
      * annotation class in this element, and in the declaring class and all its ancestors.
-     * <p/>
+     * <p>
      * From this list, the method will reach for the annotation class in all
      * annotation hierarchy.
      *
+     * @param <T> the annotation type to retrieve
      * @param annotatedElement      The annotated element from where to start.
      * @param annotationClassToFind The annotation class to find.
      * @return ? extends Annotation
@@ -517,10 +519,11 @@ public final class SeedReflectionUtils {
 
     /**
      * Finds a annotation meta-annotated on the given annotated element.
-     * <p/>
+     * <p>
      * If the annotated element is a class, the method will go through all its parent class and interface to find an
      * annotation meta annotated.
      *
+     * @param <T> the annotation type to retrieve
      * @param annotatedElementClass the annotated element to reach
      * @param metaAnnotationToFind  the meta annotation to find
      * @return the annotation meta annotated if exist, null otherwise
@@ -543,6 +546,7 @@ public final class SeedReflectionUtils {
     /**
      * Finds a annotation meta-annotated on the given annotated element.
      *
+     * @param <T> the annotation type to retrieve
      * @param annotatedElementClass the annotated element
      * @param metaAnnotationToFind  the meta annotation to find
      * @return the annotation meta annotated if exist, null otherwise

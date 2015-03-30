@@ -32,34 +32,34 @@ public abstract class AbstractSeedModule extends AbstractModule {
 
     /**
      * Binds typeLiterals to their implementations using the qualifier when it exists.
-     * <p/>
+     * <p>
      * For instance:
      * <pre>
-     * class MyClassA extends MySuperClass{@literal <}TypeGenericA{@literal >} {...}
+     * class MyClassA extends MySuperClass&lt;TypeGenericA&gt; {...}
      *
      * {@literal @}Inject
-     * MySuperClass{@literal <}TypeGenericA{@literal >} <- MyClassA
+     * MySuperClass&lt;TypeGenericA&gt; &lt;- MyClassA
      *
-     * class MyClassB extends MySuperClass{@literal <}TypeGenericB{@literal >} {...}
+     * class MyClassB extends MySuperClass&lt;TypeGenericB&gt; {...}
      *
      * {@literal @}Inject
-     * MySuperClass{@literal <}TypeGenericB{@literal >} <- MyClassB
+     * MySuperClass&lt;TypeGenericB&gt; &lt;- MyClassB
      * </pre>
      *
      * If a {@link javax.inject.Qualifier} is specified on the implementation, it will
      * be used in the bound {@link com.google.inject.Key}.
-     * <p/>
+     * <p>
      * For instance, if {@code MyClassC} is annotated by a qualifier:
      * <pre>
      * {@literal @}Named("C")
-     * class MyClassC extends MySuperClass{@literal <}TypeGenericA{@literal >} {
+     * class MyClassC extends MySuperClass&lt;TypeGenericA&gt; {
      *     ...
      * }
      * </pre>
      * Then, the qualifier should be used specified at the injection point.
      * <pre>
      * {@literal @}Inject @Named("C")
-     * MySuperClass{@literal <}TypeGenericA{@literal >} <- MyClassC
+     * MySuperClass&lt;TypeGenericA&gt; &lt;- MyClassC
      * </pre>
      *
      * @param bindingsMap classes to bind

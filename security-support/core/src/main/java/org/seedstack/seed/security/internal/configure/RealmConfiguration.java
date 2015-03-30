@@ -17,7 +17,6 @@ import org.seedstack.seed.security.api.RolePermissionResolver;
  * Represents a realm as read in the configuration
  * 
  * @author yves.dautremay@mpsa.com
- * 
  */
 public class RealmConfiguration {
 
@@ -32,8 +31,8 @@ public class RealmConfiguration {
     /**
      * Constructor
      * 
-     * @param name
-     * @param realmClass
+     * @param name The realm name.
+     * @param realmClass The realm class.
      */
     public RealmConfiguration(String name, Class<? extends Realm> realmClass) {
         this.name = name;

@@ -18,23 +18,22 @@ import java.lang.annotation.Target;
 
 /**
  * <p>{@code Scheduled} annotates {@link Task} to specified scheduling information.
+ *
  * <pre>
  * {@literal @}Scheduled("0/2 * * * * ?")
- * public class MyTask implements Task<Integer> {
+ * public class MyTask implements Task&lt;Integer&gt; {
  *     ...
  * }
  * </pre>
  *
  * @author pierre.thirouin@ext.mpsa.com
- *         Date: 08/01/14
  */
 @Inherited
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 public @interface Scheduled {
-
-    public static final String DEFAULT = "DEFAULT";
+    String DEFAULT = "DEFAULT";
 
     // Task
 
@@ -46,14 +45,12 @@ public @interface Scheduled {
     String taskName() default DEFAULT;
 
     /**
-     * Define whether or not the {@code Task} should be re-executed <br>
-     * upon execution failure.
+     * @return Define whether or not the {@code Task} should be re-executed upon execution failure.
      */
     boolean requestRecovery() default false;
 
     /**
-     * Define whether or not the {@code Task} should remain stored after it is
-     * orphaned (no trigger points to it).
+     * @return whether or not the {@code Task} should remain stored after it is orphaned (no trigger points to it).
      */
     boolean storeDurably() default false;
 
@@ -67,25 +64,22 @@ public @interface Scheduled {
     ExceptionPolicy exceptionPolicy() default ExceptionPolicy.NONE;
 
     /**
-     * The Trigger name, must be unique within the group.
+     * @return the Trigger name, must be unique within the group.
      */
     String triggerName() default DEFAULT;
 
     /**
-     * The cron expression to base the schedule on.
+     * @return the cron expression to base the schedule on.
      */
     String value() default "";
 
     /**
-     * The time zone for which the cron expression
-     * of this trigger will be resolved.
+     * @return the time zone for which the cron expression of this trigger will be resolved.
      */
     String timeZoneId() default DEFAULT;
 
     /**
-     * The trigger's priority.  When more than one trigger have the same
-     * fire time, the scheduler will fire the one with the highest priority
-     * first.
+     * @return the trigger's priority.  When more than one trigger have the same fire time, the scheduler will fire the one with the highest priority first.
      */
     int priority() default 0;
 }

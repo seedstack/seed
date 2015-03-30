@@ -85,8 +85,6 @@ public @interface CliOption {
     
     /**
      * @return a converter that will allow transformation from String to Something else 
-     * 
-     * @return
      */
     Class<? extends NuunConfigurationConverter<?>> converter() default NuunDummyConverter.class;
 }

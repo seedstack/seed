@@ -15,7 +15,7 @@ import java.util.Set;
  * A realm provider is able to provide all the realms of the application
  * 
  * @author yves.dautremay@mpsa.com
- * @Deprecated use methods in securitySupport getRoles()
+ * @deprecated use methods in securitySupport getRoles()
  */
 @Deprecated
 public interface RealmProvider extends SecuritySupport {
@@ -24,7 +24,7 @@ public interface RealmProvider extends SecuritySupport {
      * Gives all known realms of the application
      * 
      * @return a Set of Realm
-     * @Deprecated use methods in securitySupport getRoles()
+     * @deprecated use methods in securitySupport getRoles()
      */
     Set<Realm> provideRealms();
 }

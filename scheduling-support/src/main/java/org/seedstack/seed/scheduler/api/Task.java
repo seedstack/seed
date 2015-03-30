@@ -12,22 +12,20 @@ package org.seedstack.seed.scheduler.api;
 
 /**
  * {@code Task} classes could be scheduled:
- * <ul>
- * <li>By adding a {@link Scheduled} annotation
- * <p/>
+ * By adding a {@link Scheduled} annotation
+ *
  * <pre>
  * {@literal @}Scheduled("0/2 * * * * ?")
  * </pre>
- * <p/>
- * <li>Or programmatically with a {@link ScheduledTaskBuilder}
- * <p/>
+ *
+ * Or programmatically with a {@link ScheduledTaskBuilder}
+ *
  * <pre>
  * {@literal @}Inject
  * private ScheduledTaskBuilderFactory factory;
  * ...
  * factory.createSchedulerBuilder(MyTask.class).withCronExpression("0/2 * * * * ?").schedule();
  * </pre>
- * </ul>
  *
  * @author pierre.thirouin@ext.mpsa.com
  * @author david.scherrer@ext.mpsa.com

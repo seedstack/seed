@@ -22,9 +22,9 @@ import java.util.Map;
 
 /**
  * The SEED unique internal Security Expression Interpreter.
- * <p/>
+ * <p>
  * It has the responsibility to interpret any form of secured expression.
- * <p/>
+ * <p>
  * It will be supported by an API.
  *
  * @author epo.jemba@ext.mpsa.com
@@ -41,7 +41,7 @@ public class SecurityExpressionInterpreter {
     /**
      * This methods will interpret any security expression. It will handle it
      * accordingly in function of its type.
-     * <p/>
+     * <p>
      * For now, Boolean will be interpreted as Boolean and String will be
      * interpreted by the {@link ELService} as an Expression Language from the JSR 341.
      *

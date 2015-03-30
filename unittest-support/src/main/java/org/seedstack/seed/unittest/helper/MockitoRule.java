@@ -15,7 +15,7 @@ import org.junit.runners.model.Statement;
 import org.mockito.MockitoAnnotations;
 
 /**
- * A rule to use annotations {@literal @}Mock et {@literal @}InjectMocks from
+ * A rule to use annotations @Mock et @InjectMocks from
  * Mockito without using Mockito Runner.
  * 
  * @author yves.dautremay@mpsa.com

@@ -25,39 +25,37 @@ import java.util.Collection;
 public interface SeedSecurityPlugin {
 
     /**
-     * Init phase
+     * Init phase.
      * 
-     * @param initContext
+     * @param initContext The init context.
      */
     void init(InitContext initContext);
 
     /**
      * If container context is needed (web environment)
      * 
-     * @param containerContext
-     *            the container context
+     * @param containerContext the container context
      */
     void provideContainerContext(Object containerContext);
 
     /**
      * Requests for classpath scan
      * 
-     * @param classpathScanRequestBuilder
-     *            the request builder to address the requests
+     * @param classpathScanRequestBuilder the request builder to address the requests
      */
     void classpathScanRequests(ClasspathScanRequestBuilder classpathScanRequestBuilder);
 
     /**
      * Shiro module corresponding to this entry point
      * 
-     * @return the shiro module
+     * @return the Shiro module
      */
     Module provideShiroModule();
 
     /**
      * Declare other modules if necessary
      * 
-     * @return the modules necessary
+     * @return the modules necessary.
      */
     Collection<Module> provideOtherModules();
 }

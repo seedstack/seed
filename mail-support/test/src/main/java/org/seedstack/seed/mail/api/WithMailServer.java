@@ -25,16 +25,12 @@ import java.lang.annotation.Target;
 public @interface WithMailServer {
 
     /**
-     * port configuration for the mail server
-     *
-     * @return
+     * @return port configuration for the mail server
      */
     int port() default 25;
 
     /**
-     * the host name to be used by client to connect to the mail server
-     *
-     * @return
+     * @return the host name to be used by client to connect to the mail server
      */
     String host();
 }
