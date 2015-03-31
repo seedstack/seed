@@ -16,15 +16,29 @@ import java.util.Properties;
 
 import javax.sql.DataSource;
 
+import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.health.HealthCheckRegistry;
 import org.seedstack.seed.persistence.jdbc.spi.DataSourceProvider;
 
 /**
- * Data source provider for the {@link PlainDataSource}
+ * Data source provider for the {@link PlainDataSource}.
+ *
+ * @author yves.dautremay@mpsa.com
  */
 public class PlainDataSourceProvider implements DataSourceProvider {
 
     @Override
     public DataSource provideDataSource(String driverClass, String url, String user, String password, Properties dataSourceProperties) {
         return new PlainDataSource(driverClass, url, user, password, dataSourceProperties);
+    }
+
+    @Override
+    public void setHealthCheckRegistry(HealthCheckRegistry healthCheckRegistry) {
+        // not supported
+    }
+
+    @Override
+    public void setMetricRegistry(MetricRegistry metricRegistry) {
+        // not supported
     }
 }

@@ -26,7 +26,9 @@ import org.seedstack.seed.core.api.SeedException;
 import org.seedstack.seed.persistence.jdbc.internal.JdbcErrorCode;
 
 /**
- * A simmple datasource that will take its connection directly from the driver. No pooling or anything.
+ * A simple datasource that will take its connection directly from the driver. No pooling or anything.
+ *
+ * @author yves.dautremay@mpsa.com
  */
 public class PlainDataSource implements DataSource {
 
@@ -85,10 +87,7 @@ public class PlainDataSource implements DataSource {
 
     @Override
     public boolean isWrapperFor(Class<?> iface) throws SQLException {
-        if (iface.isInstance(this)) {
-            return true;
-        }
-        return false;
+        return iface.isInstance(this);
     }
 
     @Override

@@ -17,6 +17,8 @@ import java.util.Properties;
 
 import javax.sql.DataSource;
 
+import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.health.HealthCheckRegistry;
 import org.seedstack.seed.core.api.SeedException;
 import org.seedstack.seed.persistence.jdbc.internal.JdbcErrorCode;
 import org.seedstack.seed.persistence.jdbc.spi.DataSourceProvider;
@@ -24,7 +26,9 @@ import org.seedstack.seed.persistence.jdbc.spi.DataSourceProvider;
 import com.mchange.v2.c3p0.ComboPooledDataSource;
 
 /**
- * Datasource provider for C3p0
+ * Datasource provider for C3p0.
+ *
+ * @author yves.dautremay@mpsa.com
  */
 public class C3p0DataSourceProvider implements DataSourceProvider {
 
@@ -43,4 +47,13 @@ public class C3p0DataSourceProvider implements DataSourceProvider {
         }
     }
 
+    @Override
+    public void setHealthCheckRegistry(HealthCheckRegistry healthCheckRegistry) {
+        // not supported
+    }
+
+    @Override
+    public void setMetricRegistry(MetricRegistry metricRegistry) {
+        // not supported
+    }
 }

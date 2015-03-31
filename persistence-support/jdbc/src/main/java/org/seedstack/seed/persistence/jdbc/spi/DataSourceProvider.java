@@ -12,12 +12,18 @@
  */
 package org.seedstack.seed.persistence.jdbc.spi;
 
+import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.health.HealthCheckRegistry;
+
 import java.util.Properties;
 
 import javax.sql.DataSource;
 
 /**
- * Interface for data source providers. The role of a datasource provider is to create a datasource the jdbc support will be able to use.
+ * Interface for data source providers. The role of a datasource provider is to create a datasource the jdbc support
+ * will be able to use.
+ *
+ * @author yves.dautremay@mpsa.com
  */
 public interface DataSourceProvider {
 
@@ -32,4 +38,8 @@ public interface DataSourceProvider {
      * @return the datasource
      */
     DataSource provideDataSource(String driverClass, String url, String user, String password, Properties jdbcProperties);
+
+    void setHealthCheckRegistry(HealthCheckRegistry healthCheckRegistry);
+
+    void setMetricRegistry(MetricRegistry metricRegistry);
 }

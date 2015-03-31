@@ -79,4 +79,12 @@ public class MetricsPlugin extends AbstractPlugin {
     public Object nativeUnitModule() {
         return new MetricsModule(metricRegistry, healthCheckRegistry, healthCheckClasses);
     }
+
+    public MetricRegistry getMetricRegistry() {
+        return metricRegistry;
+    }
+
+    public HealthCheckRegistry getHealthCheckRegistry() {
+        return healthCheckRegistry;
+    }
 }

@@ -12,22 +12,36 @@
  */
 package org.seedstack.seed.persistence.jdbc.internal.datasource;
 
-import java.util.Properties;
-
-import javax.sql.DataSource;
-
+import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.health.HealthCheckRegistry;
+import com.zaxxer.hikari.HikariDataSource;
 import org.seedstack.seed.persistence.jdbc.spi.DataSourceProvider;
 
-import com.zaxxer.hikari.HikariDataSource;
+import javax.inject.Inject;
+import javax.sql.DataSource;
+import java.util.Properties;
 
 /**
- * Data source provider for Hikari
+ * Data source provider for Hikari.
+ *
+ * @author yves.dautremay@mpsa.com
  */
 public class HikariDataSourceProvider implements DataSourceProvider {
+    private MetricRegistry metricRegistry;
+    private HealthCheckRegistry healthCheckRegistry;
 
     @Override
     public DataSource provideDataSource(String driverClass, String url, String user, String password, Properties dataSourceProperties) {
         HikariDataSource ds = new HikariDataSource();
+
+        if (healthCheckRegistry != null) {
+            ds.setHealthCheckRegistry(healthCheckRegistry);
+        }
+
+        if (metricRegistry != null) {
+            ds.setMetricRegistry(metricRegistry);
+        }
+
         ds.setDriverClassName(driverClass);
         ds.setJdbcUrl(url);
         ds.setUsername(user);
@@ -36,4 +50,12 @@ public class HikariDataSourceProvider implements DataSourceProvider {
         return ds;
     }
 
+    public void setMetricRegistry(MetricRegistry metricRegistry) {
+        this.metricRegistry = metricRegistry;
+    }
+
+    @Override
+    public void setHealthCheckRegistry(HealthCheckRegistry healthCheckRegistry) {
+        this.healthCheckRegistry = healthCheckRegistry;
+    }
 }

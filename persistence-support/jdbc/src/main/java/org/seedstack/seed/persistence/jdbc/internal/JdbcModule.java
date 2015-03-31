@@ -25,21 +25,14 @@ import com.google.inject.TypeLiteral;
 import com.google.inject.name.Names;
 import com.google.inject.util.Providers;
 
-/**
- * JDBC support module
- */
 class JdbcModule extends PrivateModule {
-
     private static final String JDBC_REGISTERED_CLASSES = "jdbc-registered-classes";
 
-    private Map<String, DataSource> dataSources;
+    private final Map<String, DataSource> dataSources;
+    private final Map<String, Class<? extends JdbcExceptionHandler>> jdbcExceptionHandlerClasses;
+    private final Map<Class<?>, String> registeredClasses;
 
-    private Map<String, Class<? extends JdbcExceptionHandler>> jdbcExceptionHandlerClasses;
-
-    private Map<Class<?>, String> registeredClasses;
-
-    JdbcModule(Map<String, DataSource> dataSources, Map<String, Class<? extends JdbcExceptionHandler>> jdbcExceptionHandlerClasses,
-            Map<Class<?>, String> registeredClasses) {
+    JdbcModule(Map<String, DataSource> dataSources, Map<String, Class<? extends JdbcExceptionHandler>> jdbcExceptionHandlerClasses, Map<Class<?>, String> registeredClasses) {
         this.dataSources = dataSources;
         this.jdbcExceptionHandlerClasses = jdbcExceptionHandlerClasses;
         this.registeredClasses = registeredClasses;
@@ -47,13 +40,18 @@ class JdbcModule extends PrivateModule {
 
     @Override
     protected void configure() {
+        // Connection
         JdbcConnectionLink jdbcLink = new JdbcConnectionLink();
         bind(Connection.class).toInstance(TransactionalProxy.create(Connection.class, jdbcLink));
 
+        // Datasources
         for (Map.Entry<String, DataSource> entry : dataSources.entrySet()) {
             bindDataSource(entry.getKey(), entry.getValue(), jdbcLink);
         }
+
+        // Classes registered to use a specific datasource
         bind(new TypeLiteral<Map<Class<?>, String>>() {}).annotatedWith(Names.named(JDBC_REGISTERED_CLASSES)).toInstance(registeredClasses);
+
         expose(Connection.class);
         expose(new TypeLiteral<Map<Class<?>, String>>() {}).annotatedWith(Names.named(JDBC_REGISTERED_CLASSES));
     }
@@ -73,5 +71,4 @@ class JdbcModule extends PrivateModule {
         expose(JdbcExceptionHandler.class).annotatedWith(Names.named(name));
         expose(JdbcTransactionHandler.class).annotatedWith(Names.named(name));
     }
-
 }

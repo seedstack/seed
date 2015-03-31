@@ -16,11 +16,15 @@ import java.util.Properties;
 
 import javax.sql.DataSource;
 
+import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.health.HealthCheckRegistry;
 import org.apache.commons.dbcp.BasicDataSource;
 import org.seedstack.seed.persistence.jdbc.spi.DataSourceProvider;
 
 /**
- * Data source provider for commons DBCP
+ * Data source provider for commons DBCP.
+ *
+ * @author yves.dautremay@mpsa.com
  */
 public class DbcpDataSourceProvider implements DataSourceProvider {
 
@@ -37,4 +41,13 @@ public class DbcpDataSourceProvider implements DataSourceProvider {
         return basicDataSource;
     }
 
+    @Override
+    public void setHealthCheckRegistry(HealthCheckRegistry healthCheckRegistry) {
+        // not supported
+    }
+
+    @Override
+    public void setMetricRegistry(MetricRegistry metricRegistry) {
+        // not supported
+    }
 }
