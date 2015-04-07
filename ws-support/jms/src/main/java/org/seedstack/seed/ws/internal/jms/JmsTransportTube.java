@@ -36,7 +36,7 @@ class JmsTransportTube extends AbstractTubeImpl {
     private final QName serviceName;
 
     @Inject
-    private WSJmsFactory wsJmsFactory;
+    private WSJmsTransportFactory wsJmsTransportFactory;
 
     @Inject
     JmsTransportTube(@Assisted Codec codec, @Assisted QName serviceName) {
@@ -73,7 +73,7 @@ class JmsTransportTube extends AbstractTubeImpl {
                 reqHeaders = new HashMap<String, String>();
             }
 
-            JmsClientTransport con = wsJmsFactory.createJmsClientTransport(request, reqHeaders);
+            JmsClientTransport con = wsJmsTransportFactory.createJmsClientTransport(request, reqHeaders);
 
             ContentType ct = codec.getStaticContentType(request);
             requestPacketOutStream = new ByteArrayOutputStream();

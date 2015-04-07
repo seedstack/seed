@@ -16,7 +16,7 @@ import javax.jms.Message;
 import javax.xml.namespace.QName;
 import java.util.Map;
 
-interface WSJmsFactory {
+interface WSJmsTransportFactory {
     /**
      * JmsClientTransport factory method for Guice assisted injection.
      *

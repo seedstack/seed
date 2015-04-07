@@ -11,6 +11,8 @@ package org.seedstack.seed.ws.internal.jms;
 
 import com.google.inject.MembersInjector;
 import org.seedstack.seed.core.api.SeedException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import javax.jms.JMSException;
@@ -19,17 +21,26 @@ import javax.jms.MessageListener;
 import javax.jms.Session;
 
 class WSJmsMessageListener implements MessageListener {
+    private static final Logger LOGGER = LoggerFactory.getLogger(WSJmsMessageListener.class);
+
     private final JmsAdapter adapter;
     private final SoapJmsUri soapJmsUri;
     private final Session session;
+    private final boolean isTransacted;
 
-    WSJmsMessageListener(Session session, SoapJmsUri soapJmsUri, JmsAdapter adapter) {
-        this.session = session;
+    WSJmsMessageListener(SoapJmsUri soapJmsUri, JmsAdapter adapter, Session session) {
         this.adapter = adapter;
         this.soapJmsUri = soapJmsUri;
+        this.session = session;
+
+        try {
+            this.isTransacted = session.getTransacted();
+        } catch (JMSException e) {
+            throw SeedException.wrap(e, WSJmsErrorCodes.UNABLE_TO_GET_TRANSACTED_STATUS);
+        }
     }
 
-    @Inject // NOSONAR
+    @Inject
     private void injectAdapter(MembersInjector<JmsAdapter> jmsAdapterMembersInjector) {
         jmsAdapterMembersInjector.injectMembers(this.adapter);
     }
@@ -38,16 +49,19 @@ class WSJmsMessageListener implements MessageListener {
     public void onMessage(Message message) {
         try {
             adapter.handle(message, soapJmsUri);
-            session.commit();
-        } catch (Exception e) {
-            try {
-                session.rollback();
-            } catch (JMSException e1) {
-                e1.initCause(e);
-                throw SeedException.wrap(e1, WSJmsErrorCode.UNABLE_TO_ROLLBACK_WS_JMS_MESSAGE);
+            if (isTransacted) {
+                session.commit();
             }
+        } catch (Exception e) {
+            LOGGER.error("An exception occurred during WS JMS message handling", e);
 
-            throw SeedException.wrap(e, WSJmsErrorCode.UNABLE_TO_HANDLE_WS_JMS_MESSAGE);
+            if (isTransacted) {
+                try {
+                    session.rollback();
+                } catch (JMSException e1) {
+                    throw SeedException.wrap(e, WSJmsErrorCodes.UNABLE_TO_ROLLBACK_WS_JMS_MESSAGE);
+                }
+            }
         }
     }
 }

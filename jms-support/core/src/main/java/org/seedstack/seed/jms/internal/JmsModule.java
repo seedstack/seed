@@ -10,73 +10,96 @@
 package org.seedstack.seed.jms.internal;
 
 
-import java.util.Map;
-
-import javax.jms.Connection;
-import javax.jms.ExceptionListener;
-import javax.jms.Session;
-
-import org.seedstack.seed.jms.spi.JmsExceptionHandler;
-import org.seedstack.seed.jms.spi.MessageListenerDefinition;
-import org.seedstack.seed.transaction.utils.TransactionalProxy;
-
 import com.google.inject.AbstractModule;
 import com.google.inject.name.Names;
 import com.google.inject.util.Providers;
+import org.seedstack.seed.jms.spi.ConnectionDefinition;
+import org.seedstack.seed.jms.spi.JmsExceptionHandler;
+import org.seedstack.seed.jms.spi.JmsFactory;
+import org.seedstack.seed.jms.spi.MessageListenerDefinition;
+import org.seedstack.seed.jms.spi.MessageListenerInstanceDefinition;
+import org.seedstack.seed.jms.spi.MessagePoller;
+import org.seedstack.seed.transaction.utils.TransactionalProxy;
+
+import javax.jms.Connection;
+import javax.jms.ExceptionListener;
+import javax.jms.MessageListener;
+import javax.jms.Session;
+import java.util.Collection;
+import java.util.Map;
+import java.util.concurrent.ConcurrentMap;
 
 class JmsModule extends AbstractModule {
-
+    private final JmsFactory jmsFactory;
+    private final Map<String, Connection> connections;
     private final Map<String, MessageListenerDefinition> messageListenerDefinitions;
-    private final Map<String, Connection> connectionMap;
-    private final Map<String, Class<? extends JmsExceptionHandler>> jmsExceptionHandlerClasses;
-	private final Map<String, Class<? extends ExceptionListener>> exceptionListenerClassMap;
+    private final Map<String, ConnectionDefinition> connectionDefinitions;
+    private final Collection<MessagePoller> pollers;
 
-    JmsModule(Map<String, Connection> connectionMap, Map<String, MessageListenerDefinition> messageListenerDefinitions,
-              Map<String, Class<? extends JmsExceptionHandler>> jmsExceptionHandlerClasses, Map<String, Class<? extends ExceptionListener>> exceptionListenerClassMap) {
-        this.connectionMap = connectionMap;
+    public JmsModule(JmsFactory jmsFactory, ConcurrentMap<String, Connection> connections, ConcurrentMap<String, ConnectionDefinition> connectionDefinitions, Map<String, MessageListenerDefinition> messageListenerDefinitions, Collection<MessagePoller> pollers) {
+        this.jmsFactory = jmsFactory;
+        this.connections = connections;
+        this.connectionDefinitions = connectionDefinitions;
         this.messageListenerDefinitions = messageListenerDefinitions;
-        this.jmsExceptionHandlerClasses = jmsExceptionHandlerClasses;
-        this.exceptionListenerClassMap = exceptionListenerClassMap;
+        this.pollers = pollers;
     }
 
     @Override
     protected void configure() {
+        requestStaticInjection(ExceptionListenerAdapter.class);
+        requestStaticInjection(MessageListenerAdapter.class);
+
+        bind(JmsFactory.class).toInstance(jmsFactory);
+        requestInjection(jmsFactory);
+
         JmsSessionLink jmsSessionLink = new JmsSessionLink();
         bind(Session.class).toInstance(TransactionalProxy.create(Session.class, jmsSessionLink));
 
-        for (Map.Entry<String, Connection> connection : connectionMap.entrySet()) {
-            bindConnection(connection.getKey(), connection.getValue(), jmsSessionLink);
+        for (Map.Entry<String, Connection> entry : connections.entrySet()) {
+            bindConnection(connectionDefinitions.get(entry.getKey()), entry.getValue(), jmsSessionLink);
         }
 
         for (Map.Entry<String, MessageListenerDefinition> entry : messageListenerDefinitions.entrySet()) {
-            bind(JmsListenerTransactionHandler.class)
-                    .annotatedWith(Names.named(entry.getKey()))
-                    .toInstance(new JmsListenerTransactionHandler(entry.getValue().getSession()));
+            bindMessageListener(entry.getValue());
+        }
 
-            if (entry.getValue().getMessageListenerClass() != null) {
-                bind(entry.getValue().getMessageListenerClass());
-            }
-
-            // already instantiated JMS listeners are left to be injected by those who constructed the instance
+        for (MessagePoller poller : pollers) {
+            requestInjection(poller);
         }
     }
 
-    private void bindConnection(String name, Connection connection, JmsSessionLink jmsSessionLink) {
-        Class<? extends JmsExceptionHandler> connectionExceptionHandlerClass = jmsExceptionHandlerClasses.get(name);
+    private void bindMessageListener(MessageListenerDefinition messageListenerDefinition) {
+        String name = messageListenerDefinition.getName();
 
-        if (connectionExceptionHandlerClass != null) {
-            bind(JmsExceptionHandler.class).annotatedWith(Names.named(name)).to(connectionExceptionHandlerClass);
+        bind(JmsListenerTransactionHandler.class)
+                .annotatedWith(Names.named(name))
+                .toInstance(new JmsListenerTransactionHandler(messageListenerDefinition.getSession()));
+
+        if (messageListenerDefinition instanceof MessageListenerInstanceDefinition) {
+            MessageListener messageListener = ((MessageListenerInstanceDefinition) messageListenerDefinition).getMessageListener();
+            bind(MessageListener.class).annotatedWith(Names.named(name)).toInstance(messageListener);
+        } else {
+            bind(MessageListener.class).annotatedWith(Names.named(name)).to(messageListenerDefinition.getMessageListenerClass());
+        }
+    }
+
+
+    private void bindConnection(ConnectionDefinition connectionDefinition, Connection connection, JmsSessionLink jmsSessionLink) {
+        String name = connectionDefinition.getName();
+
+        Class<? extends JmsExceptionHandler> jmsExceptionHandlerClass = connectionDefinition.getJmsExceptionHandlerClass();
+        if (jmsExceptionHandlerClass != null) {
+            bind(JmsExceptionHandler.class).annotatedWith(Names.named(name)).to(jmsExceptionHandlerClass);
         } else {
             bind(JmsExceptionHandler.class).annotatedWith(Names.named(name)).toProvider(Providers.<JmsExceptionHandler>of(null));
         }
-        Class<? extends ExceptionListener> exceptionListenerClass = exceptionListenerClassMap.get(name);
-        if(exceptionListenerClass != null){
-        	bind(ExceptionListener.class).annotatedWith(Names.named(name)).to(exceptionListenerClass);
-        } else {
-        	bind(ExceptionListener.class).annotatedWith(Names.named(name)).toProvider(Providers.<ExceptionListener>of(null));
+
+        if (connectionDefinition.getExceptionListenerClass() != null) {
+            bind(ExceptionListener.class).annotatedWith(Names.named(name)).to(connectionDefinition.getExceptionListenerClass());
         }
+
         bind(Connection.class).annotatedWith(Names.named(name)).toInstance(connection);
-        requestInjection(connection);
+
         JmsTransactionHandler transactionHandler = new JmsTransactionHandler(jmsSessionLink, connection);
         bind(JmsTransactionHandler.class).annotatedWith(Names.named(name)).toInstance(transactionHandler);
     }

@@ -19,76 +19,60 @@ import javax.jms.Session;
  * @author adrien.lauer@mpsa.com
  */
 public class MessageListenerDefinition {
+    private final String name;
+    private final String connectionName;
     private final Class<? extends MessageListener> messageListenerClass;
-    private final MessageListener messageListener;
-    private final String selector;
+
     private final Session session;
-    private Destination destination;
+    private final Destination destination;
+    private final String selector;
+    private final Class<? extends MessagePoller> poller;
 
     /**
      * Creates a JMS message listener definition based on a MessageListener implementing class.
-     *
-     * @param messageListenerClass the class implementing MessageListener.
-     * @param session              the JMS session.
-     * @param destination          the destination definition
-     * @param selector             the message selector;
+     * @param name                 the name of the message listener definition.
+     * @param connectionName  the connection name that this listener is attached to.
+     * @param session              the JMS session
+     * @param destination          the JMS destination
+     * @param selector             the message selector
+     * @param messageListenerClass the class implementing MessageListener
+     * @param poller               an optional {@link MessagePoller} to retrieve messages via receive().
      */
-    public MessageListenerDefinition(Class<? extends MessageListener> messageListenerClass, Session session, Destination destination, String selector) {
+    public MessageListenerDefinition(String name, String connectionName, Session session, Destination destination, String selector, Class<? extends MessageListener> messageListenerClass, Class<? extends MessagePoller> poller) {
+        this.name = name;
+        this.connectionName = connectionName;
+        this.session = session;
+        this.destination = destination;
+        this.selector = selector;
         this.messageListenerClass = messageListenerClass;
-        this.messageListener = null;
-        this.session = session;
-        this.destination = destination;
-        this.selector = selector;
+        this.poller = poller;
     }
 
-    /**
-     * Creates a JMS message listener definition based on an already created MessageListener instance.
-     *
-     * @param messageListener the MessageListener instance.
-     * @param session         the JMS session.
-     * @param destination     the destination definition
-     * @param selector        the message selector;
-     */
-    public MessageListenerDefinition(MessageListener messageListener, Session session, Destination destination, String selector) {
-        this.messageListenerClass = null;
-        this.messageListener = messageListener;
-        this.session = session;
-        this.destination = destination;
-        this.selector = selector;
+    public String getName() {
+        return name;
     }
 
-    /**
-     * @return the JMS session.
-     */
+    public String getConnectionName() {
+        return connectionName;
+    }
+
     public Session getSession() {
         return session;
     }
 
-    /**
-     * @return the destination definition
-     */
-    public Destination getDestination() {
-        return destination;
-    }
-
-    /**
-     * @return the message selector.
-     */
-    public String getSelector() {
-        return selector;
-    }
-
-    /**
-     * @return the MessageListener implementing class, null if it is an instance-based definition.
-     */
     public Class<? extends MessageListener> getMessageListenerClass() {
         return messageListenerClass;
     }
 
-    /**
-     * @return the MessageListener instance, null if it is an class-based definition.
-     */
-    public MessageListener getMessageListener() {
-        return messageListener;
+    public Destination getDestination() {
+        return destination;
+    }
+
+    public String getSelector() {
+        return selector;
+    }
+
+    public Class<? extends MessagePoller> getPoller() {
+        return poller;
     }
 }

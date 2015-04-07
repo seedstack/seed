@@ -7,11 +7,15 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-package org.seedstack.seed.ws.internal.jms;
+package org.seedstack.seed.jms.fixtures;
 
-import org.seedstack.seed.core.api.ErrorCode;
+import javax.jms.JMSException;
 
-enum WSJmsErrorCode implements ErrorCode {
-    UNABLE_TO_ROLLBACK_WS_JMS_MESSAGE,
-    UNABLE_TO_HANDLE_WS_JMS_MESSAGE
+/**
+ * Just used for test purpose.
+ *
+ * @author pierre.thirouin@ext.mpsa.com
+ */
+public interface TestSender {
+    void send(String stringMessage) throws JMSException;
 }

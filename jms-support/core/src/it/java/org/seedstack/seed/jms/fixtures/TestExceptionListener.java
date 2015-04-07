@@ -7,16 +7,22 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-package org.seedstack.seed.jms.internal;
+package org.seedstack.seed.jms.fixtures;
 
 import javax.jms.JMSException;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * Just used for test purpose.
+ * Dummy exceptionListener for tests
  *
- * @author Pierre Thirouin <pierre.thirouin@ext.mpsa.com>
- *         18/11/2014
+ * @author redouane.loulou@ext.mpsa.com
  */
-public interface MySender {
-    void send(String stringMessage) throws JMSException;
+public class TestExceptionListener implements javax.jms.ExceptionListener {
+    static AtomicInteger count = new AtomicInteger();
+
+    @Override
+    public void onException(JMSException exception) {
+        count.incrementAndGet();
+    }
+
 }

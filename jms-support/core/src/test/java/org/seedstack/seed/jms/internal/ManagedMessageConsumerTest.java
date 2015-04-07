@@ -22,7 +22,7 @@ import javax.jms.*;
 import static org.mockito.Mockito.*;
 
 /**
- * @author Pierre Thirouin <pierre.thirouin@ext.mpsa.com>
+ * @author pierre.thirouin@ext.mpsa.com
  *         12/11/2014
  */
 @RunWith(MockitoJUnitRunner.class)
@@ -40,7 +40,7 @@ public class ManagedMessageConsumerTest {
 
     @Before
     public void setUp() throws JMSException {
-        underTest = new ManagedMessageConsumer(messageConsumer, destination, null, false);
+        underTest = new ManagedMessageConsumer(messageConsumer, destination, null, false, false);
         when(session.createConsumer(destination)).thenReturn(messageConsumer);
     }
 
