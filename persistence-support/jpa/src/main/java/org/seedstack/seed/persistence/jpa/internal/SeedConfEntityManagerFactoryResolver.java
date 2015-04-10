@@ -13,15 +13,9 @@
 package org.seedstack.seed.persistence.jpa.internal;
 
 import io.nuun.kernel.api.plugin.PluginException;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
+import org.apache.commons.configuration.Configuration;
+import org.seedstack.seed.core.api.Application;
+import org.seedstack.seed.persistence.jdbc.internal.JdbcPlugin;
 
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.PersistenceException;
@@ -31,27 +25,28 @@ import javax.persistence.spi.PersistenceProvider;
 import javax.persistence.spi.PersistenceProviderResolverHolder;
 import javax.persistence.spi.PersistenceUnitTransactionType;
 import javax.sql.DataSource;
-
-import org.apache.commons.configuration.Configuration;
-import org.seedstack.seed.core.api.Application;
-import org.seedstack.seed.persistence.jdbc.internal.JdbcPlugin;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
 
 class SeedConfEntityManagerFactoryResolver {
 
-    Map<String, EntityManagerFactory> entityManagerFactories = new HashMap<String, EntityManagerFactory>();
-
-    Map<String, Exception> unitsInException = new HashMap<String, Exception>();
-
-    EntityManagerFactory resolve(String persistenceUnit, Map<String, String> properties, Configuration unitConfiguration, Application application,
-            JdbcPlugin jdbcPlugin, Collection<Class<?>> scannedClasses) throws UnitNotConfiguredException {
+    EntityManagerFactory resolve(String persistenceUnit, Map<String, String> properties, Configuration unitConfiguration, Application application, JdbcPlugin jdbcPlugin, Collection<Class<?>> scannedClasses) throws UnitNotConfiguredException {
         String dataSourceName = unitConfiguration.getString("datasource");
         String jtaDataSourceName = unitConfiguration.getString("jta-datasource");
+
         if (dataSourceName == null && jtaDataSourceName == null) {
             throw new UnitNotConfiguredException("No property datasource or jta-datasource found for persistenceUnit [" + persistenceUnit
                     + "]. One of these properties is required to load the persistence unit from seed configuration");
         }
+
         DataSource dataSource;
         boolean isJta = false;
+
         if (jtaDataSourceName != null) {
             dataSource = jdbcPlugin.getDataSources().get(jtaDataSourceName);
             isJta = true;
@@ -60,11 +55,13 @@ class SeedConfEntityManagerFactoryResolver {
         }
 
         InternalPersistenceUnitInfo unitInfo = new InternalPersistenceUnitInfo();
+
         unitInfo.persistenceUnitName = persistenceUnit;
-        if (isJta)
+        if (isJta) {
             unitInfo.jtaDataSource = dataSource;
-        else
+        } else {
             unitInfo.nonJtaDataSource = dataSource;
+        }
 
         unitInfo.managedClassNames = new ArrayList<String>();
         for (Class<?> managed : scannedClasses) {
@@ -72,22 +69,31 @@ class SeedConfEntityManagerFactoryResolver {
                 unitInfo.managedClassNames.add(managed.getName());
             }
         }
+
         if (unitInfo.managedClassNames.isEmpty()) {
             throw new PluginException("No class was configured to belong to jpa unit [" + persistenceUnit + "]");
         }
-        if (unitConfiguration.getString("mapping-file") != null) {
-            unitInfo.mappingFileNames = Arrays.asList(unitConfiguration.getString("mapping-file"));
+
+        if (unitConfiguration.getString("mapping-files") != null) {
+            unitInfo.mappingFileNames = Arrays.asList(unitConfiguration.getStringArray("mapping-files"));
         } else {
             unitInfo.mappingFileNames = Collections.emptyList();
         }
+
         unitInfo.properties = new Properties();
         unitInfo.properties.putAll(properties);
-        if (unitConfiguration.getString("validation-mode") != null)
+
+        if (unitConfiguration.getString("validation-mode") != null) {
             unitInfo.validationMode = ValidationMode.valueOf(unitConfiguration.getString("validation-mode"));
-        if (unitConfiguration.getString("shared-cache-mode") != null)
+        }
+
+        if (unitConfiguration.getString("shared-cache-mode") != null) {
             unitInfo.sharedCacheMode = SharedCacheMode.valueOf(unitConfiguration.getString("shared-cache-mode"));
-        if (unitConfiguration.getString("transaction-type") != null)
+        }
+
+        if (unitConfiguration.getString("transaction-type") != null) {
             unitInfo.persistenceUnitTransactionType = PersistenceUnitTransactionType.valueOf(unitConfiguration.getString("transaction-type"));
+        }
 
         return createEntityManagerFactory(unitInfo, properties);
     }
@@ -96,6 +102,7 @@ class SeedConfEntityManagerFactoryResolver {
     private EntityManagerFactory createEntityManagerFactory(InternalPersistenceUnitInfo info, Map<String, String> map) {
         EntityManagerFactory fac = null;
         List<PersistenceProvider> persistenceProviders = PersistenceProviderResolverHolder.getPersistenceProviderResolver().getPersistenceProviders();
+
         for (PersistenceProvider persistenceProvider : persistenceProviders) {
             info.persistenceProviderClassName = persistenceProvider.getClass().getName();
             fac = persistenceProvider.createContainerEntityManagerFactory(info, map);
@@ -103,9 +110,12 @@ class SeedConfEntityManagerFactoryResolver {
                 break;
             }
         }
+
         if (fac == null) {
             throw new PersistenceException("No Persistence provider for EntityManager named " + info.getPersistenceUnitName());
         }
+
         return fac;
     }
+
 }
