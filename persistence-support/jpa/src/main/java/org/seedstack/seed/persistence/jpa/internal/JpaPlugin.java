@@ -63,6 +63,7 @@ public class JpaPlugin extends AbstractPlugin {
         TransactionPlugin transactionPlugin = null;
         JdbcPlugin jdbcPlugin = null;
         Application application = null;
+
         for (Plugin plugin : initContext.pluginsRequired()) {
             if (plugin instanceof ApplicationPlugin) {
                 application = ((ApplicationPlugin) plugin).getApplication();
@@ -82,21 +83,25 @@ public class JpaPlugin extends AbstractPlugin {
         }
 
         String[] persistenceUnitNames = jpaConfiguration.getStringArray("units");
-        if (persistenceUnitNames != null && persistenceUnitNames.length == 0) {
+
+        if (persistenceUnitNames == null || persistenceUnitNames.length == 0) {
             LOGGER.info("No JPA persistence unit configured, JPA support disabled");
             return InitState.INITIALIZED;
         }
+
         for (String persistenceUnit : persistenceUnitNames) {
             Configuration persistenceUnitConfiguration = jpaConfiguration.subset("unit." + persistenceUnit);
             Iterator<String> it = persistenceUnitConfiguration.getKeys("property");
             Map<String, String> properties = new HashMap<String, String>();
+
             while (it.hasNext()) {
                 String name = it.next();
                 properties.put(name.substring(9), persistenceUnitConfiguration.getString(name));
             }
 
             SeedConfEntityManagerFactoryResolver confResolver = new SeedConfEntityManagerFactoryResolver();
-            EntityManagerFactory emf = null;
+            EntityManagerFactory emf;
+
             try {
                 emf = Persistence.createEntityManagerFactory(persistenceUnit, properties);
             } catch (PersistenceException e) {
@@ -113,7 +118,9 @@ public class JpaPlugin extends AbstractPlugin {
                     throw e;
                 }
             }
+
             entityManagerFactories.put(persistenceUnit, emf);
+
             String exceptionHandler = persistenceUnitConfiguration.getString("exception-handler");
             if (exceptionHandler != null && !exceptionHandler.isEmpty()) {
                 try {
@@ -123,6 +130,7 @@ public class JpaPlugin extends AbstractPlugin {
                 }
             }
         }
+
         if (persistenceUnitNames.length == 1) {
             JpaTransactionMetadataResolver.defaultJpaUnit = persistenceUnitNames[0];
         }

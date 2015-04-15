@@ -12,6 +12,8 @@
  */
 package org.seedstack.seed.persistence.jpa.internal;
 
+import org.seedstack.seed.core.utils.SeedReflectionUtils;
+
 import java.net.URL;
 import java.util.Collections;
 import java.util.List;
@@ -121,19 +123,17 @@ class InternalPersistenceUnitInfo implements PersistenceUnitInfo {
 
     @Override
     public ClassLoader getClassLoader() {
-        // not supported
-        return null;
+        return SeedReflectionUtils.findMostCompleteClassLoader(InternalPersistenceUnitInfo.class);
     }
 
     @Override
     public void addTransformer(ClassTransformer transformer) {
-        // does nothing
+        throw new UnsupportedOperationException("class transformation is not supported by managed JPA units");
     }
 
     @Override
     public ClassLoader getNewTempClassLoader() {
-        // not supported
-        return null;
+        throw new UnsupportedOperationException("temporary classloader is not supported by managed JPA units");
     }
 
 }
