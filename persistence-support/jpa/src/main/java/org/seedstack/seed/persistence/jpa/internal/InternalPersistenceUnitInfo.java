@@ -15,6 +15,7 @@ package org.seedstack.seed.persistence.jpa.internal;
 import org.seedstack.seed.core.utils.SeedReflectionUtils;
 
 import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
@@ -133,7 +134,13 @@ class InternalPersistenceUnitInfo implements PersistenceUnitInfo {
 
     @Override
     public ClassLoader getNewTempClassLoader() {
-        throw new UnsupportedOperationException("temporary classloader is not supported by managed JPA units");
+        ClassLoader classLoader = getClassLoader();
+        if (classLoader instanceof URLClassLoader) {
+            // this forks the application class loader into a new one with the same scope
+            return new URLClassLoader(((URLClassLoader)classLoader).getURLs(), classLoader.getParent());
+        } else {
+            return classLoader;
+        }
     }
 
 }
