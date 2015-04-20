@@ -69,7 +69,7 @@ public class Poc {
     }
 
     @Test
-    @Ignore("cannot test this without Java 7")
+    @Ignore("cannot test this without Java 8")
     public void evaluate_lambda_expression() throws NoSuchMethodException {
         ExpressionFactory expressionFactory = ExpressionFactory.newInstance();
         SimpleContext simpleContext = new SimpleContext();

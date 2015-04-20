@@ -10,13 +10,8 @@
 package org.seedstack.seed.security.internal.realms;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
-import org.seedstack.seed.security.api.AuthenticationInfo;
-import org.seedstack.seed.security.api.AuthenticationToken;
-import org.seedstack.seed.security.api.RoleMapping;
-import org.seedstack.seed.security.api.RolePermissionResolver;
-import org.seedstack.seed.security.api.X509CertificateToken;
+import org.seedstack.seed.security.api.*;
 import org.seedstack.seed.security.api.exceptions.IncorrectCredentialsException;
 import org.seedstack.seed.security.api.exceptions.UnsupportedTokenException;
 import org.seedstack.seed.security.api.principals.PrincipalProvider;
@@ -60,7 +55,6 @@ public class X509CertificateRealmTest {
     }
 
     @Test
-    @Ignore("update the code to work with Java 7 (something changed in the reflection API)")
     public void getAuthenticationInfo_should_return_authentication_info() {
         String id = "a123456";
         AuthenticationToken token = new X509CertificateToken(new X509Certificate[] { x509Certificate });
@@ -95,7 +89,6 @@ public class X509CertificateRealmTest {
     }
 
     @Test
-    @Ignore("update the code to work with Java 7 (something changed in the reflection API)")
     public void getRealmRoles_should_return_roles() {
         X509Certificate[] certificates = new X509Certificate[2];
         certificates[0] = x509Certificate;

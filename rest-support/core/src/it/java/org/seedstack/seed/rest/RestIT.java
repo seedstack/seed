@@ -9,9 +9,6 @@
  */
 package org.seedstack.seed.rest;
 
-import org.junit.Ignore;
-import org.seedstack.seed.it.AbstractSeedWebIT;
-import org.seedstack.seed.rest.fixtures.Activity1;
 import org.assertj.core.api.Assertions;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
@@ -21,6 +18,8 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Test;
+import org.seedstack.seed.it.AbstractSeedWebIT;
+import org.seedstack.seed.rest.fixtures.Activity1;
 import org.skyscreamer.jsonassert.JSONAssert;
 
 import javax.inject.Inject;
@@ -41,7 +40,7 @@ public class RestIT extends AbstractSeedWebIT {
     }
 
     @Test
-    @Ignore("not working with Arquillian 1.1.5")
+    @RunAsClient
     public void activities_are_injected() {
         Assertions.assertThat(activity1).isNotNull();
     }

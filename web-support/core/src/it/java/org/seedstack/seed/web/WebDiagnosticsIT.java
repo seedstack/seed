@@ -9,13 +9,13 @@
  */
 package org.seedstack.seed.web;
 
-import org.junit.Ignore;
-import org.seedstack.seed.core.api.DiagnosticManager;
-import org.seedstack.seed.it.AbstractSeedWebIT;
 import org.jboss.arquillian.container.test.api.Deployment;
+import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Test;
+import org.seedstack.seed.core.api.DiagnosticManager;
+import org.seedstack.seed.it.AbstractSeedWebIT;
 import org.seedstack.seed.web.internal.WebPlugin;
 
 import javax.inject.Inject;
@@ -23,7 +23,6 @@ import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@Ignore("not working with arquillian 1.1.5 for now")
 public class WebDiagnosticsIT extends AbstractSeedWebIT {
     @Inject
     DiagnosticManager diagnosticManager;
@@ -34,7 +33,7 @@ public class WebDiagnosticsIT extends AbstractSeedWebIT {
     }
 
     @Test
-    @Ignore("not working with arquillian 1.1.5 for now")
+    @RunAsClient
     @SuppressWarnings("unchecked")
     public void web_diagnostic_information_is_present() throws Exception {
         Map<String, Object> diagnosticInfo = diagnosticManager.getDiagnosticInfo(null);

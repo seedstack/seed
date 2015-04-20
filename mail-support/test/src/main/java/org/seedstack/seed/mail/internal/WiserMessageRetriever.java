@@ -34,17 +34,22 @@ class WiserMessageRetriever implements MessageRetriever {
     public Collection<Message> getSentMessages() {
         if (wiser != null) {
             List<Message> result = new ArrayList<Message>();
-            for (WiserMessage wiserMessage : wiser.getMessages()) {
-                Message message;
+            List<WiserMessage> messages = wiser.getMessages();
 
-                try {
-                    message = wiserMessage.getMimeMessage();
-                } catch (MessagingException e) {
-                    throw new RuntimeException("Unable to retrieve sent messages", e);
-                }
+            // message list is synchronized for iteration
+            synchronized (messages) {
+                for (WiserMessage wiserMessage : messages) {
+                    Message message;
 
-                if (message != null) {
-                    result.add(message);
+                    try {
+                        message = wiserMessage.getMimeMessage();
+                    } catch (MessagingException e) {
+                        throw new RuntimeException("Unable to retrieve sent messages", e);
+                    }
+
+                    if (message != null) {
+                        result.add(message);
+                    }
                 }
             }
 
