@@ -14,27 +14,37 @@ package org.seedstack.seed.persistence.inmemory.internal;
 
 import org.seedstack.seed.transaction.spi.TransactionalLink;
 
+import java.util.ArrayDeque;
+import java.util.Deque;
+
 /**
  * @author redouane.loulou@ext.mpsa.com
+ * @author adrien.lauer@mpsa.com
  */
 class InMemoryTransactionLink implements TransactionalLink<String> {
-    private final ThreadLocal<String> inMemoryStoreNameContainer;
+    private final ThreadLocal<Deque<String>> perThreadObjectContainer = new ThreadLocal<Deque<String>>() {
+        @Override
+        protected Deque<String> initialValue() {
+            return new ArrayDeque<String>();
+        }
+    };
 
-    InMemoryTransactionLink() {
-    	inMemoryStoreNameContainer =  new ThreadLocal<String>();
+    @Override
+    public String get() {
+        String entityManager = this.perThreadObjectContainer.get().peek();
+
+        if (entityManager == null) {
+            throw new IllegalStateException("A store must be specified with @Store before accessing in memory map");
+        }
+
+        return entityManager;
     }
 
-	@Override
-	public String get() {
-		return inMemoryStoreNameContainer.get();
-	}
-
-    void set(String store) {
-    	inMemoryStoreNameContainer.set(store);
+    void push(String entityManager) {
+        perThreadObjectContainer.get().push(entityManager);
     }
 
-    String getCurrentTransaction() {
-        return inMemoryStoreNameContainer.get();
+    String pop() {
+        return perThreadObjectContainer.get().pop();
     }
-
 }

@@ -34,7 +34,6 @@ public abstract class AbstractTransactionManagerTest {
     protected TransactionMetadataResolver transactionMetadataResolver;
     protected TransactionHandler transactionHandler;
 
-    private Injector injector;
     private ExceptionHandler exceptionHandler;
     private TransactionManager underTest;
 
@@ -50,7 +49,7 @@ public abstract class AbstractTransactionManagerTest {
         transactionMetadataResolver = mock(TransactionMetadataResolver.class);
         when(transactionMetadataResolver.resolve(any(MethodInvocation.class), any(TransactionMetadata.class))).thenReturn(transactionMetadata);
 
-        injector = mock(Injector.class);
+        Injector injector = mock(Injector.class);
         when(injector.getInstance(TransactionHandler.class)).thenReturn(transactionHandler);
         when(injector.getInstance(TransactionMetadata.class)).thenReturn(new TransactionMetadata());
         when(injector.getInstance(ExceptionHandler.class)).thenReturn(exceptionHandler);

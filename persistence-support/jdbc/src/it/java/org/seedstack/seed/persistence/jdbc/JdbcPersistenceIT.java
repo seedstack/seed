@@ -18,6 +18,7 @@ import java.sql.SQLException;
 
 import javax.inject.Inject;
 
+import net.jcip.annotations.NotThreadSafe;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -27,21 +28,22 @@ import org.seedstack.seed.persistence.jdbc.sample.Repository;
 import org.seedstack.seed.transaction.api.Transactional;
 
 @RunWith(SeedITRunner.class)
+@NotThreadSafe
 public class JdbcPersistenceIT {
 
     @Inject
     private Repository repository;
 
-    private static boolean alreadyInited;
+    private static boolean alreadyInitialized;
 
     @Transactional
     @Jdbc
     @Before
     public void init() throws SQLException {
-        if (alreadyInited) {
+        if (alreadyInitialized) {
             repository.drop();
         } else {
-            alreadyInited = true;
+            alreadyInitialized = true;
         }
         repository.init();
     }
@@ -75,6 +77,7 @@ public class JdbcPersistenceIT {
         try {
             repository.addFail(id2, bar2);
         } catch (Exception e) {
+            // ignore exception
         }
         return repository.getBar(id2);
     }

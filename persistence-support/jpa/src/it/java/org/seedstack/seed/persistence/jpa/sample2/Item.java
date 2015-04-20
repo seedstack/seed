@@ -21,13 +21,16 @@ import javax.persistence.Id;
 public class Item implements Serializable {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
     private long ID;
 
     private String name = "";
 
     public long getID() {
         return ID;
+    }
+
+    public void setID(long ID) {
+        this.ID = ID;
     }
 
     public String getName() {

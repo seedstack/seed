@@ -25,11 +25,10 @@ import java.util.Map;
  * InMemoryPersistenceIT
  *
  * @author redouane.loulou@ext.mpsa.com
- *
+ * @author adrien.lauer@mpsa.com
  */
 @RunWith(SeedITRunner.class)
 public class InMemoryPersistenceIT {
-
 	@InMemory
 	Map<String,String> inMemorySortedMap;
 
@@ -42,29 +41,12 @@ public class InMemoryPersistenceIT {
 		Assertions.assertThat(inMemorySortedMap.get("1")).isEqualTo("test1");
 	}
 
-
-	@Test @Store("test1")
-	public void test2() {
-		Assertions.assertThat(inMemorySortedMap.get("1")).isEqualTo("test1");
-	}
-
-
 	@Test @Store("test2")
 	public void test3() {
-		Assertions.assertThat(inMemorySortedMap.get("1")).isEqualTo(null);
+		Assertions.assertThat(inMemorySortedMap.get("1")).isNull();
 		inMemorySortedMap.put("1", "test3");
 		Assertions.assertThat(inMemorySortedMap.get("1")).isEqualTo("test3");
 		inMemorySortedMap.remove("1");
 		Assertions.assertThat(inMemorySortedMap.get("1")).isNull();
-		testWithAnotherStore();
-		Assertions.assertThat(inMemorySortedMap.get("1")).isNotEqualTo("test3");
-		Assertions.assertThat(inMemorySortedMap.get("1")).isEqualTo("test1");
-		inMemorySortedMap.remove("1");
-		Assertions.assertThat(inMemorySortedMap.get("1")).isNull();
 	}
-
-	@Store("test1")
-	public void testWithAnotherStore() {
-	}
-
 }

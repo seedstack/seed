@@ -33,15 +33,17 @@ public class SimpleTransactionIT {
         Assertions.assertThat(item1Repository).isNotNull();
 
         Item1 item1 = new Item1();
+        item1.setID(10L);
         item1.setName("item1Name");
 
         item1Repository.save(item1);
 
-        Assertions.assertThat(item1.getID()).isEqualTo(1L);
+        Assertions.assertThat(item1.getID()).isEqualTo(10L);
 
         Item1 item2 = new Item1();
+        item2.setID(20L);
         item2.setName("item1Name");
         item1Repository.save(item2);
-        Assertions.assertThat(item2.getID()).isEqualTo(2);
+        Assertions.assertThat(item2.getID()).isEqualTo(20L);
     }
 }

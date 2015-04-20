@@ -9,6 +9,7 @@
  */
 package org.seedstack.seed.jms.internal;
 
+import net.jcip.annotations.NotThreadSafe;
 import org.seedstack.seed.core.api.Logging;
 import org.seedstack.seed.it.SeedITRunner;
 import org.assertj.core.api.Assertions;
@@ -33,6 +34,7 @@ import static org.junit.Assert.fail;
  *         07/11/2014
  */
 @RunWith(SeedITRunner.class)
+@NotThreadSafe
 public class ManagedReconnectionFeatureIT {
 
     // TODO <pith> 19/11/2014: improve these tests.

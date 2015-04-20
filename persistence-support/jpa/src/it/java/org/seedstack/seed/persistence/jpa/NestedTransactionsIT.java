@@ -39,6 +39,7 @@ public class NestedTransactionsIT {
     @JpaUnit("unit1")
     public void access_to_unit2_with_unit1_transaction_should_fail() throws Exception {
         Item2 item2 = new Item2();
+        item2.setID(10L);
         item2.setName("item2Name");
         item2Repository.save(item2);
         fail("should have failed");
@@ -49,9 +50,10 @@ public class NestedTransactionsIT {
     @JpaUnit("unit1")
     public void access_to_unit2_with_new_transaction_should_succeed() throws Exception {
         Item1 item1 = new Item1();
+        item1.setID(20L);
         item1.setName("item1Name");
         item1Repository.save(item1);
-        Assertions.assertThat(item1.getID()).isEqualTo(1L);
+        Assertions.assertThat(item1.getID()).isEqualTo(20L);
 
         access_to_unit2_with_new_transaction();
 
@@ -62,17 +64,19 @@ public class NestedTransactionsIT {
     @JpaUnit("unit2")
     protected void access_to_unit2_with_new_transaction() {
         Item2 item2 = new Item2();
+        item2.setID(30L);
         item2.setName("item2Name");
         item2Repository.save(item2);
-        Assertions.assertThat(item2.getID()).isEqualTo(1);
+        Assertions.assertThat(item2.getID()).isEqualTo(30L);
     }
 
     @Transactional(propagation = Propagation.MANDATORY)
     @JpaUnit("unit1")
     protected void access_to_unit1_with_current_transaction() {
         Item1 item1 = new Item1();
+        item1.setID(40L);
         item1.setName("item1Name");
         item1Repository.save(item1);
-        Assertions.assertThat(item1.getID()).isEqualTo(2);
+        Assertions.assertThat(item1.getID()).isEqualTo(40L);
     }
 }

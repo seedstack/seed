@@ -36,6 +36,7 @@ import static org.assertj.core.api.Assertions.fail;
 public class MockMailServerIT extends AbstractSeedIT {
     @Inject
     MessageRetriever retriever;
+
     @Inject
     @Named("smtp-test")
     private Session session;

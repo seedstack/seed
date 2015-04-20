@@ -20,7 +20,6 @@ import java.io.Serializable;
 public class Item2 implements Serializable {
 	
 	@Id
-	@GeneratedValue(strategy=GenerationType.AUTO)
 	private long ID;
 	
 	private String name = "";
@@ -28,6 +27,10 @@ public class Item2 implements Serializable {
 	public long getID() {
 		return ID;
 	}
+
+    public void setID(long ID) {
+        this.ID = ID;
+    }
 
 	public String getName() {
 		return name;

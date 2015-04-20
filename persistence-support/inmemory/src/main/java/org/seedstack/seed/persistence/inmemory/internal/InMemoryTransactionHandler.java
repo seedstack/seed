@@ -28,18 +28,19 @@ class InMemoryTransactionHandler implements TransactionHandler<Object> {
     public void doInitialize(TransactionMetadata transactionMetadata) {
         Object store = transactionMetadata.getMetadata("store");
         if (store != null) {
-            inMemoryTransactionLink.set(store.toString());
+            inMemoryTransactionLink.push(store.toString());
         }
 
     }
 
     @Override
     public void doJoinGlobalTransaction() {
-        throw new UnsupportedOperationException("In memory persistence doesn't support global transactions");
+        // no transaction support
     }
 
     @Override
     public String doCreateTransaction() {
+        // no transaction support
         return null;
     }
 
@@ -70,7 +71,7 @@ class InMemoryTransactionHandler implements TransactionHandler<Object> {
 
     @Override
     public void doCleanup() {
-        // no transaction support
+        inMemoryTransactionLink.pop();
     }
 
     @Override

@@ -20,7 +20,6 @@ import java.io.Serializable;
 public class Item1 implements Serializable {
 	
 	@Id
-	@GeneratedValue(strategy=GenerationType.AUTO)
 	private long ID;
 	
 	private String name = "";
@@ -29,14 +28,18 @@ public class Item1 implements Serializable {
 		return ID;
 	}
 
-	public String getName() {
+    public void setID(long ID) {
+        this.ID = ID;
+    }
+
+    public String getName() {
 		return name;
 	}
 
 	public void setName(String name) {
 		this.name = name;
 	}
-	
+
 	@Override
     public int hashCode()
     {

@@ -9,17 +9,15 @@
  */
 package org.seedstack.seed.mail.internal;
 
-import com.google.common.base.Function;
-import com.google.common.collect.Collections2;
 import com.google.common.collect.Lists;
 import org.seedstack.seed.mail.api.MessageRetriever;
 import org.subethamail.wiser.Wiser;
 import org.subethamail.wiser.WiserMessage;
 
-import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.mail.Message;
 import javax.mail.MessagingException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -35,23 +33,24 @@ class WiserMessageRetriever implements MessageRetriever {
     @Override
     public Collection<Message> getSentMessages() {
         if (wiser != null) {
-            final List<WiserMessage> messages = wiser.getMessages();
-            return Collections2.transform(messages, new Function<WiserMessage, Message>() {
-                @Nullable
-                @Override
-                public Message apply(@Nullable WiserMessage input) {
-                    try {
-                        if (input != null) {
-                            return input.getMimeMessage();
-                        }
-                    } catch (MessagingException e) {
-                        throw new RuntimeException("Unable to retrieve sent messages", e);
-                    }
+            List<Message> result = new ArrayList<Message>();
+            for (WiserMessage wiserMessage : wiser.getMessages()) {
+                Message message;
 
-                    return null;
+                try {
+                    message = wiserMessage.getMimeMessage();
+                } catch (MessagingException e) {
+                    throw new RuntimeException("Unable to retrieve sent messages", e);
                 }
-            });
+
+                if (message != null) {
+                    result.add(message);
+                }
+            }
+
+            return result;
         }
+
         return Lists.newArrayList();
     }
 }

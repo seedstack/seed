@@ -36,9 +36,10 @@ public class NoPersistenceXmlIT {
     @Test
     public void testRepository() {
         Item item = new Item();
+        item.setID(10L);
         item.setName("itemName");
         itemRepository.save(item);
-        assertThat(item.getID()).isEqualTo(1L);
+        assertThat(item.getID()).isEqualTo(10L);
     }
 
     @Test
