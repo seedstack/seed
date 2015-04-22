@@ -13,7 +13,7 @@
 /**
  *
  */
-package org.seedstack.seed.unittest.helper;
+package org.seedstack.seed.test;
 
 import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;

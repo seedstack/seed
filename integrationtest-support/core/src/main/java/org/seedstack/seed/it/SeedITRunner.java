@@ -18,7 +18,7 @@ import org.seedstack.seed.core.utils.SeedReflectionUtils;
 import org.seedstack.seed.it.api.Expect;
 import org.seedstack.seed.it.api.WithPlugins;
 import org.seedstack.seed.it.api.WithoutSpiPluginsLoader;
-import org.seedstack.seed.it.internal.ITErrorCode;
+import org.seedstack.seed.it.api.ITErrorCode;
 import org.seedstack.seed.it.internal.ITPlugin;
 import org.seedstack.seed.it.spi.ITKernelMode;
 import org.seedstack.seed.it.spi.ITRunnerPlugin;
@@ -346,7 +346,7 @@ public class SeedITRunner extends BlockJUnit4ClassRunner {
             if (unwrappedThrowable == null) {
                 throw SeedException.createNew(ITErrorCode.EXPECTED_EXCEPTION_DID_NOT_OCCURRED).put("expectedClass", expectedClass);
             } else if (!unwrappedThrowable.getClass().equals(expectedClass)) {
-                throw SeedException.createNew(ITErrorCode.ANOTHER_EXCEPTION_THAN_EXPECTED_OCCURED).put("expectedClass", expectedClass).put("occurredClass", unwrappedThrowable.getClass());
+                throw SeedException.createNew(ITErrorCode.ANOTHER_EXCEPTION_THAN_EXPECTED_OCCURRED).put("expectedClass", expectedClass).put("occurredClass", unwrappedThrowable.getClass());
             }
         }
     }

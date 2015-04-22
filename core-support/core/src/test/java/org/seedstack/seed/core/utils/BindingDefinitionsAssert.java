@@ -7,7 +7,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-package org.seedstack.seed.core.assertions;
+package org.seedstack.seed.core.utils;
 
 import com.google.inject.Key;
 import org.assertj.core.api.Assertions;
@@ -17,7 +17,7 @@ import java.util.Map;
 import static org.seedstack.seed.core.utils.SeedBindingUtils.resolveBindingDefinitions;
 
 /**
- * This assertion class provides assertions around types.
+ * This assertion class provides assertions around bindings.
  *  
  * @author pierre.thirouin@ext.mpsa.com
  */
