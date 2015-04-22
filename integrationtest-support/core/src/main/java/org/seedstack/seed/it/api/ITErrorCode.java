@@ -7,21 +7,21 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-package org.seedstack.seed.core.assertions;
+package org.seedstack.seed.it.api;
 
 import org.seedstack.seed.core.api.ErrorCode;
 
 /**
- * SEED core assertions error codes.
+ * Enumerates all IT error codes.
  *
- * @author epo.jemba@ext.mpsa.com
- * @author pierre.thirouin@ext.mpsa.com
+ * @author adrien.lauer@mpsa.com
  */
-enum CoreAssertionsErrorCode implements ErrorCode {
-    UNEXPECTED_EXCEPTION,
-	CLASS_IS_NOT_INJECTABLE,
-	CLASS_IS_NOT_INJECTED_WITH,
-	BAD_PROPERTY_VALUE,
-	OBJECT_IS_NULL,
-	METHOD_DOES_NOT_EXIST
+public enum ITErrorCode implements ErrorCode {
+    FAILED_TO_INITIALIZE_SAFE_KERNEL,
+    FAILED_TO_INSTANTIATE_TEST_RULE,
+    TEST_PLUGINS_MISMATCH,
+    UNEXPECTED_EXCEPTION_OCCURRED,
+    EXPECTED_EXCEPTION_DID_NOT_OCCURRED,
+    ANOTHER_EXCEPTION_THAN_EXPECTED_OCCURRED,
+    FAILED_TO_INITIALIZE_KERNEL
 }

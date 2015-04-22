@@ -16,7 +16,6 @@ import com.google.inject.Key;
 import com.google.inject.TypeLiteral;
 import org.seedstack.seed.core.api.SeedException;
 import org.junit.Test;
-import org.seedstack.seed.core.assertions.BindingDefinitionsAssert;
 import org.seedstack.seed.core.utils.sample.*;
 
 import static org.seedstack.seed.core.utils.SeedBindingUtils.resolveBindingDefinitions;
