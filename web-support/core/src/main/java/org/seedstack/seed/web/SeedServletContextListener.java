@@ -30,7 +30,7 @@ import java.util.ServiceLoader;
 
 
 /**
- * This context listener has the responsibility to initialize the SEED framework in a web environment and
+ * This context listener has the responsibility to initialize the Seed framework in a web environment and
  * to initialize/destroy any delegate context listener marked with the {@link org.seedstack.seed.web.api.DelegateServletContextListener} interface.
  *
  * @author yves.dautremay@mpsa.com
@@ -62,7 +62,7 @@ public class SeedServletContextListener implements ServletContextListener, Servl
 
     @Override
     public void contextInitialized(ServletContextEvent sce) {
-        LOGGER.info("Starting SEED web application");
+        LOGGER.info("Starting Seed Web application");
 
         try {
             mainListener.contextInitialized(sce);
@@ -81,12 +81,12 @@ public class SeedServletContextListener implements ServletContextListener, Servl
             throw SeedException.wrap(e, WebErrorCode.UNEXPECTED_WEB_EXCEPTION);
         }
 
-        LOGGER.info("SEED web application started");
+        LOGGER.info("Seed Web application started");
     }
 
     @Override
     public void contextDestroyed(ServletContextEvent sce) {
-        LOGGER.info("Stopping SEED web application");
+        LOGGER.info("Stopping Seed Web application");
 
         try {
             otherListeners.contextDestroyed(sce);
@@ -97,7 +97,7 @@ public class SeedServletContextListener implements ServletContextListener, Servl
             throw SeedException.wrap(e, WebErrorCode.UNEXPECTED_WEB_EXCEPTION);
         }
 
-        LOGGER.info("SEED web application stopped");
+        LOGGER.info("Seed Web application stopped");
     }
 
     @Override
