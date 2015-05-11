@@ -12,18 +12,18 @@
  */
 package org.seedstack.seed.persistence.jdbc.internal.datasource;
 
-import java.beans.PropertyVetoException;
-import java.util.Properties;
-
-import javax.sql.DataSource;
-
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.health.HealthCheckRegistry;
+import com.mchange.v2.c3p0.ComboPooledDataSource;
 import org.seedstack.seed.core.api.SeedException;
 import org.seedstack.seed.persistence.jdbc.internal.JdbcErrorCode;
 import org.seedstack.seed.persistence.jdbc.spi.DataSourceProvider;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import com.mchange.v2.c3p0.ComboPooledDataSource;
+import javax.sql.DataSource;
+import java.beans.PropertyVetoException;
+import java.util.Properties;
 
 /**
  * Datasource provider for C3p0.
@@ -31,9 +31,10 @@ import com.mchange.v2.c3p0.ComboPooledDataSource;
  * @author yves.dautremay@mpsa.com
  */
 public class C3p0DataSourceProvider implements DataSourceProvider {
+    private static final Logger LOGGER = LoggerFactory.getLogger(C3p0DataSourceProvider.class);
 
     @Override
-    public DataSource provideDataSource(String driverClass, String url, String user, String password, Properties jdbcProperties) {
+    public DataSource provide(String driverClass, String url, String user, String password, Properties jdbcProperties) {
         ComboPooledDataSource cpds = new ComboPooledDataSource();
         try {
             cpds.setDriverClass(driverClass);
@@ -55,5 +56,16 @@ public class C3p0DataSourceProvider implements DataSourceProvider {
     @Override
     public void setMetricRegistry(MetricRegistry metricRegistry) {
         // not supported
+    }
+
+    @Override
+    public void close(DataSource dataSource) {
+        try {
+            if (dataSource instanceof ComboPooledDataSource) {
+                ((ComboPooledDataSource)dataSource).close();
+            }
+        } catch (Exception e) {
+            LOGGER.warn("Unable to close datasource", e);
+        }
     }
 }

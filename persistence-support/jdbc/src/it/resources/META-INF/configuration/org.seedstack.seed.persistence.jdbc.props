@@ -9,11 +9,12 @@
 #
 
 [org.seedstack.seed.persistence.jdbc]
-datasources=datasource1
+datasources = datasource1
 
 [org.seedstack.seed.persistence.jdbc.datasource.datasource1]
-driver=org.hsqldb.jdbcDriver
-url=jdbc:hsqldb:mem:testdb1
-user=sa
-password=
-property.sql.enforce_strict_size=true
+provider = HikariDataSourceProvider
+driver = org.hsqldb.jdbcDriver
+url = jdbc:hsqldb:mem:testdb1
+user = sa
+password =
+property.sql.enforce_strict_size = true

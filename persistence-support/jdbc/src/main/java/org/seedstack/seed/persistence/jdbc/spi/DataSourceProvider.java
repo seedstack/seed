@@ -37,7 +37,15 @@ public interface DataSourceProvider {
      * @param jdbcProperties Additional configured properties
      * @return the datasource
      */
-    DataSource provideDataSource(String driverClass, String url, String user, String password, Properties jdbcProperties);
+    DataSource provide(String driverClass, String url, String user, String password, Properties jdbcProperties);
+
+    /**
+     * This method is called upon shutdown to allow the provider to close a datasource in an implementation-specific
+     * way.
+     *
+     * @param dataSource the datasource that may be closed.
+     */
+    void close(DataSource dataSource);
 
     void setHealthCheckRegistry(HealthCheckRegistry healthCheckRegistry);
 

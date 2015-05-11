@@ -12,14 +12,15 @@
  */
 package org.seedstack.seed.persistence.jdbc.internal.datasource;
 
-import java.util.Properties;
-
-import javax.sql.DataSource;
-
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.health.HealthCheckRegistry;
 import org.apache.commons.dbcp.BasicDataSource;
 import org.seedstack.seed.persistence.jdbc.spi.DataSourceProvider;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.sql.DataSource;
+import java.util.Properties;
 
 /**
  * Data source provider for commons DBCP.
@@ -27,9 +28,10 @@ import org.seedstack.seed.persistence.jdbc.spi.DataSourceProvider;
  * @author yves.dautremay@mpsa.com
  */
 public class DbcpDataSourceProvider implements DataSourceProvider {
+    private static final Logger LOGGER = LoggerFactory.getLogger(DbcpDataSourceProvider.class);
 
     @Override
-    public DataSource provideDataSource(String driverClass, String url, String user, String password, Properties dataSourceProperties) {
+    public DataSource provide(String driverClass, String url, String user, String password, Properties dataSourceProperties) {
         BasicDataSource basicDataSource = new BasicDataSource();
         basicDataSource.setDriverClassName(driverClass);
         basicDataSource.setUrl(url);
@@ -49,5 +51,16 @@ public class DbcpDataSourceProvider implements DataSourceProvider {
     @Override
     public void setMetricRegistry(MetricRegistry metricRegistry) {
         // not supported
+    }
+
+    @Override
+    public void close(DataSource dataSource) {
+        try {
+            if (dataSource instanceof BasicDataSource) {
+                ((BasicDataSource)dataSource).close();
+            }
+        } catch (Exception e) {
+            LOGGER.warn("Unable to close datasource", e);
+        }
     }
 }

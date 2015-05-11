@@ -12,6 +12,10 @@
  */
 package org.seedstack.seed.persistence.jdbc.internal.datasource;
 
+import org.seedstack.seed.core.api.SeedException;
+import org.seedstack.seed.persistence.jdbc.internal.JdbcErrorCode;
+
+import javax.sql.DataSource;
 import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -19,11 +23,6 @@ import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
 import java.util.Properties;
 import java.util.logging.Logger;
-
-import javax.sql.DataSource;
-
-import org.seedstack.seed.core.api.SeedException;
-import org.seedstack.seed.persistence.jdbc.internal.JdbcErrorCode;
 
 /**
  * A simple datasource that will take its connection directly from the driver. No pooling or anything.
