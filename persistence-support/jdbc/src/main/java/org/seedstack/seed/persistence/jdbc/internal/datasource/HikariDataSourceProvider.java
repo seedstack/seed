@@ -12,22 +12,39 @@
  */
 package org.seedstack.seed.persistence.jdbc.internal.datasource;
 
-import java.util.Properties;
+import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.health.HealthCheckRegistry;
+import com.zaxxer.hikari.HikariDataSource;
+import org.seedstack.seed.persistence.jdbc.spi.DataSourceProvider;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.sql.DataSource;
-
-import org.seedstack.seed.persistence.jdbc.spi.DataSourceProvider;
-
-import com.zaxxer.hikari.HikariDataSource;
+import java.util.Properties;
 
 /**
- * Data source provider for Hikari
+ * Data source provider for Hikari.
+ *
+ * @author yves.dautremay@mpsa.com
  */
 public class HikariDataSourceProvider implements DataSourceProvider {
+    private static final Logger LOGGER = LoggerFactory.getLogger(HikariDataSourceProvider.class);
+
+    private MetricRegistry metricRegistry;
+    private HealthCheckRegistry healthCheckRegistry;
 
     @Override
-    public DataSource provideDataSource(String driverClass, String url, String user, String password, Properties dataSourceProperties) {
+    public DataSource provide(String driverClass, String url, String user, String password, Properties dataSourceProperties) {
         HikariDataSource ds = new HikariDataSource();
+
+        if (healthCheckRegistry != null) {
+            ds.setHealthCheckRegistry(healthCheckRegistry);
+        }
+
+        if (metricRegistry != null) {
+            ds.setMetricRegistry(metricRegistry);
+        }
+
         ds.setDriverClassName(driverClass);
         ds.setJdbcUrl(url);
         ds.setUsername(user);
@@ -36,4 +53,24 @@ public class HikariDataSourceProvider implements DataSourceProvider {
         return ds;
     }
 
+    @Override
+    public void setMetricRegistry(MetricRegistry metricRegistry) {
+        this.metricRegistry = metricRegistry;
+    }
+
+    @Override
+    public void setHealthCheckRegistry(HealthCheckRegistry healthCheckRegistry) {
+        this.healthCheckRegistry = healthCheckRegistry;
+    }
+
+    @Override
+    public void close(DataSource dataSource) {
+        try {
+            if (dataSource instanceof HikariDataSource) {
+                ((HikariDataSource) dataSource).close();
+            }
+        } catch (Exception e) {
+            LOGGER.warn("Unable to close datasource", e);
+        }
+    }
 }

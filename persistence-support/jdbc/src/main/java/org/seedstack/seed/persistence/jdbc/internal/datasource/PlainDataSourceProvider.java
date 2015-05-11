@@ -12,19 +12,37 @@
  */
 package org.seedstack.seed.persistence.jdbc.internal.datasource;
 
-import java.util.Properties;
-
-import javax.sql.DataSource;
-
+import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.health.HealthCheckRegistry;
 import org.seedstack.seed.persistence.jdbc.spi.DataSourceProvider;
 
+import javax.sql.DataSource;
+import java.util.Properties;
+
 /**
- * Data source provider for the {@link PlainDataSource}
+ * Data source provider for the {@link PlainDataSource}.
+ *
+ * @author yves.dautremay@mpsa.com
  */
 public class PlainDataSourceProvider implements DataSourceProvider {
 
     @Override
-    public DataSource provideDataSource(String driverClass, String url, String user, String password, Properties dataSourceProperties) {
+    public DataSource provide(String driverClass, String url, String user, String password, Properties dataSourceProperties) {
         return new PlainDataSource(driverClass, url, user, password, dataSourceProperties);
+    }
+
+    @Override
+    public void setHealthCheckRegistry(HealthCheckRegistry healthCheckRegistry) {
+        // not supported
+    }
+
+    @Override
+    public void setMetricRegistry(MetricRegistry metricRegistry) {
+        // not supported
+    }
+
+    @Override
+    public void close(DataSource dataSource) {
+        // not supported
     }
 }
