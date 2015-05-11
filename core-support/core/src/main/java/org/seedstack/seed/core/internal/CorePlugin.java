@@ -148,7 +148,7 @@ public class CorePlugin extends AbstractPlugin {
         String packageRoots = SEED_PACKAGE_ROOT;
         String[] applicationPackageRoots = bootstrapConfiguration.getStringArray("package-roots"); // expect package prefixes joined by a comma (",")
         if (applicationPackageRoots == null || applicationPackageRoots.length == 0) {
-            LOGGER.warn("No additional package roots specified. SEED will only scan " + packageRoots);
+            LOGGER.info("No additional package roots specified. SEED will only scan " + packageRoots);
         } else {
             packageRoots += "," + StringUtils.join(applicationPackageRoots, ",");
         }
