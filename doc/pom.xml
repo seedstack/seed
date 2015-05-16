@@ -60,15 +60,6 @@
                     </execution>
                 </executions>
             </plugin>
-            <plugin>
-                <artifactId>maven-antrun-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>fix-javadoc-stylesheet</id>
-                        <phase>prepare-package</phase>
-                    </execution>
-                </executions>
-            </plugin>
         </plugins>
     </build>
 
