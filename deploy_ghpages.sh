@@ -17,5 +17,5 @@
 	git config user.email "travis@seedstack.org"
 	git add .
 	git commit -m "Built for gh-pages of http://seedstack.github.io/seed"
-	git push --force-with-lease --quiet "https://${GITHUB_TOKEN}@github.com/seedstack/seed" master:gh-pages > /dev/null 2>&1
+	git push --force --quiet "https://${GITHUB_TOKEN}@github.com/seedstack/seed" master:gh-pages > /dev/null 2>&1
 )
