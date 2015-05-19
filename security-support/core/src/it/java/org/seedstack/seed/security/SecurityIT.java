@@ -49,6 +49,7 @@ public class SecurityIT {
     public void Obiwan_should_be_a_jedi() {
         assertThat(SecurityUtils.getSubject().hasRole("jedi")).isTrue();
         assertThat(securitySupport.hasRole("jedi")).isTrue();
+        assertThat(securitySupport.hasRole("nothing")).isTrue();
     }
 
     @Test
@@ -86,6 +87,12 @@ public class SecurityIT {
     public void Obiwan_should_be_able_to_call_the_force_and_teach() {
         assertThat(annotatedClass.callTheForce()).isTrue();
         assertThat(annotatedClass.teach()).isTrue();
+    }
+
+    @Test
+    @WithUser(id = "nobody", password = "foreverAlone")
+    public void user_nobody_should_have_role_nothing() {
+        assertThat(securitySupport.hasRole("nothing")).isTrue();
     }
 
     @Test(expected = AuthorizationException.class)
