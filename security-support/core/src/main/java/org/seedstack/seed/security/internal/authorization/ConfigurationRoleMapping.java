@@ -30,8 +30,9 @@ import org.seedstack.seed.security.api.RoleMapping;
 import org.seedstack.seed.security.api.principals.PrincipalProvider;
 
 /**
- * Resolve the role mappings from an Configuration. This implementation manages
- * domains :<br>
+ * Resolve the role mappings from an Configuration. Roles given to every user cans be defined by mapping it to
+ * the GLOBAL_WILDCARD character.
+ * This implementation manages domains :<br>
  * If mapping is titi.$DOMAIN$ = toto, tutu and given auth is titi.foo, then
  * returned roles will be toto and tutu, each role having a domain foo.
  * 
@@ -39,6 +40,9 @@ import org.seedstack.seed.security.api.principals.PrincipalProvider;
  * 
  */
 public class ConfigurationRoleMapping implements RoleMapping {
+
+    /** wildcard used to give role to every user */
+    private final static String GLOBAL_WILDCARD = "*";
 
     /** domain wildcard */
     private final static String DOMAIN_WILDCARD = "$DOMAIN$";
@@ -51,10 +55,16 @@ public class ConfigurationRoleMapping implements RoleMapping {
 
     /** map : role = mapped roles */
     private final Map<String, Set<String>> map = new HashMap<String, Set<String>>();
+    
+    /** roles given to every user */
+    private final Set<String> givenRoles = new HashSet<String>();
 
     @Override
     public Collection<Role> resolveRoles(Set<String> auths, Collection<PrincipalProvider<?>> principalProviders) {
         Map<String, Role> roleMap = new HashMap<String, Role>();
+        for (String role : givenRoles) {
+			roleMap.put(role, new Role(role));
+		}
         for (String auth : auths) {
             if (map.containsKey(auth)) {
                 for (String roleName : map.get(auth)) {
@@ -116,10 +126,16 @@ public class ConfigurationRoleMapping implements RoleMapping {
             String roleName = keys.next();
             String[] perms = rolesConfiguration.getStringArray(roleName);
             for (String token : perms) {
-                Set<String> roles = map.get(token);
-                roles = new HashSet<String>();
-                roles.add(roleName);
-                map.put(token, roles);
+            	if(GLOBAL_WILDCARD.equals(token)){
+            		givenRoles.add(roleName);
+            	}else{
+            		Set<String> roles = map.get(token);
+            		if(roles == null){
+            			roles = new HashSet<String>();
+            		}
+            		roles.add(roleName);
+            		map.put(token, roles);
+            	}
             }
         }
     }
