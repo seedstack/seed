@@ -7,11 +7,13 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-package org.seedstack.seed.jms.internal;
+package org.seedstack.seed.jms.fixtures;
 
 import org.seedstack.seed.core.api.Logging;
+import org.seedstack.seed.jms.JmsRefreshIT;
 import org.seedstack.seed.jms.api.DestinationType;
 import org.seedstack.seed.jms.api.JmsMessageListener;
+import org.seedstack.seed.transaction.api.Transactional;
 import org.slf4j.Logger;
 
 import javax.jms.JMSException;
@@ -19,30 +21,28 @@ import javax.jms.Message;
 import javax.jms.MessageListener;
 import javax.jms.TextMessage;
 
-/**
- * @author Pierre Thirouin <pierre.thirouin@ext.mpsa.com>
- *         07/11/2014
- */
-@JmsMessageListener(connection = "connection4", destinationType = DestinationType.QUEUE, destinationName = "queue4")
-public class MyMessageListener4 implements MessageListener {
+@JmsMessageListener(connection = "connection3", destinationType = DestinationType.QUEUE, destinationName = "queue3")
+public class TestMessageListener3 implements MessageListener {
 
     @Logging
     Logger logger;
 
     @Override
+    @Transactional
     public void onMessage(Message message) {
         try {
-            UnManagedReconnectionFeatureIT.text = ((TextMessage) message).getText();
+            String text = ((TextMessage) message).getText();
+            JmsRefreshIT.text = text;
             logger.info("Message '{}' received", ((TextMessage) message).getText());
         } catch (JMSException e) {
             throw new RuntimeException(e);
         }
-        if (UnManagedReconnectionFeatureIT.text.equals("UNMANAGED1")) {
-            UnManagedReconnectionFeatureIT.latchConnect1.countDown();
-        } else if (UnManagedReconnectionFeatureIT.text.equals("RECONNECT1")) {
-            UnManagedReconnectionFeatureIT.latchReconnect1.countDown();
-        } else if (UnManagedReconnectionFeatureIT.text.equals("RECONNECT2")) {
-            UnManagedReconnectionFeatureIT.latchReconnect2.countDown();
+        if (JmsRefreshIT.text.equals("MANAGED1")) {
+            JmsRefreshIT.latchConnect1.countDown();
+        } else if (JmsRefreshIT.text.equals("RECONNECT1")) {
+            JmsRefreshIT.latchReconnect1.countDown();
+        } else if (JmsRefreshIT.text.equals("RECONNECT2")) {
+            JmsRefreshIT.latchReconnect2.countDown();
         }
     }
 }

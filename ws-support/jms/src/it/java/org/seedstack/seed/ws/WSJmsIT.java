@@ -10,13 +10,13 @@
 package org.seedstack.seed.ws;
 
 
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.seedstack.seed.core.api.Configuration;
 import org.seedstack.seed.it.SeedITRunner;
 import org.seedstack.seed.ws.internal.jms.JmsTransportException;
 import org.seedstack.wsdl.seed.calculator.CalculatorService;
 import org.seedstack.wsdl.seed.calculator.CalculatorWS;
-import org.junit.Test;
-import org.junit.runner.RunWith;
 
 import javax.xml.ws.BindingProvider;
 

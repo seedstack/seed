@@ -23,7 +23,7 @@ import javax.jms.*;
 import java.util.List;
 
 /**
- * @author Pierre Thirouin <pierre.thirouin@ext.mpsa.com>
+ * @author pierre.thirouin@ext.mpsa.com
  *         12/11/2014
  */
 @RunWith(MockitoJUnitRunner.class)
@@ -39,7 +39,7 @@ public class ManagedSessionTest {
 
     @Before
     public void setUp() throws JMSException {
-        underTest = new ManagedSession(session, true, Session.AUTO_ACKNOWLEDGE);
+        underTest = new ManagedSession(session, true, Session.AUTO_ACKNOWLEDGE, false);
         Mockito.when(session.createConsumer(destination, null, false)).thenReturn(Mockito.mock(MessageConsumer.class));
     }
 

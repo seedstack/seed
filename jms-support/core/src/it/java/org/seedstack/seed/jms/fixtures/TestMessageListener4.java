@@ -7,42 +7,38 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-package org.seedstack.seed.jms.internal;
+package org.seedstack.seed.jms.fixtures;
 
 import org.seedstack.seed.core.api.Logging;
+import org.seedstack.seed.it.api.ITBind;
+import org.seedstack.seed.jms.JmsPollingIT;
+import org.seedstack.seed.jms.SimpleMessagePoller;
 import org.seedstack.seed.jms.api.DestinationType;
 import org.seedstack.seed.jms.api.JmsMessageListener;
+import org.seedstack.seed.transaction.api.Transactional;
 import org.slf4j.Logger;
 
 import javax.jms.JMSException;
 import javax.jms.Message;
-import javax.jms.MessageListener;
 import javax.jms.TextMessage;
 
-/**
- * @author Pierre Thirouin <pierre.thirouin@ext.mpsa.com>
- *         07/11/2014
- */
-@JmsMessageListener(connection = "connection3", destinationType = DestinationType.QUEUE, destinationName = "queue3")
-public class MyMessageListener3 implements MessageListener {
+
+@JmsMessageListener(connection = "connection4", destinationType = DestinationType.QUEUE, destinationName = "queue4", poller = SimpleMessagePoller.class)
+public class TestMessageListener4 implements javax.jms.MessageListener {
 
     @Logging
-    Logger logger;
+    public Logger logger;
 
     @Override
+    @Transactional
     public void onMessage(Message message) {
         try {
-            ManagedReconnectionFeatureIT.text = ((TextMessage) message).getText();
+            JmsPollingIT.text = ((TextMessage) message).getText();
             logger.info("Message '{}' received", ((TextMessage) message).getText());
         } catch (JMSException e) {
             throw new RuntimeException(e);
-        }
-        if (ManagedReconnectionFeatureIT.text.equals("MANAGED1")) {
-            ManagedReconnectionFeatureIT.latchConnect1.countDown();
-        } else if (ManagedReconnectionFeatureIT.text.equals("RECONNECT1")) {
-            ManagedReconnectionFeatureIT.latchReconnect1.countDown();
-        } else if (ManagedReconnectionFeatureIT.text.equals("RECONNECT2")) {
-            ManagedReconnectionFeatureIT.latchReconnect2.countDown();
+        } finally {
+            JmsPollingIT.count.countDown();
         }
     }
 }

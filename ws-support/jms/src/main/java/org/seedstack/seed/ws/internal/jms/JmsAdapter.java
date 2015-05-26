@@ -24,14 +24,14 @@ import java.io.InputStream;
 
 class JmsAdapter extends Adapter<JmsAdapter.JMSToolkit> {
     @Inject
-    private WSJmsFactory wsJmsFactory;
+    private WSJmsTransportFactory wsJmsTransportFactory;
 
     JmsAdapter(WSEndpoint endpoint) {
         super(endpoint);
     }
 
     void handle(Message requestMessage, SoapJmsUri uri) throws IOException, JMSException {
-        JmsServerTransport connection = wsJmsFactory.createJmsServerTransport(requestMessage, uri);
+        JmsServerTransport connection = wsJmsTransportFactory.createJmsServerTransport(requestMessage, uri);
 
         JMSToolkit tk = pool.take();
         try {

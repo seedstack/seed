@@ -9,6 +9,8 @@
  */
 package org.seedstack.seed.ws.internal.jms;
 
+import org.apache.commons.configuration.BaseConfiguration;
+import org.apache.commons.configuration.Configuration;
 import org.apache.commons.lang.StringUtils;
 
 import javax.jms.Destination;
@@ -20,17 +22,23 @@ import javax.naming.NamingException;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URLDecoder;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
 
 final class SoapJmsUri {
     public static final String JNDI_LOOKUP_VARIANT = "jndi";
     public static final String SEED_QUEUE_LOOKUP_VARIANT = "queue";
     public static final String SEED_TOPIC_LOOKUP_VARIANT = "topic";
+    public static final String CONNECTION_NAME_PATTERN = "ws-%s-connection";
 
     private final String lookupVariant;
     private final String destinationName;
     private final Map<String, String[]> params;
     private final String uri2string;
+
+    private String endpointName;
 
     private SoapJmsUri(String lookupVariant, String destinationName, Map<String, String[]> params, String uri2string) {
         this.lookupVariant = lookupVariant;
@@ -118,19 +126,18 @@ final class SoapJmsUri {
     }
 
     static Context getContext(SoapJmsUri soapJmsUri) throws NamingException {
+        Properties properties = new Properties();
+
         String jndiInitialContextFactory = soapJmsUri.getParameter("jndiInitialContextFactory");
-        if (StringUtils.isEmpty(jndiInitialContextFactory)) {
-            throw new IllegalArgumentException("Missing SOAP-JMS URI parameter jndiInitialContextFactory");
+        if (!StringUtils.isEmpty(jndiInitialContextFactory)) {
+            properties.setProperty(javax.naming.Context.INITIAL_CONTEXT_FACTORY, jndiInitialContextFactory);
         }
 
         String jndiURL = soapJmsUri.getParameter("jndiURL");
-        if (StringUtils.isEmpty(jndiURL)) {
-            throw new IllegalArgumentException("Missing SOAP-JMS URI parameter jndiURL");
+        if (!StringUtils.isEmpty(jndiURL)) {
+            properties.setProperty(javax.naming.Context.PROVIDER_URL, jndiURL);
         }
 
-        Properties properties = new Properties();
-        properties.setProperty(javax.naming.Context.INITIAL_CONTEXT_FACTORY, jndiInitialContextFactory);
-        properties.setProperty(javax.naming.Context.PROVIDER_URL, jndiURL);
 
         return new InitialContext(properties);
     }
@@ -199,6 +206,34 @@ final class SoapJmsUri {
 
     String getDestinationName() {
         return destinationName;
+    }
+
+    String getEndpointName() {
+        return endpointName;
+    }
+
+    void setEndpointName(String endpointName) {
+        this.endpointName = endpointName;
+    }
+
+    String getConnectionName() {
+        if (JNDI_LOOKUP_VARIANT.equals(lookupVariant)) {
+            if (endpointName != null) {
+                return String.format(CONNECTION_NAME_PATTERN, endpointName);
+            }
+        } else if ((SoapJmsUri.SEED_QUEUE_LOOKUP_VARIANT.equals(lookupVariant) || SoapJmsUri.SEED_TOPIC_LOOKUP_VARIANT.equals(lookupVariant))) {
+            return getParameter("connectionName");
+        }
+
+        return null;
+    }
+
+    Configuration getConfiguration(Configuration wsConfiguration) {
+        if (endpointName != null) {
+            return wsConfiguration.subset(String.format("endpoint.%s.jms", endpointName));
+        } else {
+            return new BaseConfiguration();
+        }
     }
 
     @Override

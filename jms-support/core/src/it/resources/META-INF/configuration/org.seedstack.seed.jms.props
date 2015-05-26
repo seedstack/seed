@@ -9,7 +9,7 @@
 #
 
 [org.seedstack.seed.jms]
-connection-factories = connectionFactory1, connectionFactory2, connectionFactory3, connectionFactory4, connectionFactory5, connectionFactory6
+connection-factories = connectionFactory1, connectionFactory2, connectionFactory3, connectionFactory4
 connection-factory.connectionFactory1.vendor.class = org.apache.activemq.ActiveMQConnectionFactory
 connection-factory.connectionFactory1.vendor.property.brokerURL = vm://localhost?broker.persistent=false
 connection-factory.connectionFactory2.vendor.class = org.apache.activemq.ActiveMQConnectionFactory
@@ -18,23 +18,14 @@ connection-factory.connectionFactory3.vendor.class = org.apache.activemq.ActiveM
 connection-factory.connectionFactory3.vendor.property.brokerURL = vm://localhost?broker.persistent=false
 connection-factory.connectionFactory4.vendor.class = org.apache.activemq.ActiveMQConnectionFactory
 connection-factory.connectionFactory4.vendor.property.brokerURL = vm://localhost?broker.persistent=false
-connection-factory.connectionFactory5.vendor.class = org.apache.activemq.ActiveMQConnectionFactory
-connection-factory.connectionFactory5.vendor.property.brokerURL = vm://localhost?broker.persistent=false
-connection-factory.connectionFactory6.vendor.class = org.apache.activemq.ActiveMQConnectionFactory
-connection-factory.connectionFactory6.vendor.property.brokerURL = vm://localhost?broker.persistent=false
-#tcp://localhost:61616
-connections = connection1, connection2, connection3, connection4, connection5, connection6
+
+connections = connection1, connection2, connection3, connection4
 connection.connection1.connection-factory = connectionFactory1
 connection.connection1.reconnection-delay=100
 connection.connection2.connection-factory = connectionFactory2
 connection.connection2.reconnection-delay=100
 connection.connection3.connection-factory = connectionFactory3
 connection.connection3.reconnection-delay=100
+connection.connection3.exception-listener=org.seedstack.seed.jms.fixtures.TestExceptionListener
 connection.connection4.connection-factory = connectionFactory4
-connection.connection4.reconnection-delay=100
-connection.connection5.connection-factory = connectionFactory5
-connection.connection5.reconnection-delay=100
-connection.connection6.connection-factory = connectionFactory6
-connection.connection6.reconnection-delay=3000
-connection.connection6.exceptionListener=org.seedstack.seed.jms.internal.MyExceptionListener
-
+connection.connection4.jee-mode = true

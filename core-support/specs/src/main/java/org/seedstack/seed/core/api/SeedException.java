@@ -43,6 +43,7 @@ public class SeedException extends RuntimeException {
     private static final ConcurrentMap<String, Map<String, String>> ERROR_TEMPLATES = new ConcurrentHashMap<String, Map<String, String>>();
     private static final int WRAP_LENGTH = 120;
     private static final String CAUSE_PATTERN = "%d. %s";
+    private static final String CODE_PATTERN = "(%s) %s";
     private static final String ERROR_TEMPLATE_PATH = "META-INF/errors/";
     private static final String ERROR_TEMPLATE_EXTENSION = ".properties";
 
@@ -52,14 +53,15 @@ public class SeedException extends RuntimeException {
     private boolean alreadyComputed = false;
     private List<String> causes;
     private String fix;
+    private String url;
 
     protected SeedException(ErrorCode errorCode) {
-        super(errorCode.toString() + " (" + errorCode.getClass().getSimpleName() + ")");
+        super(formatErrorCode(errorCode));
         this.errorCode = errorCode;
     }
 
     protected SeedException(ErrorCode errorCode, Throwable cause) {
-        super(errorCode.toString() + " (" + errorCode.getClass().getSimpleName() + ")", cause);
+        super(formatErrorCode(errorCode), cause);
         this.errorCode = errorCode;
     }
 
@@ -147,10 +149,15 @@ public class SeedException extends RuntimeException {
         return this.fix;
     }
 
+    public String getUrl() {
+        compute();
+        return this.url;
+    }
+
     private String buildStackTrace() {
         StringBuilder s = new StringBuilder();
 
-        s.append(StringUtils.leftPad("", SeedException.class.getCanonicalName().length() + getMessage().length() + 2, "-"));
+        s.append(StringUtils.leftPad("", SeedException.class.getCanonicalName().length() + getMessage().length() + 2, "="));
         s.append("\n");
 
         String seedMessage = getSeedMessage();
@@ -158,8 +165,7 @@ public class SeedException extends RuntimeException {
             s.append(wrapLine(seedMessage));
             s.append("\n\n");
         } else {
-            s.append(getMessage());
-            s.append("\n\n");
+            s.append("\n");
         }
 
         compute();
@@ -175,7 +181,7 @@ public class SeedException extends RuntimeException {
 
             int count = 1;
             for (String seedCause : causes) {
-                s.append(wrapLine(String.format(CAUSE_PATTERN, count, seedCause))).append("\n");
+                s.append(wrapLine(String.format(CAUSE_PATTERN, count, seedCause)));
                 count++;
             }
 
@@ -183,14 +189,18 @@ public class SeedException extends RuntimeException {
         }
 
         if (fix != null) {
-            s.append("Advised fix\n-----------\n");
+            s.append("Fix\n---\n");
             s.append(wrapLine(fix));
             s.append("\n");
-        } else {
-            s.append("No advisable fix\n----------------\n");
         }
 
-        s.append("\nDetailed trace\n--------------\n");
+        if (url != null) {
+            s.append("Online information\n------------------\n");
+            s.append(url).append("\n");
+            s.append("\n");
+        }
+
+        s.append("Detailed trace\n--------------\n");
         StringWriter stringWriter = new StringWriter();
         super.printStackTrace(new PrintWriter(stringWriter));
         s.append(stringWriter.toString());
@@ -217,6 +227,7 @@ public class SeedException extends RuntimeException {
 
         List<String> causes = new ArrayList<String>();
         String fix = null;
+        String url = null;
 
         Throwable theCause = getCause();
         while (theCause != null) {
@@ -229,10 +240,16 @@ public class SeedException extends RuntimeException {
                     fix = SeedStringUtils.replaceTokens(fix, seedCause.getProperties());
                 }
 
+                // Also get the url
+                url = seedCause.getErrorTemplate("url");
+                if (url != null) {
+                    url = SeedStringUtils.replaceTokens(url, seedCause.getProperties());
+                }
+
                 // Collects all cause messages from highest to lowest level
                 String seedCauseErrorTemplate = seedCause.getErrorTemplate("message");
                 if (seedCauseErrorTemplate != null) {
-                    causes.add(SeedStringUtils.replaceTokens(seedCauseErrorTemplate, seedCause.getProperties()));
+                    causes.add(String.format(CODE_PATTERN, formatErrorClass(seedCause.getErrorCode()), SeedStringUtils.replaceTokens(seedCauseErrorTemplate, seedCause.getProperties())));
                 } else {
                     causes.add(theCause.getMessage());
                 }
@@ -250,8 +267,16 @@ public class SeedException extends RuntimeException {
             }
         }
 
+        if (url == null) {
+            url = getErrorTemplate("url");
+            if (url != null) {
+                url = SeedStringUtils.replaceTokens(url, getProperties());
+            }
+        }
+
         this.causes = causes;
         this.fix = fix;
+        this.url = url;
         this.alreadyComputed = true;
     }
 
@@ -339,6 +364,20 @@ public class SeedException extends RuntimeException {
         }
 
         return templates.get(errorCode + "." + templateType);
+    }
+
+    private static String formatErrorCode(ErrorCode errorCode) {
+        String name = errorCode.toString().toLowerCase().replace("_", " ");
+
+        return String.format(
+                CODE_PATTERN,
+                formatErrorClass(errorCode),
+                name.substring(0, 1).toUpperCase() + name.substring(1)
+        );
+    }
+
+    private static String formatErrorClass(ErrorCode errorCode) {
+        return errorCode.getClass().getSimpleName().replace("ErrorCodes", "").replace("ErrorCode", "").toUpperCase();
     }
 
     /**

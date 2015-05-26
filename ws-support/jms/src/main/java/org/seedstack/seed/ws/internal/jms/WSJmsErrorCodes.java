@@ -7,20 +7,12 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-package org.seedstack.seed.validation.internal.pojo;
+package org.seedstack.seed.ws.internal.jms;
 
-import javax.validation.Valid;
-import javax.validation.constraints.Null;
+import org.seedstack.seed.core.api.ErrorCode;
 
-/**
- * @author pierre.thirouin@ext.mpsa.com
- *         14/10/2014
- */
-public class PojoWithDeepValidation {
-
-    @Null
-    String str = "should be null";
-
-    @Valid
-    private Pojo pojo = new Pojo(Pojo.State.INVALID);
+enum WSJmsErrorCodes implements ErrorCode {
+    UNABLE_TO_ROLLBACK_WS_JMS_MESSAGE,
+    UNABLE_TO_REGISTER_MESSAGE_LISTENER,
+    UNABLE_TO_GET_TRANSACTED_STATUS
 }

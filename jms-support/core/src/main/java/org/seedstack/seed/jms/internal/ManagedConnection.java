@@ -14,146 +14,107 @@ import org.seedstack.seed.jms.spi.ConnectionDefinition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.inject.Injector;
-import com.google.inject.Key;
-import com.google.inject.name.Names;
-
-import javax.inject.Inject;
-import javax.jms.*;
-
-import java.util.*;
+import javax.jms.Connection;
+import javax.jms.ConnectionConsumer;
+import javax.jms.ConnectionMetaData;
+import javax.jms.Destination;
+import javax.jms.ExceptionListener;
+import javax.jms.JMSException;
+import javax.jms.ServerSessionPool;
+import javax.jms.Session;
+import javax.jms.Topic;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
  * This connection is a facade to the actual jms connection. It provides the reconnection mechanism.
  *
- * @author Pierre Thirouin <pierre.thirouin@ext.mpsa.com>
- *         04/11/2014
+ * @author pierre.thirouin@ext.mpsa.com
+ * @author adrien.lauer@mpsa.com
  */
 class ManagedConnection implements Connection, ExceptionListener {
     private static final Logger LOGGER = LoggerFactory.getLogger(ManagedConnection.class);
 
     private final List<ManagedSession> sessions = new ArrayList<ManagedSession>();
     private final AtomicBoolean needToStart = new AtomicBoolean(false);
-    private final String connectionName;
-    private final int reconnectionDelay;
-    private final ConnectionFactory connectionFactory;
-    private final String user;
-    private final String password;
-    private final String defaultClientId;
-    private final boolean shouldSetClientId;
-    private String clientId;
-    private final AtomicBoolean scheduleInProgress;
-    
-    @Inject
-    private Injector injector;
-    
-    private ExceptionListener exceptionListener;
-    private Connection connection;
-    private ReentrantReadWriteLock connectionLock = new ReentrantReadWriteLock();
 
-    ManagedConnection(ConnectionFactory connectionFactory, ConnectionDefinition connectionDefinition, String defaultClientId, String connectionName) throws JMSException {
-        SeedCheckUtils.checkIfNotNull(connectionFactory);
+    private final ConnectionDefinition connectionDefinition;
+    private final JmsFactoryImpl jmsFactoryImpl;
+    private final AtomicBoolean scheduleInProgress;
+    private final ReentrantReadWriteLock connectionLock = new ReentrantReadWriteLock();
+
+    private Connection connection;
+    private ExceptionListener exceptionListener;
+
+    ManagedConnection(ConnectionDefinition connectionDefinition, JmsFactoryImpl jmsFactoryImpl) throws JMSException {
         SeedCheckUtils.checkIfNotNull(connectionDefinition);
 
-        this.connectionFactory = connectionFactory;
-        this.connectionName = connectionName;
-        this.reconnectionDelay = connectionDefinition.getReconnectionDelay();
-        this.clientId = connectionDefinition.getClientId();
-        this.user = connectionDefinition.getUser();
-        this.password = connectionDefinition.getPassword();
-        this.defaultClientId = defaultClientId;
-        this.shouldSetClientId = connectionDefinition.isShouldSetClientId();
+        this.jmsFactoryImpl = jmsFactoryImpl;
+        this.connectionDefinition = connectionDefinition;
         this.scheduleInProgress = new AtomicBoolean(false);
         this.connection = createConnection();
     }
 
     private Connection createConnection() throws JMSException {
-        Connection newConnection;
+        Connection newConnection = jmsFactoryImpl.createRawConnection(connectionDefinition);
 
-        if (user != null) {
-            newConnection = connectionFactory.createConnection(user, password);
-        } else {
-            newConnection = connectionFactory.createConnection();
+        // Set the exception listener to ourselves so we can monitor the underlying connection
+        if (!connectionDefinition.isJeeMode()) {
+            newConnection.setExceptionListener(this);
         }
 
-        // Initialize the client id
-        try {
-            if (shouldSetClientId) {
-                if (clientId == null) {
-                    LOGGER.info("Setting client id as {} on managed connection {}", defaultClientId, connectionName);
-                    newConnection.setClientID(defaultClientId);
-                } else {
-                    LOGGER.info("Setting client id as {} on managed connection {}", clientId, connectionName);
-                    newConnection.setClientID(clientId);
-                }
-            }
-        } catch (JMSException e) {
-            LOGGER.error(e.getErrorCode(), e);
-            throw e;
-        }
-
-        newConnection.setExceptionListener(this);
-
-        LOGGER.debug("Initialized JMS connection {}", connectionName);
+        LOGGER.debug("Initialized JMS connection {}", connectionDefinition.getName());
 
         return newConnection;
     }
 
-    private void refresh() {
-    	LOGGER.debug("Attempt to schedule a reconnection");
-    	if(scheduleInProgress.getAndSet(true)){
-        	LOGGER.debug("Schedule already in progress");
-    	}else{
-        	LOGGER.debug("Schedule in progress");
-    		scheduleReconnection();
-    	}
+    private void scheduleReconnection() {
+        TimerTask timerTask = new TimerTask() {
+            @Override
+            public void run() {
+                connectionLock.writeLock().lock();
+
+                try {
+                    // Recreate the connection
+                    connection = createConnection();
+                    LOGGER.info("Recreated JMS connection {}", connectionDefinition.getName());
+
+                    // Refresh sessions
+                    for (ManagedSession session : sessions) {
+                        session.refresh(connection);
+                    }
+
+                    // Start the new connection if needed
+                    if (needToStart.get()) {
+                        connection.start();
+                        scheduleInProgress.set(false);
+                        LOGGER.info("Restarted JMS connection {}", connectionDefinition.getName());
+                    }
+                } catch (Exception e) {
+                    LOGGER.error("Failed to restart JMS connection {}, next attempt in {} ms", connectionDefinition.getName(), connectionDefinition.getReconnectionDelay());
+                    scheduleReconnection();
+                } finally {
+                    connectionLock.writeLock().unlock();
+                }
+
+            }
+        };
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.MILLISECOND, connectionDefinition.getReconnectionDelay());
+        new Timer().schedule(timerTask, calendar.getTime());
     }
-
-	private void scheduleReconnection() {
-		TimerTask timerTask = new TimerTask() {
-			@Override
-			public void run() {
-				connectionLock.writeLock().lock();
-
-				try {
-					// Recreate the connection
-					connection = createConnection();
-
-					// Refresh sessions
-					for (ManagedSession session : sessions) {
-						session.refresh(connection);
-					}
-
-					// Start the new connection if needed
-					if (needToStart.get()) {
-						connection.start();
-			    		scheduleInProgress.set(false);
-						LOGGER.info("Restarted JMS connection {}",
-								connectionName);
-						
-					}
-				} catch (JMSException e) {
-					LOGGER.info("Attempt to reconnect {} in {} milliseconds",
-							connectionName, reconnectionDelay);
-					scheduleReconnection();
-				} finally {
-					connectionLock.writeLock().unlock();
-				}
-
-			}
-		};
-		Calendar calendar = Calendar.getInstance();
-		calendar.add(Calendar.MILLISECOND, reconnectionDelay);
-		new Timer().schedule(timerTask, calendar.getTime());
-	}
 
     private Connection getConnection() throws JMSException {
         connectionLock.readLock().lock();
         try {
             if (connection == null) {
-                throw new JMSException("Connection " + connectionName + " is not ready");
+                throw new JMSException("Connection " + connectionDefinition.getName() + " is not ready");
             }
 
             return connection;
@@ -164,30 +125,47 @@ class ManagedConnection implements Connection, ExceptionListener {
 
     @Override
     public void onException(JMSException exception) {
-    	if(exception != null && LOGGER.isDebugEnabled()){
-    		LOGGER.debug(exception.getMessage(), exception);
-    	}
-        if(exceptionListener == null){
-        	//inject declarative exception Listener
-            this.exceptionListener = injector.getInstance(Key.get(ExceptionListener.class, Names.named(connectionName)));
+        LOGGER.error("An exception occurred on JMS connection {}", connectionDefinition.getName());
+        if (exception != null && LOGGER.isDebugEnabled()) {
+            LOGGER.debug("Original exception below", exception);
         }
+
         if (exceptionListener != null) {
             exceptionListener.onException(exception);
         }
 
-        // reset the connection
-        LOGGER.info("Reset JMS connection {}", connectionName);
+        reset();
+    }
 
-        connectionLock.writeLock().lock();
-        try {
-            connection = null;
-            for (ManagedSession session : sessions) {
-                session.reset();
+    private void reset() {
+        if (scheduleInProgress.getAndSet(true)) {
+            LOGGER.debug("JMS connection {} already scheduled for restart", connectionDefinition.getName());
+        } else {
+            // reset the connection
+            LOGGER.warn("Closing JMS connection {} and scheduling restart in {} ms", connectionDefinition.getName(), connectionDefinition.getReconnectionDelay());
+
+            connectionLock.writeLock().lock();
+            try {
+                // Reset the sessions to prevent their use during refresh
+                for (ManagedSession session : sessions) {
+                    session.reset();
+                }
+
+                // Effectively close th connection and prevent its use during refresh
+                if (connection != null) {
+                    try {
+                        connection.close();
+                    } catch (JMSException e) {
+                        LOGGER.warn("Unable to cleanly close the JMS connection {}", connectionDefinition.getName());
+                    }
+                }
+                connection = null;
+
+                // Schedule
+                scheduleReconnection();
+            } finally {
+                connectionLock.writeLock().unlock();
             }
-
-            refresh();
-        } finally {
-            connectionLock.writeLock().unlock();
         }
     }
 
@@ -197,7 +175,7 @@ class ManagedConnection implements Connection, ExceptionListener {
     public Session createSession(boolean transacted, int acknowledgeMode) throws JMSException {
         connectionLock.readLock().lock();
         try {
-            ManagedSession managedSession = new ManagedSession(getConnection().createSession(transacted, acknowledgeMode), transacted, acknowledgeMode);
+            ManagedSession managedSession = new ManagedSession(getConnection().createSession(transacted, acknowledgeMode), transacted, acknowledgeMode, connectionDefinition.isJeeMode());
             sessions.add(managedSession);
             return managedSession;
         } finally {
@@ -216,34 +194,23 @@ class ManagedConnection implements Connection, ExceptionListener {
     }
 
     @Override
-    public void setClientID(String clientID) throws JMSException {
-        getConnection().setClientID(clientID);
-        this.clientId = clientID;
-    }
-
-    @Override
-    public String getClientID() throws JMSException {
-        return getConnection().getClientID();
-    }
-
-    @Override
     public void close() throws JMSException {
         getConnection().close();
-        LOGGER.info("Closed JMS connection {}", connectionName);
+        LOGGER.info("Closed JMS connection {}", connectionDefinition.getName());
     }
 
     @Override
     public void start() throws JMSException {
         getConnection().start();
         needToStart.set(true);
-        LOGGER.info("Started JMS connection {}", connectionName);
+        LOGGER.info("Started JMS connection {}", connectionDefinition.getName());
     }
 
     @Override
     public void stop() throws JMSException {
         getConnection().stop();
         needToStart.set(false);
-        LOGGER.info("Stopped JMS connection {}", connectionName);
+        LOGGER.info("Stopped JMS connection {}", connectionDefinition.getName());
     }
 
     @Override
@@ -252,12 +219,22 @@ class ManagedConnection implements Connection, ExceptionListener {
     }
 
     @Override
-    public void setExceptionListener(ExceptionListener listener) throws JMSException {
-        this.exceptionListener = listener;
+    public void setExceptionListener(ExceptionListener exceptionListener) throws JMSException {
+        this.exceptionListener = exceptionListener;
     }
 
     @Override
     public ExceptionListener getExceptionListener() throws JMSException {
-        return getConnection().getExceptionListener();
+        return exceptionListener;
+    }
+
+    @Override
+    public void setClientID(String clientID) throws JMSException {
+        throw new IllegalStateException("Client id cannot be changed on managed connections");
+    }
+
+    @Override
+    public String getClientID() throws JMSException {
+        throw new IllegalStateException("Client id cannot be retrieved on managed connections");
     }
 }

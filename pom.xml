@@ -64,6 +64,7 @@
                     <groupId>org.codehaus.mojo</groupId>
                     <artifactId>license-maven-plugin</artifactId>
                     <configuration>
+                    	<failIfWarning>false</failIfWarning>
                         <includedLicenses>
                             <includedLicense>Apache 2</includedLicense>
                             <includedLicense>BSD</includedLicense>

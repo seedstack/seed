@@ -20,19 +20,15 @@ import java.util.Set;
 class WSJmsModule extends PrivateModule {
     private final Set<WSJmsMessageListener> wsJmsMessageListeners;
     private final LoadingCache<SoapJmsUri, Connection> connectionCache;
-    private final WSJmsPlugin wsJmsPlugin;
 
-    WSJmsModule(WSJmsPlugin wsJmsPlugin, Set<WSJmsMessageListener> wsJmsMessageListeners, LoadingCache<SoapJmsUri, Connection> connectionCache) {
-        this.wsJmsPlugin = wsJmsPlugin;
+    WSJmsModule(Set<WSJmsMessageListener> wsJmsMessageListeners, LoadingCache<SoapJmsUri, Connection> connectionCache) {
         this.wsJmsMessageListeners = wsJmsMessageListeners;
         this.connectionCache = connectionCache;
     }
 
     @Override
     protected void configure() {
-        bind(WSJmsPlugin.class).toInstance(wsJmsPlugin);
-
-        install(new FactoryModuleBuilder().build(WSJmsFactory.class));
+        install(new FactoryModuleBuilder().build(WSJmsTransportFactory.class));
 
         bind(new TypeLiteral<LoadingCache<SoapJmsUri, Connection>>() {
         }).toInstance(connectionCache);

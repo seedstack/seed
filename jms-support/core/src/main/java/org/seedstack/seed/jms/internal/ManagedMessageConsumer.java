@@ -11,37 +11,46 @@ package org.seedstack.seed.jms.internal;
 
 import org.seedstack.seed.core.api.SeedException;
 import org.seedstack.seed.core.utils.SeedCheckUtils;
+import org.seedstack.seed.jms.spi.JmsErrorCodes;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
-import javax.jms.*;
+import javax.jms.Destination;
+import javax.jms.JMSException;
+import javax.jms.Message;
+import javax.jms.MessageConsumer;
+import javax.jms.MessageListener;
+import javax.jms.Session;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
  * This session is a facade of a jms messageConsumer. It allows the reconnection mechanism.
  *
- * @author Pierre Thirouin <pierre.thirouin@ext.mpsa.com>
+ * @author pierre.thirouin@ext.mpsa.com
  *         06/11/2014
  */
 class ManagedMessageConsumer implements MessageConsumer {
+    private static final Logger logger = LoggerFactory.getLogger(ManagedMessageConsumer.class);
 
     private MessageListener messageListener;
-
     private MessageConsumer messageConsumer;
-    private Destination destination;
-    private String messageSelector;
-    private boolean noLocal;
 
-    private ReentrantReadWriteLock messageConsumerLock = new ReentrantReadWriteLock();
+    private final Destination destination;
+    private final String messageSelector;
+    private final boolean noLocal;
+    private final boolean polling;
+    protected final ReentrantReadWriteLock messageConsumerLock = new ReentrantReadWriteLock();
 
-    ManagedMessageConsumer(MessageConsumer messageConsumer, Destination destination, @Nullable String messageSelector, boolean noLocal) {
+    ManagedMessageConsumer(MessageConsumer messageConsumer, Destination destination, @Nullable String messageSelector, boolean noLocal, boolean polling) {
         SeedCheckUtils.checkIfNotNull(messageConsumer);
         SeedCheckUtils.checkIfNotNull(destination);
 
         this.messageConsumer = messageConsumer;
-
         this.messageSelector = messageSelector;
         this.destination = destination;
         this.noLocal = noLocal;
+        this.polling = polling;
     }
 
     void refresh(Session session) {
@@ -57,11 +66,11 @@ class ManagedMessageConsumer implements MessageConsumer {
             }
 
             // Refresh the message listener if it exists
-            if (messageListener != null) {
+            if (messageListener != null && !this.polling) {
                 messageConsumer.setMessageListener(messageListener);
             }
         } catch (JMSException e) {
-            SeedException.wrap(e, SeedJmsErrorCodes.INITIALIZATION_EXCEPTION);
+            SeedException.wrap(e, JmsErrorCodes.INITIALIZATION_EXCEPTION);
         } finally {
             messageConsumerLock.writeLock().unlock();
         }
@@ -70,6 +79,7 @@ class ManagedMessageConsumer implements MessageConsumer {
     void reset() {
         messageConsumerLock.writeLock().lock();
         try {
+            logger.trace("Resetting message consumer");
             messageConsumer = null;
         } finally {
             messageConsumerLock.writeLock().unlock();
@@ -80,7 +90,7 @@ class ManagedMessageConsumer implements MessageConsumer {
         messageConsumerLock.readLock().lock();
         try {
             if (messageConsumer == null) {
-                throw new JMSException("The connection is closed");
+                throw new JMSException("Attempt to use a message consumer during connection refresh");
             }
             return messageConsumer;
         } finally {
@@ -115,7 +125,9 @@ class ManagedMessageConsumer implements MessageConsumer {
 
     @Override
     public void setMessageListener(MessageListener listener) throws JMSException {
-        getMessageConsumer().setMessageListener(listener);
+        if (!polling) {
+            getMessageConsumer().setMessageListener(listener);
+        }
         messageListener = listener;
     }
 
