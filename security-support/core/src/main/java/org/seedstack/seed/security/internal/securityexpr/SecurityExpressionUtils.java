@@ -9,7 +9,7 @@
  */
 package org.seedstack.seed.security.internal.securityexpr;
 
-import org.seedstack.seed.security.api.Domain;
+import org.seedstack.seed.security.api.SimpleScope;
 import org.seedstack.seed.security.api.Scope;
 import org.seedstack.seed.security.api.SecuritySupport;
 
@@ -64,14 +64,14 @@ public final class SecurityExpressionUtils {
     }
 
     /**
-     * Checks the current user role in the given domains.
+     * Checks the current user role in the given scopes.
      *
-     * @param role    the role to check
-     * @param domains the list of domains
-     * @return true if the user has the role for all the given domains.
+     * @param role the role to check
+     * @param simpleScopes the list of simple scopes to verify the role on (optional).
+     * @return true if the user has the role for all the given simple scopes.
      */
-    public static boolean hasRole(String role, String... domains) {
-        return securitySupport.hasRole(role, getScopes(domains));
+    public static boolean hasRole(String role, String... simpleScopes) {
+        return securitySupport.hasRole(role, getSimpleScopes(simpleScopes));
     }
 
     /**
@@ -108,17 +108,17 @@ public final class SecurityExpressionUtils {
      * Checks the current user permission.
      *
      * @param permission the permission to check
-     * @param domains the list of domains for this permission
+     * @param simpleScopes the list of simple scopes for this permission
      * @return true if user has the given permission
      */
-    public static boolean hasPermission(String permission, String... domains) {
-        return securitySupport.isPermitted(permission, getScopes(domains));
+    public static boolean hasPermission(String permission, String... simpleScopes) {
+        return securitySupport.isPermitted(permission, getSimpleScopes(simpleScopes));
     }
 
-    private static Scope[] getScopes(String[] domains) {
-        Scope[] scopes = new Scope[domains.length];
+    private static Scope[] getSimpleScopes(String[] scopeValues) {
+        Scope[] scopes = new Scope[scopeValues.length];
         for (int i = 0; i < scopes.length; i++) {
-            scopes[i] = new Domain(domains[i]);
+            scopes[i] = new SimpleScope(scopeValues[i]);
         }
         return scopes;
     }

@@ -11,6 +11,7 @@ package org.seedstack.seed.security.internal;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import javax.inject.Inject;
@@ -26,20 +27,18 @@ import com.google.inject.Provider;
 import com.google.inject.TypeLiteral;
 import com.google.inject.multibindings.Multibinder;
 import com.google.inject.name.Names;
-import org.seedstack.seed.security.api.RoleMapping;
-import org.seedstack.seed.security.api.RolePermissionResolver;
-import org.seedstack.seed.security.api.SecuritySupport;
-import org.seedstack.seed.security.api.PrincipalCustomizer;
+import org.seedstack.seed.security.api.*;
 import org.seedstack.seed.security.internal.configure.RealmConfiguration;
 import org.seedstack.seed.security.internal.configure.SeedSecurityConfigurer;
 import org.seedstack.seed.security.internal.realms.ShiroRealmAdapter;
 
 class SeedSecurityCoreModule extends PrivateModule {
+    private final Map<String, Class<? extends Scope>> scopeClasses;
+    private final SeedSecurityConfigurer securityConfigurer;
 
-    private SeedSecurityConfigurer securityConfigurer;
-
-    SeedSecurityCoreModule(SeedSecurityConfigurer securityConfigurer) {
+    SeedSecurityCoreModule(SeedSecurityConfigurer securityConfigurer, Map<String, Class<? extends Scope>> scopeClasses) {
         this.securityConfigurer = securityConfigurer;
+        this.scopeClasses = scopeClasses;
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
@@ -53,8 +52,8 @@ class SeedSecurityCoreModule extends PrivateModule {
             //if the constructor does not exist, we have a problem with our realm
             throw new RuntimeException(e);
         }
+        bind(new TypeLiteral<Map<String, Class<? extends Scope>>>() {}).toInstance(scopeClasses);
         bind(SecuritySupport.class).to(ShiroSecuritySupport.class);
-        bind(org.seedstack.seed.security.api.RealmProvider.class).to(ShiroSecuritySupport.class);
         bindRealms();
         Multibinder<PrincipalCustomizer> principalCustomizers = Multibinder.newSetBinder(binder(), PrincipalCustomizer.class);
         for (Class<?> customizerClass : securityConfigurer.getPrincipalCustomizers()) {
@@ -64,7 +63,6 @@ class SeedSecurityCoreModule extends PrivateModule {
         expose(new TypeLiteral<Set<Realm>>() {});
         expose(new TypeLiteral<Set<PrincipalCustomizer>>() {});
         expose(SecuritySupport.class);
-        expose(org.seedstack.seed.security.api.RealmProvider.class);
     }
 
     private void bindRealms() {

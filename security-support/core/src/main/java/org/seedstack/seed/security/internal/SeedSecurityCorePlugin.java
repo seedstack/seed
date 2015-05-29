@@ -17,15 +17,15 @@ import com.google.inject.spi.Element;
 import com.google.inject.spi.Elements;
 import com.google.inject.spi.PrivateElements;
 import com.google.inject.util.Modules;
+import org.seedstack.seed.core.api.SeedException;
 import org.seedstack.seed.core.internal.application.ApplicationPlugin;
 import org.seedstack.seed.core.utils.SeedReflectionUtils;
-import org.seedstack.seed.security.api.PrincipalCustomizer;
-import org.seedstack.seed.security.api.Realm;
-import org.seedstack.seed.security.api.RoleMapping;
-import org.seedstack.seed.security.api.RolePermissionResolver;
+import org.seedstack.seed.security.api.*;
 import org.seedstack.seed.security.internal.configure.SeedSecurityConfigurer;
 import org.seedstack.seed.security.internal.data.DataSecurityModule;
 import org.seedstack.seed.security.internal.securityexpr.SecurityExpressionModule;
+import org.seedstack.seed.security.spi.SecurityErrorCodes;
+import org.seedstack.seed.security.spi.SecurityScope;
 import org.seedstack.seed.security.spi.SecurityConcern;
 import org.seedstack.seed.security.spi.data.DataObfuscationHandler;
 import org.seedstack.seed.security.spi.data.DataSecurityHandler;
@@ -42,12 +42,7 @@ import org.kametic.specifications.Specification;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.ServiceLoader;
+import java.util.*;
 
 /**
  * This plugin provides core security infrastructure, based on Apache Shiro
@@ -65,11 +60,13 @@ public class SeedSecurityCorePlugin extends AbstractPlugin {
 
     private Map<Class<?>, Collection<Class<?>>> scannedClasses;
 
-    private Collection<SeedSecurityPlugin> securityPlugins = new ArrayList<SeedSecurityPlugin>();
-    
+    private final Collection<SeedSecurityPlugin> securityPlugins = new ArrayList<SeedSecurityPlugin>();
+    private final Map<String, Class<? extends Scope>> scopeClasses = new HashMap<String, Class<? extends Scope>>();
+
+    private final Specification<Class<?>> specificationScopes = classImplements(Scope.class);
     private final Specification<Class<?>> specificationDataSecurityHandlers = classImplements(DataSecurityHandler.class);
     private final Specification<Class<?>> specificationDataObfuscationHandlers = classImplements(DataObfuscationHandler.class);
-    
+
     private Collection<Class<? extends DataSecurityHandler<?>>> dataSecurityHandlers;
     private Collection<Class<?>> principalCustomizerClasses;
 
@@ -106,6 +103,28 @@ public class SeedSecurityCorePlugin extends AbstractPlugin {
         Map<Specification, Collection<Class<?>>> scannedTypesBySpecification = initContext.scannedTypesBySpecification();
         dataSecurityHandlers =  (Collection) scannedTypesBySpecification.get(specificationDataSecurityHandlers);
 
+        Collection<Class<?>> scopeCandidateClasses = scannedTypesBySpecification.get(specificationScopes);
+        if (scopeCandidateClasses != null) {
+            for (Class<?> scopeCandidateClass : scopeCandidateClasses) {
+                if (Scope.class.isAssignableFrom(scopeCandidateClass)) {
+                    SecurityScope securityScope = scopeCandidateClass.getAnnotation(SecurityScope.class);
+                    String scopeName;
+
+                    if (securityScope != null) {
+                        scopeName = securityScope.value();
+                    } else {
+                        scopeName = scopeCandidateClass.getSimpleName();
+                    }
+
+                    if (scopeClasses.containsKey(scopeName)) {
+                        throw SeedException.createNew(SecurityErrorCodes.DUPLICATE_SCOPE_NAME).put("scopeName", scopeName);
+                    }
+
+                    scopeClasses.put(scopeName, (Class<? extends Scope>) scopeCandidateClass);
+                }
+            }
+        }
+
         for (SeedSecurityPlugin securityPlugin : securityPlugins) {
             LOGGER.debug("Loading security plugin {}", securityPlugin.getClass().getCanonicalName());
             securityPlugin.init(initContext);
@@ -135,7 +154,7 @@ public class SeedSecurityCorePlugin extends AbstractPlugin {
     private Collection<Module> getCoreModules() {
         SeedSecurityConfigurer configurer = new SeedSecurityConfigurer(securityConfiguration, scannedClasses, principalCustomizerClasses);
         Collection<Module> coreModules = new ArrayList<Module>();
-        coreModules.add(new SeedSecurityCoreModule(configurer));
+        coreModules.add(new SeedSecurityCoreModule(configurer, scopeClasses));
         coreModules.add(new SeedSecurityCoreAopModule());
         coreModules.add(new DataSecurityModule(dataSecurityHandlers));
         coreModules.add(new SecurityExpressionModule());
@@ -149,6 +168,7 @@ public class SeedSecurityCorePlugin extends AbstractPlugin {
                 .descendentTypeOf(RolePermissionResolver.class)
                 .specification(specificationDataSecurityHandlers)
                 .specification(specificationDataObfuscationHandlers)
+                .specification(specificationScopes)
                 .subtypeOf(PrincipalCustomizer.class);
         for (SeedSecurityPlugin securityPlugin : securityPlugins) {
             securityPlugin.classpathScanRequests(builder);

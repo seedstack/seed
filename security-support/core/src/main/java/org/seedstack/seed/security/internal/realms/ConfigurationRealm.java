@@ -9,22 +9,13 @@
  */
 package org.seedstack.seed.security.internal.realms;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
+import java.util.*;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.apache.commons.configuration.Configuration;
-import org.seedstack.seed.security.api.AuthenticationInfo;
-import org.seedstack.seed.security.api.AuthenticationToken;
-import org.seedstack.seed.security.api.Realm;
-import org.seedstack.seed.security.api.RoleMapping;
-import org.seedstack.seed.security.api.RolePermissionResolver;
-import org.seedstack.seed.security.api.UsernamePasswordToken;
+import org.seedstack.seed.security.api.*;
 import org.seedstack.seed.security.api.exceptions.AuthenticationException;
 import org.seedstack.seed.security.api.exceptions.IncorrectCredentialsException;
 import org.seedstack.seed.security.api.exceptions.UnknownAccountException;

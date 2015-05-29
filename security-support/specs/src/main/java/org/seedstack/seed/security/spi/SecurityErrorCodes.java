@@ -7,7 +7,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-package org.seedstack.seed.security.internal.errors;
+package org.seedstack.seed.security.spi;
 
 import org.seedstack.seed.core.api.ErrorCode;
 
@@ -17,9 +17,10 @@ import org.seedstack.seed.core.api.ErrorCode;
  * @author epo.jemba@ext.mpsa.com
  *
  */
-public enum SecurityErrorCode implements ErrorCode {
+public enum SecurityErrorCodes implements ErrorCode {
 	
-	UNEXPECTED_ERROR
+	UNEXPECTED_ERROR,
+	DUPLICATE_SCOPE_NAME, UNABLE_TO_CREATE_SCOPE
 	
 	
 

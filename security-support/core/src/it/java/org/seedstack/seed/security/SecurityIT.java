@@ -19,7 +19,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.seedstack.seed.core.api.Install;
 import org.seedstack.seed.it.SeedITRunner;
-import org.seedstack.seed.security.api.Domain;
+import org.seedstack.seed.security.api.SimpleScope;
 import org.seedstack.seed.security.api.SecuritySupport;
 import org.seedstack.seed.security.api.WithUser;
 import org.seedstack.seed.security.api.exceptions.AuthorizationException;
@@ -73,13 +73,13 @@ public class SecurityIT {
     public void ThePoltergeist_should_be_ghost_on_MU() {
         assertThat(SecurityUtils.getSubject().hasRole("ghost")).isTrue();
         assertThat(securitySupport.hasRole("ghost")).isTrue();
-        assertThat(securitySupport.hasRole("ghost", new Domain("MU"))).isTrue();
-        assertThat(securitySupport.hasRole("ghost", new Domain("SX"))).isTrue();
+        assertThat(securitySupport.hasRole("ghost", new SimpleScope("MU"))).isTrue();
+        assertThat(securitySupport.hasRole("ghost", new SimpleScope("SX"))).isTrue();
         assertThat(securitySupport.isPermitted("site:haunt")).isTrue();
-        assertThat(securitySupport.isPermitted("site:haunt", new Domain("MU"))).isTrue();
-        assertThat(securitySupport.isPermitted("site:haunt", new Domain("SX"))).isTrue();
-        assertThat(securitySupport.getDomains().contains(new Domain("MU"))).isTrue();
-        assertThat(securitySupport.getDomains().contains(new Domain("SX"))).isTrue();
+        assertThat(securitySupport.isPermitted("site:haunt", new SimpleScope("MU"))).isTrue();
+        assertThat(securitySupport.isPermitted("site:haunt", new SimpleScope("SX"))).isTrue();
+        assertThat(securitySupport.getSimpleScopes().contains(new SimpleScope("MU"))).isTrue();
+        assertThat(securitySupport.getSimpleScopes().contains(new SimpleScope("SX"))).isTrue();
     }
 
     @Test

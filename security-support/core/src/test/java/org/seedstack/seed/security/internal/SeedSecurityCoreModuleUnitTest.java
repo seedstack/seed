@@ -15,6 +15,8 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.lang.annotation.Annotation;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -29,6 +31,7 @@ import com.google.inject.TypeLiteral;
 import com.google.inject.binder.AnnotatedBindingBuilder;
 import com.google.inject.binder.AnnotatedElementBuilder;
 import com.google.inject.binder.ScopedBindingBuilder;
+import org.seedstack.seed.security.api.Scope;
 import org.seedstack.seed.security.internal.configure.RealmConfiguration;
 import org.seedstack.seed.security.internal.configure.SeedSecurityConfigurer;
 import org.seedstack.seed.security.internal.realms.ConfigurationRealm;
@@ -56,7 +59,7 @@ public class SeedSecurityCoreModuleUnitTest {
         when(binder.bind(any(TypeLiteral.class))).thenReturn(ab);
         when(binder.skipSources(any(Class.class), any(Class.class))).thenReturn(binder);
         securityConfigurer = mock(SeedSecurityConfigurer.class);
-        underTest = new SeedSecurityCoreModule(securityConfigurer);
+        underTest = new SeedSecurityCoreModule(securityConfigurer, new HashMap<String, Class<? extends Scope>>());
         Whitebox.setInternalState(underTest, "binder", binder);
     }
 

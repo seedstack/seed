@@ -210,18 +210,19 @@ public interface SecuritySupport {
     void checkRoles(String... roleIdentifiers);
 
     /**
-     * Gives the roles given to the user. You can find all the domains of a Role by calling Role.getScopesByType(Domain.class)
+     * Gives the roles given to the user. You can find all the scopes of a Role by calling role.getScopes() or the scopes
+     * of a specific type (like SimpleScope) by calling role.getScopesByType(SimpleScope.class)
      * 
      * @return a Set of all the roles the user has. Not null, empty if none.
      */
     Set<Role> getRoles();
 
     /**
-     * Gives all the domains of the user found in all its roles.
+     * Gives all the simple scopes of the user found in all its roles.
      * 
-     * @return a Set of all the domains.
+     * @return a Set of all the scopes.
      */
-    Set<Domain> getDomains();
+    Set<SimpleScope> getSimpleScopes();
 
     /**
      * Logs out the connected user and invalidates and/or removes any associated entities, such as a Session and authorization data. After this method

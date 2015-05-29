@@ -17,6 +17,7 @@ import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Set;
 
 import org.apache.commons.configuration.Configuration;
@@ -30,6 +31,7 @@ import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.Key;
 import com.google.inject.TypeLiteral;
+import org.seedstack.seed.security.api.Scope;
 import org.seedstack.seed.security.internal.authorization.ConfigurationRoleMapping;
 import org.seedstack.seed.security.internal.authorization.ConfigurationRolePermissionResolver;
 import org.seedstack.seed.security.internal.configure.RealmConfiguration;
@@ -46,7 +48,7 @@ public class SeedSecurityCoreModuleIntegrationTest {
 	@Before
 	public void before(){
 		securityConfigurer = mock(SeedSecurityConfigurer.class);
-		underTest = new SeedSecurityCoreModule(securityConfigurer);
+		underTest = new SeedSecurityCoreModule(securityConfigurer, new HashMap<String, Class<? extends Scope>>());
 	}
 	
 	@Test

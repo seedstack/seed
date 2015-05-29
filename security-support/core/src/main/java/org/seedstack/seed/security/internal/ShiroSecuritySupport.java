@@ -22,15 +22,11 @@ import javax.inject.Inject;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.AuthorizationInfo;
-import org.apache.shiro.mgt.RealmSecurityManager;
 import org.apache.shiro.realm.Realm;
 import org.apache.shiro.session.Session;
 import org.apache.shiro.subject.PrincipalCollection;
 import org.apache.shiro.subject.Subject;
-import org.seedstack.seed.security.api.Domain;
-import org.seedstack.seed.security.api.RealmProvider;
-import org.seedstack.seed.security.api.Role;
-import org.seedstack.seed.security.api.Scope;
+import org.seedstack.seed.security.api.*;
 import org.seedstack.seed.security.api.exceptions.AuthorizationException;
 import org.seedstack.seed.security.api.principals.PrincipalProvider;
 import org.seedstack.seed.security.api.principals.Principals;
@@ -44,7 +40,7 @@ import org.seedstack.seed.security.internal.realms.ShiroRealmAdapter;
  * 
  * @author yves.dautremay@mpsa.com
  */
-public class ShiroSecuritySupport implements RealmProvider {
+public class ShiroSecuritySupport implements SecuritySupport {
 
     @Inject
     private Set<Realm> realms;
@@ -216,23 +212,6 @@ public class ShiroSecuritySupport implements RealmProvider {
         SecurityUtils.getSubject().logout();
     }
 
-    @Override
-    @Deprecated
-    public Set<org.seedstack.seed.security.api.Realm> provideRealms() {
-        Set<org.seedstack.seed.security.api.Realm> result = new HashSet<org.seedstack.seed.security.api.Realm>();
-        org.apache.shiro.mgt.SecurityManager securityManager = SecurityUtils.getSecurityManager();
-        if (!(securityManager instanceof RealmSecurityManager)) {
-            return Collections.emptySet();
-        }
-        Collection<Realm> shiroRealms = ((RealmSecurityManager) securityManager).getRealms();
-        for (Realm shiroRealm : shiroRealms) {
-            if (shiroRealm instanceof ShiroRealmAdapter) {
-                result.add(((ShiroRealmAdapter) shiroRealm).getRealm());
-            }
-        }
-        return result;
-    }
-
     private SeedAuthorizationInfo getAuthorizationInfo(Realm realm) {
         SeedAuthorizationInfo authzInfo = null;
         if (realm instanceof ShiroRealmAdapter) {
@@ -257,12 +236,12 @@ public class ShiroSecuritySupport implements RealmProvider {
     }
 
     @Override
-    public Set<Domain> getDomains() {
-        Set<Domain> domains = new HashSet<Domain>();
+    public Set<SimpleScope> getSimpleScopes() {
+        Set<SimpleScope> simpleScopes = new HashSet<SimpleScope>();
         for (Role role : getRoles()) {
-            domains.addAll(role.getScopesByType(Domain.class));
+            simpleScopes.addAll(role.getScopesByType(SimpleScope.class));
         }
-        return domains;
+        return simpleScopes;
     }
 
     @Override
