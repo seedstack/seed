@@ -9,12 +9,10 @@
  */
 package org.seedstack.seed.core.internal.application;
 
-import org.seedstack.seed.core.api.Application;
-import org.seedstack.seed.core.spi.diagnostic.DiagnosticDomain;
-import org.seedstack.seed.core.spi.diagnostic.DiagnosticInfoCollector;
+import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.ConfigurationConverter;
+import org.seedstack.seed.core.spi.diagnostic.DiagnosticInfoCollector;
 
-import javax.inject.Inject;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -23,17 +21,66 @@ import java.util.Map;
  *
  * @author adrien.lauer@mpsa.com
  */
-@DiagnosticDomain("org.seedstack.seed.core.application")
 class ApplicationDiagnosticCollector implements DiagnosticInfoCollector {
-    @Inject
-    Application application;
+    private Configuration configuration;
+    private String applicationId;
+    private String applicationName;
+    private String applicationVersion;
+    private String activeProfiles;
+    private String storageLocation;
 
     @Override
     public Map<String, Object> collect() {
         Map<String, Object> result = new HashMap<String, Object>();
 
-        result.put("configuration", ConfigurationConverter.getMap(application.getConfiguration()));
+        if (applicationId != null) {
+            result.put("id", applicationId);
+        }
+
+        if (applicationName != null) {
+            result.put("name", applicationName);
+        }
+
+        if (applicationVersion != null) {
+            result.put("version", applicationVersion);
+        }
+
+        if (activeProfiles != null) {
+            result.put("active-profiles", activeProfiles);
+        }
+
+        if (storageLocation != null) {
+            result.put("storage-location", storageLocation);
+        }
+
+        if (configuration != null) {
+            result.put("configuration", ConfigurationConverter.getMap(configuration));
+        }
 
         return result;
+    }
+
+    public void setConfiguration(Configuration configuration) {
+        this.configuration = configuration;
+    }
+
+    public void setApplicationName(String applicationName) {
+        this.applicationName = applicationName;
+    }
+
+    public void setApplicationVersion(String applicationVersion) {
+        this.applicationVersion = applicationVersion;
+    }
+
+    public void setActiveProfiles(String activeProfiles) {
+        this.activeProfiles = activeProfiles;
+    }
+
+    public void setStorageLocation(String storageLocation) {
+        this.storageLocation = storageLocation;
+    }
+
+    public void setApplicationId(String applicationId) {
+        this.applicationId = applicationId;
     }
 }

@@ -12,13 +12,13 @@ package org.seedstack.seed.core;
 import com.google.inject.AbstractModule;
 import com.google.inject.Injector;
 import com.google.inject.Module;
-import org.seedstack.seed.core.api.DiagnosticManager;
-import org.seedstack.seed.core.api.ErrorCode;
-import org.seedstack.seed.core.api.SeedException;
 import io.nuun.kernel.api.Kernel;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.seedstack.seed.core.api.DiagnosticManager;
+import org.seedstack.seed.core.api.ErrorCode;
+import org.seedstack.seed.core.api.SeedException;
 
 import javax.inject.Inject;
 import java.util.List;
@@ -101,7 +101,24 @@ public class DiagnosticManagerIT {
         Map<String, Object> applicationInfo = (Map<String, Object>) diagnosticInfo.get("org.seedstack.seed.core.application");
 
         assertThat(applicationInfo).isNotNull();
+        assertThat(applicationInfo.get("id")).isNotNull();
+        assertThat(applicationInfo.get("name")).isNotNull();
+        assertThat(applicationInfo.get("version")).isNotNull();
+        assertThat(applicationInfo.get("storage-location")).isNotNull();
+        assertThat(applicationInfo.get("active-profiles")).isNotNull();
         assertThat(applicationInfo.get("configuration")).isNotNull();
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void diagnostic_information_from_scanned_collectors_is_present() {
+        Map<String, Object> diagnosticInfo = holder.diagnosticManager.getDiagnosticInfo(null);
+
+        assertThat(diagnosticInfo).isNotNull();
+        Map<String, Object> testInfo = (Map<String, Object>) diagnosticInfo.get("test");
+
+        assertThat(testInfo).isNotNull();
+        assertThat(testInfo.get("service")).isNotNull();
     }
 
     @BeforeClass

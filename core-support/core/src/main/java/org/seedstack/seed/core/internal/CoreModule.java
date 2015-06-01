@@ -29,9 +29,9 @@ import java.util.Map;
 class CoreModule extends AbstractModule {
     private final Collection<Module> subModules;
     private final DiagnosticManager diagnosticManager;
-    private final Map<String, Class<? extends DiagnosticInfoCollector>> diagnosticInfoCollectors;
+    private final Map<String, DiagnosticInfoCollector> diagnosticInfoCollectors;
 
-    CoreModule(Collection<Module> subModules, DiagnosticManager diagnosticManager, Map<String, Class<? extends DiagnosticInfoCollector>> diagnosticInfoCollectors) {
+    CoreModule(Collection<Module> subModules, DiagnosticManager diagnosticManager, Map<String, DiagnosticInfoCollector> diagnosticInfoCollectors) {
         this.subModules = subModules;
         this.diagnosticManager = diagnosticManager;
         this.diagnosticInfoCollectors = diagnosticInfoCollectors;
@@ -43,8 +43,8 @@ class CoreModule extends AbstractModule {
             @Override
             protected void configure() {
                 MapBinder<String, DiagnosticInfoCollector> diagnosticInfoCollectorMapBinder = MapBinder.newMapBinder(binder(), String.class, DiagnosticInfoCollector.class);
-                for (Map.Entry<String, Class<? extends DiagnosticInfoCollector>> diagnosticInfoCollectorEntry : diagnosticInfoCollectors.entrySet()) {
-                    diagnosticInfoCollectorMapBinder.addBinding(diagnosticInfoCollectorEntry.getKey()).to(diagnosticInfoCollectorEntry.getValue());
+                for (Map.Entry<String, DiagnosticInfoCollector> diagnosticInfoCollectorEntry : diagnosticInfoCollectors.entrySet()) {
+                    diagnosticInfoCollectorMapBinder.addBinding(diagnosticInfoCollectorEntry.getKey()).toInstance(diagnosticInfoCollectorEntry.getValue());
                 }
 
                 bind(DiagnosticManager.class).toInstance(diagnosticManager);

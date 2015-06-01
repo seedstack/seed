@@ -10,8 +10,6 @@
 package org.seedstack.seed.web.internal;
 
 import com.google.common.collect.Lists;
-import com.google.inject.Inject;
-import org.seedstack.seed.core.spi.diagnostic.DiagnosticDomain;
 import org.seedstack.seed.core.spi.diagnostic.DiagnosticInfoCollector;
 
 import javax.servlet.ServletContext;
@@ -20,21 +18,21 @@ import java.util.Map;
 
 import static org.seedstack.seed.core.utils.SeedReflectionUtils.invokeMethod;
 
-@DiagnosticDomain(WebPlugin.WEB_PLUGIN_PREFIX)
 class WebDiagnosticCollector implements DiagnosticInfoCollector {
-    @Inject(optional = true)
-    private ServletContext servletContext;
+    private final ServletContext servletContext;
+
+    WebDiagnosticCollector(ServletContext servletContext) {
+        this.servletContext = servletContext;
+    }
 
     @Override
     public Map<String, Object> collect() {
         Map<String, Object> result = new HashMap<String, Object>();
 
-        if (servletContext != null) {
-            result.put("version", String.format("%d.%d", servletContext.getMajorVersion(), servletContext.getMinorVersion()));
-            result.put("effective-version", String.format("%d.%d", invokeMethod(servletContext, "getEffectiveMajorVersion"), invokeMethod(servletContext, "getEffectiveMinorVersion")));
-            result.put("servlets", buildServletList());
-            result.put("filters", buildFilterList());
-        }
+        result.put("version", String.format("%d.%d", servletContext.getMajorVersion(), servletContext.getMinorVersion()));
+        result.put("effective-version", String.format("%d.%d", invokeMethod(servletContext, "getEffectiveMajorVersion"), invokeMethod(servletContext, "getEffectiveMinorVersion")));
+        result.put("servlets", buildServletList());
+        result.put("filters", buildFilterList());
 
         return result;
     }

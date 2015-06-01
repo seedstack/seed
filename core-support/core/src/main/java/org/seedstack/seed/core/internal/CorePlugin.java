@@ -30,7 +30,12 @@ import org.slf4j.LoggerFactory;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.net.URL;
-import java.util.*;
+import java.util.Collection;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Core plugin that setup common SEED package roots and scans modules to install via the
@@ -85,7 +90,7 @@ public class CorePlugin extends AbstractPlugin {
 
     private final Configuration bootstrapConfiguration;
     private final Set<Class<? extends Module>> seedModules = new HashSet<Class<? extends Module>>();
-    private final Map<String, Class<? extends DiagnosticInfoCollector>> diagnosticInfoCollectors = new HashMap<String, Class<? extends DiagnosticInfoCollector>>();
+    private final Map<String, DiagnosticInfoCollector> diagnosticInfoCollectors = new HashMap<String, DiagnosticInfoCollector>();
 
     /**
      * @return the diagnostic manager singleton.
@@ -118,8 +123,12 @@ public class CorePlugin extends AbstractPlugin {
             if (DiagnosticInfoCollector.class.isAssignableFrom(candidate)) {
                 DiagnosticDomain diagnosticDomain = candidate.getAnnotation(DiagnosticDomain.class);
                 if (diagnosticDomain != null) {
-                    diagnosticInfoCollectors.put(diagnosticDomain.value(), (Class<? extends DiagnosticInfoCollector>) candidate);
-                    LOGGER.trace("Detected diagnostic collector {} for diagnostic domain {}", candidate.getCanonicalName(), diagnosticDomain.value());
+                    try {
+                        diagnosticInfoCollectors.put(diagnosticDomain.value(), (DiagnosticInfoCollector) candidate.newInstance());
+                        LOGGER.trace("Detected diagnostic collector {} for diagnostic domain {}", candidate.getCanonicalName(), diagnosticDomain.value());
+                    } catch (Exception e) {
+                        throw SeedException.wrap(e, CoreErrorCode.UNABLE_TO_CREATE_DIAGNOSTIC_COLLECTOR).put("diagnosticCollectorClass", candidate.getClass().getCanonicalName());
+                    }
                 }
             }
         }
@@ -186,6 +195,16 @@ public class CorePlugin extends AbstractPlugin {
      */
     public Configuration getBootstrapConfiguration() {
         return bootstrapConfiguration;
+    }
+
+    /**
+     * This method registers an existing {@link DiagnosticInfoCollector} instance.
+     *
+     * @param diagnosticDomain        the diagnostic domain name the collector is related to.
+     * @param diagnosticInfoCollector the diagnostic collector instance.
+     */
+    public void registerDiagnosticCollector(String diagnosticDomain, DiagnosticInfoCollector diagnosticInfoCollector) {
+        diagnosticInfoCollectors.put(diagnosticDomain, diagnosticInfoCollector);
     }
 
     @Override
