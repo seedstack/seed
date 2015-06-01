@@ -21,7 +21,7 @@ nobody = foreverAlone
 [org.seedstack.seed.security.roles]
 padawan = SEED.PADAWAN, FND.ETUDES
 jedi = SEED.JEDI
-ghost = SEED.$DOMAIN$.GHOST
+ghost = SEED.{scope}.GHOST, ETUDES
 nothing = *
 
 [org.seedstack.seed.security.permissions]

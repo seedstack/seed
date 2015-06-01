@@ -12,7 +12,7 @@ package org.seedstack.seed.security.internal.securityexpr;
 import org.seedstack.seed.core.api.SeedException;
 import org.seedstack.seed.el.api.ELContextBuilder;
 import org.seedstack.seed.el.api.ELService;
-import org.seedstack.seed.security.internal.errors.SecurityErrorCode;
+import org.seedstack.seed.security.spi.SecurityErrorCodes;
 
 import javax.el.ELContext;
 import javax.inject.Inject;
@@ -88,7 +88,7 @@ public class SecurityExpressionInterpreter {
             availableMethods.put("hasAllPermissions", SecurityExpressionUtils.class.getDeclaredMethod("hasAllPermissions", String[].class));
             availableMethods.put("hasPermission", SecurityExpressionUtils.class.getDeclaredMethod("hasPermission", String.class, String[].class));
         } catch (NoSuchMethodException e) {
-            throw SeedException.wrap(e, SecurityErrorCode.UNEXPECTED_ERROR);
+            throw SeedException.wrap(e, SecurityErrorCodes.UNEXPECTED_ERROR);
         }
         return availableMethods;
     }

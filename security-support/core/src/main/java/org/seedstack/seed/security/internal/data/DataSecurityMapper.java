@@ -11,7 +11,7 @@ package org.seedstack.seed.security.internal.data;
 
 import com.google.inject.Injector;
 import org.seedstack.seed.core.api.SeedException;
-import org.seedstack.seed.security.internal.errors.SecurityErrorCode;
+import org.seedstack.seed.security.spi.SecurityErrorCodes;
 import org.seedstack.seed.security.internal.securityexpr.SecurityExpressionInterpreter;
 import org.seedstack.seed.security.spi.data.DataObfuscationHandler;
 import org.seedstack.seed.security.spi.data.DataSecurityHandler;
@@ -87,7 +87,7 @@ class DataSecurityMapper implements Mapper<Void> {
 	public Void map(Node node) {
 		
 		if (securityObject == null) {
-			throw SeedException.createNew( SecurityErrorCode.UNEXPECTED_ERROR );
+			throw SeedException.createNew( SecurityErrorCodes.UNEXPECTED_ERROR );
 		}
 		
 		Class<? extends DataObfuscationHandler<?>> securityObfuscationHandler = dataSecurityHandler.securityObfuscationHandler(securityObject);
@@ -117,9 +117,9 @@ class DataSecurityMapper implements Mapper<Void> {
 			f.setAccessible(true);
 			o = f.get(instance);
 		} catch (IllegalArgumentException e) {
-			throw SeedException.wrap(e, SecurityErrorCode.UNEXPECTED_ERROR);
+			throw SeedException.wrap(e, SecurityErrorCodes.UNEXPECTED_ERROR);
 		} catch (IllegalAccessException e) {
-			throw SeedException.wrap(e, SecurityErrorCode.UNEXPECTED_ERROR);
+			throw SeedException.wrap(e, SecurityErrorCodes.UNEXPECTED_ERROR);
 		}
 
 		return o;
@@ -131,9 +131,9 @@ class DataSecurityMapper implements Mapper<Void> {
 			f.setAccessible(true);
 			f.set(instance, value);
 		} catch (IllegalArgumentException e) {
-			throw SeedException.wrap(e, SecurityErrorCode.UNEXPECTED_ERROR);
+			throw SeedException.wrap(e, SecurityErrorCodes.UNEXPECTED_ERROR);
 		} catch (IllegalAccessException e) {
-			throw SeedException.wrap(e, SecurityErrorCode.UNEXPECTED_ERROR);
+			throw SeedException.wrap(e, SecurityErrorCodes.UNEXPECTED_ERROR);
 		}
 	}
 	

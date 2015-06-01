@@ -11,11 +11,18 @@ package org.seedstack.seed.security.api;
 
 /**
  * A scope is an additional verification to be made on a permission. When
- * verifying a permission, we verify is the scope given to the user includes the
- * scope to verify. Scopes can be used as LDAP domains.<br>
- * As an example, one could consider hierarchical scopes where MU includes
- * MU/Montage. If the user has the domain MU on a permission and we verify the
- * permission on MU/Montage, it will be granted.
+ * verifying a permission, we verify if the scope given to the user includes the
+ * scope to verify.
+ *
+ * As an example, one could consider hierarchical scopes where EU includes
+ * EU/France. If the user has the scope EU on a permission and we verify a
+ * permission valid in EU/France, it will be granted. On the contrary if the user
+ * has the scope US and we verify a permission valid in EU/France is will not be
+ * granted.
+ *
+ * Often there is no need for hierarchical scopes and the provided {@link SimpleScope}
+ * can be used directly. Simple scopes are not hierarchical and are just checked
+ * with strict equality.
  *
  * 
  * @author yves.dautremay@mpsa.com
@@ -24,11 +31,18 @@ package org.seedstack.seed.security.api;
 public interface Scope {
 
 	/**
-	 * Technical description of the scope
+	 * Returns the value of the scope represented as a string.
 	 * 
-	 * @return a string describing the scope.
+	 * @return a string representation of the scope.
 	 */
-	String getDescription();
+	String getValue();
+
+    /**
+     * Sets the scope internal state with the string representation.
+     *
+     * @param value the string representation of the scope.
+     */
+    void setValue(String value);
 
 	/**
 	 * Verifies if the current scope includes the given scope.<br>

@@ -14,28 +14,28 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Before;
 import org.junit.Test;
 
-import org.seedstack.seed.security.api.Domain;
+import org.seedstack.seed.security.api.SimpleScope;
 
-public class DomainPermissionUnitTest {
+public class SimpleScopePermissionUnitTest {
 
 	ScopePermission underTest;
 	
-	Domain domain;
+	SimpleScope simpleScope;
 	
 	String permission;
 	
 	@Before
 	public void before(){
-		domain = new Domain("foo");
+		simpleScope = new SimpleScope("foo");
 		permission = "bar";
-		underTest = new ScopePermission(permission, domain);
+		underTest = new ScopePermission(permission, simpleScope);
 	}
 	
 	@Test
 	public void test_constructor_with_string_permission(){
-		underTest = new ScopePermission("bar", domain);
+		underTest = new ScopePermission("bar", simpleScope);
 		String perm = underTest.getPermission();
 		assertEquals(perm, "bar");
-		assertEquals(domain, underTest.getScope());
+		assertEquals(simpleScope, underTest.getScope());
 	}
 }

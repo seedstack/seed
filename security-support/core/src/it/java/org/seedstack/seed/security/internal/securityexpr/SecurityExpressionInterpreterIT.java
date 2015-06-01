@@ -47,7 +47,7 @@ public class SecurityExpressionInterpreterIT {
 
     @Test
     @WithUser(id = "ThePoltergeist", password = "bouh")
-    public void check_security_method_with_domain_interpreted() {
+    public void check_security_method_with_scope_interpreted() {
         Assertions.assertThat(interpreter.interpret("${hasRole('ghost')}")).isTrue();
         Assertions.assertThat(interpreter.interpret("${hasRole('ghost', 'MU')}")).isTrue();
         Assertions.assertThat(interpreter.interpret("${hasRole('king', 'MU')}")).isFalse();

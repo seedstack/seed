@@ -24,6 +24,7 @@ import org.junit.Test;
 import org.powermock.reflect.Whitebox;
 
 import org.seedstack.seed.security.api.Role;
+import org.seedstack.seed.security.api.Scope;
 
 public class ConfigurationRoleMappingUnitTest {
 
@@ -41,6 +42,7 @@ public class ConfigurationRoleMappingUnitTest {
 		mappedRoles.add(mappedRole2);
 		map.put(role, mappedRoles);
 		Whitebox.setInternalState(underTest, "map", map);
+		Whitebox.setInternalState(underTest, "scopeClasses", new HashMap<String, Class<? extends Scope>>());
 	}
 	
 	@SuppressWarnings("serial")
