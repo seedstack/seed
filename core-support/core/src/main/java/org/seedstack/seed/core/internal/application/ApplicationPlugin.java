@@ -11,9 +11,7 @@ package org.seedstack.seed.core.internal.application;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Sets;
-import org.apache.commons.lang.text.StrLookup;
-import org.seedstack.seed.core.api.Application;
-import org.seedstack.seed.core.api.SeedException;
+import io.nuun.kernel.api.Plugin;
 import io.nuun.kernel.api.plugin.InitState;
 import io.nuun.kernel.api.plugin.context.InitContext;
 import io.nuun.kernel.api.plugin.request.ClasspathScanRequest;
@@ -21,6 +19,9 @@ import io.nuun.kernel.core.AbstractPlugin;
 import jodd.props.Props;
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.MapConfiguration;
+import org.apache.commons.lang.text.StrLookup;
+import org.seedstack.seed.core.api.Application;
+import org.seedstack.seed.core.api.SeedException;
 import org.seedstack.seed.core.internal.CorePlugin;
 import org.seedstack.seed.core.utils.SeedReflectionUtils;
 import org.slf4j.Logger;
@@ -31,7 +32,14 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -64,6 +72,9 @@ public class ApplicationPlugin extends AbstractPlugin {
 
     @Override
     public InitState init(InitContext initContext) {
+        ApplicationDiagnosticCollector applicationDiagnosticCollector = new ApplicationDiagnosticCollector();
+        ((CorePlugin) initContext.pluginsRequired().iterator().next()).registerDiagnosticCollector("org.seedstack.seed.core.application", applicationDiagnosticCollector);
+
         Set<String> allConfigurationResources = Sets.newHashSet();
 
         for (String propertiesResource : initContext.mapResourcesByRegex().get(PROPERTIES_REGEX)) {
@@ -116,12 +127,16 @@ public class ApplicationPlugin extends AbstractPlugin {
         String[] profiles = getStringArray(System.getProperty("org.seedstack.seed.profiles"));
         if (profiles == null || profiles.length == 0) {
             LOGGER.info("No configuration profile selected");
+            applicationDiagnosticCollector.setActiveProfiles("");
         } else {
-            LOGGER.info("Active configuration profile(s): {}", Arrays.toString(profiles));
+            String activeProfiles = Arrays.toString(profiles);
+            LOGGER.info("Active configuration profile(s): {}", activeProfiles);
+            applicationDiagnosticCollector.setActiveProfiles(activeProfiles);
         }
 
         // Build configuration
         Configuration configuration = buildConfiguration(props, propsOverride, profiles);
+        applicationDiagnosticCollector.setConfiguration(configuration);
         Configuration coreConfiguration = configuration.subset(CorePlugin.CORE_PLUGIN_PREFIX);
 
         String appId = coreConfiguration.getString("application-id");
@@ -140,6 +155,9 @@ public class ApplicationPlugin extends AbstractPlugin {
         }
 
         LOGGER.info("Application info: '{}' / '{}' / '{}'", appId, appName, appVersion);
+        applicationDiagnosticCollector.setApplicationId(appId);
+        applicationDiagnosticCollector.setApplicationName(appName);
+        applicationDiagnosticCollector.setApplicationVersion(appVersion);
 
         String seedStorage = coreConfiguration.getString("storage");
         File seedDirectory;
@@ -162,6 +180,7 @@ public class ApplicationPlugin extends AbstractPlugin {
         }
 
         LOGGER.debug("Application storage location is {}", seedDirectory.getAbsolutePath());
+        applicationDiagnosticCollector.setStorageLocation(seedDirectory.getAbsolutePath());
 
         if (coreConfiguration.getBoolean("redirect-jul", true)) {
             SLF4JBridgeHandler.removeHandlersForRootLogger();
@@ -181,6 +200,13 @@ public class ApplicationPlugin extends AbstractPlugin {
                 .resourcesRegex(PROPERTIES_REGEX)
                 .resourcesRegex(PROPS_REGEX)
                 .build();
+    }
+
+    @Override
+    public Collection<Class<? extends Plugin>> requiredPlugins() {
+        Collection<Class<? extends Plugin>> plugins = new ArrayList<Class<? extends Plugin>>();
+        plugins.add(CorePlugin.class);
+        return plugins;
     }
 
     @Override

@@ -17,6 +17,8 @@ import io.nuun.kernel.api.plugin.context.InitContext;
 import io.nuun.kernel.api.plugin.request.ClasspathScanRequest;
 import io.nuun.kernel.core.AbstractPlugin;
 import org.apache.commons.configuration.Configuration;
+import org.seedstack.seed.core.api.SeedException;
+import org.seedstack.seed.core.internal.CorePlugin;
 import org.seedstack.seed.core.internal.application.ApplicationPlugin;
 import org.seedstack.seed.web.api.WebFilter;
 import org.seedstack.seed.web.api.WebInitParam;
@@ -67,12 +69,24 @@ public class WebPlugin extends AbstractPlugin {
     @SuppressWarnings("unchecked")
     @Override
     public InitState init(InitContext initContext) {
-        if (this.servletContext == null) {
+        if (servletContext == null) {
             LOGGER.info("No servlet context detected, web support disabled");
             return InitState.INITIALIZED;
         }
 
-        ApplicationPlugin applicationPlugin = (ApplicationPlugin) initContext.pluginsRequired().iterator().next();
+        WebDiagnosticCollector webDiagnosticCollector = new WebDiagnosticCollector(servletContext);
+        ApplicationPlugin applicationPlugin = null;
+        for (Plugin plugin : initContext.pluginsRequired()) {
+            if (plugin instanceof ApplicationPlugin) {
+                applicationPlugin = (ApplicationPlugin) plugin;
+            } else if (plugin instanceof CorePlugin) {
+                ((CorePlugin) plugin).registerDiagnosticCollector(WEB_PLUGIN_PREFIX, webDiagnosticCollector);
+            }
+        }
+
+        if (applicationPlugin == null) {
+            throw SeedException.createNew(WebErrorCode.PLUGIN_NOT_FOUND).put("plugin", "application");
+        }
 
         Configuration webConfiguration = applicationPlugin.getApplication().getConfiguration().subset(WebPlugin.WEB_PLUGIN_PREFIX);
         Map<Class<? extends Annotation>, Collection<Class<?>>> scannedClassesByAnnotationClass = initContext.scannedClassesByAnnotationClass();
@@ -156,6 +170,7 @@ public class WebPlugin extends AbstractPlugin {
     @Override
     public Collection<Class<? extends Plugin>> requiredPlugins() {
         Collection<Class<? extends Plugin>> plugins = new ArrayList<Class<? extends Plugin>>();
+        plugins.add(CorePlugin.class);
         plugins.add(ApplicationPlugin.class);
         return plugins;
     }

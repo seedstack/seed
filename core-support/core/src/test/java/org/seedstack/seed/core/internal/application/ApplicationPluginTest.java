@@ -12,11 +12,12 @@
  */
 package org.seedstack.seed.core.internal.application;
 
-import org.seedstack.seed.core.api.Application;
 import io.nuun.kernel.api.plugin.context.InitContext;
 import org.assertj.core.api.Assertions;
 import org.junit.Before;
 import org.junit.Test;
+import org.seedstack.seed.core.api.Application;
+import org.seedstack.seed.core.internal.CorePlugin;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -67,9 +68,14 @@ public class ApplicationPluginTest {
 
     }
 
+    @SuppressWarnings("unchecked")
     public InitContext mockInitContextForCore() {
         InitContext initContext = mock(InitContext.class);
         Map<String, Collection<String>> resources = new HashMap<String, Collection<String>>();
+
+        when(initContext.pluginsRequired()).thenReturn(new ArrayList() {{
+            add(mock(CorePlugin.class));
+        }});
 
         Collection<String> props = new ArrayList<String>();
         props.add("META-INF/configuration/org.seedstack.seed-test.props");

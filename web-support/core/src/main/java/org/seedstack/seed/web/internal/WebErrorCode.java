@@ -19,5 +19,5 @@ import org.seedstack.seed.core.api.ErrorCode;
 public enum WebErrorCode implements ErrorCode {
     UNEXPECTED_WEB_EXCEPTION,
     ERROR_RETRIEVING_RESOURCE,
-    UNABLE_TO_DETERMINE_RESOURCE_INFO
+    PLUGIN_NOT_FOUND, UNABLE_TO_DETERMINE_RESOURCE_INFO
 }
