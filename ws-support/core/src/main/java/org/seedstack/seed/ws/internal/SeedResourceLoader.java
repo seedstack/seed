@@ -31,7 +31,7 @@ class SeedResourceLoader implements ResourceLoader {
 
     @Override
     public URL getCatalogFile() throws MalformedURLException {
-        return classLoader.getResource(WSPlugin.WS_RESOURCES_LOCATION + "jax-ws-catalog.xml");
+        return classLoader.getResource("META-INF/jax-ws-catalog.xml");
     }
 
     @Override

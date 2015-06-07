@@ -18,7 +18,7 @@ full = good, ADD, MINUS
 [org.seedstack.seed.ws]
 endpoints = CalculatorWS
 endpoint.CalculatorWS.implementation = org.seedstack.seed.ws.fixtures.CalculatorServiceImpl
-endpoint.CalculatorWS.wsdl = Calculator.wsdl
+endpoint.CalculatorWS.wsdl = META-INF/ws/Calculator.wsdl
 endpoint.CalculatorWS.url = /ws/calculator
 endpoint.CalculatorWS.enable-mtom = true
 

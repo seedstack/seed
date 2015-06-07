@@ -10,11 +10,6 @@
 package org.seedstack.seed.ws.internal;
 
 import com.google.common.collect.ImmutableList;
-import org.seedstack.seed.core.api.SeedException;
-import org.seedstack.seed.core.internal.application.ApplicationPlugin;
-import org.seedstack.seed.core.utils.SeedReflectionUtils;
-import org.seedstack.seed.core.utils.SeedSpecifications;
-import org.seedstack.seed.ws.adapters.NoSecurityRealmAuthenticationAdapter;
 import com.oracle.webservices.api.databinding.DatabindingModeFeature;
 import com.oracle.webservices.api.databinding.ExternalMetadataFeature;
 import com.sun.xml.ws.api.BindingID;
@@ -41,6 +36,11 @@ import io.nuun.kernel.api.plugin.request.ClasspathScanRequest;
 import io.nuun.kernel.core.AbstractPlugin;
 import org.apache.commons.configuration.Configuration;
 import org.kametic.specifications.Specification;
+import org.seedstack.seed.core.api.SeedException;
+import org.seedstack.seed.core.internal.application.ApplicationPlugin;
+import org.seedstack.seed.core.utils.SeedReflectionUtils;
+import org.seedstack.seed.core.utils.SeedSpecifications;
+import org.seedstack.seed.ws.adapters.NoSecurityRealmAuthenticationAdapter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.EntityResolver;
@@ -55,13 +55,7 @@ import javax.xml.ws.soap.MTOMFeature;
 import javax.xml.ws.soap.SOAPBinding;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * This plugin provides standalone JAX-WS integration.
@@ -72,7 +66,6 @@ import java.util.Set;
 public class WSPlugin extends AbstractPlugin {
     public static final String WS_PLUGIN_CONFIGURATION_PREFIX = "org.seedstack.seed.ws";
     public static final List<String> SUPPORTED_BINDINGS = ImmutableList.of(SOAPBinding.SOAP11HTTP_BINDING, SOAPBinding.SOAP12HTTP_BINDING, SOAPBinding.SOAP11HTTP_MTOM_BINDING, SOAPBinding.SOAP12HTTP_MTOM_BINDING);
-    public static final String WS_RESOURCES_LOCATION = "META-INF/ws/";
 
     private static final Logger LOGGER = LoggerFactory.getLogger(WSPlugin.class);
     private static final String XSD_REGEX = ".*\\.xsd";
@@ -123,20 +116,16 @@ public class WSPlugin extends AbstractPlugin {
         }
 
         for (String xsdResource : initContext.mapResourcesByRegex().get(XSD_REGEX)) {
-            if (xsdResource.startsWith(WS_RESOURCES_LOCATION)) {
-                URL xsdResourceUrl = classLoader.getResource(xsdResource);
-                if (xsdResourceUrl != null) {
-                    docs.put(xsdResourceUrl.toString(), SDDocumentSource.create(xsdResourceUrl));
-                }
+            URL xsdResourceUrl = classLoader.getResource(xsdResource);
+            if (xsdResourceUrl != null) {
+                docs.put(xsdResourceUrl.toString(), SDDocumentSource.create(xsdResourceUrl));
             }
         }
 
         for (String wsdlResource : initContext.mapResourcesByRegex().get(WSDL_REGEX)) {
-            if (wsdlResource.startsWith(WS_RESOURCES_LOCATION)) {
-                URL xmlResourceUrl = classLoader.getResource(wsdlResource);
-                if (xmlResourceUrl != null) {
-                    docs.put(xmlResourceUrl.toString(), SDDocumentSource.create(xmlResourceUrl));
-                }
+            URL wsdlResourceUrl = classLoader.getResource(wsdlResource);
+            if (wsdlResourceUrl != null) {
+                docs.put(wsdlResourceUrl.toString(), SDDocumentSource.create(wsdlResourceUrl));
             }
         }
 
@@ -302,7 +291,7 @@ public class WSPlugin extends AbstractPlugin {
         MetadataReader metadataReader = null;
         String externalMetadata = endpointConfiguration.getString("external-metadata");
         if (externalMetadata != null) {
-            metadataReader = ExternalMetadataFeature.builder().addResources(externalMetadata).build().getMetadataReader(SeedReflectionUtils.findMostCompleteClassLoader(implementationClass));
+            metadataReader = ExternalMetadataFeature.builder().addResources(externalMetadata).build().getMetadataReader(SeedReflectionUtils.findMostCompleteClassLoader(implementationClass), false);
         }
 
         EndpointFactory.verifyImplementorClass(implementationClass, metadataReader);
@@ -354,7 +343,6 @@ public class WSPlugin extends AbstractPlugin {
         if (wsdlPath == null || wsdlPath.isEmpty()) {
             throw SeedException.createNew(WSErrorCode.WSDL_LOCATION_MISSING).put(ENDPOINT_NAME_ATTRIBUTE, endpoint).put(IMPLEMENTATION_CLASS_ATTRIBUTE, implementation);
         }
-        wsdlPath = WS_RESOURCES_LOCATION + wsdlPath;
 
         URL wsdlURL;
         try {
