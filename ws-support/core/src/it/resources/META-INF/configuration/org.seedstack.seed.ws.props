@@ -19,6 +19,6 @@ full = good, ADD, MINUS
 test-port = ${sys:seed.ws.port}
 endpoints = CalculatorWS
 endpoint.CalculatorWS.implementation = org.seedstack.seed.ws.fixtures.CalculatorServiceImpl
-endpoint.CalculatorWS.wsdl = Calculator.wsdl
+endpoint.CalculatorWS.wsdl = META-INF/ws/Calculator.wsdl
 endpoint.CalculatorWS.url = http://localhost:${org.seedstack.seed.ws.test-port}/ws/calculator
 endpoint.CalculatorWS.enable-mtom = true

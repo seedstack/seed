@@ -20,18 +20,18 @@ test-port = ${sys:seed.ws.port}
 endpoints = CalculatorWS0, CalculatorWS1, CalculatorWS2
 
 endpoint.CalculatorWS0.implementation = org.seedstack.seed.ws.fixtures.CalculatorServiceImpl
-endpoint.CalculatorWS0.wsdl = Calculator.wsdl
+endpoint.CalculatorWS0.wsdl = META-INF/ws/Calculator.wsdl
 endpoint.CalculatorWS0.url = http://localhost:${org.seedstack.seed.ws.test-port}/ws/calculator
 endpoint.CalculatorWS0.enable-mtom = true
 
 endpoint.CalculatorWS1.implementation = org.seedstack.seed.ws.fixtures.CalculatorServiceImpl
-endpoint.CalculatorWS1.wsdl = Calculator.wsdl
+endpoint.CalculatorWS1.wsdl = META-INF/ws/Calculator.wsdl
 endpoint.CalculatorWS1.binding = http://www.w3.org/2010/soapjms/
 endpoint.CalculatorWS1.url = jms:jndi:dynamicQueues/TEST.QUEUE?jndiInitialContextFactory=org.apache.activemq.jndi.ActiveMQInitialContextFactory&jndiConnectionFactoryName=ConnectionFactory&jndiURL=vm://localhost?broker.persistent=false
 endpoint.CalculatorWS1.enable-mtom = true
 
 endpoint.CalculatorWS2.implementation = org.seedstack.seed.ws.fixtures.CalculatorServiceImpl
-endpoint.CalculatorWS2.wsdl = Calculator.wsdl
+endpoint.CalculatorWS2.wsdl = META-INF/ws/Calculator.wsdl
 endpoint.CalculatorWS2.binding = http://www.w3.org/2010/soapjms/
 endpoint.CalculatorWS2.url = jms:jndi:dynamicTopics/TEST.TOPIC?jndiInitialContextFactory=org.apache.activemq.jndi.ActiveMQInitialContextFactory&jndiConnectionFactoryName=ConnectionFactory&jndiURL=vm://localhost?broker.persistent=false
 endpoint.CalculatorWS2.enable-mtom = true
