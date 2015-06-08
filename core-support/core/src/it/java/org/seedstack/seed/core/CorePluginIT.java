@@ -25,6 +25,8 @@ import org.seedstack.seed.core.fixtures.Service2;
 import org.seedstack.seed.core.fixtures.Service3;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import some.different.pkg.AnotherForeignClass;
+import some.other.pkg.ForeignClass;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
@@ -32,7 +34,7 @@ import javax.inject.Inject;
 import static io.nuun.kernel.core.NuunCore.createKernel;
 import static io.nuun.kernel.core.NuunCore.newKernelConfiguration;
 
-public class SeedCorePluginIT {
+public class CorePluginIT {
     Injector injector;
     static Kernel underTest;
 
@@ -61,7 +63,10 @@ public class SeedCorePluginIT {
         @Inject
         @Nullable
         Service3 s3;
-
+        @Inject
+        ForeignClass foreignClass;
+        @Inject
+        AnotherForeignClass anotherForeignClass;
     }
 
     static class HolderException {
@@ -104,5 +109,13 @@ public class SeedCorePluginIT {
 
         Assertions.assertThat(LoggerHolder.logger).isNotNull();
         Assertions.assertThat(holder.logger1).isSameAs(LoggerHolder.logger);
+    }
+
+    @Test
+    public void multiple_package_roots_can_be_used() {
+        HolderNominal holder = injector.getInstance(HolderNominal.class);
+
+        Assertions.assertThat(holder.foreignClass).isNotNull();
+        Assertions.assertThat(holder.anotherForeignClass).isNotNull();
     }
 }

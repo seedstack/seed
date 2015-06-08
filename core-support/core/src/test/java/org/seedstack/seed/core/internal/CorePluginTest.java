@@ -127,6 +127,8 @@ public class CorePluginTest {
     @Test
     public void package_root_should_valid() {
         String pluginPackageRoot = pluginUnderTest.pluginPackageRoot();
-        Assertions.assertThat(pluginPackageRoot).isEqualTo(CorePlugin.SEED_PACKAGE_ROOT + ",org.awesomeness,foo.bar");
+        Assertions.assertThat(pluginPackageRoot).contains(CorePlugin.SEED_PACKAGE_ROOT);
+        Assertions.assertThat(pluginPackageRoot).contains("some.other.pkg");
+        Assertions.assertThat(pluginPackageRoot).contains("some.different.pkg");
     }
 }

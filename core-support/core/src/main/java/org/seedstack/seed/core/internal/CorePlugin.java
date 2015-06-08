@@ -9,12 +9,14 @@
  */
 package org.seedstack.seed.core.internal;
 
+import com.google.common.collect.ImmutableMap;
 import com.google.inject.Module;
 import io.nuun.kernel.api.plugin.InitState;
 import io.nuun.kernel.api.plugin.context.InitContext;
 import io.nuun.kernel.api.plugin.request.ClasspathScanRequest;
 import io.nuun.kernel.core.AbstractPlugin;
 import org.apache.commons.configuration.Configuration;
+import org.apache.commons.configuration.MapConfiguration;
 import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.commons.lang.StringUtils;
 import org.reflections.vfs.Vfs;
@@ -165,31 +167,29 @@ public class CorePlugin extends AbstractPlugin {
     }
 
     private Configuration loadBootstrapConfiguration() {
+        MapConfiguration globalConfiguration = new MapConfiguration(new HashMap<String, Object>());
+
         ClassLoader classLoader = SeedReflectionUtils.findMostCompleteClassLoader();
         if (classLoader == null) {
             throw SeedException.createNew(CoreErrorCode.UNABLE_TO_FIND_CLASSLOADER);
         }
-
-        PropertiesConfiguration configuration = new PropertiesConfiguration();
 
         try {
             Enumeration<URL> urls = classLoader.getResources(SEED_BOOTSTRAP_PATH);
 
             while (urls.hasMoreElements()) {
                 URL url = urls.nextElement();
-                configuration.load(url);
+                globalConfiguration.append(new PropertiesConfiguration(url));
             }
         } catch (Exception e) {
             throw SeedException.wrap(e, CoreErrorCode.UNEXPECTED_EXCEPTION);
         }
 
-        return configuration;
+        return new MapConfiguration(new ImmutableMap.Builder<String, Object>().putAll(globalConfiguration.getMap()).build());
     }
 
     /**
      * Returns the configuration coming from the SEED bootstrap properties.
-     *
-     * <strong>This configuration should not be mutated.</strong>
      *
      * @return bootstrap configuration
      */
