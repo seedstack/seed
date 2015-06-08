@@ -30,7 +30,7 @@ import javax.naming.NamingException;
 import static io.nuun.kernel.core.NuunCore.createKernel;
 import static io.nuun.kernel.core.NuunCore.newKernelConfiguration;
 
-public class SeedJndiPluginIT {
+public class JndiPluginIT {
 	static Kernel underTest;
     Injector injector;
 
