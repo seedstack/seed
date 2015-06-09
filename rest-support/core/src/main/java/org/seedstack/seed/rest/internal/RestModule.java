@@ -27,16 +27,15 @@ class RestModule extends ServletModule {
     private final Set<Class<? extends ResourceFilterFactory>> resourceFilterFactories;
     private final Collection<Class<?>> resourceClasses;
     private final Collection<Class<?>> providerClasses;
-    private final Collection<Class<?>> activityClasses;
 
-    RestModule(Collection<Class<?>> resourceClasses, Collection<Class<?>> providerClasses, Collection<Class<?>> activityClasses, Set<Class<? extends ResourceFilterFactory>> resourceFilterFactories, Map<String, String> jerseyParameters, String restPath, String jspPath) {
+    RestModule(Collection<Class<?>> resourceClasses, Collection<Class<?>> providerClasses, Map<String, String> jerseyParameters,
+               Set<Class<? extends ResourceFilterFactory>> resourceFilterFactories, String restPath, String jspPath) {
         this.resourceFilterFactories = resourceFilterFactories;
         this.restPath = restPath;
         this.jspPath = jspPath;
         this.jerseyParameters = jerseyParameters;
         this.resourceClasses = resourceClasses;
         this.providerClasses = providerClasses;
-        this.activityClasses = activityClasses;
     }
 
     @Override
@@ -64,10 +63,6 @@ class RestModule extends ServletModule {
         Multibinder<ResourceFilterFactory> resourceFilterFactoryMultibinder = Multibinder.newSetBinder(binder(), ResourceFilterFactory.class);
         for (Class<? extends ResourceFilterFactory> resourceFilterFactory : resourceFilterFactories) {
             resourceFilterFactoryMultibinder.addBinding().to(resourceFilterFactory);
-        }
-
-        for (Class<?> activityClass : activityClasses) {
-            bind(activityClass);
         }
 
         for (Class<?> resourceClass : resourceClasses) {

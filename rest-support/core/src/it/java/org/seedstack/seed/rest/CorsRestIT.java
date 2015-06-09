@@ -25,7 +25,7 @@ import static com.jayway.restassured.RestAssured.expect;
 public class CorsRestIT extends AbstractSeedWebIT {
     @Deployment
     public static WebArchive createDeployment() {
-        return ShrinkWrap.create(WebArchive.class).addAsResource("META-INF/configuration/org.seedstack.seed.rest.cors.properties", "META-INF/configuration/org.seedstack.seed.rest.cors.properties").setWebXML("WEB-INF/web.xml");
+        return ShrinkWrap.create(WebArchive.class).addAsResource("META-INF/configuration/org.seedstack.seed.rest.cors.props", "META-INF/configuration/org.seedstack.seed.rest.cors.props").setWebXML("WEB-INF/web.xml");
     }
 
     @RunAsClient

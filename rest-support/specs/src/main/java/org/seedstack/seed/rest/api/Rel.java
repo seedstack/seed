@@ -9,22 +9,29 @@
  */
 package org.seedstack.seed.rest.api;
 
-import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
-import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * This annotation mark classes that will be considered as REST activities.
+ * Indicates a resource's relation type.
  *
- * @author adrien.lauer@mpsa.com
+ * @author pierre.thirouin@ext.mpsa.com (Pierre Thirouin)
  */
-@Documented
+@Target({ElementType.METHOD, ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ ElementType.TYPE})
-@Inherited
-public @interface Activity {
+public @interface Rel {
 
+    /**
+     * @return the relation type
+     */
+    String value();
+
+    /**
+     * Defines whether the resource should be exposed as an entry point by JSON-HOME.
+     *
+     * @return true if the resource should be exposed, false otherwise
+     */
+    boolean expose() default false;
 }

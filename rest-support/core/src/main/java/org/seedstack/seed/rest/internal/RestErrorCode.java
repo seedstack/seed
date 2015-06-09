@@ -17,5 +17,6 @@ import org.seedstack.seed.core.api.ErrorCode;
  * @author adrien.lauer@mpsa.com
  */
 public enum RestErrorCode implements ErrorCode {
-    UNSUPPORTED_CACHE_POLICY
+    MULTIPLE_PATH_FOR_THE_SAME_REL,
+    UNSUPPORTED_CACHE_POLICY, CANNOT_MERGE_RESOURCE_WITH_DIFFERENT_REL, CANNOT_MERGE_RESOURCES_WITH_DIFFERENT_DOC,
 }
