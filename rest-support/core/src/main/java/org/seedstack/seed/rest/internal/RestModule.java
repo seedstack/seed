@@ -23,15 +23,17 @@ import java.util.Set;
 class RestModule extends ServletModule {
     private final String restPath;
     private final String jspPath;
+    private final Map<String, String> jerseyParameters;
     private final Set<Class<? extends ResourceFilterFactory>> resourceFilterFactories;
     private final Collection<Class<?>> resourceClasses;
     private final Collection<Class<?>> providerClasses;
     private final Collection<Class<?>> activityClasses;
 
-    RestModule(Collection<Class<?>> resourceClasses, Collection<Class<?>> providerClasses, Collection<Class<?>> activityClasses, Set<Class<? extends ResourceFilterFactory>> resourceFilterFactories, String restPath, String jspPath) {
+    RestModule(Collection<Class<?>> resourceClasses, Collection<Class<?>> providerClasses, Collection<Class<?>> activityClasses, Set<Class<? extends ResourceFilterFactory>> resourceFilterFactories, Map<String, String> jerseyParameters, String restPath, String jspPath) {
         this.resourceFilterFactories = resourceFilterFactories;
         this.restPath = restPath;
         this.jspPath = jspPath;
+        this.jerseyParameters = jerseyParameters;
         this.resourceClasses = resourceClasses;
         this.providerClasses = providerClasses;
         this.activityClasses = activityClasses;
@@ -44,9 +46,16 @@ class RestModule extends ServletModule {
 
         Map<String, String> initParams = new HashMap<String, String>();
 
+        // Default configuration values
         initParams.put("com.sun.jersey.api.json.POJOMappingFeature", "true");
-        initParams.put("com.sun.jersey.config.property.JSPTemplatesBasePath", jspPath);
         initParams.put("com.sun.jersey.config.feature.FilterForwardOn404", "true");
+        initParams.put("com.sun.jersey.config.feature.DisableWADL", "true");
+
+        // User configuration values
+        initParams.putAll(jerseyParameters);
+
+        // Forced configuration values
+        initParams.put("com.sun.jersey.config.property.JSPTemplatesBasePath", jspPath);
         initParams.put("com.sun.jersey.config.feature.FilterContextPath", restPath);
 
         bind(SeedContainer.class).in(Scopes.SINGLETON);

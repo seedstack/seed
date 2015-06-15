@@ -63,4 +63,11 @@ public class RestIT extends AbstractSeedWebIT {
         // assert body
         JSONAssert.assertEquals(obj, new JSONObject(response), false);
     }
+
+    @RunAsClient
+    @Test
+    public void wadl_is_disabled_by_default() throws JSONException {
+        expect().statusCode(404).given().get(baseURL.toString() + "rest/application.wadl");
+        expect().statusCode(204).given().options(baseURL.toString() + "rest/products/");
+    }
 }

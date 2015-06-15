@@ -10,6 +10,7 @@
 package org.seedstack.seed.rest.internal;
 
 import org.kametic.specifications.AbstractSpecification;
+import org.seedstack.seed.core.utils.SeedConfigurationUtils;
 import org.seedstack.seed.rest.api.Activity;
 import org.seedstack.seed.rest.api.ResourceFiltering;
 import com.sun.jersey.spi.container.ResourceFilterFactory;
@@ -37,8 +38,10 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 
 /**
@@ -100,12 +103,20 @@ public class RestPlugin extends AbstractPlugin {
             }
         }
 
+        Map<String, String> jerseyParameters = new HashMap<String, String>();
+        Properties jerseyProperties = SeedConfigurationUtils.buildPropertiesFromConfiguration(restConfiguration, "jersey.property");
+        for (Object key : jerseyProperties.keySet()) {
+            jerseyParameters.put(key.toString(), jerseyProperties.getProperty(key.toString()));
+        }
+
+
         webPlugin.registerAdditionalModule(
                 new RestModule(
                         scannedClassesBySpecification.get(resourcesSpecification),
                         scannedClassesBySpecification.get(providersSpecification),
                         scannedClassesByAnnotationClass.get(Activity.class),
                         resourceFilterFactories,
+                        jerseyParameters,
                         restPath,
                         jspPath)
         );
