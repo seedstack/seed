@@ -25,7 +25,7 @@
 
     <modules>
         <module>core-support</module>
-        <module>cryptography-support</module>
+        <module>crypto-support</module>
         <module>unittest-support</module>
         <module>integrationtest-support</module>
         <module>el-support</module>

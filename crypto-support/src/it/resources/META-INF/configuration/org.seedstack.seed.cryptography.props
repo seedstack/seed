@@ -1,0 +1,34 @@
+#
+# Copyright (c) 2013-2015 by The SeedStack authors. All rights reserved.
+#
+# This file is part of SeedStack, An enterprise-oriented full development stack.
+#
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+#
+
+[org.seedstack.seed.cryptography]
+keystore.path=src/it/resources/node.keystore
+keystore.password=${password:5BC99359A5D29F5192CEBDAC25C17A9CC52CA0CC8D3325A2DC92C3DF05AABE37DBF32480DC2F8E629CEBE4903BC645BFFF33CB8D4B3910281DB0AF47DF5E739D346BE56E91BB33882407B71DF4F9193DCD1D7FE9CB82E195E42816770AF8472680FF894A80602CBD3C4D0B080B474960E49688E7C1677945ECBB1A49580F0DE3}
+keys=key1;key2
+
+
+[org.seedstack.seed.cryptography.key.key1]
+cert.resource=client.cer
+keystore.alias=client
+key.password=${password:70E65711ACFEF03F59AFCED4BCF8E4C51F84A0A621B06221FC9EC83BAADA0229303027A4AD470B5B7DDC27D684D8BB68BEFBDBA4E06E0EDFAC3B0251E01F5E12F00764BC85BAF58F2438EAA57F8404B5C96C44AE728A7CF5926C434172E0B85E7A6A4B1BF9AFF2112A6B24687115B55C03226383BBF96563A19B18954B49DD59}
+
+[org.seedstack.seed.cryptography.key.key2]
+cert.file=src/it/resources/client.cer
+keystore.alias=client
+key.password=${password:3DFD0E368DB232DD72C94928C9A43D52768A5C2B683B77DF6870F8D2CC8709A0253B149EF4A29D37366A7F922ECC9F246058F3C3AEB5BAA89C9F1F3FEC005C513FAAABF670D5EE8937B3743408D5CD5C42A7EF321F8F76B60588173C5EF8F1252DA76FE5122DCDBE6A9AD18F2FFBEA5BAFD8A72D162B1248A0A27E1D031E515A}
+
+
+## In a protected file
+[org.seedstack.seed.cryptography.key.master]
+keystore.path=src/it/resources/internal/testkeystore.jck
+keystore.password=${env:KS_PASSWD}
+cert.file=src/it/resources/internal/seed.crt
+keystore.alias=seed
+key.password=${env:KEY_PASSWD}
