@@ -18,5 +18,6 @@ import org.seedstack.seed.core.api.ErrorCode;
  */
 public enum CliErrorCode implements ErrorCode {
     NO_COMMAND_LINE_HANDLER_FOUND,
+    EXCEPTION_OCCURRED_BEFORE_CLI_TEST,
     UNEXPECTED_CLI_ERROR
-}
+    }

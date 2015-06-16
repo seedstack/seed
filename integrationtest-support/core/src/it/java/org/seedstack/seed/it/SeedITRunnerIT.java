@@ -10,18 +10,69 @@
 package org.seedstack.seed.it;
 
 import com.google.inject.Injector;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.seedstack.seed.it.api.AfterKernel;
+import org.seedstack.seed.it.api.BeforeKernel;
 
 import javax.inject.Inject;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class SeedITRunnerIT extends AbstractSeedIT {
+@RunWith(TestingITRunner.class)
+public class SeedITRunnerIT {
     @Inject
     Injector injector;
 
+    static boolean passedBeforeClass = false;
+    static boolean passedAfterClass = false;
+    static boolean passedBeforeKernel = false;
+    static boolean passedAfterKernel = false;
+
+    @BeforeKernel
+    public static void beforeKernel() {
+        assertThat(passedBeforeKernel).isFalse();
+        assertThat(passedBeforeClass).isFalse();
+        assertThat(passedAfterClass).isFalse();
+        assertThat(passedAfterKernel).isFalse();
+        passedBeforeKernel = true;
+    }
+
+    @BeforeClass
+    public static void beforeClass() {
+        assertThat(passedBeforeKernel).isTrue();
+        assertThat(passedBeforeClass).isFalse();
+        assertThat(passedAfterClass).isFalse();
+        assertThat(passedAfterKernel).isFalse();
+        passedBeforeClass = true;
+    }
+
+    @AfterClass
+    public static void afterClass() {
+        assertThat(passedBeforeKernel).isTrue();
+        assertThat(passedBeforeClass).isTrue();
+        assertThat(passedAfterClass).isFalse();
+        assertThat(passedAfterKernel).isFalse();
+        passedAfterClass = true;
+    }
+
+    @AfterKernel
+    public static void afterKernel() {
+        assertThat(passedBeforeKernel).isTrue();
+        assertThat(passedBeforeClass).isTrue();
+        assertThat(passedAfterClass).isTrue();
+        assertThat(passedAfterKernel).isFalse();
+        passedAfterKernel = true;
+    }
+
     @Test
     public void seed_it_runner_is_injecting_test_class_properly() {
+        assertThat(passedBeforeKernel).isTrue();
+        assertThat(passedBeforeClass).isTrue();
+        assertThat(passedAfterClass).isFalse();
+        assertThat(passedAfterKernel).isFalse();
         assertThat(injector).isNotNull();
     }
 }
