@@ -13,26 +13,31 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Injector;
 import com.google.inject.Module;
 import com.google.inject.ProvisionException;
-import org.seedstack.seed.core.api.SeedException;
-import org.seedstack.seed.core.utils.SeedReflectionUtils;
-import org.seedstack.seed.it.api.Expect;
-import org.seedstack.seed.it.api.WithPlugins;
-import org.seedstack.seed.it.api.WithoutSpiPluginsLoader;
-import org.seedstack.seed.it.api.ITErrorCode;
-import org.seedstack.seed.it.internal.ITPlugin;
-import org.seedstack.seed.it.spi.ITKernelMode;
-import org.seedstack.seed.it.spi.ITRunnerPlugin;
 import io.nuun.kernel.api.Kernel;
 import io.nuun.kernel.api.Plugin;
 import io.nuun.kernel.api.config.KernelConfiguration;
 import io.nuun.kernel.core.AbstractPlugin;
 import io.nuun.kernel.core.NuunCore;
+import org.junit.Before;
 import org.junit.rules.MethodRule;
 import org.junit.rules.TestRule;
 import org.junit.runner.notification.RunNotifier;
 import org.junit.runners.BlockJUnit4ClassRunner;
 import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.InitializationError;
+import org.junit.runners.model.Statement;
+import org.seedstack.seed.core.api.SeedException;
+import org.seedstack.seed.core.utils.SeedReflectionUtils;
+import org.seedstack.seed.it.api.AfterKernel;
+import org.seedstack.seed.it.api.BeforeKernel;
+import org.seedstack.seed.it.api.Expect;
+import org.seedstack.seed.it.api.ITErrorCode;
+import org.seedstack.seed.it.api.WithPlugins;
+import org.seedstack.seed.it.api.WithoutSpiPluginsLoader;
+import org.seedstack.seed.it.internal.ITPlugin;
+import org.seedstack.seed.it.spi.ITKernelMode;
+import org.seedstack.seed.it.spi.ITRunnerPlugin;
+import org.seedstack.seed.it.spi.PausableRunBefores;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -60,7 +65,7 @@ public class SeedITRunner extends BlockJUnit4ClassRunner {
     private final Class<? extends Plugin>[] safeModePlugins;
     private final Module[] safeModeModules;
     private final ServiceLoader<ITRunnerPlugin> plugins;
-    private final Class<?> expectedClass;
+    private final Class<? extends Throwable> expectedClass;
 
     private ITKernelMode kernelMode = ITKernelMode.ANY;
     private Kernel kernel;
@@ -89,6 +94,11 @@ public class SeedITRunner extends BlockJUnit4ClassRunner {
         this.safeModeModules = safeModeModules.clone();
         this.plugins = ServiceLoader.load(ITRunnerPlugin.class, SeedReflectionUtils.findMostCompleteClassLoader(SeedITRunner.class));
         this.expectedClass = findExpectedClass();
+    }
+
+    protected void collectInitializationErrors(List<Throwable> errors) {
+        validatePublicVoidNoArgMethods(BeforeKernel.class, true, errors);
+        validatePublicVoidNoArgMethods(AfterKernel.class, true, errors);
     }
 
     @Override
@@ -170,7 +180,6 @@ public class SeedITRunner extends BlockJUnit4ClassRunner {
      *
      * @param notifier          RunNotifier
      * @param eventualException exception if kernel failed to initialize normally. A safe mode kernel is still available.
-     * @author redouane.loulou@ext.mpsa.com
      */
     protected void afterClassTest(RunNotifier notifier, Exception eventualException) {
         // can be overridden by subclasses
@@ -181,7 +190,6 @@ public class SeedITRunner extends BlockJUnit4ClassRunner {
      *
      * @param notifier          RunNotifier
      * @param eventualException exception if kernel failed to initialize normally. A safe mode kernel is still available.
-     * @author redouane.loulou@ext.mpsa.com
      */
     protected void beforeClassTest(RunNotifier notifier, Exception eventualException) {
         // can be overridden by subclasses
@@ -240,6 +248,12 @@ public class SeedITRunner extends BlockJUnit4ClassRunner {
     }
 
     @Override
+    protected Statement withBefores(FrameworkMethod method, Object target, Statement statement) {
+        List<FrameworkMethod> befores = getTestClass().getAnnotatedMethods(Before.class);
+        return befores.isEmpty() ? statement : new PausableRunBefores(statement, befores, target);
+    }
+
+    @Override
     protected Object createTest() throws Exception {
         Object test;
 
@@ -275,6 +289,15 @@ public class SeedITRunner extends BlockJUnit4ClassRunner {
     }
 
     private void initKernel() {
+        List<FrameworkMethod> beforeKernelMethods = getTestClass().getAnnotatedMethods(BeforeKernel.class);
+        for (FrameworkMethod beforeKernelMethod : beforeKernelMethods) {
+            try {
+                beforeKernelMethod.invokeExplosively(null);
+            } catch (Throwable throwable) {
+                SeedException.wrap(throwable, ITErrorCode.EXCEPTION_OCCURRED_BEFORE_KERNEL);
+            }
+        }
+
         safeModeException = null;
         try {
             KernelConfiguration kernelConfiguration = NuunCore.newKernelConfiguration();
@@ -326,6 +349,14 @@ public class SeedITRunner extends BlockJUnit4ClassRunner {
                 kernel.stop();
             }
         } finally {
+            List<FrameworkMethod> beforeKernelMethods = getTestClass().getAnnotatedMethods(AfterKernel.class);
+            for (FrameworkMethod beforeKernelMethod : beforeKernelMethods) {
+                try {
+                    beforeKernelMethod.invokeExplosively(null);
+                } catch (Throwable throwable) {
+                    SeedException.wrap(throwable, ITErrorCode.EXCEPTION_OCCURRED_AFTER_KERNEL);
+                }
+            }
             kernel = null;
         }
     }
@@ -351,7 +382,7 @@ public class SeedITRunner extends BlockJUnit4ClassRunner {
         }
     }
 
-    private Class<? extends Exception> findExpectedClass() {
+    private Class<? extends Throwable> findExpectedClass() {
         Expect annotation = getTestClass().getJavaClass().getAnnotation(Expect.class);
         if (annotation != null) {
             return annotation.value();

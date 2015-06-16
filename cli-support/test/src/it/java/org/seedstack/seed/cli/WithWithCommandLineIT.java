@@ -9,9 +9,10 @@
  */
 package org.seedstack.seed.cli;
 
+import org.junit.Before;
+import org.junit.Test;
 import org.seedstack.seed.cli.api.WithCommandLine;
 import org.seedstack.seed.it.AbstractSeedIT;
-import org.junit.Test;
 
 import javax.inject.Inject;
 
@@ -21,9 +22,17 @@ public class WithWithCommandLineIT extends AbstractSeedIT {
     @Inject
     private Fixture fixture;
 
+    private boolean passedBefore = false;
+
+    @Before
+    public void before() {
+        passedBefore = true;
+    }
+
     @Test
     @WithCommandLine(value = "--option=value", expectedExitCode = 255)
     public void test_with_annotation() {
+        assertThat(passedBefore).isTrue();
         assertThat(fixture).isNotNull();
         assertThat(DummyCommandLineHandler.called).isTrue();
     }

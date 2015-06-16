@@ -17,17 +17,14 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * This annotation can be used on integration tests to mark a Throwable class as being expected.
- * 
- * @author epo.jemba@ext.mpsa.com
+ * This annotation can be used to specify a static method that will execute before the Kernel starts.
+ *
+ * @author adrien.lauer@mpsa.com
  */
-@Target(ElementType.TYPE)
+@Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Inherited
-public @interface Expect {
-    /**
-     * @return the expected class.
-     */
-    Class<? extends Throwable> value();
+public @interface BeforeKernel {
+    
 }

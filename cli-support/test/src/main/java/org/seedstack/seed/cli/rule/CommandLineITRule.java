@@ -19,6 +19,7 @@ import org.seedstack.seed.core.api.SeedException;
 import org.junit.rules.MethodRule;
 import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.Statement;
+import org.seedstack.seed.it.spi.PausableRunBefores;
 
 import java.util.concurrent.Callable;
 
@@ -44,24 +45,30 @@ public class CommandLineITRule implements MethodRule {
                     String[] value = annotation.value();
                     int expectedExitCode = annotation.expectedExitCode();
 
-                    int returnCode = SeedRunner.execute(value, new CommandLineITCallable(target));
+                    int returnCode = SeedRunner.execute(value, new CommandLineITCallable(target, statement));
 
-                    assertThat(returnCode).as("Exit Code Returned by seed runner").isEqualTo(expectedExitCode);
+                    assertThat(returnCode).as("Exit code returned by SeedRunner").isEqualTo(expectedExitCode);
                 }
 
-                statement.evaluate();
+                if (statement instanceof PausableRunBefores) {
+                    ((PausableRunBefores)statement).resume();
+                } else {
+                    statement.evaluate();
+                }
             }
         };
     }
 
     private static final class CommandLineITCallable implements Callable<Integer> {
         private final Object target;
+        private final Statement statement;
 
         @Inject
         Injector injector;
 
-        private CommandLineITCallable(Object target) {
+        private CommandLineITCallable(Object target, Statement statement) {
             this.target = target;
+            this.statement = statement;
         }
 
         @Override
@@ -73,6 +80,14 @@ public class CommandLineITRule implements MethodRule {
                 commandLineHandler = injector.getInstance(CommandLineHandler.class);
             } catch(Exception e) {
                 throw SeedException.wrap(e, CliErrorCode.NO_COMMAND_LINE_HANDLER_FOUND);
+            }
+
+            if (statement instanceof PausableRunBefores) {
+                try {
+                    ((PausableRunBefores)statement).evaluateAndPause();
+                } catch (Throwable t) {
+                    throw SeedException.wrap(t, CliErrorCode.EXCEPTION_OCCURRED_BEFORE_CLI_TEST);
+                }
             }
 
             return commandLineHandler.call();
