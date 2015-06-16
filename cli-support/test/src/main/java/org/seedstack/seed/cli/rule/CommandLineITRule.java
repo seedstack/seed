@@ -27,6 +27,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * @author epo.jemba@ext.mpsa.com
+ * @author adrien.lauer@mpsa.com
  */
 public class CommandLineITRule implements MethodRule {
 

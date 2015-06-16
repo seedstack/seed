@@ -10,6 +10,7 @@
 package org.seedstack.seed.cli;
 
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.seedstack.seed.cli.api.WithCommandLine;
 import org.seedstack.seed.it.AbstractSeedIT;
@@ -19,21 +20,34 @@ import javax.inject.Inject;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class WithWithCommandLineIT extends AbstractSeedIT {
+    private static boolean passedBeforeClass = false;
+    private static boolean passedBefore = false;
+
     @Inject
     private Fixture fixture;
 
-    private boolean passedBefore = false;
+    @BeforeClass
+    public static void beforeClass() {
+        assertThat(passedBeforeClass).isFalse();
+        assertThat(passedBefore).isFalse();
+        assertThat(DummyCommandLineHandler.called).isFalse();
+        passedBeforeClass = true;
+    }
 
     @Before
     public void before() {
+        assertThat(passedBeforeClass).isTrue();
+        assertThat(passedBefore).isFalse();
+        assertThat(DummyCommandLineHandler.called).isFalse();
         passedBefore = true;
     }
 
     @Test
     @WithCommandLine(value = "--option=value", expectedExitCode = 255)
     public void test_with_annotation() {
+        assertThat(passedBeforeClass).isTrue();
         assertThat(passedBefore).isTrue();
-        assertThat(fixture).isNotNull();
         assertThat(DummyCommandLineHandler.called).isTrue();
+        assertThat(fixture).isNotNull();
     }
 }
