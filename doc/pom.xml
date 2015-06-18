@@ -236,7 +236,7 @@
         </dependency>
         <dependency>
             <groupId>org.seedstack.seed</groupId>
-            <artifactId>seed-cryptography-support</artifactId>
+            <artifactId>seed-crypto-support</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>

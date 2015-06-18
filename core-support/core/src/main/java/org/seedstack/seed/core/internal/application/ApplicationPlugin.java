@@ -9,14 +9,29 @@
  */
 package org.seedstack.seed.core.internal.application;
 
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Sets;
+import org.apache.commons.lang.text.StrLookup;
 import io.nuun.kernel.api.Plugin;
 import io.nuun.kernel.api.plugin.InitState;
 import io.nuun.kernel.api.plugin.context.InitContext;
 import io.nuun.kernel.api.plugin.request.ClasspathScanRequest;
 import io.nuun.kernel.core.AbstractPlugin;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+
 import jodd.props.Props;
+
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.MapConfiguration;
 import org.apache.commons.lang.text.StrLookup;
@@ -28,10 +43,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.bridge.SLF4JBridgeHandler;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Sets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -40,7 +53,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Plugin that initialize the application identity, storage location and configuration.
@@ -141,7 +153,8 @@ public class ApplicationPlugin extends AbstractPlugin {
 
         String appId = coreConfiguration.getString("application-id");
         if (appId == null || appId.isEmpty()) {
-            throw SeedException.createNew(ApplicationErrorCode.MISSING_APPLICATION_IDENTIFIER).put("property", CorePlugin.CORE_PLUGIN_PREFIX + ".application-id");
+            throw SeedException.createNew(ApplicationErrorCode.MISSING_APPLICATION_IDENTIFIER).put("property",
+                    CorePlugin.CORE_PLUGIN_PREFIX + ".application-id");
         }
 
         String appName = coreConfiguration.getString("application-name");
@@ -196,10 +209,7 @@ public class ApplicationPlugin extends AbstractPlugin {
 
     @Override
     public Collection<ClasspathScanRequest> classpathScanRequests() {
-        return classpathScanRequestBuilder()
-                .resourcesRegex(PROPERTIES_REGEX)
-                .resourcesRegex(PROPS_REGEX)
-                .build();
+        return classpathScanRequestBuilder().resourcesRegex(PROPERTIES_REGEX).resourcesRegex(PROPS_REGEX).build();
     }
 
     @Override
@@ -308,6 +318,14 @@ public class ApplicationPlugin extends AbstractPlugin {
         MapConfiguration mapConfiguration = new MapConfiguration(new ImmutableMap.Builder<String, Object>().putAll(finalConfiguration).build());
         mapConfiguration.getInterpolator().registerLookup("env", StrLookup.mapLookup(System.getenv()));
         mapConfiguration.getInterpolator().registerLookup("json", new JsonLookup(mapConfiguration));
+
+        // Add every lookup registered
+        for (Entry<String, ConfigurationLookup> lookup : ConfigurationLookupRegistry.getInstance().getLookups().entrySet()) {
+            LOGGER.debug("Add a configuration lookup for key [{}]", lookup.getKey());
+            StrLookup strLookup = lookup.getValue().getLookup(mapConfiguration);
+            mapConfiguration.getInterpolator().registerLookup(lookup.getKey(), strLookup);
+        }
+
         return mapConfiguration;
     }
 }
