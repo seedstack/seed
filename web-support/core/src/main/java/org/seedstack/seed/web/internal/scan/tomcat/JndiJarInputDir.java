@@ -10,10 +10,10 @@
 package org.seedstack.seed.web.internal.scan.tomcat;
 
 import com.google.common.collect.AbstractIterator;
-import org.seedstack.seed.core.api.CoreErrorCode;
 import org.seedstack.seed.core.api.SeedException;
 import org.reflections.vfs.Vfs;
 import org.seedstack.seed.core.internal.CorePlugin;
+import org.seedstack.seed.web.api.WebErrorCode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -75,7 +75,7 @@ class JndiJarInputDir implements Vfs.Dir {
                                     return new JndiJarInputFile(entry, jarInputStream);
                                 }
                             } catch (IOException e) {
-                                throw SeedException.wrap(e, CoreErrorCode.UNABLE_TO_SCAN_JAR);
+                                throw SeedException.wrap(e, WebErrorCode.UNABLE_TO_SCAN_TOMCAT_JNDI_JAR);
                             }
                         }
                     }

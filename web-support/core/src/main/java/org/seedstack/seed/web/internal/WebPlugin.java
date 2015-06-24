@@ -21,6 +21,7 @@ import org.reflections.util.ClasspathHelper;
 import org.seedstack.seed.core.api.SeedException;
 import org.seedstack.seed.core.internal.CorePlugin;
 import org.seedstack.seed.core.internal.application.ApplicationPlugin;
+import org.seedstack.seed.web.api.WebErrorCode;
 import org.seedstack.seed.web.api.WebFilter;
 import org.seedstack.seed.web.api.WebInitParam;
 import org.seedstack.seed.web.api.WebServlet;

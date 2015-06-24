@@ -15,8 +15,6 @@ package org.seedstack.seed.core.api;
  * @author adrien.lauer@mpsa.com
  */
 public enum CoreErrorCode implements ErrorCode {
-    UNABLE_TO_SCAN_JAR,
-    UNABLE_TO_SCAN_JNDI_CONTEXT,
     UNABLE_TO_INSTANTIATE_MODULE,
     UNABLE_TO_INJECT_LOGGER,
     UNABLE_TO_FIND_CLASSLOADER,

@@ -11,6 +11,7 @@ package org.seedstack.seed.web.internal;
 
 import org.seedstack.seed.core.api.DiagnosticManager;
 import org.seedstack.seed.core.api.SeedException;
+import org.seedstack.seed.web.api.WebErrorCode;
 
 import javax.inject.Inject;
 import javax.servlet.Filter;

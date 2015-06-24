@@ -15,6 +15,7 @@ import org.seedstack.seed.core.api.SeedException;
 import org.seedstack.seed.core.utils.SeedReflectionUtils;
 import org.seedstack.seed.web.api.ResourceInfo;
 import org.seedstack.seed.web.api.ResourceRequest;
+import org.seedstack.seed.web.api.WebErrorCode;
 import org.seedstack.seed.web.api.WebResourceResolver;
 import org.apache.commons.configuration.Configuration;
 import org.slf4j.Logger;
