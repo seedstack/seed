@@ -32,8 +32,8 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>io.nuun</groupId>
-            <artifactId>nuun-web-plugin</artifactId>
+            <groupId>org.sonatype.sisu.inject</groupId>
+            <artifactId>guice-servlet</artifactId>
         </dependency>
         <dependency>
             <groupId>com.thetransactioncompany</groupId>
@@ -46,6 +46,12 @@
             <scope>provided</scope>
         </dependency>
 
+        <dependency>
+            <groupId>org.seedstack.seed</groupId>
+            <artifactId>seed-unittest-support</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
         <dependency>
             <groupId>org.seedstack.seed</groupId>
             <artifactId>seed-integrationtest-support-web</artifactId>
