@@ -12,9 +12,11 @@ package org.seedstack.seed.core.internal;
 import com.google.common.collect.ImmutableMap;
 import com.google.inject.Module;
 import io.nuun.kernel.api.plugin.InitState;
+import io.nuun.kernel.api.plugin.PluginException;
 import io.nuun.kernel.api.plugin.context.InitContext;
 import io.nuun.kernel.api.plugin.request.ClasspathScanRequest;
 import io.nuun.kernel.core.AbstractPlugin;
+import io.nuun.kernel.core.internal.scanner.AbstractClasspathScanner;
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.MapConfiguration;
 import org.apache.commons.configuration.PropertiesConfiguration;
@@ -23,6 +25,9 @@ import org.reflections.vfs.Vfs;
 import org.seedstack.seed.core.api.DiagnosticManager;
 import org.seedstack.seed.core.api.Install;
 import org.seedstack.seed.core.api.SeedException;
+import org.seedstack.seed.core.internal.scan.ClasspathScanHandler;
+import org.seedstack.seed.core.internal.scan.FallbackUrlType;
+import org.seedstack.seed.core.api.CoreErrorCode;
 import org.seedstack.seed.core.spi.diagnostic.DiagnosticDomain;
 import org.seedstack.seed.core.spi.diagnostic.DiagnosticInfoCollector;
 import org.seedstack.seed.core.utils.SeedReflectionUtils;
@@ -32,12 +37,7 @@ import org.slf4j.LoggerFactory;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.net.URL;
-import java.util.Collection;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Core plugin that setup common SEED package roots and scans modules to install via the
@@ -55,31 +55,31 @@ public class CorePlugin extends AbstractPlugin {
 
     private static final DiagnosticManagerImpl DIAGNOSTIC_MANAGER = new DiagnosticManagerImpl();
 
+    private static final FallbackUrlType FALLBACK_URL_TYPE = new FallbackUrlType();
+
     static {
-        Vfs.addDefaultURLTypes(new Vfs.UrlType() {
-            @Override
-            public boolean matches(URL url) {
-                return "jndi".equals(url.getProtocol()) && url.toExternalForm().contains(".jar");
-            }
+        // Load Nuun and Reflections classes to force initialization of Vfs url types
+        try {
+            Class.forName(Vfs.class.getCanonicalName());
+            Class.forName(AbstractClasspathScanner.class.getCanonicalName());
+        } catch (ClassNotFoundException e) {
+            throw new PluginException("Cannot initialize the classpath scanning infrastructure", e);
+        }
 
-            @Override
-            public Vfs.Dir createDir(final URL url) {
-                return new JndiJarInputDir(url);
-            }
-        });
+        // Find all classpath scan handlers and add their Vfs url types
+        List<Vfs.UrlType> urlTypes = new ArrayList<Vfs.UrlType>();
+        for (ClasspathScanHandler classpathScanHandler : ServiceLoader.load(ClasspathScanHandler.class)) {
+            LOGGER.trace("Adding classpath handler {}", classpathScanHandler.getClass().getCanonicalName());
+            urlTypes.addAll(classpathScanHandler.urlTypes());
+        }
 
-        Vfs.addDefaultURLTypes(new Vfs.UrlType() {
-            @Override
-            public boolean matches(URL url) {
-                return "jndi".equals(url.getProtocol()) && !url.toExternalForm().contains(".jar");
-            }
+        // Add fallback Vfs url type
+        urlTypes.add(FALLBACK_URL_TYPE);
 
-            @Override
-            public Vfs.Dir createDir(final URL url) {
-                return new JndiInputDir(url);
-            }
-        });
+        // Overwrites all url types to Vfs
+        Vfs.setDefaultURLTypes(urlTypes);
 
+        //
         Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
             @Override
             public void uncaughtException(Thread t, Throwable e) {
@@ -113,6 +113,16 @@ public class CorePlugin extends AbstractPlugin {
     @SuppressWarnings("unchecked")
     @Override
     public InitState init(InitContext initContext) {
+        int failedUrlCount = FALLBACK_URL_TYPE.getFailedUrls().size();
+        if (failedUrlCount > 0) {
+            LOGGER.info("{} URL(s) were not scanned, enable debug logging to see them", failedUrlCount);
+            if (LOGGER.isTraceEnabled()) {
+                for (URL failedUrl : FALLBACK_URL_TYPE.getFailedUrls()) {
+                    LOGGER.debug("URL not scanned: {}", failedUrl);
+                }
+            }
+        }
+
         Set<URL> scannedUrls = extractScannedUrls(initContext);
         if (scannedUrls != null) {
             DIAGNOSTIC_MANAGER.setClasspathUrls(scannedUrls);

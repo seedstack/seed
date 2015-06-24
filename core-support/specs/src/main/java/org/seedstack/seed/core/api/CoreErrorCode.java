@@ -7,16 +7,14 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-package org.seedstack.seed.core.internal;
-
-import org.seedstack.seed.core.api.ErrorCode;
+package org.seedstack.seed.core.api;
 
 /**
  * SEED core error codes.
  *
  * @author adrien.lauer@mpsa.com
  */
-enum CoreErrorCode implements ErrorCode {
+public enum CoreErrorCode implements ErrorCode {
     UNABLE_TO_SCAN_JAR,
     UNABLE_TO_SCAN_JNDI_CONTEXT,
     UNABLE_TO_INSTANTIATE_MODULE,
@@ -24,5 +22,6 @@ enum CoreErrorCode implements ErrorCode {
     UNABLE_TO_FIND_CLASSLOADER,
     UNABLE_TO_LOAD_SEED_BOOTSTRAP,
     UNEXPECTED_EXCEPTION,
-    UNABLE_TO_CREATE_DIAGNOSTIC_COLLECTOR, RETROW_EXCEPTION_AFTER_DIAGNOSTIC_FAILURE
+    UNABLE_TO_CREATE_DIAGNOSTIC_COLLECTOR,
+    RETROW_EXCEPTION_AFTER_DIAGNOSTIC_FAILURE
 }

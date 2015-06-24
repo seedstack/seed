@@ -7,12 +7,14 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-package org.seedstack.seed.core.internal;
+package org.seedstack.seed.web.internal.scan.tomcat;
 
 import com.google.common.base.Joiner;
 import com.google.common.collect.AbstractIterator;
+import org.seedstack.seed.core.api.CoreErrorCode;
 import org.seedstack.seed.core.api.SeedException;
 import org.reflections.vfs.Vfs;
+import org.seedstack.seed.core.internal.CorePlugin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

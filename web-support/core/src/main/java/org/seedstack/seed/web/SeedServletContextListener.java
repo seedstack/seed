@@ -10,24 +10,19 @@
 package org.seedstack.seed.web;
 
 import com.google.inject.Injector;
+import com.google.inject.servlet.GuiceServletContextListener;
+import io.nuun.kernel.api.Kernel;
+import io.nuun.kernel.core.NuunCore;
 import org.seedstack.seed.core.api.SeedException;
 import org.seedstack.seed.core.internal.CorePlugin;
 import org.seedstack.seed.core.utils.SeedReflectionUtils;
 import org.seedstack.seed.web.api.DelegateServletContextListener;
 import org.seedstack.seed.web.internal.WebErrorCode;
-import io.nuun.plugin.web.NuunServletContextListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.servlet.ServletContextAttributeEvent;
-import javax.servlet.ServletContextAttributeListener;
-import javax.servlet.ServletContextEvent;
-import javax.servlet.ServletContextListener;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.ServiceLoader;
-
+import javax.servlet.*;
+import java.util.*;
 
 /**
  * This context listener has the responsibility to initialize the Seed framework in a web environment and
@@ -37,11 +32,12 @@ import java.util.ServiceLoader;
  * @author epo.jemba@ext.mpsa.com
  * @author adrien.lauer@mpsa.com
  */
-public class SeedServletContextListener implements ServletContextListener, ServletContextAttributeListener {
+public class SeedServletContextListener extends GuiceServletContextListener implements ServletContextListener, ServletContextAttributeListener {
     private static final Logger LOGGER = LoggerFactory.getLogger(SeedServletContextListener.class);
 
-    private final NuunServletContextListener mainListener;
-    private final DelegateServletContextListenerImpl otherListeners;
+    private final DelegateServletContextListenerImpl delegateListeners;
+    private Kernel kernel;
+    private Injector injector;
 
     /**
      * Creates the context listener.
@@ -56,8 +52,7 @@ public class SeedServletContextListener implements ServletContextListener, Servl
             listeners.add(iterator.next());
         }
 
-        mainListener = new NuunServletContextListener();
-        otherListeners = new DelegateServletContextListenerImpl(listeners);
+        delegateListeners = new DelegateServletContextListenerImpl(listeners);
     }
 
     @Override
@@ -65,16 +60,20 @@ public class SeedServletContextListener implements ServletContextListener, Servl
         LOGGER.info("Starting Seed Web application");
 
         try {
-            mainListener.contextInitialized(sce);
-            final Injector injector = (Injector) sce.getServletContext().getAttribute(Injector.class.getName());
+            kernel = createKernel(sce.getServletContext());
+            kernel.init();
+            kernel.start();
+            injector = kernel.objectGraph().as(Injector.class);
 
-            otherListeners.setCallback(new AbstractCallback() {
+            super.contextInitialized(sce);
+
+            delegateListeners.setCallback(new AbstractCallback() {
                 @Override
                 public void onBeforeContextInitialized(ServletContextListener candidate) {
                     injector.injectMembers(candidate);
                 }
             });
-            otherListeners.contextInitialized(sce);
+            delegateListeners.contextInitialized(sce);
         } catch (Exception e) { // NOSONAR
             LOGGER.error("An unexpected error occurred during web application startup, collecting diagnostic information");
             CorePlugin.getDiagnosticManager().dumpDiagnosticReport(e);
@@ -89,8 +88,11 @@ public class SeedServletContextListener implements ServletContextListener, Servl
         LOGGER.info("Stopping Seed Web application");
 
         try {
-            otherListeners.contextDestroyed(sce);
-            mainListener.contextDestroyed(sce);
+            delegateListeners.contextDestroyed(sce);
+
+            if (kernel != null && kernel.isStarted()) {
+                kernel.stop();
+            }
         } catch (Exception e) { // NOSONAR
             LOGGER.error("An unexpected error occurred during web application shutdown, collecting diagnostic information");
             CorePlugin.getDiagnosticManager().dumpDiagnosticReport(e);
@@ -101,18 +103,39 @@ public class SeedServletContextListener implements ServletContextListener, Servl
     }
 
     @Override
+    protected Injector getInjector() {
+        return injector;
+    }
+
+    @Override
     public void attributeAdded(ServletContextAttributeEvent scab) {
-        otherListeners.attributeAdded(scab);
+        delegateListeners.attributeAdded(scab);
     }
 
     @Override
     public void attributeRemoved(ServletContextAttributeEvent scab) {
-        otherListeners.attributeRemoved(scab);
+        delegateListeners.attributeRemoved(scab);
     }
 
     @Override
     public void attributeReplaced(ServletContextAttributeEvent scab) {
-        otherListeners.attributeReplaced(scab);
+        delegateListeners.attributeReplaced(scab);
+    }
+
+    private Kernel createKernel(ServletContext servletContext) {
+        List<String> params = new ArrayList<String>();
+        Enumeration<?> initparams = servletContext.getInitParameterNames();
+        while (initparams.hasMoreElements()) {
+            String keyName = (String) initparams.nextElement();
+            if (keyName != null && !keyName.isEmpty()) {
+                String value = servletContext.getInitParameter(keyName);
+                LOGGER.debug("Setting kernel parameter {} to {}", keyName, value);
+                params.add(keyName);
+                params.add(value);
+            }
+        }
+
+        return NuunCore.createKernel(NuunCore.newKernelConfiguration().containerContext(servletContext));
     }
 
     abstract class AbstractCallback {

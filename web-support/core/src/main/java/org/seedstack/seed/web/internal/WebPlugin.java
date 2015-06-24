@@ -17,6 +17,7 @@ import io.nuun.kernel.api.plugin.context.InitContext;
 import io.nuun.kernel.api.plugin.request.ClasspathScanRequest;
 import io.nuun.kernel.core.AbstractPlugin;
 import org.apache.commons.configuration.Configuration;
+import org.reflections.util.ClasspathHelper;
 import org.seedstack.seed.core.api.SeedException;
 import org.seedstack.seed.core.internal.CorePlugin;
 import org.seedstack.seed.core.internal.application.ApplicationPlugin;
@@ -31,6 +32,7 @@ import javax.servlet.Servlet;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServlet;
 import java.lang.annotation.Annotation;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -154,6 +156,21 @@ public class WebPlugin extends AbstractPlugin {
 
         return InitState.INITIALIZED;
     }
+
+    @Override
+    public Set<URL> computeAdditionalClasspathScan() {
+        Set<URL> additionalUrls = new HashSet<URL>();
+
+        if (servletContext != null) {
+            additionalUrls.addAll(ClasspathHelper.forWebInfLib(servletContext));
+            additionalUrls.add(ClasspathHelper.forWebInfClasses(servletContext));
+        }
+
+        LOGGER.debug("{} URL(s) were determined from Web classpath", additionalUrls.size());
+
+        return additionalUrls;
+    }
+
 
     @Override
     public void provideContainerContext(Object containerContext) {
