@@ -11,7 +11,7 @@
  * Creation : 10 juin 2015
  */
 /**
- * 
+ *
  */
 package org.seedstack.seed.crypto.internal;
 
@@ -20,7 +20,7 @@ import org.junit.Test;
 
 /**
  * Unit test for {@link KeyStoreDefinition}
- * 
+ *
  * @author thierry.bouvet@mpsa.com
  */
 public class KeyStoreDefinitionTest {
@@ -30,9 +30,8 @@ public class KeyStoreDefinitionTest {
      */
     @Test
     public void testGetPath() {
-        KeyStoreDefinition definition = new KeyStoreDefinition();
         final String path = "path";
-        definition.setPath(path);
+        KeyStoreDefinition definition = new KeyStoreDefinition(path, null);
         Assertions.assertThat(definition.getPath()).isEqualTo(path);
     }
 
@@ -41,9 +40,8 @@ public class KeyStoreDefinitionTest {
      */
     @Test
     public void testGetPassword() {
-        KeyStoreDefinition definition = new KeyStoreDefinition();
         final String password = "password";
-        definition.setPassword(password);
+        KeyStoreDefinition definition = new KeyStoreDefinition(null, password);
         Assertions.assertThat(definition.getPassword()).isEqualTo(password);
     }
 

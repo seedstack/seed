@@ -38,16 +38,16 @@ class EncryptionServiceImpl implements EncryptionService {
 
     private KeyStore keyStore;
 
-    private CertificateDefinition certificateDefintion;
+    private CertificateDefinition certificateDefinition;
 
-    public EncryptionServiceImpl(KeyStore ks, CertificateDefinition certificateDefintion) {
+    public EncryptionServiceImpl(KeyStore ks, CertificateDefinition certificateDefinition) {
         this.keyStore = ks;
-        this.certificateDefintion = certificateDefintion;
+        this.certificateDefinition = certificateDefinition;
     }
 
     @Override
     public byte[] encrypt(byte[] toCrypt) throws InvalidKeyException {
-        PublicKey pk = this.certificateDefintion.getCertificate().getPublicKey();
+        PublicKey pk = this.certificateDefinition.getCertificate().getPublicKey();
         return crypt(toCrypt, pk, Cipher.ENCRYPT_MODE);
     }
 
@@ -58,7 +58,7 @@ class EncryptionServiceImpl implements EncryptionService {
         }
         Key key;
         try {
-            key = keyStore.getKey(this.certificateDefintion.getAlias(), this.certificateDefintion.getPassword().toCharArray());
+            key = keyStore.getKey(this.certificateDefinition.getAlias(), this.certificateDefinition.getPassword().toCharArray());
         } catch (UnrecoverableKeyException e) {
             throw new IllegalArgumentException(e);
         } catch (KeyStoreException e) {
@@ -80,7 +80,7 @@ class EncryptionServiceImpl implements EncryptionService {
      * @throws InvalidKeyException if the given key is inappropriate for initializing this cipher. See {@link Cipher#init(int, java.security.Key)}
      */
     private byte[] crypt(byte[] crypt, Key key, int mode) throws InvalidKeyException {
-        Cipher rsaCipher = null;
+        Cipher rsaCipher;
         try {
             rsaCipher = Cipher.getInstance("RSA/ECB/PKCS1PADDING");
         } catch (NoSuchAlgorithmException e) {

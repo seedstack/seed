@@ -9,17 +9,32 @@
  */
 package org.seedstack.seed.core.internal.application;
 
-import org.apache.commons.lang.text.StrLookup;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Sets;
 import io.nuun.kernel.api.Plugin;
 import io.nuun.kernel.api.plugin.InitState;
 import io.nuun.kernel.api.plugin.context.InitContext;
 import io.nuun.kernel.api.plugin.request.ClasspathScanRequest;
 import io.nuun.kernel.core.AbstractPlugin;
+import jodd.props.Props;
+import org.apache.commons.configuration.AbstractConfiguration;
+import org.apache.commons.configuration.Configuration;
+import org.apache.commons.configuration.MapConfiguration;
+import org.apache.commons.lang.text.StrLookup;
+import org.seedstack.seed.core.api.Application;
+import org.seedstack.seed.core.api.SeedException;
+import org.seedstack.seed.core.internal.CorePlugin;
+import org.seedstack.seed.core.spi.configuration.ConfigurationLookup;
+import org.seedstack.seed.core.utils.SeedReflectionUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.bridge.SLF4JBridgeHandler;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Enumeration;
@@ -29,30 +44,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-
-import jodd.props.Props;
-
-import org.apache.commons.configuration.Configuration;
-import org.apache.commons.configuration.MapConfiguration;
-import org.apache.commons.lang.text.StrLookup;
-import org.seedstack.seed.core.api.Application;
-import org.seedstack.seed.core.api.SeedException;
-import org.seedstack.seed.core.internal.CorePlugin;
-import org.seedstack.seed.core.utils.SeedReflectionUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.slf4j.bridge.SLF4JBridgeHandler;
-
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Sets;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
 
 /**
  * Plugin that initialize the application identity, storage location and configuration.
@@ -98,6 +89,16 @@ public class ApplicationPlugin extends AbstractPlugin {
         for (String propsResource : initContext.mapResourcesByRegex().get(PROPS_REGEX)) {
             if (propsResource.startsWith(CONFIGURATION_LOCATION)) {
                 allConfigurationResources.add(propsResource);
+            }
+        }
+
+        Map<String, Class<? extends StrLookup>> configurationLookups = new HashMap<String, Class<? extends StrLookup>>();
+
+        for (Class<?> candidate : initContext.scannedClassesByAnnotationClass().get(ConfigurationLookup.class)) {
+            ConfigurationLookup configurationLookup = candidate.getAnnotation(ConfigurationLookup.class);
+            if (StrLookup.class.isAssignableFrom(candidate) && configurationLookup != null && !configurationLookup.value().isEmpty()) {
+                configurationLookups.put(configurationLookup.value(), candidate.asSubclass(StrLookup.class));
+                LOGGER.trace("Detected configuration lookup {}", configurationLookup.value());
             }
         }
 
@@ -147,7 +148,7 @@ public class ApplicationPlugin extends AbstractPlugin {
         }
 
         // Build configuration
-        Configuration configuration = buildConfiguration(props, propsOverride, profiles);
+        Configuration configuration = buildConfiguration(props, propsOverride, configurationLookups, profiles);
         applicationDiagnosticCollector.setConfiguration(configuration);
         Configuration coreConfiguration = configuration.subset(CorePlugin.CORE_PLUGIN_PREFIX);
 
@@ -209,7 +210,7 @@ public class ApplicationPlugin extends AbstractPlugin {
 
     @Override
     public Collection<ClasspathScanRequest> classpathScanRequests() {
-        return classpathScanRequestBuilder().resourcesRegex(PROPERTIES_REGEX).resourcesRegex(PROPS_REGEX).build();
+        return classpathScanRequestBuilder().resourcesRegex(PROPERTIES_REGEX).resourcesRegex(PROPS_REGEX).annotationType(ConfigurationLookup.class).build();
     }
 
     @Override
@@ -286,7 +287,23 @@ public class ApplicationPlugin extends AbstractPlugin {
         return newProps;
     }
 
-    private Configuration buildConfiguration(Props props, Props propsOverride, String... profiles) {
+    private StrLookup buildStrLookup(Class<? extends StrLookup> strLookupClass, AbstractConfiguration abstractConfiguration) {
+        try {
+            try {
+                return strLookupClass.getConstructor(AbstractConfiguration.class).newInstance(abstractConfiguration);
+            } catch (NoSuchMethodException e1) {
+                try {
+                    return strLookupClass.getConstructor().newInstance();
+                } catch (NoSuchMethodException e2) {
+                    throw SeedException.wrap(e2, ApplicationErrorCode.NO_SUITABLE_CONFIGURATION_LOOKUP_CONSTRUCTOR_FOUND).put("className", strLookupClass.getCanonicalName());
+                }
+            }
+        } catch (Exception e) {
+            throw SeedException.wrap(e, ApplicationErrorCode.UNABLE_TO_INSTANTIATE_CONFIGURATION_LOOKUP).put("className", strLookupClass.getCanonicalName());
+        }
+    }
+
+    private Configuration buildConfiguration(Props props, Props propsOverride, Map<String, Class<? extends StrLookup>> configurationLookups, String... profiles) {
         Map<String, String> finalConfiguration = new HashMap<String, String>();
         Map<String, String> configurationMap = new HashMap<String, String>();
         Map<String, String> configurationOverrideMap = new HashMap<String, String>();
@@ -316,14 +333,10 @@ public class ApplicationPlugin extends AbstractPlugin {
 
         // Convert final configuration to an immutable Apache Commons Configuration
         MapConfiguration mapConfiguration = new MapConfiguration(new ImmutableMap.Builder<String, Object>().putAll(finalConfiguration).build());
-        mapConfiguration.getInterpolator().registerLookup("env", StrLookup.mapLookup(System.getenv()));
-        mapConfiguration.getInterpolator().registerLookup("json", new JsonLookup(mapConfiguration));
 
-        // Add every lookup registered
-        for (Entry<String, ConfigurationLookup> lookup : ConfigurationLookupRegistry.getInstance().getLookups().entrySet()) {
-            LOGGER.debug("Add a configuration lookup for key [{}]", lookup.getKey());
-            StrLookup strLookup = lookup.getValue().getLookup(mapConfiguration);
-            mapConfiguration.getInterpolator().registerLookup(lookup.getKey(), strLookup);
+        // Register configuration lookups
+        for (Entry<String, Class<? extends StrLookup>> configurationLookup : configurationLookups.entrySet()) {
+            mapConfiguration.getInterpolator().registerLookup(configurationLookup.getKey(), buildStrLookup(configurationLookup.getValue(), mapConfiguration));
         }
 
         return mapConfiguration;

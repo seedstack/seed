@@ -33,7 +33,7 @@ import com.google.inject.name.Names;
  * 
  * @author thierry.bouvet@mpsa.com
  */
-public class AsymetricCryptingSupportModuleTest {
+public class CryptoModuleTest {
 
     /**
      * Test method for {@link org.seedstack.seed.crypto.internal.CryptoModule#configure()}. This method inject a mocked

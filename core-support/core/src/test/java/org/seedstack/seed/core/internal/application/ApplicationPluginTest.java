@@ -17,8 +17,11 @@ import org.assertj.core.api.Assertions;
 import org.junit.Before;
 import org.junit.Test;
 import org.seedstack.seed.core.api.Application;
+import org.seedstack.seed.core.api.Install;
 import org.seedstack.seed.core.internal.CorePlugin;
+import org.seedstack.seed.core.spi.configuration.ConfigurationLookup;
 
+import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -77,6 +80,9 @@ public class ApplicationPluginTest {
             add(mock(CorePlugin.class));
         }});
 
+        Map<Class<? extends Annotation>, Collection<Class<?>>> scannedClassesByAnnotationClass = new HashMap<Class<? extends Annotation>, Collection<Class<?>>>();
+        scannedClassesByAnnotationClass.put(ConfigurationLookup.class, new ArrayList<Class<?>>());
+
         Collection<String> props = new ArrayList<String>();
         props.add("META-INF/configuration/org.seedstack.seed-test.props");
         resources.put(ApplicationPlugin.PROPS_REGEX, props);
@@ -86,6 +92,8 @@ public class ApplicationPluginTest {
         resources.put(ApplicationPlugin.PROPERTIES_REGEX, properties);
 
         when(initContext.mapResourcesByRegex()).thenReturn(resources);
+        when(initContext.scannedClassesByAnnotationClass()).thenReturn(scannedClassesByAnnotationClass);
+
         return initContext;
     }
 }

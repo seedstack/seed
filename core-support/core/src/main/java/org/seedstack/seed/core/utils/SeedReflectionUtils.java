@@ -13,17 +13,18 @@ import com.google.common.base.Predicate;
 import com.google.common.collect.Lists;
 import com.google.gag.annotation.remark.Hack;
 import com.google.gag.annotation.remark.Magic;
-import org.seedstack.seed.core.api.SeedException;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.reflections.ReflectionUtils;
+import org.seedstack.seed.core.api.SeedException;
 
 import java.lang.annotation.Annotation;
-import java.lang.annotation.Inherited;
-import java.lang.reflect.*;
+import java.lang.reflect.AnnotatedElement;
+import java.lang.reflect.Field;
+import java.lang.reflect.Member;
+import java.lang.reflect.Method;
 import java.util.*;
 
-import static com.google.gag.enumeration.MagicType.BLACK;
 import static com.google.gag.enumeration.MagicType.WHITE;
 
 /**
@@ -238,92 +239,6 @@ public final class SeedReflectionUtils {
         }
 
         return toClean;
-    }
-
-    /**
-     * Inject specified annotations in a target class.
-     *
-     * @param targetClass The class to inject.
-     * @param annotations The annotations to inject.
-     */
-    @SuppressWarnings({"rawtypes", "unchecked"})
-    @Hack("Started because of WAS8 JAX-WS implementation")
-    @Magic(type = BLACK)
-    public static void injectAnnotations(Class<?> targetClass, Annotation[] annotations) {
-        // Initialize the internal caches
-        targetClass.getAnnotations();
-
-        try {
-            try { // NOSONAR
-                // Oracle JVM
-
-                Field mapRef = Class.class.getDeclaredField("annotations");
-                mapRef.setAccessible(true);
-
-                Map<Class, Annotation> annotationMap = (Map<Class, Annotation>) mapRef.get(targetClass);
-
-                for (Annotation annotation : annotations) {
-                    annotationMap.put(annotation.annotationType(), annotation);
-                }
-
-                mapRef.set(targetClass, annotationMap);
-            } catch (NoSuchFieldException e1) { // NOSONAR
-                try { // NOSONAR
-                    // IBM JVM
-
-                    Method getAnnotationCacheMethod = ClassLoader.class.getDeclaredMethod("getAnnotationCache");
-                    getAnnotationCacheMethod.setAccessible(true);
-
-                    Hashtable annotationCache = (Hashtable) getAnnotationCacheMethod.invoke(targetClass.getClassLoader());
-
-                    Annotation[] annotationArray = (Annotation[]) annotationCache.get(targetClass);
-                    Annotation[] newAnnotationArray = new Annotation[annotationArray.length + annotations.length];
-                    System.arraycopy(annotationArray, 0, newAnnotationArray, 0, annotationArray.length);
-
-                    for (int i = annotations.length; i > 0; i--) {
-                        newAnnotationArray[newAnnotationArray.length - i] = annotations[i - 1];
-                    }
-
-                    annotationCache.put(targetClass, newAnnotationArray);
-                } catch (NoSuchMethodException e2) {
-                    // Unsupported JVM
-                    throw SeedException.wrap(e2, CoreUtilsErrorCode.ANNOTATION_INJECTION_NOT_SUPPORTED);
-                }
-            }
-        } catch (IllegalAccessException e) {
-            throw SeedException.wrap(e, CoreUtilsErrorCode.ERROR_OCCURRED_TRYING_TO_INJECT_ANNOTATION);
-        } catch (InvocationTargetException e) {
-            throw SeedException.wrap(e, CoreUtilsErrorCode.ERROR_OCCURRED_TRYING_TO_INJECT_ANNOTATION);
-        }
-    }
-
-    /**
-     * Inject one annotation in a target class.
-     *
-     * @param targetClass The class to inject.
-     * @param annotation  The annotation to inject.
-     */
-    public static void injectAnnotation(Class<?> targetClass, Annotation annotation) {
-        SeedReflectionUtils.injectAnnotations(targetClass, new Annotation[]{annotation});
-    }
-
-    /**
-     * Copy non inheritable annotation in the subclass proxy to preserve them.
-     *
-     * @param proxyClass The proxy class.
-     */
-    public static void preserveAnnotationsInProxy(Class<?> proxyClass) {
-        Class<?> cleanedClass = SeedReflectionUtils.cleanProxy(proxyClass);
-        if (!proxyClass.equals(cleanedClass)) {
-            List<Annotation> annotationsToCopy = new ArrayList<Annotation>();
-            for (Annotation annotation : cleanedClass.getAnnotations()) {
-                if (!annotation.getClass().isAnnotationPresent(Inherited.class)) {
-                    annotationsToCopy.add(annotation);
-                }
-            }
-
-            injectAnnotations(proxyClass, annotationsToCopy.toArray(new Annotation[annotationsToCopy.size()]));
-        }
     }
 
     /**

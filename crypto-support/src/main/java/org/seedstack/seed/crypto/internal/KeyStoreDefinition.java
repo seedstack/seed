@@ -14,49 +14,33 @@ package org.seedstack.seed.crypto.internal;
 
 /**
  * Definition which contains all parameters to access to the keystore.
- * 
+ *
  * @author thierry.bouvet@mpsa.com
  */
-public class KeyStoreDefinition {
+class KeyStoreDefinition {
+    private final String path;
+    private final String password;
 
-    private String path;
-
-    private String password;
+    public KeyStoreDefinition(String path, String password) {
+        this.path = path;
+        this.password = password;
+    }
 
     /**
      * The keystore path.
-     * 
+     *
      * @return the keystore path
      */
-    public String getPath() {
+    String getPath() {
         return path;
     }
 
     /**
-     * Set the keystore path.
-     * 
-     * @param path the keystore path
-     */
-    public void setPath(String path) {
-        this.path = path;
-    }
-
-    /**
      * Password to access to the keystore.
-     * 
+     *
      * @return the password to access to the keystore
      */
-    public String getPassword() {
+    String getPassword() {
         return password;
     }
-
-    /**
-     * Set the password to access to the keystore.
-     * 
-     * @param password the password to access to the keystore
-     */
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
 }

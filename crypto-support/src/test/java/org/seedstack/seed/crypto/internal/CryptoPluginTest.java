@@ -11,24 +11,17 @@
  * Creation : 4 juin 2015
  */
 /**
- * 
+ *
  */
 package org.seedstack.seed.crypto.internal;
 
 import io.nuun.kernel.api.Plugin;
 import io.nuun.kernel.api.plugin.context.InitContext;
 import io.nuun.kernel.core.AbstractPlugin;
-
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-
 import mockit.Deencapsulation;
 import mockit.Expectations;
 import mockit.Mocked;
 import mockit.Verifications;
-
 import org.apache.commons.configuration.Configuration;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
@@ -36,12 +29,17 @@ import org.seedstack.seed.core.api.Application;
 import org.seedstack.seed.core.internal.application.ApplicationPlugin;
 import org.seedstack.seed.crypto.api.EncryptionService;
 
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Unit test for {@link CryptoPlugin}.
- * 
+ *
  * @author thierry.bouvet@mpsa.com
  */
-public class AsymetricCryptingSupportPluginTest {
+public class CryptoPluginTest {
 
     /**
      * Test method for {@link org.seedstack.seed.crypto.internal.CryptoPlugin#name()}.
@@ -57,15 +55,15 @@ public class AsymetricCryptingSupportPluginTest {
     @Test
     public void testNativeUnitModule(@SuppressWarnings("unused") @Mocked final CryptoModule module) {
 
-        final Map<String, EncryptionService> rsaServices = new HashMap<String, EncryptionService>();
+        final Map<String, EncryptionService> encryptionServices = new HashMap<String, EncryptionService>();
 
         final CryptoPlugin plugin = new CryptoPlugin();
-        Deencapsulation.setField(plugin, "rsaServices", rsaServices);
+        Deencapsulation.setField(plugin, "encryptionServices", encryptionServices);
 
         plugin.nativeUnitModule();
         new Verifications() {
             {
-                new CryptoModule(rsaServices);
+                new CryptoModule(encryptionServices);
                 times = 1;
             }
         };
@@ -75,17 +73,17 @@ public class AsymetricCryptingSupportPluginTest {
     /**
      * Test method for {@link org.seedstack.seed.crypto.internal.CryptoPlugin#init(io.nuun.kernel.api.plugin.context.InitContext)}. Test creation of
      * {@link EncryptionService}.
-     * 
+     *
      * @throws Exception if an error occurred
      */
     @Test
     public void testInitInitContext(@Mocked final InitContext context, @Mocked final ApplicationPlugin applicationPlugin,
-            @Mocked final Configuration configuration, @Mocked final Application application, @Mocked final EncryptionServiceFactory factory,
-            @Mocked final CertificateDefinitionFactory certificateDefinitionFactory) throws Exception {
+                                    @Mocked final Configuration configuration, @Mocked final Application application, @Mocked final EncryptionServiceFactory factory) throws Exception {
 
         new Expectations() {
             @Mocked
             CertificateDefinition certificateDefinition;
+
             {
                 context.pluginsRequired();
                 result = Collections.singleton(applicationPlugin);
@@ -99,8 +97,8 @@ public class AsymetricCryptingSupportPluginTest {
                 configuration.subset("org.seedstack.seed.cryptography");
                 result = configuration;
 
-                configuration.getString("keys");
-                result = "key1";
+                configuration.getStringArray("keys");
+                result = new String[] { "key1" };
 
             }
         };
@@ -108,17 +106,14 @@ public class AsymetricCryptingSupportPluginTest {
         plugin.init(context);
 
         new Verifications() {
-            Map<String, EncryptionService> rsaServices = Deencapsulation.getField(plugin, "rsaServices");
-            final int configurations = 1;
+            Map<String, EncryptionService> encryptionServices = Deencapsulation.getField(plugin, "encryptionServices");
+            final int configurations = 2; // master + key1
 
             {
-                certificateDefinitionFactory.getInstance(configuration);
+                factory.createEncryptionService((KeyStoreDefinition) any, (CertificateDefinition) any);
                 times = configurations;
 
-                factory.getInstance((KeyStoreDefinition) any, (CertificateDefinition) any);
-                times = configurations;
-
-                Assertions.assertThat(rsaServices.size()).isEqualTo(configurations);
+                Assertions.assertThat(encryptionServices.size()).isEqualTo(configurations);
             }
         };
 
@@ -127,17 +122,17 @@ public class AsymetricCryptingSupportPluginTest {
     /**
      * Test method for {@link org.seedstack.seed.crypto.internal.CryptoPlugin#init(io.nuun.kernel.api.plugin.context.InitContext)}. Test creation of
      * {@link EncryptionService} with a custom keystore for one key.
-     * 
+     *
      * @throws Exception if an error occurred
      */
     @Test
     public void testInitInitContextWithCustomKeystoreForKey(@Mocked final InitContext context, @Mocked final ApplicationPlugin applicationPlugin,
-            @Mocked final Configuration configuration, @Mocked final Application application, @Mocked final EncryptionServiceFactory factory,
-            @Mocked final CertificateDefinitionFactory certificateDefinitionFactory) throws Exception {
+                                                            @Mocked final Configuration configuration, @Mocked final Configuration subsetConfiguration, @Mocked final Application application, @Mocked final EncryptionServiceFactory factory) throws Exception {
 
         new Expectations() {
             @Mocked
             CertificateDefinition certificateDefinition;
+
             {
                 context.pluginsRequired();
                 result = Collections.singleton(applicationPlugin);
@@ -151,28 +146,22 @@ public class AsymetricCryptingSupportPluginTest {
                 configuration.subset("org.seedstack.seed.cryptography");
                 result = configuration;
 
-                configuration.getString("keys");
-                result = "key1";
-
-                configuration.getString("keystore.path");
-                result = "path";
+                configuration.getStringArray("keys");
+                result = new String[] { "key1" };
             }
         };
         final CryptoPlugin plugin = new CryptoPlugin();
         plugin.init(context);
 
         new Verifications() {
-            Map<String, EncryptionService> rsaServices = Deencapsulation.getField(plugin, "rsaServices");
-            final int configurations = 1;
+            Map<String, EncryptionService> encryptionServices = Deencapsulation.getField(plugin, "encryptionServices");
+            final int configurations = 2; // master + key1
 
             {
-                certificateDefinitionFactory.getInstance(configuration);
+                factory.createEncryptionService((KeyStoreDefinition) any, (CertificateDefinition) any);
                 times = configurations;
 
-                factory.getInstance((KeyStoreDefinition) any, (CertificateDefinition) any);
-                times = configurations;
-
-                Assertions.assertThat(rsaServices.size()).isEqualTo(configurations);
+                Assertions.assertThat(encryptionServices.size()).isEqualTo(configurations);
             }
         };
 
@@ -181,16 +170,17 @@ public class AsymetricCryptingSupportPluginTest {
     /**
      * Test method for {@link org.seedstack.seed.crypto.internal.CryptoPlugin#init(io.nuun.kernel.api.plugin.context.InitContext)}. Test an error in
      * the configuration file.
-     * 
+     *
      * @throws Exception if an error occurred
      */
     @Test(expected = RuntimeException.class)
     public void testInitInitContextWithProblemKeyDefinition(@Mocked final InitContext context, @Mocked final ApplicationPlugin applicationPlugin,
-            @Mocked final Configuration configuration, @Mocked final Application application) throws Exception {
+                                                            @Mocked final Configuration configuration, @Mocked final Application application) throws Exception {
 
         new Expectations() {
             @Mocked
             CertificateDefinition certificateDefinition;
+
             {
                 context.pluginsRequired();
                 result = Collections.singleton(applicationPlugin);
@@ -204,8 +194,8 @@ public class AsymetricCryptingSupportPluginTest {
                 configuration.subset("org.seedstack.seed.cryptography");
                 result = configuration;
 
-                configuration.getString("keys");
-                result = "key1";
+                configuration.getStringArray("keys");
+                result = new String[] { "key1" };
 
                 configuration.isEmpty();
                 result = true;
@@ -219,7 +209,7 @@ public class AsymetricCryptingSupportPluginTest {
     /**
      * Test method for {@link org.seedstack.seed.crypto.internal.CryptoPlugin#init(io.nuun.kernel.api.plugin.context.InitContext)}. Test the plugin
      * without {@link ApplicationPlugin}. So nothing is done.
-     * 
+     *
      * @throws Exception if an error occurred
      */
     @Test
@@ -229,6 +219,7 @@ public class AsymetricCryptingSupportPluginTest {
         new Expectations() {
             @Mocked
             CertificateDefinition certificateDefinition;
+
             {
                 context.pluginsRequired();
                 result = Collections.singleton(applicationPlugin);
@@ -239,10 +230,10 @@ public class AsymetricCryptingSupportPluginTest {
         plugin.init(context);
 
         new Verifications() {
-            Map<String, EncryptionService> rsaServices = Deencapsulation.getField(plugin, "rsaServices");
+            Map<String, EncryptionService> encryptionServices = Deencapsulation.getField(plugin, "encryptionServices");
 
             {
-                Assertions.assertThat(rsaServices).isEmpty();
+                Assertions.assertThat(encryptionServices).isEmpty();
             }
         };
 
@@ -256,45 +247,5 @@ public class AsymetricCryptingSupportPluginTest {
         CryptoPlugin plugin = new CryptoPlugin();
         Collection<Class<? extends Plugin>> list = plugin.requiredPlugins();
         Assertions.assertThat(list.contains(ApplicationPlugin.class)).isTrue();
-    }
-
-    /**
-     * Test method for {@link org.seedstack.seed.crypto.internal.CryptoPlugin#getLookup(Configuration)}.
-     */
-    @Test
-    public void testPasswordLookup(@Mocked final Configuration configuration, @Mocked final EncryptionServiceFactory factory,
-            @Mocked final CertificateDefinitionFactory certificateDefinitionFactory,
-            @SuppressWarnings("unused") @Mocked final PasswordLookup passwordLookup) throws Exception {
-
-        new Expectations() {
-            @Mocked
-            CertificateDefinition certificateDefinition;
-            {
-                configuration.subset("org.seedstack.seed.cryptography");
-                result = configuration;
-
-            }
-        };
-        final CryptoPlugin plugin = new CryptoPlugin();
-        plugin.getLookup(configuration);
-
-        new Verifications() {
-            Map<String, EncryptionService> rsaServices = Deencapsulation.getField(plugin, "rsaServices");
-            final int configurations = 1;
-
-            {
-                certificateDefinitionFactory.getInstance(configuration);
-                times = configurations;
-
-                factory.getInstance((KeyStoreDefinition) any, (CertificateDefinition) any);
-                times = configurations;
-
-                Assertions.assertThat(rsaServices.size()).isEqualTo(configurations);
-
-                new PasswordLookup(rsaServices.get("master"));
-                times = 1;
-            }
-        };
-
     }
 }

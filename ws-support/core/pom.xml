@@ -42,6 +42,9 @@
                             </wsdlFiles>
                             <target>2.1</target>
                             <genJWS>false</genJWS>
+                            <vmArgs>
+                                <vmArg>-Djavax.xml.accessExternalSchema=all</vmArg>
+                            </vmArgs>
                         </configuration>
                     </execution>
                 </executions>

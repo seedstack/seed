@@ -14,6 +14,7 @@ import org.apache.commons.configuration.AbstractConfiguration;
 import org.apache.commons.configuration.interpol.ConfigurationInterpolator;
 import org.apache.commons.lang.text.StrLookup;
 import org.apache.commons.lang.text.StrSubstitutor;
+import org.seedstack.seed.core.spi.configuration.ConfigurationLookup;
 
 import java.util.regex.Pattern;
 
@@ -22,13 +23,19 @@ import java.util.regex.Pattern;
  *
  * @author adrien.lauer@mpsa.com
  */
-class JsonLookup extends StrLookup {
+@ConfigurationLookup("json")
+public class JsonLookup extends StrLookup {
     public static final Pattern LOOKUP_PATTERN = Pattern.compile("\\|");
 
     private final ConfigurationInterpolator interpolator;
     private final StrSubstitutor substitutor;
 
-    JsonLookup(AbstractConfiguration configuration) {
+    /**
+     * Creates the lookup.
+     *
+     * @param configuration the actual configuration.
+     */
+    public JsonLookup(AbstractConfiguration configuration) {
         this.interpolator = configuration.getInterpolator();
         this.substitutor = configuration.getSubstitutor();
     }
