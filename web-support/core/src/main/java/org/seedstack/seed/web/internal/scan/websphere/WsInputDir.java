@@ -35,6 +35,7 @@ class WsInputDir implements Vfs.Dir {
     private final URL url;
 
     private String classesPath;
+    private String warfile;
 
     private JarInputStream jarInputStream;
 
@@ -58,7 +59,7 @@ class WsInputDir implements Vfs.Dir {
                             String path = url.toExternalForm();
 
                             final String warExtension = ".war!";
-                            String warfile = path.substring(0, path.indexOf(warExtension) + ".war".length());
+                            warfile = path.substring(0, path.indexOf(warExtension) + ".war".length());
                             classesPath = path.substring(path.indexOf(warExtension) + warExtension.length() + 1, path.length());
                             jarInputStream = new JarInputStream(new URL(warfile).openStream());
 
@@ -86,7 +87,8 @@ class WsInputDir implements Vfs.Dir {
                                     return new WsInputFile(classesPath, entry, jarInputStream);
                                 }
                             } catch (IOException e) {
-                                throw SeedException.wrap(e, WebErrorCode.UNABLE_TO_SCAN_WEBSPHERE_DIRECTORY);
+                                throw SeedException.wrap(e, WebErrorCode.UNABLE_TO_SCAN_WEBSPHERE_DIRECTORY).put("path", classesPath)
+                                        .put("warname", warfile);
                             }
                         }
 
