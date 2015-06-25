@@ -1,1 +1,2 @@
 org.seedstack.seed.web.internal.scan.tomcat.TomcatClasspathScanHandler
+org.seedstack.seed.web.internal.scan.websphere.WebsphereClasspathScanHandler
