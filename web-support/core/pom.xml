@@ -47,6 +47,12 @@
         </dependency>
 
         <dependency>
+            <groupId>org.jmockit</groupId>
+            <artifactId>jmockit</artifactId>
+            <version>1.17</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>org.seedstack.seed</groupId>
             <artifactId>seed-unittest-support</artifactId>
             <version>${project.version}</version>

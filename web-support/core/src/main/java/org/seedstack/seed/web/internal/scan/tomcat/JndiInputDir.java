@@ -9,21 +9,27 @@
  */
 package org.seedstack.seed.web.internal.scan.tomcat;
 
-import com.google.common.base.Joiner;
-import com.google.common.collect.AbstractIterator;
-import org.seedstack.seed.core.api.SeedException;
-import org.reflections.vfs.Vfs;
-import org.seedstack.seed.core.internal.CorePlugin;
-import org.seedstack.seed.web.api.WebErrorCode;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.net.URL;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Deque;
+import java.util.Iterator;
+import java.util.List;
 
 import javax.naming.NameClassPair;
 import javax.naming.NamingEnumeration;
 import javax.naming.NamingException;
 import javax.naming.directory.DirContext;
-import java.net.URL;
-import java.util.*;
+
+import org.reflections.vfs.Vfs;
+import org.seedstack.seed.core.api.SeedException;
+import org.seedstack.seed.core.internal.CorePlugin;
+import org.seedstack.seed.web.api.WebErrorCode;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.google.common.base.Joiner;
+import com.google.common.collect.AbstractIterator;
 
 /**
  * VFS directory implementation for JNDI directory scanning.
@@ -60,6 +66,7 @@ class JndiInputDir implements Vfs.Dir {
                         }
                     }
 
+                    @Override
                     protected Vfs.File computeNext() {
                         try {
                             JndiInputFile nextFile = findNextFile();

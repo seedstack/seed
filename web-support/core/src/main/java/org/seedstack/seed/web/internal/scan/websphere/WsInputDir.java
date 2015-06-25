@@ -7,7 +7,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-package org.seedstack.seed.web.internal.scan.tomcat;
+package org.seedstack.seed.web.internal.scan.websphere;
 
 import java.io.IOException;
 import java.net.URL;
@@ -25,18 +25,20 @@ import org.slf4j.LoggerFactory;
 import com.google.common.collect.AbstractIterator;
 
 /**
- * VFS directory implementation for JNDI JAR scanning.
+ * VFS file implementation for WebSphere WSJAR scanning. Scan for directory.
  *
- * @author adrien.lauer@mpsa.com
+ * @author thierry.bouvet@mpsa.com
  */
-class JndiJarInputDir implements Vfs.Dir {
-    private static final Logger LOGGER = LoggerFactory.getLogger(JndiJarInputDir.class);
+class WsInputDir implements Vfs.Dir {
+    private static final Logger LOGGER = LoggerFactory.getLogger(WsInputDir.class);
 
     private final URL url;
 
-    JarInputStream jarInputStream;
+    private String classesPath;
 
-    JndiJarInputDir(URL url) {
+    private JarInputStream jarInputStream;
+
+    WsInputDir(URL url) {
         this.url = url;
     }
 
@@ -53,15 +55,22 @@ class JndiJarInputDir implements Vfs.Dir {
                 return new AbstractIterator<Vfs.File>() {
                     { // NOSONAR
                         try {
-                            jarInputStream = new JarInputStream(url.openConnection().getInputStream());
+                            String path = url.toExternalForm();
+
+                            final String warExtension = ".war!";
+                            String warfile = path.substring(0, path.indexOf(warExtension) + ".war".length());
+                            classesPath = path.substring(path.indexOf(warExtension) + warExtension.length() + 1, path.length());
+                            jarInputStream = new JarInputStream(new URL(warfile).openStream());
+
                         } catch (Exception e) {
-                            LOGGER.warn("Unable to open JAR at " + url.toExternalForm() + ", ignoring it");
+                            LOGGER.warn("Unable to open WAR at " + url.toExternalForm() + ", ignoring it");
                             LOGGER.debug(CorePlugin.DETAILS_MESSAGE, e);
                         }
                     }
 
                     @Override
                     protected Vfs.File computeNext() {
+
                         if (jarInputStream == null) {
                             return endOfData();
                         }
@@ -74,12 +83,13 @@ class JndiJarInputDir implements Vfs.Dir {
                                 }
 
                                 if (!entry.isDirectory()) {
-                                    return new JndiJarInputFile(entry, jarInputStream);
+                                    return new WsInputFile(classesPath, entry, jarInputStream);
                                 }
                             } catch (IOException e) {
-                                throw SeedException.wrap(e, WebErrorCode.UNABLE_TO_SCAN_TOMCAT_JNDI_JAR);
+                                throw SeedException.wrap(e, WebErrorCode.UNABLE_TO_SCAN_WEBSPHERE_DIRECTORY);
                             }
                         }
+
                     }
                 };
             }
@@ -91,7 +101,7 @@ class JndiJarInputDir implements Vfs.Dir {
         try {
             jarInputStream.close();
         } catch (IOException e) {
-            LOGGER.warn("Unable to close JAR at " + url.toExternalForm());
+            LOGGER.warn("Unable to close WAR at " + url.toExternalForm());
             LOGGER.debug(CorePlugin.DETAILS_MESSAGE, e);
         }
     }
