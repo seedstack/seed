@@ -8,6 +8,10 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 #
 
-org.seedstack.seed.web.cors.enabled = true
-org.seedstack.seed.web.cors.property.tagRequests = true
-org.seedstack.seed.web.cors.property.supportedMethods = GET\\, POST\\, HEAD\\, OPTIONS\\, PUT\\, DELETE
+[org.seedstack.seed.web.cors]
+enabled = true
+property.tagRequests = true
+property.supportedMethods = GET\\, POST\\, HEAD\\, OPTIONS\\, PUT\\, DELETE
+
+[org.seedstack.seed.rest]
+baseRel = http://example.org/rel

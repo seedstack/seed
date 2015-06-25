@@ -9,7 +9,6 @@
  */
 package org.seedstack.seed.rest;
 
-import org.assertj.core.api.Assertions;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.test.api.ArquillianResource;
@@ -19,17 +18,13 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Test;
 import org.seedstack.seed.it.AbstractSeedWebIT;
-import org.seedstack.seed.rest.fixtures.Activity1;
 import org.skyscreamer.jsonassert.JSONAssert;
 
-import javax.inject.Inject;
 import java.net.URL;
 
 import static com.jayway.restassured.RestAssured.expect;
 
 public class RestIT extends AbstractSeedWebIT {
-    @Inject
-    Activity1 activity1;
 
     @ArquillianResource
     URL baseURL;
@@ -37,12 +32,6 @@ public class RestIT extends AbstractSeedWebIT {
     @Deployment
     public static WebArchive createDeployment() {
         return ShrinkWrap.create(WebArchive.class).setWebXML("WEB-INF/web.xml");
-    }
-
-    @Test
-    @RunAsClient
-    public void activities_are_injected() {
-        Assertions.assertThat(activity1).isNotNull();
     }
 
     @RunAsClient

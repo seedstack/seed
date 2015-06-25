@@ -1,0 +1,163 @@
+/**
+ * Copyright (c) 2013-2015 by The SeedStack authors. All rights reserved.
+ *
+ * This file is part of SeedStack, An enterprise-oriented full development stack.
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+package org.seedstack.seed.rest.internal.jsonhome;
+
+import org.seedstack.seed.core.api.SeedException;
+import org.seedstack.seed.core.utils.SeedCheckUtils;
+import org.seedstack.seed.rest.internal.RestErrorCode;
+
+import javax.annotation.Nullable;
+import java.util.HashMap;
+import java.util.Map;
+
+/**
+ * The JSON-HOME representation of a REST resource.
+ *
+ * @author pierre.thirouin@ext.mpsa.com (Pierre Thirouin)
+ */
+class Resource {
+
+    private final String rel;
+
+    private String href;
+
+    private String hrefTemplate;
+
+    private Map<String, String> hrefVars;
+
+    private Hints hints;
+
+    /**
+     * Resource constructor.
+     *
+     * @param rel   the relation type
+     * @param href  the href (can be an href-template)
+     * @param hints the the resource hints
+     */
+    public Resource(String rel, String href, @Nullable Hints hints) {
+        SeedCheckUtils.checkIfNotNull(rel);
+        SeedCheckUtils.checkIfNotNull(href);
+        this.rel = rel;
+        this.href = href;
+        this.hints = hints;
+    }
+
+    /**
+     * Resource constructor.
+     *
+     * @param rel          the the relation type
+     * @param hrefTemplate the href template
+     * @param hrefVars     the href variables
+     * @param hints        the the resource hints
+     */
+    public Resource(String rel, String hrefTemplate, @Nullable Map<String, String> hrefVars, @Nullable Hints hints) {
+        SeedCheckUtils.checkIfNotNull(rel);
+        SeedCheckUtils.checkIfNotNull(hrefTemplate);
+        this.rel = rel;
+        this.hrefTemplate = hrefTemplate;
+        this.hrefVars = hrefVars;
+        this.hints = hints;
+    }
+
+    public String rel() {
+        return rel;
+    }
+
+    public String href() {
+        return href;
+    }
+
+    public String hrefTemplate() {
+        return hrefTemplate;
+    }
+
+    public Map<String, String> hrefVars() {
+        return hrefVars;
+    }
+
+    public Hints hints() {
+        return hints;
+    }
+
+    public boolean templated() {
+        return hrefTemplate != null && !hrefTemplate.equals("");
+    }
+
+    public void merge(Resource resource) {
+        checkRel(resource);
+        checkHrefs(resource);
+
+        if (resource.templated()) {
+            this.hrefVars.putAll(resource.hrefVars());
+        }
+        if (resource.hints() != null) {
+            this.hints.merge(resource.hints());
+        }
+    }
+
+    private void checkRel(Resource resource) {
+        if (!rel.equals(resource.rel())) {
+            throw SeedException.createNew(RestErrorCode.CANNOT_MERGE_RESOURCE_WITH_DIFFERENT_REL)
+                    .put("oldRel", rel).put("newRel", resource.rel());
+        }
+    }
+
+    private void checkHrefs(Resource resource) {
+        if (resource == null) {
+            throw new IllegalArgumentException("Resource should not be null");
+        }
+        if (resource.templated() && !this.templated()) {
+            throw SeedException.createNew(RestErrorCode.MULTIPLE_PATH_FOR_THE_SAME_REL)
+                    .put("rel", rel)
+                    .put("oldHref", this.hrefTemplate != null ? hrefTemplate : href)
+                    .put("newHref", resource.hrefTemplate() != null ? resource.hrefTemplate() : resource.href());
+        }
+        if (resource.templated() && !resource.hrefTemplate().equals(this.hrefTemplate())) {
+            throw SeedException.createNew(RestErrorCode.MULTIPLE_PATH_FOR_THE_SAME_REL)
+                    .put("rel", rel)
+                    .put("oldHref", this.hrefTemplate)
+                    .put("newHref", resource.hrefTemplate());
+
+        } else if (!resource.templated() && !resource.href().equals(this.href())) {
+            throw SeedException.createNew(RestErrorCode.MULTIPLE_PATH_FOR_THE_SAME_REL)
+                    .put("rel", rel)
+                    .put("oldHref", this.href)
+                    .put("newHref", resource.href());
+        }
+    }
+
+    public Map<String, Object> toRepresentation() {
+        Map<String, Object> representation = new HashMap<String, Object>();
+        if (templated()) {
+            representation.put("href-template", hrefTemplate);
+            representation.put("href-vars", hrefVars);
+        } else {
+            representation.put("href", href);
+        }
+        if (hints != null) {
+            Map<String, Object> hintsRepresentation = hints.toRepresentation();
+            if (!hintsRepresentation.isEmpty()) {
+                representation.put("hints", hintsRepresentation);
+            }
+        }
+        return representation;
+    }
+
+    @Override
+    public String toString() {
+        return "Resource{" +
+                "rel='" + rel + '\'' +
+                ", href='" + href + '\'' +
+                ", hrefTemplate='" + hrefTemplate + '\'' +
+                ", hrefVars=" + hrefVars +
+                ", hints=" + hints +
+                '}';
+    }
+}

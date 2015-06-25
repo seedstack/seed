@@ -9,10 +9,8 @@
  */
 package org.seedstack.seed.rest.internal;
 
-import org.kametic.specifications.AbstractSpecification;
+import com.google.inject.AbstractModule;
 import org.seedstack.seed.core.utils.SeedConfigurationUtils;
-import org.seedstack.seed.rest.api.Activity;
-import org.seedstack.seed.rest.api.ResourceFiltering;
 import com.sun.jersey.spi.container.ResourceFilterFactory;
 import io.nuun.kernel.api.Plugin;
 import io.nuun.kernel.api.plugin.InitState;
@@ -23,26 +21,17 @@ import io.nuun.kernel.core.AbstractPlugin;
 import org.apache.commons.configuration.Configuration;
 import org.kametic.specifications.Specification;
 import org.seedstack.seed.core.internal.application.ApplicationPlugin;
+import org.seedstack.seed.rest.api.ResourceFiltering;
+import org.seedstack.seed.rest.internal.jsonhome.JsonHome;
 import org.seedstack.seed.web.internal.WebPlugin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.servlet.ServletContext;
-import javax.ws.rs.Path;
-import javax.ws.rs.ext.ContextResolver;
-import javax.ws.rs.ext.ExceptionMapper;
-import javax.ws.rs.ext.MessageBodyReader;
-import javax.ws.rs.ext.MessageBodyWriter;
-import javax.ws.rs.ext.Provider;
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Modifier;
-import java.util.ArrayList;
-import java.util.Collection;
+import java.util.*;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
 import java.util.Properties;
-import java.util.Set;
 
 /**
  * This plugin enables JAX-RS usage in SEED applications. The JAX-RS implementation is Jersey.
@@ -53,10 +42,11 @@ public class RestPlugin extends AbstractPlugin {
     private static final String REST_PLUGIN_CONFIGURATION_PREFIX = "org.seedstack.seed.rest";
     private static final Logger LOGGER = LoggerFactory.getLogger(RestPlugin.class);
 
-    private final Specification<Class<?>> resourcesSpecification = and(or(classAnnotatedWith(Path.class), classMethodsAnnotatedWith(Path.class)), not(classIsAbstract()));
-    private final Specification<Class<?>> providersSpecification = or(and(classAnnotatedWith(Provider.class), classImplements(MessageBodyWriter.class)), and(classAnnotatedWith(Provider.class), classImplements(ContextResolver.class)), and(classAnnotatedWith(Provider.class), classImplements(MessageBodyReader.class)), and(classAnnotatedWith(Provider.class), classImplements(ExceptionMapper.class)));
+    private final Specification<Class<?>> resourcesSpecification = new JaxRsResourceSpecification();
+    private final Specification<Class<?>> providersSpecification = new JaxRsProviderSpecification();
 
     private ServletContext servletContext;
+    private JsonHome jsonHome;
 
     @Override
     public String name() {
@@ -109,19 +99,34 @@ public class RestPlugin extends AbstractPlugin {
             jerseyParameters.put(key.toString(), jerseyProperties.getProperty(key.toString()));
         }
 
+        String baseRel = restConfiguration.getString("baseRel");
+        if (baseRel == null) { //TODO SeedException
+            throw new IllegalArgumentException("Missing org.seedstack.seed.rest.baseRel property");
+        }
+
+        jsonHome = new JsonHome(baseRel, scannedClassesBySpecification.get(resourcesSpecification));
 
         webPlugin.registerAdditionalModule(
                 new RestModule(
                         scannedClassesBySpecification.get(resourcesSpecification),
                         scannedClassesBySpecification.get(providersSpecification),
-                        scannedClassesByAnnotationClass.get(Activity.class),
-                        resourceFilterFactories,
                         jerseyParameters,
+                        resourceFilterFactories,
                         restPath,
                         jspPath)
         );
 
         return InitState.INITIALIZED;
+    }
+
+    @Override
+    public Object nativeUnitModule() {
+        return new AbstractModule() {
+            @Override
+            protected void configure() {
+                bind(JsonHome.class).toInstance(jsonHome);
+            }
+        };
     }
 
     @Override
@@ -134,7 +139,11 @@ public class RestPlugin extends AbstractPlugin {
     @Override
     @SuppressWarnings("unchecked")
     public Collection<ClasspathScanRequest> classpathScanRequests() {
-        return classpathScanRequestBuilder().annotationType(Activity.class).annotationType(ResourceFiltering.class).specification(resourcesSpecification).specification(providersSpecification).build();
+        return classpathScanRequestBuilder()
+                .annotationType(ResourceFiltering.class)
+                .specification(providersSpecification)
+                .specification(resourcesSpecification)
+                .build();
     }
 
     @Override
@@ -143,18 +152,5 @@ public class RestPlugin extends AbstractPlugin {
         plugins.add(ApplicationPlugin.class);
         plugins.add(WebPlugin.class);
         return plugins;
-    }
-
-    /**
-     * Checks if the class is abstract.
-     * @return the specification
-     */
-    private Specification<Class<?>> classIsAbstract() {
-        return new AbstractSpecification<Class<?>>() {
-            @Override
-            public boolean isSatisfiedBy(Class<?> candidate) {
-                return candidate != null && Modifier.isAbstract(candidate.getModifiers());
-            }
-        };
     }
 }
