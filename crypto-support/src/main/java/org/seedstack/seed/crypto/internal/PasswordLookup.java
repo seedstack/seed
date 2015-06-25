@@ -12,31 +12,38 @@
  */
 package org.seedstack.seed.crypto.internal;
 
-import java.security.InvalidKeyException;
-
-import javax.xml.bind.DatatypeConverter;
-
+import org.apache.commons.configuration.AbstractConfiguration;
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.lang.text.StrLookup;
+import org.seedstack.seed.core.spi.configuration.ConfigurationLookup;
 import org.seedstack.seed.crypto.api.EncryptionService;
+
+import javax.xml.bind.DatatypeConverter;
+import java.security.InvalidKeyException;
 
 /**
  * {@link Configuration} lookup for a parameter like ${password:xxxx} where xxxx is an encrypted password.
- * 
+ *
  * @author thierry.bouvet@mpsa.com
  */
+@ConfigurationLookup("password")
 public class PasswordLookup extends StrLookup {
+    private final EncryptionService encryptionService;
 
-    private EncryptionService service;
+    public PasswordLookup(AbstractConfiguration abstractConfiguration) {
+        EncryptionServiceFactory encryptionServiceFactory = new EncryptionServiceFactory();
+        Configuration configuration = abstractConfiguration.subset(CryptoPlugin.CRYPTO_PLUGIN_PREFIX);
 
-    public PasswordLookup(EncryptionService service) {
-        this.service = service;
+        encryptionService = encryptionServiceFactory.createEncryptionService(
+                encryptionServiceFactory.createKeyStoreDefinition(configuration, CryptoPlugin.MASTER_KEY_NAME),
+                encryptionServiceFactory.createCertificateDefinition(configuration, CryptoPlugin.MASTER_KEY_NAME)
+        );
     }
 
     @Override
     public String lookup(String key) {
         try {
-            return new String(service.decrypt(DatatypeConverter.parseHexBinary(key)));
+            return new String(encryptionService.decrypt(DatatypeConverter.parseHexBinary(key)));
         } catch (InvalidKeyException e) {
             throw new RuntimeException("Can not decrypt passwords !", e);
         }

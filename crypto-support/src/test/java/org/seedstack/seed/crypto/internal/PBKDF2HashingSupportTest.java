@@ -12,12 +12,11 @@
  */
 package org.seedstack.seed.crypto.internal;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.seedstack.seed.crypto.api.Hash;
-import org.seedstack.seed.crypto.internal.PBKDF2HashingService;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class PBKDF2HashingSupportTest {
 

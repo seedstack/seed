@@ -7,15 +7,20 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-/*
- * Creation : 12 juin 2015
- */
 package org.seedstack.seed.core.internal.application;
 
-import org.apache.commons.configuration.Configuration;
 import org.apache.commons.lang.text.StrLookup;
+import org.seedstack.seed.core.spi.configuration.ConfigurationLookup;
 
-public interface ConfigurationLookup {
-
-    StrLookup getLookup(Configuration configuration);
+/**
+ * This class resolve environment interpolations.
+ *
+ * @author adrien.lauer@mpsa.com
+ */
+@ConfigurationLookup("env")
+public class EnvLookup extends StrLookup {
+    @Override
+    public String lookup(String key) {
+        return System.getenv(key);
+    }
 }

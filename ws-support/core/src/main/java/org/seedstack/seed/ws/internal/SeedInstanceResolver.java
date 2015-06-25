@@ -27,15 +27,7 @@ class SeedInstanceResolver extends AbstractMultiInstanceResolver<Object> {
     @Override
     public Object resolve(Packet packet) {
         Object instance = injector.getInstance(this.clazz);
-
-        try {
-            SeedReflectionUtils.preserveAnnotationsInProxy(instance.getClass());
-        } catch (Exception e) {
-            throw new RuntimeException("Unable to instantiate WS implementation " + this.clazz.getCanonicalName(), e);
-        }
-
         prepare(instance);
-
         return instance;
     }
 }

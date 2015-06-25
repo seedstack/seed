@@ -33,7 +33,7 @@ import org.junit.Test;
  * 
  * @author thierry.bouvet@mpsa.com
  */
-public class AsymetricCryptingRSATest {
+public class EncryptionServiceImplTest {
 
     /**
      * Test method for {@link EncryptionServiceImpl#encrypt(byte[])}. Test encrypt without any problem.

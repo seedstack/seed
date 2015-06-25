@@ -16,9 +16,8 @@
             <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
         </encoder>
     </appender>
-    <logger name="org.seedstack.seed.crypto" level="DEBUG"/>
-    
-    <root level="INFO">
+
+    <root level="WARN">
         <appender-ref ref="STDOUT" />
     </root>
 </configuration>
