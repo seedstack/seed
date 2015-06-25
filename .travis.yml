@@ -4,7 +4,7 @@ sudo: false
 language: java
 
 jdk:
-  - oraclejdk7
+  - oraclejdk8
 
 notifications:
   irc: "chat.freenode.net#seedstack-dev"
