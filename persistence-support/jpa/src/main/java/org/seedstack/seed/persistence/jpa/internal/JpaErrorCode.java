@@ -20,6 +20,7 @@ import org.seedstack.seed.core.api.ErrorCode;
  *
  */
 enum JpaErrorCode implements ErrorCode {
+	DATA_SOURCE_NOT_FOUND,
+	NO_PERSISTED_CLASSES_IN_UNIT,
 	ACCESSING_ENTITY_MANAGER_OUTSIDE_TRANSACTION
-	
 }

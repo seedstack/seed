@@ -16,19 +16,6 @@ import io.nuun.kernel.api.plugin.context.InitContext;
 import io.nuun.kernel.api.plugin.request.ClasspathScanRequest;
 import io.nuun.kernel.api.plugin.request.ClasspathScanRequestBuilder;
 import io.nuun.kernel.core.AbstractPlugin;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-
-import javax.persistence.Embeddable;
-import javax.persistence.Entity;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
-import javax.persistence.PersistenceException;
-
 import org.apache.commons.configuration.Configuration;
 import org.seedstack.seed.core.api.Application;
 import org.seedstack.seed.core.internal.application.ApplicationPlugin;
@@ -38,9 +25,19 @@ import org.seedstack.seed.transaction.internal.TransactionPlugin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.persistence.Embeddable;
+import javax.persistence.Entity;
+import javax.persistence.EntityManagerFactory;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Properties;
+
 /**
  * This plugin enables JPA support by creating an {@link javax.persistence.EntityManagerFactory} per persistence unit configured.
- * 
+ *
  * @author adrien.lauer@mpsa.com
  */
 public class JpaPlugin extends AbstractPlugin {
@@ -48,6 +45,7 @@ public class JpaPlugin extends AbstractPlugin {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(JpaPlugin.class);
 
+    private final EntityManagerFactoryFactory confResolver = new EntityManagerFactoryFactory();
     private final Map<String, EntityManagerFactory> entityManagerFactories = new HashMap<String, EntityManagerFactory>();
     private final Map<String, Class<? extends JpaExceptionHandler>> exceptionHandlerClasses = new HashMap<String, Class<? extends JpaExceptionHandler>>();
 
@@ -82,6 +80,10 @@ public class JpaPlugin extends AbstractPlugin {
             throw new PluginException("Unable to find transaction plugin");
         }
 
+        if (jdbcPlugin == null) {
+            throw new PluginException("Unable to find jdbc plugin");
+        }
+
         String[] persistenceUnitNames = jpaConfiguration.getStringArray("units");
 
         if (persistenceUnitNames == null || persistenceUnitNames.length == 0) {
@@ -92,19 +94,15 @@ public class JpaPlugin extends AbstractPlugin {
         for (String persistenceUnit : persistenceUnitNames) {
             Configuration persistenceUnitConfiguration = jpaConfiguration.subset("unit." + persistenceUnit);
             Iterator<String> it = persistenceUnitConfiguration.getKeys("property");
-            Map<String, String> properties = new HashMap<String, String>();
 
+            Properties properties = new Properties();
             while (it.hasNext()) {
                 String name = it.next();
                 properties.put(name.substring(9), persistenceUnitConfiguration.getString(name));
             }
 
-            SeedConfEntityManagerFactoryResolver confResolver = new SeedConfEntityManagerFactoryResolver();
             EntityManagerFactory emf;
-
-            try {
-                emf = Persistence.createEntityManagerFactory(persistenceUnit, properties);
-            } catch (PersistenceException e) {
+            if (persistenceUnitConfiguration.containsKey("datasource")) {
                 Collection<Class<?>> scannedClasses = new ArrayList<Class<?>>();
                 if (initContext.scannedClassesByAnnotationClass().get(Entity.class) != null) {
                     scannedClasses.addAll(initContext.scannedClassesByAnnotationClass().get(Entity.class));
@@ -112,11 +110,10 @@ public class JpaPlugin extends AbstractPlugin {
                 if (initContext.scannedClassesByAnnotationClass().get(Embeddable.class) != null) {
                     scannedClasses.addAll(initContext.scannedClassesByAnnotationClass().get(Embeddable.class));
                 }
-                try {
-                    emf = confResolver.resolve(persistenceUnit, properties, persistenceUnitConfiguration, application, jdbcPlugin, scannedClasses);
-                } catch (UnitNotConfiguredException noConfEx) {
-                    throw e;
-                }
+
+                emf = confResolver.createEntityManagerFactory(persistenceUnit, properties, persistenceUnitConfiguration, application, jdbcPlugin.getDataSources(), scannedClasses);
+            } else {
+                emf = confResolver.createEntityManagerFactory(persistenceUnit, properties);
             }
 
             entityManagerFactories.put(persistenceUnit, emf);
