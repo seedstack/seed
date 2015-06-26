@@ -163,20 +163,17 @@ public class SeedException extends RuntimeException {
         String seedMessage = getSeedMessage();
         if (seedMessage != null) {
             s.append(wrapLine(seedMessage));
-            s.append("\n\n");
-        } else {
-            s.append("\n");
         }
+
+        s.append("\n");
 
         compute();
         int i = causes.size();
-        if (i == 0) {
-            s.append("No cause found\n--------------\n\n");
-        } else if (i == 1) {
+        if (i == 1) {
             s.append("Cause\n-----\n");
             s.append(wrapLine(causes.get(0)));
-            s.append("\n\n");
-        } else {
+            s.append("\n");
+        } else if (i > 1) {
             s.append("Causes\n------\n");
 
             int count = 1;

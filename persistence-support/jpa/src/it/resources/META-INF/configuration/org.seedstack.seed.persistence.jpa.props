@@ -45,7 +45,6 @@ property.sql.enforce_strict_size=true
 
 [org.seedstack.seed.persistence.jpa.unit.unit4]
 datasource=datasource1
-#jta-datasource=datasource1
 mapping-files = META-INF/otherItem.xml
 property.hibernate.dialect=org.hibernate.dialect.HSQLDialect
 property.hibernate.hbm2ddl.auto=create

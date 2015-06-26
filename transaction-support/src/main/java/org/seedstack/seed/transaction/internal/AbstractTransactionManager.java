@@ -169,7 +169,7 @@ public abstract class AbstractTransactionManager implements TransactionManager {
             }
         } catch (Exception e) {
             throw SeedException.wrap(e, TransactionErrorCode.SPECIFIED_TRANSACTION_HANDLER_NOT_FOUND)
-                    .put("handlerClass", handlerClass.getCanonicalName())
+                    .put("handlerClass", handlerClass.getSimpleName())
                     .put("resource", resource == null ? "default" : resource);
         }
     }

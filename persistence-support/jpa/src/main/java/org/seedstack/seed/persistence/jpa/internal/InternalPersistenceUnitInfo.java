@@ -28,26 +28,65 @@ import javax.persistence.spi.PersistenceUnitTransactionType;
 import javax.sql.DataSource;
 
 class InternalPersistenceUnitInfo implements PersistenceUnitInfo {
+    private final String persistenceUnitName;
 
-    String persistenceUnitName;
+    private String persistenceProviderClassName;
 
-    String persistenceProviderClassName;
+    private PersistenceUnitTransactionType persistenceUnitTransactionType = PersistenceUnitTransactionType.RESOURCE_LOCAL;
 
-    PersistenceUnitTransactionType persistenceUnitTransactionType = PersistenceUnitTransactionType.RESOURCE_LOCAL;
+    private DataSource jtaDataSource;
 
-    DataSource jtaDataSource;
+    private DataSource nonJtaDataSource;
 
-    DataSource nonJtaDataSource;
+    private List<String> mappingFileNames;
 
-    List<String> mappingFileNames;
+    private List<String> managedClassNames;
 
-    List<String> managedClassNames;
+    private SharedCacheMode sharedCacheMode = SharedCacheMode.UNSPECIFIED;
 
-    SharedCacheMode sharedCacheMode = SharedCacheMode.UNSPECIFIED;
+    private ValidationMode validationMode = ValidationMode.AUTO;
 
-    ValidationMode validationMode = ValidationMode.AUTO;
+    private Properties properties;
 
-    Properties properties;
+    public InternalPersistenceUnitInfo(String persistenceUnitName) {
+        this.persistenceUnitName = persistenceUnitName;
+    }
+
+    void setPersistenceProviderClassName(String persistenceProviderClassName) {
+        this.persistenceProviderClassName = persistenceProviderClassName;
+    }
+
+    void setPersistenceUnitTransactionType(PersistenceUnitTransactionType persistenceUnitTransactionType) {
+        this.persistenceUnitTransactionType = persistenceUnitTransactionType;
+    }
+
+    void setJtaDataSource(DataSource jtaDataSource) {
+        this.jtaDataSource = jtaDataSource;
+    }
+
+    void setNonJtaDataSource(DataSource nonJtaDataSource) {
+        this.nonJtaDataSource = nonJtaDataSource;
+    }
+
+    void setMappingFileNames(List<String> mappingFileNames) {
+        this.mappingFileNames = mappingFileNames;
+    }
+
+    void setManagedClassNames(List<String> managedClassNames) {
+        this.managedClassNames = managedClassNames;
+    }
+
+    void setSharedCacheMode(SharedCacheMode sharedCacheMode) {
+        this.sharedCacheMode = sharedCacheMode;
+    }
+
+    void setValidationMode(ValidationMode validationMode) {
+        this.validationMode = validationMode;
+    }
+
+    void setProperties(Properties properties) {
+        this.properties = properties;
+    }
 
     @Override
     public String getPersistenceUnitName() {
