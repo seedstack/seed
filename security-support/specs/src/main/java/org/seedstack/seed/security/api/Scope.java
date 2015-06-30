@@ -24,15 +24,22 @@ package org.seedstack.seed.security.api;
  * can be used directly. Simple scopes are not hierarchical and are just checked
  * with strict equality.
  *
- * 
+ *
  * @author yves.dautremay@mpsa.com
- * 
+ *
  */
 public interface Scope {
 
 	/**
+	 * Return the name of the scope.
+	 *
+	 * @return the name of the scope.
+	 */
+	String getName();
+
+	/**
 	 * Returns the value of the scope represented as a string.
-	 * 
+	 *
 	 * @return a string representation of the scope.
 	 */
 	String getValue();
@@ -46,7 +53,7 @@ public interface Scope {
 
 	/**
 	 * Verifies if the current scope includes the given scope.<br>
-	 * 
+	 *
 	 * @param scope the scope to check
 	 * @return whether this includes the given scope
 	 */

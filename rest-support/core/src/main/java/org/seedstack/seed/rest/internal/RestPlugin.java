@@ -99,10 +99,10 @@ public class RestPlugin extends AbstractPlugin {
             jerseyParameters.put(key.toString(), jerseyProperties.getProperty(key.toString()));
         }
 
-        String baseRel = restConfiguration.getString("baseRel");
-        if (baseRel == null) { //TODO SeedException
-            throw new IllegalArgumentException("Missing org.seedstack.seed.rest.baseRel property");
-        }
+        String baseRel = restConfiguration.getString("baseRel", "");
+//        if (baseRel == null) { //TODO SeedException
+//            throw new IllegalArgumentException("Missing org.seedstack.seed.rest.baseRel property");
+//        }
 
         jsonHome = new JsonHome(baseRel, scannedClassesBySpecification.get(resourcesSpecification));
 

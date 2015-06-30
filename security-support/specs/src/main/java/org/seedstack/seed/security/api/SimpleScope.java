@@ -57,6 +57,17 @@ public class SimpleScope implements Scope {
     }
 
     @Override
+    public String getName() {
+        Class<? extends SimpleScope> scopeClass = getClass();
+        SecurityScope annotation = scopeClass.getAnnotation(SecurityScope.class);
+        if (annotation != null) {
+            return annotation.value();
+        } else {
+            return scopeClass.getSimpleName().toLowerCase();
+        }
+    }
+
+    @Override
     public String getValue() {
         return this.value;
     }
