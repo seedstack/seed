@@ -8,19 +8,17 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 /**
- * 
+ *
  */
 package org.seedstack.seed.persistence.jpa.internal;
 
 import org.seedstack.seed.core.api.ErrorCode;
 
 /**
- * 
  * @author redouane.loulou@ext.mpsa.com
- *
  */
 enum JpaErrorCode implements ErrorCode {
-	DATA_SOURCE_NOT_FOUND,
-	NO_PERSISTED_CLASSES_IN_UNIT,
-	ACCESSING_ENTITY_MANAGER_OUTSIDE_TRANSACTION
+    DATA_SOURCE_NOT_FOUND,
+    NO_PERSISTED_CLASSES_IN_UNIT,
+    ACCESSING_ENTITY_MANAGER_OUTSIDE_TRANSACTION
 }

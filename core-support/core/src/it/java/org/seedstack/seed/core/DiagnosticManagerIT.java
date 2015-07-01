@@ -85,7 +85,7 @@ public class DiagnosticManagerIT {
 
         Map<String, Object> exceptionInfo = (Map<String, Object>) diagnosticInfo.get("exception");
         assertThat(exceptionInfo.get("message")).isEqualTo(seedException.getMessage());
-        assertThat(exceptionInfo.get("seed-message")).isEqualTo(seedException.getSeedMessage());
+        assertThat(exceptionInfo.get("description")).isEqualTo(seedException.getDescription());
         assertThat(exceptionInfo.get("fix")).isNull();
         assertThat(exceptionInfo.get("class")).isEqualTo(seedException.getClass().getCanonicalName());
         assertThat((List<String>) exceptionInfo.get("stacktrace")).isNotEmpty();

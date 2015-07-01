@@ -32,7 +32,7 @@
             </dependency>
             <dependency>
                 <groupId>org.seedstack</groupId>
-                <artifactId>nuun-bom</artifactId>
+                <artifactId>commons-bom</artifactId>
                 <version>${seedstack.poms.version}</version>
                 <type>pom</type>
                 <scope>import</scope>

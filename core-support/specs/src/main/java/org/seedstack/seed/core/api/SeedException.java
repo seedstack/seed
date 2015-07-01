@@ -9,7 +9,6 @@
  */
 package org.seedstack.seed.core.api;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.WordUtils;
 import org.seedstack.seed.core.utils.SeedStringUtils;
 import org.slf4j.Logger;
@@ -17,18 +16,11 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.PrintStream;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.lang.reflect.Constructor;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * This is the base class for all technical SEED exceptions.
@@ -39,19 +31,27 @@ import java.util.concurrent.ConcurrentMap;
 public class SeedException extends RuntimeException {
     private static final long serialVersionUID = 1L;
     private static final Logger LOGGER = LoggerFactory.getLogger(SeedException.class);
-    private static final String INITIAL_LOCALE_CODE = Locale.getDefault().getLanguage();
-    private static final ConcurrentMap<String, Map<String, String>> ERROR_TEMPLATES = new ConcurrentHashMap<String, Map<String, String>>();
+    private static final ConcurrentMap<String, Properties> ERROR_TEMPLATES = new ConcurrentHashMap<String, Properties>();
     private static final int WRAP_LENGTH = 120;
     private static final String CAUSE_PATTERN = "%d. %s";
     private static final String CODE_PATTERN = "(%s) %s";
     private static final String ERROR_TEMPLATE_PATH = "META-INF/errors/";
     private static final String ERROR_TEMPLATE_EXTENSION = ".properties";
+    private static final String JAVA_LANG_THROWABLE = "java.lang.Throwable";
+    private static final String PRINT_STACK_TRACE = "printStackTrace";
 
     private final ErrorCode errorCode;
     private final Map<String, Object> properties = new HashMap<String, Object>();
+    private final AtomicBoolean alreadyComputed = new AtomicBoolean(false);
+    private final ThreadLocal<Boolean> alreadyVisited = new ThreadLocal<Boolean>() {
+        @Override
+        protected Boolean initialValue() {
+            return false;
+        }
+    };
 
-    private boolean alreadyComputed = false;
     private List<String> causes;
+    private String message;
     private String fix;
     private String url;
 
@@ -110,121 +110,131 @@ public class SeedException extends RuntimeException {
     }
 
     /**
-     * Retrieve the SEED message associated with this exception.
+     * The toString() method is overloaded to provide additional exception details. When invoked directly it only returns
+     * the details of this exception. When invoked from printStackTrace() it returns the details of this exception and
+     * flags all causes of SeedException type to only display their short message when their toString() method will be
+     * invoked by printStacktrace(). This uses a ThreadLocal implementation of the flag to stay thread-safe.
      *
-     * @return the SEED message if any, null otherwise.
+     * @return a textual representation of the exception.
      */
-    public String getSeedMessage() {
-        String template = getErrorTemplate("message");
-        if (template != null) {
-            return SeedStringUtils.replaceTokens(template, properties);
-        }
-
-        return null;
-    }
-
     @Override
-    public void printStackTrace(PrintWriter s) {
-        synchronized (s) {
-            s.println(this);
-            s.println(buildStackTrace());
+    public String toString() {
+        boolean inPrintStackTrace = isInPrintStackTrace();
+
+        if (inPrintStackTrace) {
+            try {
+                if (alreadyVisited.get()) {
+                    // Already displayed in the cause list of the first SeedException
+                    return super.toString();
+                } else {
+                    // First SeedException to be displayed in a causal chain
+                    Throwable theCause = getCause();
+                    while (theCause != null) {
+                        if (theCause instanceof SeedException) {
+                            ((SeedException) theCause).alreadyVisited.set(true);
+                        }
+                        theCause = theCause.getCause();
+                    }
+                }
+            } finally {
+                alreadyVisited.remove();
+            }
         }
-    }
 
-    @Override
-    public void printStackTrace(PrintStream s) {
-        synchronized (s) {
-            s.println(this);
-            s.println(buildStackTrace());
-        }
-    }
-
-    public List<String> getCauses() {
         compute();
-        return this.causes;
-    }
 
-    public String getFix() {
-        compute();
-        return this.fix;
-    }
+        StringBuilder s = new StringBuilder(16384);
 
-    public String getUrl() {
-        compute();
-        return this.url;
-    }
-
-    private String buildStackTrace() {
-        StringBuilder s = new StringBuilder();
-
-        s.append(StringUtils.leftPad("", SeedException.class.getCanonicalName().length() + getMessage().length() + 2, "="));
+        s.append(super.toString());
         s.append("\n");
 
-        String seedMessage = getSeedMessage();
+        String seedMessage = getDescription();
         if (seedMessage != null) {
+            s.append("\nDescription\n-----------\n");
             s.append(wrapLine(seedMessage));
         }
 
-        s.append("\n");
-
-        compute();
         int i = causes.size();
         if (i == 1) {
-            s.append("Cause\n-----\n");
+            s.append("\nCause\n-----\n");
             s.append(wrapLine(causes.get(0)));
-            s.append("\n");
         } else if (i > 1) {
-            s.append("Causes\n------\n");
+            s.append("\nCauses\n------\n");
 
             int count = 1;
             for (String seedCause : causes) {
                 s.append(wrapLine(String.format(CAUSE_PATTERN, count, seedCause)));
                 count++;
             }
-
-            s.append("\n");
         }
 
         if (fix != null) {
-            s.append("Fix\n---\n");
+            s.append("\nFix\n---\n");
             s.append(wrapLine(fix));
-            s.append("\n");
         }
 
         if (url != null) {
-            s.append("Online information\n------------------\n");
+            s.append("\nOnline information\n------------------\n");
             s.append(url).append("\n");
-            s.append("\n");
         }
 
-        s.append("Detailed trace\n--------------\n");
-        StringWriter stringWriter = new StringWriter();
-        super.printStackTrace(new PrintWriter(stringWriter));
-        s.append(stringWriter.toString());
-        s.append("\n");
+        if (inPrintStackTrace) {
+            s.append("\nStacktrace\n----------");
+        }
 
         return s.toString();
     }
 
-    private StringBuffer wrapLine(String seedMessage) {
-        StringBuffer sb = new StringBuffer();
-        if (seedMessage != null && !"".equals(seedMessage)) {
-            String[] split = seedMessage.split("\n");
-            for (String s1 : split) {
-                sb.append(WordUtils.wrap(s1, WRAP_LENGTH)).append('\n');
-            }
-        }
-        return sb;
+    /**
+     * Provides additional information beyond the short message.
+     *
+     * @return the exception description or null if none exists.
+     */
+    public String getDescription() {
+        compute();
+        return this.message;
+    }
+
+    /**
+     * Provides a list describing the causes of this exception. This list is built by iterating through this exception
+     * causes and storing the description through {@link #getDescription()} if present or the message through {@link #getMessage()}
+     * as a fallback.
+     *
+     * @return the list of causes, possibly empty.
+     */
+    public List<String> getCauses() {
+        compute();
+        return this.causes;
+    }
+
+    /**
+     * Provides advice on how to fix the root cause of the exception. This fix is effectively extracted from the last
+     * cause available.
+     *
+     * @return the fix of the root cause or null if none exists.
+     */
+    public String getFix() {
+        compute();
+        return this.fix;
+    }
+
+    /**
+     * Provides an URL to online information about the root cause of the exception. This URL is effectively extracted from the
+     * last cause available.
+     *
+     * @return the online information URL of the root cause or null if none exists.
+     */
+    public String getUrl() {
+        compute();
+        return this.url;
     }
 
     private void compute() {
-        if (alreadyComputed) {
+        if (alreadyComputed.getAndSet(true)) {
             return;
         }
 
-        List<String> causes = new ArrayList<String>();
-        String fix = null;
-        String url = null;
+        causes = new ArrayList<String>();
 
         Throwable theCause = getCause();
         while (theCause != null) {
@@ -232,15 +242,15 @@ public class SeedException extends RuntimeException {
                 SeedException seedCause = (SeedException) theCause;
 
                 // Find the fix at lowest depth
-                fix = seedCause.getErrorTemplate("fix");
-                if (fix != null) {
-                    fix = SeedStringUtils.replaceTokens(fix, seedCause.getProperties());
+                String fixTemplate = seedCause.getErrorTemplate("fix");
+                if (fixTemplate != null) {
+                    fix = SeedStringUtils.replaceTokens(fixTemplate, seedCause.getProperties());
                 }
 
                 // Also get the url
-                url = seedCause.getErrorTemplate("url");
-                if (url != null) {
-                    url = SeedStringUtils.replaceTokens(url, seedCause.getProperties());
+                String urlTemplate = seedCause.getErrorTemplate("url");
+                if (urlTemplate != null) {
+                    url = SeedStringUtils.replaceTokens(urlTemplate, seedCause.getProperties());
                 }
 
                 // Collects all cause messages from highest to lowest level
@@ -257,24 +267,37 @@ public class SeedException extends RuntimeException {
             theCause = theCause.getCause();
         }
 
+        if (message == null) {
+            String messageTemplate = getErrorTemplate("message");
+            if (messageTemplate != null) {
+                message = SeedStringUtils.replaceTokens(messageTemplate, getProperties());
+            }
+        }
+
         if (fix == null) {
-            fix = getErrorTemplate("fix");
-            if (fix != null) {
-                fix = SeedStringUtils.replaceTokens(fix, getProperties());
+            String fixTemplate = getErrorTemplate("fix");
+            if (fixTemplate != null) {
+                fix = SeedStringUtils.replaceTokens(fixTemplate, getProperties());
             }
         }
 
         if (url == null) {
-            url = getErrorTemplate("url");
-            if (url != null) {
-                url = SeedStringUtils.replaceTokens(url, getProperties());
+            String urlTemplate = getErrorTemplate("url");
+            if (urlTemplate != null) {
+                url = SeedStringUtils.replaceTokens(urlTemplate, getProperties());
             }
         }
+    }
 
-        this.causes = causes;
-        this.fix = fix;
-        this.url = url;
-        this.alreadyComputed = true;
+    private StringBuffer wrapLine(String seedMessage) {
+        StringBuffer sb = new StringBuffer();
+        if (seedMessage != null && !"".equals(seedMessage)) {
+            String[] split = seedMessage.split("\n");
+            for (String s1 : split) {
+                sb.append(WordUtils.wrap(s1, WRAP_LENGTH)).append('\n');
+            }
+        }
+        return sb;
     }
 
     /**
@@ -318,49 +341,49 @@ public class SeedException extends RuntimeException {
     }
 
     private String getErrorTemplate(String templateType) {
-        Map<String, String> templates = ERROR_TEMPLATES.get(errorCode.getClass().getCanonicalName());
+        Properties templates = ERROR_TEMPLATES.get(errorCode.getClass().getCanonicalName());
 
         if (templates == null) {
+            templates = new Properties();
             ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-            Properties loadedProperties = new Properties();
 
             if (classLoader == null) {
                 classLoader = errorCode.getClass().getClassLoader();
             }
 
             if (classLoader != null) {
-                String catalogPath = ERROR_TEMPLATE_PATH + errorCode.getClass().getCanonicalName() + "_" + INITIAL_LOCALE_CODE + ERROR_TEMPLATE_EXTENSION;
+                String catalogPath = ERROR_TEMPLATE_PATH + errorCode.getClass().getCanonicalName() + ERROR_TEMPLATE_EXTENSION;
                 InputStream errorTemplatesStream = classLoader.getResourceAsStream(catalogPath);
-
-                if (errorTemplatesStream == null) {
-                    catalogPath = ERROR_TEMPLATE_PATH + errorCode.getClass().getCanonicalName() + ERROR_TEMPLATE_EXTENSION;
-                    errorTemplatesStream = classLoader.getResourceAsStream(catalogPath);
-                }
 
                 if (errorTemplatesStream != null) {
                     try {
-                        loadedProperties.load(errorTemplatesStream);
+                        templates.load(errorTemplatesStream);
                     } catch (IOException e) {
-                        LOGGER.warn("Error reading error catalog for " + errorCode.getClass().getCanonicalName(), e);
+                        LOGGER.error("Error reading error catalog for " + errorCode.getClass().getCanonicalName(), e);
                     }
 
                     try {
                         errorTemplatesStream.close();
                     } catch (IOException e) {
-                        LOGGER.warn("Unable to close error catalog " + catalogPath, e);
+                        LOGGER.error("Unable to close error catalog " + catalogPath, e);
                     }
                 }
-            }
-
-            templates = new HashMap<String, String>();
-            for (String name : loadedProperties.stringPropertyNames()) {
-                templates.put(name, loadedProperties.getProperty(name));
             }
 
             ERROR_TEMPLATES.putIfAbsent(errorCode.getClass().getCanonicalName(), templates);
         }
 
-        return templates.get(errorCode + "." + templateType);
+        return templates.getProperty(errorCode + "." + templateType);
+    }
+
+    private boolean isInPrintStackTrace() {
+        for (StackTraceElement stackTraceElement : Thread.currentThread().getStackTrace()) {
+            if (JAVA_LANG_THROWABLE.equals(stackTraceElement.getClassName()) && PRINT_STACK_TRACE.equals(stackTraceElement.getMethodName())) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private static String formatErrorCode(ErrorCode errorCode) {
@@ -384,7 +407,7 @@ public class SeedException extends RuntimeException {
      * @return the created SeedException.
      */
     public static SeedException createNew(ErrorCode errorCode) {
-        return SeedException.createNew(SeedException.class, errorCode);
+        return new SeedException(errorCode);
     }
 
     /**
@@ -413,7 +436,7 @@ public class SeedException extends RuntimeException {
      * @return the created SeedException.
      */
     public static SeedException wrap(Throwable throwable, ErrorCode errorCode) {
-        return SeedException.wrap(SeedException.class, throwable, errorCode);
+        return new SeedException(errorCode, throwable);
     }
 
     /**

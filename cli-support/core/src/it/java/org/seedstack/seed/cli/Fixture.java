@@ -9,11 +9,8 @@
  */
 package org.seedstack.seed.cli;
 
-import org.junit.Test;
+import org.seedstack.seed.it.api.ITBind;
 
-public class CommandLinePluginIT {
-    @Test
-    public void test() throws Exception {
-        SeedRunner.execute(new String[]{"test", "-a", "-b", "babar", "zob", "-Pkey1=value1", "-Pkey2=value2"});
-    }
+@ITBind
+public class Fixture {
 }

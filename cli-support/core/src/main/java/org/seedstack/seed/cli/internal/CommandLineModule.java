@@ -9,32 +9,27 @@
  */
 package org.seedstack.seed.cli.internal;
 
-import java.util.Map;
-import java.util.Map.Entry;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.google.inject.AbstractModule;
+import com.google.inject.name.Names;
+import org.seedstack.seed.cli.api.CommandLineHandler;
+
+import java.util.Map;
 
 /**
  * @author epo.jemba@ext.mpsa.com
+ * @author adrien.lauer@mpsa.com
  */
 class CommandLineModule extends AbstractModule {
-	private static final Logger LOGGER = LoggerFactory.getLogger(CommandLineModule.class);
-	private final Map<Class, Class> bindings;
+    private final Map<String, Class<? extends CommandLineHandler>> cliHandlers;
 
-	CommandLineModule(Map<Class,Class> bindings) {
-		this.bindings = bindings;
-	}
-	
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	@Override
-	protected void configure() {
-		for( Entry<Class, Class> binding : bindings.entrySet()  ) {
-			LOGGER.info(String.format("Binding %s to %s.", binding.getKey(), binding.getValue()));
-			bind(binding.getKey()).to(binding.getValue());
-		}
-	}
+    CommandLineModule(Map<String, Class<? extends CommandLineHandler>> cliHandlers) {
+        this.cliHandlers = cliHandlers;
+    }
 
+    @Override
+    protected void configure() {
+        for (Map.Entry<String, Class<? extends CommandLineHandler>> cliHandlerEntry : cliHandlers.entrySet()) {
+            bind(CommandLineHandler.class).annotatedWith(Names.named(cliHandlerEntry.getKey())).to(cliHandlerEntry.getValue());
+        }
+    }
 }

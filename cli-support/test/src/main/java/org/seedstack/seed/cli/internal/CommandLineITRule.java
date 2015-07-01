@@ -7,21 +7,18 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-package org.seedstack.seed.cli.rule;
+package org.seedstack.seed.cli.internal;
 
 import com.google.inject.Inject;
 import com.google.inject.Injector;
-import org.seedstack.seed.cli.SeedRunner;
-import org.seedstack.seed.cli.api.WithCommandLine;
-import org.seedstack.seed.cli.spi.CliErrorCode;
-import org.seedstack.seed.cli.spi.CommandLineHandler;
-import org.seedstack.seed.core.api.SeedException;
 import org.junit.rules.MethodRule;
 import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.Statement;
+import org.seedstack.seed.cli.SeedRunner;
+import org.seedstack.seed.cli.api.CliErrorCode;
+import org.seedstack.seed.cli.api.WithCommandLine;
+import org.seedstack.seed.core.api.SeedException;
 import org.seedstack.seed.it.spi.PausableRunBefores;
-
-import java.util.concurrent.Callable;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -46,13 +43,13 @@ public class CommandLineITRule implements MethodRule {
                     String[] value = annotation.value();
                     int expectedExitCode = annotation.expectedExitCode();
 
-                    int returnCode = SeedRunner.execute(value, new CommandLineITCallable(target, statement));
+                    int returnCode = SeedRunner.execute(value, new CommandLineITCallable(target, statement, annotation.command(), annotation.value()));
 
                     assertThat(returnCode).as("Exit code returned by SeedRunner").isEqualTo(expectedExitCode);
                 }
 
                 if (statement instanceof PausableRunBefores) {
-                    ((PausableRunBefores)statement).resume();
+                    ((PausableRunBefores) statement).resume();
                 } else {
                     statement.evaluate();
                 }
@@ -60,14 +57,15 @@ public class CommandLineITRule implements MethodRule {
         };
     }
 
-    private static final class CommandLineITCallable implements Callable<Integer> {
+    private static final class CommandLineITCallable extends SeedRunner.SeedCallable {
         private final Object target;
         private final Statement statement;
 
         @Inject
-        Injector injector;
+        private Injector injector;
 
-        private CommandLineITCallable(Object target, Statement statement) {
+        private CommandLineITCallable(Object target, Statement statement, String command, String[] args) {
+            super(command, args);
             this.target = target;
             this.statement = statement;
         }
@@ -76,22 +74,15 @@ public class CommandLineITRule implements MethodRule {
         public Integer call() throws Exception {
             injector.injectMembers(target);
 
-            CommandLineHandler commandLineHandler;
-            try {
-                commandLineHandler = injector.getInstance(CommandLineHandler.class);
-            } catch(Exception e) {
-                throw SeedException.wrap(e, CliErrorCode.NO_COMMAND_LINE_HANDLER_FOUND);
-            }
-
             if (statement instanceof PausableRunBefores) {
                 try {
-                    ((PausableRunBefores)statement).evaluateAndPause();
+                    ((PausableRunBefores) statement).evaluateAndPause();
                 } catch (Throwable t) {
                     throw SeedException.wrap(t, CliErrorCode.EXCEPTION_OCCURRED_BEFORE_CLI_TEST);
                 }
             }
 
-            return commandLineHandler.call();
+            return super.call();
         }
     }
 }

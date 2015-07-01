@@ -170,9 +170,11 @@ class DiagnosticManagerImpl implements DiagnosticManager {
         Map<Long, Object> results = new HashMap<Long, Object>();
         ThreadMXBean threadMXBean = ManagementFactory.getThreadMXBean();
         for (long threadId : threadMXBean.getAllThreadIds()) {
-            Map<String, Object> threadResults = new HashMap<String, Object>();
             ThreadInfo threadInfo = threadMXBean.getThreadInfo(threadId);
+            
             if (threadInfo != null) { // checks if the thread is not alive or it does not exist.
+                Map<String, Object> threadResults = new HashMap<String, Object>();
+
                 threadResults.put("name", threadInfo.getThreadName());
                 threadResults.put("cpu", threadMXBean.getThreadCpuTime(threadId));
                 threadResults.put("user", threadMXBean.getThreadUserTime(threadId));

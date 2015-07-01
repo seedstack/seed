@@ -9,62 +9,57 @@
  */
 package org.seedstack.seed.cli;
 
-import org.seedstack.seed.cli.spi.CliArgs;
-import org.seedstack.seed.cli.spi.CliOption;
-import org.seedstack.seed.cli.spi.CommandLineHandler;
-import io.nuun.plugin.cli.NuunOption;
+import org.seedstack.seed.cli.api.CliArgs;
+import org.seedstack.seed.cli.api.CliCommand;
+import org.seedstack.seed.cli.api.CliOption;
+import org.seedstack.seed.cli.api.CommandLineHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * @author epo.jemba@ext.mpsa.com
+ * @author adrien.lauer@mpsa.com
  */
+@CliCommand("test")
 public class SampleCommandLineHandler implements CommandLineHandler {
     private static final Logger LOGGER = LoggerFactory.getLogger(SampleCommandLineHandler.class);
 
-    @CliOption(opt = "a", arg = false)
+    @CliOption(name = "a")
     private Boolean hasA;
 
-    @NuunOption(opt = "b", arg = true)
+    @CliOption(name = "b", valueCount = 1)
     private String b;
 
-    @NuunOption(opt = "P", args = true, valueSeparator = '=')
-    private String P[];
+    @CliOption(name = "P", valueCount = -1)
+    private Map<String, String> P1;
+
+    @CliOption(name = "P", valueCount = -1)
+    private String[] P2;
 
     @CliArgs
-    private String[] arg;
-
-
-    @Override
-    public String name() {
-        return "Test Application Handler";
-    }
+    private String[] args;
 
     @Override
     public Integer call() throws Exception {
-
-        LOGGER.info("EXECUTING !!");
-        LOGGER.info("hasA = " + hasA);
-        LOGGER.info("b = " + b);
-        if (arg != null) {
-            LOGGER.info("arg.length = " + arg.length);
-            LOGGER.info("arg = " + arg[0]);
-        }
-
-
         assertThat(hasA).isNotNull();
         assertThat(hasA).isTrue();
 
         assertThat(b).isNotNull();
         assertThat(b).isEqualTo("babar");
 
-        assertThat(arg).isNotNull();
-        assertThat(arg).containsExactly("zob");
+        assertThat(args).isNotNull();
+        assertThat(args).containsExactly("zob");
 
-        assertThat(P).isNotNull();
-        assertThat(P).containsExactly("key1", "value1", "key2", "value2");
+        assertThat(P1).isNotNull();
+        assertThat(P1.get("key1")).isEqualTo("value1");
+        assertThat(P1.get("key2")).isEqualTo("value2");
+
+        assertThat(P2).isNotNull();
+        assertThat(P2).containsExactly("key1", "value1", "key2", "value2");
 
         return 0;
     }
