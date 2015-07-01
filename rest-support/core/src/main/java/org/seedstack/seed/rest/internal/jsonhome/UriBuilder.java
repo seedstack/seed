@@ -24,31 +24,28 @@ class UriBuilder {
     }
 
     /**
-     * Constructs a URI with the base and the paths. Slashes in the
-     * parameters don't matter. The final slash will always be removed.
+     * Constructs a URI. Slashes in the parameters don't matter.
+     * The final slash will always be removed.
      * <p>
      * No encoding or replacement will be done.
      * </p>
-     * The base parameter should not be blank, but the paths can be null
-     * or empty, in this case they wont be added.
+     * The paths can be null or empty, in this case they wont be added.
      *
-     * @param base  the base path
      * @param paths the paths
      * @return the built path
      */
-    public static String path(String base, final String... paths) {
-        if (base == null || base.isEmpty()) {
-            throw new IllegalArgumentException("The base path should not be null or empty");
-        }
-        StringBuilder sb = new StringBuilder().append(stripLeadingSlash(base));
+    public static String path(final String... paths) {
+        StringBuilder sb = new StringBuilder();
+        boolean firstPath = true;
         for (String s : paths) {
             if (s == null || s.isEmpty()) {
                 continue;
             }
-            if (!s.startsWith("/")) {
+            if (!s.startsWith("/") && !firstPath) {
                 sb.append("/");
             }
             sb.append(stripLeadingSlash(s));
+            firstPath = false;
         }
         return sb.toString();
     }

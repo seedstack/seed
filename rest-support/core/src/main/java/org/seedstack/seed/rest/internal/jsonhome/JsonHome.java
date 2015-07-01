@@ -20,8 +20,8 @@ public class JsonHome {
 
     private final Map<String, Map<String, Object>> resources = new HashMap<String, Map<String, Object>>();
 
-    public JsonHome(String baseRel, Collection<Class<?>> resourceClasses) {
-        Map<String, Resource> resourceMap = new ResourceParser(baseRel).parse(resourceClasses);
+    public JsonHome(String baseRel, String baseParam, Collection<Class<?>> resourceClasses) {
+        Map<String, Resource> resourceMap = new ResourceParser(baseRel, baseParam).parse(resourceClasses);
 
         for (Map.Entry<String, Resource> resourceEntry : resourceMap.entrySet()) {
             String rel = resourceEntry.getKey();

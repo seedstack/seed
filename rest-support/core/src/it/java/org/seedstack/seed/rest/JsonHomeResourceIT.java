@@ -43,7 +43,11 @@ public class JsonHomeResourceIT extends AbstractSeedWebIT {
         Response response = expect().statusCode(200).given().header("Content-Type", "application/json-home")
                 .get(baseURL.toString() + "rest/");
 
-        String expectedBody = "{\"resources\":{\"http://example.org/rel/product\":{\"hints\":{\"allow\":[\"GET\"],\"formats\":{\"application/json\":\"\",\"application/json+hal\":\"\",\"application/xml\":\"\"}},\"href\":\"/product\"},\"http://example.org/rel/widget\":{\"href-template\":\"/widgets/{widgetName}\",\"hints\":{\"allow\":[\"GET\",\"PUT\"]},\"href-vars\":{\"widgetName\":\"http://example.org/rel/param/widgetName\",\"pageSize\":\"http://example.org/rel/param/pageSize\"}},\"http://example.org/rel/ValidResource1\":{\"href\":\"/JsonHomeValidResource1\"},\"http://example.org/rel/widgets\":{\"hints\":{\"allow\":[\"GET\"]},\"href\":\"/widgets\"}}}";
+        String expectedBody = "{\"resources\":{" +
+                "\"http://example.org/rel/product\":{\"hints\":{\"allow\":[\"GET\"],\"formats\":{\"application/json\":\"\",\"application/json+hal\":\"\",\"application/xml\":\"\"}},\"href\":\"/product\"}," +
+                "\"http://example.org/rel/widget\":{\"href-template\":\"/widgets/{widgetName}\",\"hints\":{\"allow\":[\"GET\",\"PUT\"]},\"href-vars\":{\"widgetName\":\"widgetName\",\"pageSize\":\"pageSize\"}}," +
+                "\"http://example.org/rel/ValidResource1\":{\"href\":\"/JsonHomeValidResource1\"}," +
+                "\"http://example.org/rel/widgets\":{\"hints\":{\"allow\":[\"GET\"]},\"href\":\"/widgets\"}}}";
 
         //response.body().prettyPrint();
 
