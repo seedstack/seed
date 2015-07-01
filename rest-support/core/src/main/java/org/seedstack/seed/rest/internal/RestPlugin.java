@@ -9,8 +9,6 @@
  */
 package org.seedstack.seed.rest.internal;
 
-import com.google.inject.AbstractModule;
-import org.seedstack.seed.core.utils.SeedConfigurationUtils;
 import com.sun.jersey.spi.container.ResourceFilterFactory;
 import io.nuun.kernel.api.Plugin;
 import io.nuun.kernel.api.plugin.InitState;
@@ -21,6 +19,7 @@ import io.nuun.kernel.core.AbstractPlugin;
 import org.apache.commons.configuration.Configuration;
 import org.kametic.specifications.Specification;
 import org.seedstack.seed.core.internal.application.ApplicationPlugin;
+import org.seedstack.seed.core.utils.SeedConfigurationUtils;
 import org.seedstack.seed.rest.api.ResourceFiltering;
 import org.seedstack.seed.rest.internal.jsonhome.JsonHome;
 import org.seedstack.seed.web.internal.WebPlugin;
@@ -30,8 +29,6 @@ import org.slf4j.LoggerFactory;
 import javax.servlet.ServletContext;
 import java.lang.annotation.Annotation;
 import java.util.*;
-import java.util.HashMap;
-import java.util.Properties;
 
 /**
  * This plugin enables JAX-RS usage in SEED applications. The JAX-RS implementation is Jersey.
@@ -100,11 +97,9 @@ public class RestPlugin extends AbstractPlugin {
         }
 
         String baseRel = restConfiguration.getString("baseRel", "");
-//        if (baseRel == null) { //TODO SeedException
-//            throw new IllegalArgumentException("Missing org.seedstack.seed.rest.baseRel property");
-//        }
+        String baseParam = restConfiguration.getString("baseParam", "");
 
-        jsonHome = new JsonHome(baseRel, scannedClassesBySpecification.get(resourcesSpecification));
+        jsonHome = new JsonHome(baseRel, baseParam, scannedClassesBySpecification.get(resourcesSpecification));
 
         webPlugin.registerAdditionalModule(
                 new RestModule(
@@ -112,21 +107,10 @@ public class RestPlugin extends AbstractPlugin {
                         scannedClassesBySpecification.get(providersSpecification),
                         jerseyParameters,
                         resourceFilterFactories,
-                        restPath,
-                        jspPath)
+                        restPath, jspPath, jsonHome)
         );
 
         return InitState.INITIALIZED;
-    }
-
-    @Override
-    public Object nativeUnitModule() {
-        return new AbstractModule() {
-            @Override
-            protected void configure() {
-                bind(JsonHome.class).toInstance(jsonHome);
-            }
-        };
     }
 
     @Override

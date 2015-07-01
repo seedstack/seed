@@ -29,9 +29,11 @@ import java.util.Map;
 class ResourceParser {
 
     private final String baseRel;
+    private final String baseParam;
 
-    public ResourceParser(String baseRel) {
+    public ResourceParser(String baseRel, String baseParam) {
         this.baseRel = baseRel;
+        this.baseParam = baseParam;
     }
 
     /**
@@ -162,10 +164,10 @@ class ResourceParser {
             for (Annotation annotation : annotations) {
                 if (annotation.annotationType().equals(PathParam.class)) {
                     String varName = ((PathParam) annotation).value();
-                    hrefVars.put(varName, UriBuilder.path(baseRel, "param", varName));
+                    hrefVars.put(varName, UriBuilder.path(baseParam, varName));
                 } else if (annotation.annotationType().equals(QueryParam.class)) {
                     String varName = ((QueryParam) annotation).value();
-                    hrefVars.put(varName, UriBuilder.path(baseRel, "param", varName));
+                    hrefVars.put(varName, UriBuilder.path(baseParam, varName));
                 }
             }
         }

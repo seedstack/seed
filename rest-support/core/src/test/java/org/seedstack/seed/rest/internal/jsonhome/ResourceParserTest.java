@@ -27,11 +27,12 @@ import java.util.Map;
 public class ResourceParserTest {
 
     private static final String BASE_REL = "http://example.org/rel/";
+    private static final String BASE_PARAM = "http://example.org/param/";
     private ResourceParser underTest;
 
     @Before
     public void before() {
-        underTest = new ResourceParser(BASE_REL);
+        underTest = new ResourceParser(BASE_REL, BASE_PARAM);
     }
 
     @Ignore
@@ -156,13 +157,13 @@ public class ResourceParserTest {
 
         Assertions.assertThat(linkTemplateResource.hrefTemplate()).isEqualTo("/widgets/{widgetName}");
         Assertions.assertThat(linkTemplateResource.hrefVars()).hasSize(2);
-        Assertions.assertThat(linkTemplateResource.hrefVars().get("widgetName")).isEqualTo(UriBuilder.path(BASE_REL, "param/widgetName"));
-        Assertions.assertThat(linkTemplateResource.hrefVars().get("pageSize")).isEqualTo(UriBuilder.path(BASE_REL, "param/pageSize"));
+        Assertions.assertThat(linkTemplateResource.hrefVars().get("widgetName")).isEqualTo(UriBuilder.path(BASE_PARAM, "widgetName"));
+        Assertions.assertThat(linkTemplateResource.hrefVars().get("pageSize")).isEqualTo(UriBuilder.path(BASE_PARAM, "pageSize"));
     }
 
     @Test
     public void testCreateResource() {
-        Map<String, Resource> resources = new ResourceParser(BASE_REL).parse(MyLinkTemplateResource.class);
+        Map<String, Resource> resources = new ResourceParser(BASE_REL, BASE_PARAM).parse(MyLinkTemplateResource.class);
 
         Assertions.assertThat(resources).hasSize(1);
 
