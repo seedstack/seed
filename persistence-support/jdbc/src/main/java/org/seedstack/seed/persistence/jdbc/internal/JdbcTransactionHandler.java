@@ -12,20 +12,21 @@
  */
 package org.seedstack.seed.persistence.jdbc.internal;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-
-import javax.sql.DataSource;
-
 import org.seedstack.seed.core.api.SeedException;
+import org.seedstack.seed.persistence.jdbc.api.JdbcErrorCode;
+import org.seedstack.seed.persistence.jdbc.api.JdbcTransaction;
 import org.seedstack.seed.transaction.spi.TransactionHandler;
 import org.seedstack.seed.transaction.spi.TransactionMetadata;
+
+import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.SQLException;
 
 /**
  * The transaction Handler for JDBC. It needs to make sure only one connection is open for each thread. For nested new transactions, the same
  * connection must be passed but a savepoint is created in case of partial rollback.
  */
-public class JdbcTransactionHandler implements TransactionHandler<JdbcTransaction> {
+class JdbcTransactionHandler implements TransactionHandler<JdbcTransaction> {
 
     private final DataSource dataSource;
 
@@ -37,7 +38,7 @@ public class JdbcTransactionHandler implements TransactionHandler<JdbcTransactio
      * @param jdbcConnectionLink jdbc link for the connection
      * @param dataSource the datasource to use when needing a new connection
      */
-    public JdbcTransactionHandler(JdbcConnectionLink jdbcConnectionLink, DataSource dataSource) {
+    JdbcTransactionHandler(JdbcConnectionLink jdbcConnectionLink, DataSource dataSource) {
         this.dataSource = dataSource;
         this.jdbcConnectionLink = jdbcConnectionLink;
     }

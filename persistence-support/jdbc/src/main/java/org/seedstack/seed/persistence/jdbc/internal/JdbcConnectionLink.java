@@ -12,17 +12,19 @@
  */
 package org.seedstack.seed.persistence.jdbc.internal;
 
+import org.seedstack.seed.core.api.SeedException;
+import org.seedstack.seed.persistence.jdbc.api.JdbcErrorCode;
+import org.seedstack.seed.persistence.jdbc.api.JdbcTransaction;
+import org.seedstack.seed.transaction.spi.TransactionalLink;
+
 import java.sql.Connection;
 import java.util.ArrayDeque;
 import java.util.Deque;
 
-import org.seedstack.seed.core.api.SeedException;
-import org.seedstack.seed.transaction.spi.TransactionalLink;
-
 /**
  * Link for JDBC connection
  */
-public class JdbcConnectionLink implements TransactionalLink<Connection> {
+class JdbcConnectionLink implements TransactionalLink<Connection> {
 
     private final ThreadLocal<Deque<JdbcTransaction>> perThreadObjectContainer = new ThreadLocal<Deque<JdbcTransaction>>() {
         @Override

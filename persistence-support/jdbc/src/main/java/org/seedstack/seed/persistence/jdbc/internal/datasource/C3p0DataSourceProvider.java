@@ -16,7 +16,7 @@ import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.health.HealthCheckRegistry;
 import com.mchange.v2.c3p0.ComboPooledDataSource;
 import org.seedstack.seed.core.api.SeedException;
-import org.seedstack.seed.persistence.jdbc.internal.JdbcErrorCode;
+import org.seedstack.seed.persistence.jdbc.api.JdbcErrorCode;
 import org.seedstack.seed.persistence.jdbc.spi.DataSourceProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

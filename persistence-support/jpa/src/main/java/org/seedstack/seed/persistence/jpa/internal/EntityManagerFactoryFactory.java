@@ -15,37 +15,27 @@ package org.seedstack.seed.persistence.jpa.internal;
 import org.apache.commons.configuration.Configuration;
 import org.seedstack.seed.core.api.Application;
 import org.seedstack.seed.core.api.SeedException;
+import org.seedstack.seed.persistence.jdbc.internal.JdbcRegistry;
 
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
-import javax.persistence.PersistenceException;
-import javax.persistence.SharedCacheMode;
-import javax.persistence.ValidationMode;
+import javax.persistence.*;
 import javax.persistence.spi.PersistenceProvider;
 import javax.persistence.spi.PersistenceProviderResolverHolder;
 import javax.persistence.spi.PersistenceUnitTransactionType;
 import javax.sql.DataSource;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 
 class EntityManagerFactoryFactory {
     EntityManagerFactory createEntityManagerFactory(String persistenceUnit, Properties properties) {
         return Persistence.createEntityManagerFactory(persistenceUnit, properties);
     }
 
-    EntityManagerFactory createEntityManagerFactory(String persistenceUnit, Properties properties, Configuration unitConfiguration, Application application, Map<String, DataSource> datasources, Collection<Class<?>> scannedClasses) {
+    EntityManagerFactory createEntityManagerFactory(String persistenceUnit, Properties properties, Configuration unitConfiguration, Application application, JdbcRegistry jdbcRegistry, Collection<Class<?>> scannedClasses) {
         InternalPersistenceUnitInfo unitInfo = new InternalPersistenceUnitInfo(persistenceUnit);
 
-        String datasourceName = unitConfiguration.getString("datasource");
-        DataSource dataSource = datasources.get(datasourceName);
+        String dataSourceName = unitConfiguration.getString("datasource");
+        DataSource dataSource = jdbcRegistry.getDataSource(dataSourceName);
         if (dataSource == null) {
-            throw SeedException.createNew(JpaErrorCode.DATA_SOURCE_NOT_FOUND).put("unit", unitInfo.getPersistenceUnitName()).put("datasource", datasourceName);
+            throw SeedException.createNew(JpaErrorCode.DATA_SOURCE_NOT_FOUND).put("unit", unitInfo.getPersistenceUnitName()).put("datasource", dataSourceName);
         }
 
         ArrayList<String> classNames = new ArrayList<String>();

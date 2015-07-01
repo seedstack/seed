@@ -12,29 +12,25 @@
  */
 package org.seedstack.seed.persistence.jdbc.internal;
 
-import java.sql.Connection;
-import java.util.Map;
-
-import javax.sql.DataSource;
-
+import com.google.inject.PrivateModule;
+import com.google.inject.TypeLiteral;
+import com.google.inject.name.Named;
+import com.google.inject.name.Names;
+import com.google.inject.util.Providers;
 import org.seedstack.seed.persistence.jdbc.api.JdbcExceptionHandler;
 import org.seedstack.seed.transaction.utils.TransactionalProxy;
 
-import com.google.inject.PrivateModule;
-import com.google.inject.TypeLiteral;
-import com.google.inject.name.Names;
-import com.google.inject.util.Providers;
+import java.sql.Connection;
+import java.util.Map;
 
 class JdbcModule extends PrivateModule {
     private static final String JDBC_REGISTERED_CLASSES = "jdbc-registered-classes";
 
-    private final Map<String, DataSource> dataSources;
-    private final Map<String, Class<? extends JdbcExceptionHandler>> jdbcExceptionHandlerClasses;
+    private final Map<String, DataSourceDefinition> dataSourceDefinitions;
     private final Map<Class<?>, String> registeredClasses;
 
-    JdbcModule(Map<String, DataSource> dataSources, Map<String, Class<? extends JdbcExceptionHandler>> jdbcExceptionHandlerClasses, Map<Class<?>, String> registeredClasses) {
-        this.dataSources = dataSources;
-        this.jdbcExceptionHandlerClasses = jdbcExceptionHandlerClasses;
+    JdbcModule(Map<String, DataSourceDefinition> dataSourceDefinitions, Map<Class<?>, String> registeredClasses) {
+        this.dataSourceDefinitions = dataSourceDefinitions;
         this.registeredClasses = registeredClasses;
     }
 
@@ -45,8 +41,8 @@ class JdbcModule extends PrivateModule {
         bind(Connection.class).toInstance(TransactionalProxy.create(Connection.class, jdbcLink));
 
         // Datasources
-        for (Map.Entry<String, DataSource> entry : dataSources.entrySet()) {
-            bindDataSource(entry.getKey(), entry.getValue(), jdbcLink);
+        for (DataSourceDefinition definition : dataSourceDefinitions.values()) {
+            bindDataSource(definition, jdbcLink);
         }
 
         // Classes registered to use a specific datasource
@@ -56,19 +52,19 @@ class JdbcModule extends PrivateModule {
         expose(new TypeLiteral<Map<Class<?>, String>>() {}).annotatedWith(Names.named(JDBC_REGISTERED_CLASSES));
     }
 
-    private void bindDataSource(String name, DataSource dataSource, JdbcConnectionLink jdbcLink) {
-        Class<? extends JdbcExceptionHandler> jdbcExceptionHandlerClass = jdbcExceptionHandlerClasses.get(name);
+    private void bindDataSource(DataSourceDefinition definition,  JdbcConnectionLink jdbcLink) {
+        Named dataSourceQualifier = Names.named(definition.getName());
 
-        if (jdbcExceptionHandlerClass != null) {
-            bind(JdbcExceptionHandler.class).annotatedWith(Names.named(name)).to(jdbcExceptionHandlerClass);
+        if (definition.getJdbcExceptionHandler() != null) {
+            bind(JdbcExceptionHandler.class).annotatedWith(dataSourceQualifier).to(definition.getJdbcExceptionHandler());
         } else {
-            bind(JdbcExceptionHandler.class).annotatedWith(Names.named(name)).toProvider(Providers.<JdbcExceptionHandler> of(null));
+            bind(JdbcExceptionHandler.class).annotatedWith(dataSourceQualifier).toProvider(Providers.<JdbcExceptionHandler> of(null));
         }
 
-        JdbcTransactionHandler transactionHandler = new JdbcTransactionHandler(jdbcLink, dataSource);
-        bind(JdbcTransactionHandler.class).annotatedWith(Names.named(name)).toInstance(transactionHandler);
+        JdbcTransactionHandler transactionHandler = new JdbcTransactionHandler(jdbcLink, definition.getDataSource());
+        bind(JdbcTransactionHandler.class).annotatedWith(dataSourceQualifier).toInstance(transactionHandler);
 
-        expose(JdbcExceptionHandler.class).annotatedWith(Names.named(name));
-        expose(JdbcTransactionHandler.class).annotatedWith(Names.named(name));
+        expose(JdbcExceptionHandler.class).annotatedWith(dataSourceQualifier);
+        expose(JdbcTransactionHandler.class).annotatedWith(dataSourceQualifier);
     }
 }
