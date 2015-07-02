@@ -10,7 +10,7 @@
 /*
  * Creation : 17 févr. 2015
  */
-package org.seedstack.seed.persistence.jdbc.internal;
+package org.seedstack.seed.persistence.jdbc.api;
 
 import java.sql.Connection;
 import java.sql.SQLException;

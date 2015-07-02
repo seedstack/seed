@@ -12,7 +12,6 @@
  */
 package org.seedstack.seed.persistence.jdbc.api;
 
-import org.seedstack.seed.persistence.jdbc.internal.JdbcTransaction;
 import org.seedstack.seed.transaction.spi.ExceptionHandler;
 import org.seedstack.seed.transaction.spi.TransactionMetadata;
 

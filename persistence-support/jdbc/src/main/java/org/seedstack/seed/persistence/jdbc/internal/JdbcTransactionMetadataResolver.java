@@ -12,11 +12,6 @@
  */
 package org.seedstack.seed.persistence.jdbc.internal;
 
-import java.util.Map;
-
-import javax.inject.Inject;
-import javax.inject.Named;
-
 import org.aopalliance.intercept.MethodInvocation;
 import org.seedstack.seed.core.utils.SeedReflectionUtils;
 import org.seedstack.seed.persistence.jdbc.api.Jdbc;
@@ -24,10 +19,14 @@ import org.seedstack.seed.persistence.jdbc.api.JdbcExceptionHandler;
 import org.seedstack.seed.transaction.spi.TransactionMetadata;
 import org.seedstack.seed.transaction.spi.TransactionMetadataResolver;
 
+import javax.inject.Inject;
+import javax.inject.Named;
+import java.util.Map;
+
 /**
  * TransactionMetadataResolver for JDBC support. It reads the JDBC annotation to know which datasource should be use.
  */
-public class JdbcTransactionMetadataResolver implements TransactionMetadataResolver {
+class JdbcTransactionMetadataResolver implements TransactionMetadataResolver {
 
     static String defaultJdbc;
 

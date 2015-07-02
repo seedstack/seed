@@ -20,6 +20,7 @@ import org.apache.commons.configuration.Configuration;
 import org.seedstack.seed.core.api.Application;
 import org.seedstack.seed.core.internal.application.ApplicationPlugin;
 import org.seedstack.seed.persistence.jdbc.internal.JdbcPlugin;
+import org.seedstack.seed.persistence.jdbc.internal.JdbcRegistry;
 import org.seedstack.seed.persistence.jpa.api.JpaExceptionHandler;
 import org.seedstack.seed.transaction.internal.TransactionPlugin;
 import org.slf4j.Logger;
@@ -59,7 +60,7 @@ public class JpaPlugin extends AbstractPlugin {
     public InitState init(InitContext initContext) {
         Configuration jpaConfiguration = null;
         TransactionPlugin transactionPlugin = null;
-        JdbcPlugin jdbcPlugin = null;
+        JdbcRegistry jdbcRegistry = null;
         Application application = null;
 
         for (Plugin plugin : initContext.pluginsRequired()) {
@@ -69,7 +70,7 @@ public class JpaPlugin extends AbstractPlugin {
             } else if (plugin instanceof TransactionPlugin) {
                 transactionPlugin = (TransactionPlugin) plugin;
             } else if (plugin instanceof JdbcPlugin) {
-                jdbcPlugin = (JdbcPlugin) plugin;
+                jdbcRegistry = (JdbcRegistry) plugin;
             }
         }
 
@@ -80,7 +81,7 @@ public class JpaPlugin extends AbstractPlugin {
             throw new PluginException("Unable to find transaction plugin");
         }
 
-        if (jdbcPlugin == null) {
+        if (jdbcRegistry == null) {
             throw new PluginException("Unable to find jdbc plugin");
         }
 
@@ -111,7 +112,7 @@ public class JpaPlugin extends AbstractPlugin {
                     scannedClasses.addAll(initContext.scannedClassesByAnnotationClass().get(Embeddable.class));
                 }
 
-                emf = confResolver.createEntityManagerFactory(persistenceUnit, properties, persistenceUnitConfiguration, application, jdbcPlugin.getDataSources(), scannedClasses);
+                emf = confResolver.createEntityManagerFactory(persistenceUnit, properties, persistenceUnitConfiguration, application, jdbcRegistry, scannedClasses);
             } else {
                 emf = confResolver.createEntityManagerFactory(persistenceUnit, properties);
             }

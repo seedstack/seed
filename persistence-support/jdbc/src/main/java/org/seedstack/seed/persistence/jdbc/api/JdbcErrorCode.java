@@ -10,7 +10,7 @@
 /*
  * Creation : 17 févr. 2015
  */
-package org.seedstack.seed.persistence.jdbc.internal;
+package org.seedstack.seed.persistence.jdbc.api;
 
 import org.seedstack.seed.core.api.ErrorCode;
 
@@ -33,6 +33,6 @@ public enum JdbcErrorCode implements ErrorCode {
 
     WRONG_DATASOURCE_PROVIDER,
 
-    WRONG_DATASOURCE_CONTEXT;
+    WRONG_DATASOURCE_CONTEXT, MISSING_DATASOURCE_CONFIG;
 
 }

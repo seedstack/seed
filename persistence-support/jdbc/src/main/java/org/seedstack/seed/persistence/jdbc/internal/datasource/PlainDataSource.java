@@ -13,7 +13,7 @@
 package org.seedstack.seed.persistence.jdbc.internal.datasource;
 
 import org.seedstack.seed.core.api.SeedException;
-import org.seedstack.seed.persistence.jdbc.internal.JdbcErrorCode;
+import org.seedstack.seed.persistence.jdbc.api.JdbcErrorCode;
 
 import javax.sql.DataSource;
 import java.io.PrintWriter;
