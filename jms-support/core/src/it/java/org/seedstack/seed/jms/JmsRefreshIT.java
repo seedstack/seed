@@ -19,7 +19,7 @@ import org.seedstack.seed.it.SeedITRunner;
 import org.seedstack.seed.jms.fixtures.TestExceptionListener;
 import org.seedstack.seed.jms.fixtures.TestSender3;
 import org.seedstack.seed.jms.fixtures.TestSender4;
-import org.seedstack.seed.jms.internal.*;
+import org.seedstack.seed.jms.internal.FakeConnectionFactoryImpl;
 import org.seedstack.seed.jms.spi.ConnectionDefinition;
 import org.seedstack.seed.jms.spi.JmsFactory;
 import org.slf4j.Logger;
@@ -74,14 +74,26 @@ public class JmsRefreshIT {
 
         connection3.close();
         method("onException").withParameterTypes(JMSException.class).in(connection3).invoke(new JMSException("Connection is down"));
-        Thread.sleep(200); // reconnect at the first try
+        //Thread.sleep(200); // reconnect at the first try
 
         // Refresh connection and resend message
-        testSender3.send("RECONNECTED1");
+        boolean sent = false;
+        int attempt = 0;
+        while (!sent && attempt < 50) {
+            try {
+                attempt++;
+                testSender3.send("RECONNECTED1");
+                sent = true;
+            } catch (Exception e) {
+                Thread.sleep(50);
+            }
+        }
 
         latchReconnect1.await(200, TimeUnit.MILLISECONDS);
         Assertions.assertThat(text).isEqualTo("RECONNECTED1"); // message is successfully received
     }
+
+
 
     @Test
     public void connection_failed_multiple_times_then_reconnect() throws InterruptedException, JMSException {
