@@ -21,11 +21,11 @@ connection-factory.connectionFactory4.vendor.property.brokerURL = vm://localhost
 
 connections = connection1, connection2, connection3, connection4
 connection.connection1.connection-factory = connectionFactory1
-connection.connection1.reconnection-delay=100
+connection.connection1.reconnection-delay=50
 connection.connection2.connection-factory = connectionFactory2
-connection.connection2.reconnection-delay=100
+connection.connection2.reconnection-delay=50
 connection.connection3.connection-factory = connectionFactory3
-connection.connection3.reconnection-delay=100
+connection.connection3.reconnection-delay=50
 connection.connection3.exception-listener=org.seedstack.seed.jms.fixtures.TestExceptionListener
 connection.connection4.connection-factory = connectionFactory4
 connection.connection4.jee-mode = true
