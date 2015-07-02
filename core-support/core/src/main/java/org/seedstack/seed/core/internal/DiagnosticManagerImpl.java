@@ -172,18 +172,20 @@ class DiagnosticManagerImpl implements DiagnosticManager {
         for (long threadId : threadMXBean.getAllThreadIds()) {
             Map<String, Object> threadResults = new HashMap<String, Object>();
             ThreadInfo threadInfo = threadMXBean.getThreadInfo(threadId);
-            threadResults.put("name", threadInfo.getThreadName());
-            threadResults.put("cpu", threadMXBean.getThreadCpuTime(threadId));
-            threadResults.put("user", threadMXBean.getThreadUserTime(threadId));
-            threadResults.put("blocked-count", threadInfo.getBlockedCount());
-            threadResults.put("blocked-time", threadInfo.getBlockedTime());
-            threadResults.put("waited-count", threadInfo.getWaitedCount());
-            threadResults.put("waited-time", threadInfo.getWaitedTime());
-            threadResults.put("suspended", threadInfo.isSuspended());
-            threadResults.put("native", threadInfo.isInNative());
-            threadResults.put("state", threadInfo.getThreadState().toString());
+            if (threadInfo != null) { // checks if the thread is not alive or it does not exist.
+                threadResults.put("name", threadInfo.getThreadName());
+                threadResults.put("cpu", threadMXBean.getThreadCpuTime(threadId));
+                threadResults.put("user", threadMXBean.getThreadUserTime(threadId));
+                threadResults.put("blocked-count", threadInfo.getBlockedCount());
+                threadResults.put("blocked-time", threadInfo.getBlockedTime());
+                threadResults.put("waited-count", threadInfo.getWaitedCount());
+                threadResults.put("waited-time", threadInfo.getWaitedTime());
+                threadResults.put("suspended", threadInfo.isSuspended());
+                threadResults.put("native", threadInfo.isInNative());
+                threadResults.put("state", threadInfo.getThreadState().toString());
 
-            results.put(threadId, threadResults);
+                results.put(threadId, threadResults);
+            }
         }
 
         return results;
