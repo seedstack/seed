@@ -7,7 +7,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-package org.seedstack.seed.jms;
+package org.seedstack.seed.jms.fixtures;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -21,7 +21,7 @@ import javax.jms.TextMessage;
 import org.seedstack.seed.it.api.ITBind;
 
 @ITBind
-public class MyUnManagedMessageSender {
+public class TestSender2 {
 
     @Inject
     @Named("connection1")

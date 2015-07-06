@@ -29,7 +29,7 @@ import javax.jms.Session;
 
 
 /**
- * @author Pierre Thirouin <pierre.thirouin@ext.mpsa.com>
+ * @author pierre.thirouin@ext.mpsa.com
  *         12/11/2014
  */
 @RunWith(MockitoJUnitRunner.class)
@@ -40,13 +40,20 @@ public class ManagedConnectionTest {
     private ConnectionFactory connectionFactory;
     @Mock
     private Connection connection;
+    @Mock
+    private JmsFactoryImpl jmsFactoryImpl;
+    @Mock
+    private ExceptionListener exceptionListener;
 
     @Before
     public void setUp() throws JMSException {
+        ConnectionDefinition connectionDefinition = new ConnectionDefinition("my-connection", connectionFactory, true, true, true, "test-client-id", "user", "password", 100, null, null);
         Mockito.when(connectionFactory.createConnection("user", "password")).thenReturn(connection);
         Mockito.when(connection.createSession(true, Session.AUTO_ACKNOWLEDGE)).thenReturn(Mockito.mock(Session.class));
         Mockito.when(connection.getClientID()).thenReturn("my-app-my-connection");
-        underTest = new ManagedConnection(connectionFactory, new ConnectionDefinition(true, true, null, "user", "password", 100), "test-client-id", "my-connection");
+        Mockito.when(connection.getExceptionListener()).thenReturn(exceptionListener);
+        Mockito.when(jmsFactoryImpl.createRawConnection(connectionDefinition)).thenReturn(connection);
+        underTest = new ManagedConnection(connectionDefinition, jmsFactoryImpl);
     }
 
     @Test
@@ -60,8 +67,9 @@ public class ManagedConnectionTest {
         Whitebox.setInternalState(underTest, "sessions", Lists.newArrayList(session));
 
         // Failure
-        Whitebox.setInternalState(underTest, "connectionFactory", new FakeConnectionFactory());
-        underTest.setExceptionListener(new ExceptionListener() {
+        Object jmsFactoryImpl = Whitebox.getInternalState(underTest, "jmsFactoryImpl");
+        Whitebox.setInternalState(underTest, "jmsFactoryImpl", new FakeConnectionFactoryImpl());
+        underTest.setExceptionListener(new javax.jms.ExceptionListener() {
 			
 			@Override
 			public void onException(JMSException exception) {
@@ -76,7 +84,7 @@ public class ManagedConnectionTest {
         Mockito.verify(session, Mockito.times(1)).reset(); // session is reset on cascade
 
         // The connection is back
-        Whitebox.setInternalState(underTest, "connectionFactory", connectionFactory);
+        Whitebox.setInternalState(underTest, "jmsFactoryImpl", jmsFactoryImpl);
 
         // wait for the timer to refresh the connection
         Thread.sleep(200);
@@ -86,4 +94,21 @@ public class ManagedConnectionTest {
         Mockito.verify(session, Mockito.times(1)).refresh(connection); // session is refreshed
     }
 
+    @Test
+    public void test_that_wraped_exceptionlistener_from_managedConnection_differs_from_jmsbroker_connection() throws InterruptedException, JMSException {
+        Whitebox.setInternalState(underTest, "jmsFactoryImpl", new FakeConnectionFactoryImpl());
+        javax.jms.ExceptionListener exceptionListener = new javax.jms.ExceptionListener() {
+            @Override
+            public void onException(JMSException e) {
+
+            }
+        };
+        underTest.setExceptionListener(exceptionListener);
+        Connection jmsConnection = Whitebox.getInternalState(underTest, "connection");
+        javax.jms.ExceptionListener exceptionListenerAQ = jmsConnection.getExceptionListener();
+        javax.jms.ExceptionListener exceptionListenerMC = Whitebox.getInternalState(underTest, "exceptionListener");
+        Assertions.assertThat(exceptionListenerAQ).isNotEqualTo(exceptionListenerMC);
+        Assertions.assertThat(exceptionListenerMC).isEqualTo(exceptionListener);
+
+    }
 }

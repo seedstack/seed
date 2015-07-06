@@ -9,17 +9,15 @@
  */
 package org.seedstack.seed.jms.internal;
 
-import org.seedstack.seed.transaction.spi.TransactionHandler;
-
-import javax.jms.Connection;
 import javax.jms.JMSException;
 import javax.jms.Session;
+
+import org.seedstack.seed.transaction.spi.TransactionHandler;
 
 abstract class AbstractJmsTransactionHandler implements TransactionHandler<Session> {
     @Override
     public void doJoinGlobalTransaction() {
-        // TODO support JMS JTA
-        throw new UnsupportedOperationException("JMS implementation doesn't support global transactions");
+        // nothing to do (with a JNDI provided connection factory JTA is automatically enabled)
     }
 
     @Override

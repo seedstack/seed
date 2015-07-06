@@ -9,6 +9,8 @@
  */
 package org.seedstack.seed.jms.api;
 
+import org.seedstack.seed.jms.spi.MessagePoller;
+
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Inherited;
@@ -45,4 +47,10 @@ public @interface JmsMessageListener  {
      * @return an optional selector to only retrieve messages that matches it.
      */
     String selector() default "";
+
+    /**
+     * @return an optional {@link org.seedstack.seed.jms.spi.MessagePoller} to retrieve messages via receive() instead
+     * of asynchronous delivery.
+     */
+    Class<? extends MessagePoller> poller()[] default {};
 }

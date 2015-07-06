@@ -15,7 +15,7 @@
     <parent>
         <groupId>org.seedstack.seed</groupId>
         <artifactId>seed-cli-support</artifactId>
-        <version>2.0.0-M3-SNAPSHOT</version>
+        <version>2.0.0-M4-SNAPSHOT</version>
     </parent>
 
     <artifactId>seed-cli-support-core</artifactId>

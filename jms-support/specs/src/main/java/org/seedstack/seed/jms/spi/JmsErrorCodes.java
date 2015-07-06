@@ -7,7 +7,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-package org.seedstack.seed.jms.internal;
+package org.seedstack.seed.jms.spi;
 
 import org.seedstack.seed.core.api.ErrorCode;
 
@@ -16,7 +16,7 @@ import org.seedstack.seed.core.api.ErrorCode;
  *
  * @author pierre.thirouin@ext.mpsa.com
  */
-public enum SeedJmsErrorCodes implements ErrorCode {
+public enum JmsErrorCodes implements ErrorCode {
     UNEXPECTED_EXCEPTION,
     INITIALIZATION_EXCEPTION,
     PLUGIN_NOT_FOUND,
@@ -27,12 +27,14 @@ public enum SeedJmsErrorCodes implements ErrorCode {
     MISSING_CONNECTION_FACTORY,
     UNABLE_TO_CREATE_JMS_CONNECTION,
     UNABLE_TO_LOAD_CLASS,
-    MISSING_CONNECTION_FOR_MESSAGE_LISTENER,
-    UNABLE_TO_CREATE_SESSION_FOR_LISTENER,
+    UNABLE_TO_CREATE_SESSION,
     UNKNOWN_DESTINATION_TYPE,
-    UNABLE_TO_CREATE_DESTINATION_FOR_LISTENER,
+    UNABLE_TO_CREATE_DESTINATION,
     NO_JNDI_CONTEXT,
     MISSING_JNDI_CONTEXT,
     JNDI_LOOKUP_ERROR,
-    DUPLICATE_MESSAGE_LISTENER_DEFINITION_NAME, DUPLICATE_CONNECTION_NAME
+    UNABLE_TO_CREATE_MESSAGE_CONSUMER,
+    DUPLICATE_MESSAGE_LISTENER_DEFINITION_NAME,
+    MESSAGE_POLLER_REQUIRED_IN_JEE_MODE,
+    UNABLE_TO_CREATE_POLLER, CANNOT_SET_CLIENT_ID_IN_JEE_MODE, DUPLICATE_CONNECTION_NAME
 }

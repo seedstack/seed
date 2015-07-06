@@ -23,7 +23,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 /**
  * This session is a facade of a jms session. It allows the reconnection mechanism.
  *
- * @author Pierre Thirouin <pierre.thirouin@ext.mpsa.com>
+ * @author pierre.thirouin@ext.mpsa.com
  *         06/11/2014
  */
 class ManagedSession implements Session {
@@ -35,17 +35,20 @@ class ManagedSession implements Session {
     private final Integer acknowledgeMode;
 
     private Session session;
+    
+    private final boolean polling;
 
     private List<ManagedMessageConsumer> managedMessageConsumers = new ArrayList<ManagedMessageConsumer>();
 
     private ReentrantReadWriteLock sessionLock = new ReentrantReadWriteLock();
 
-    ManagedSession(Session session, boolean transacted, int acknowledgeMode) {
+    ManagedSession(Session session, boolean transacted, int acknowledgeMode, boolean polling) {
         SeedCheckUtils.checkIfNotNull(session);
-
+        
         this.session = session;
         this.transacted = transacted;
         this.acknowledgeMode = acknowledgeMode;
+        this.polling = polling;
     }
 
     void refresh(Connection connection) throws JMSException {
@@ -67,7 +70,7 @@ class ManagedSession implements Session {
     void reset() {
         sessionLock.writeLock().lock();
         try {
-            logger.trace("Reset session");
+            logger.trace("Resetting session");
             session = null;
             for (ManagedMessageConsumer managedMessageConsumer : managedMessageConsumers) {
                 managedMessageConsumer.reset();
@@ -81,7 +84,7 @@ class ManagedSession implements Session {
         sessionLock.readLock().lock();
         try {
             if (session == null) {
-                throw new JMSException("The connection is closed");
+                throw new JMSException("Attempt to use a session during connection refresh");
             }
 
             return session;
@@ -200,7 +203,7 @@ class ManagedSession implements Session {
 
     @Override
     public MessageConsumer createConsumer(Destination destination, String messageSelector, boolean NoLocal) throws JMSException {
-        ManagedMessageConsumer consumer = new ManagedMessageConsumer(getSession().createConsumer(destination, messageSelector, NoLocal), destination, messageSelector, NoLocal);
+        ManagedMessageConsumer consumer = new ManagedMessageConsumer(getSession().createConsumer(destination, messageSelector, NoLocal), destination, messageSelector, NoLocal, polling);
         managedMessageConsumers.add(consumer);
         return consumer;
     }

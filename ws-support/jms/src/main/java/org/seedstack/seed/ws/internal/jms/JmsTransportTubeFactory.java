@@ -22,12 +22,12 @@ import javax.inject.Inject;
  */
 public class JmsTransportTubeFactory extends TransportTubeFactory {
     @Inject
-    private static WSJmsFactory wsJmsFactory;
+    private static WSJmsTransportFactory wsJmsTransportFactory;
 
     @Override
     public Tube doCreate(ClientTubeAssemblerContext context) {
         if (context.getAddress().getURI().getScheme().equalsIgnoreCase("jms")) {
-            return wsJmsFactory.createJmsTransportTube(context.getCodec(), context.getService().getServiceName());
+            return wsJmsTransportFactory.createJmsTransportTube(context.getCodec(), context.getService().getServiceName());
         }
 
         return null;

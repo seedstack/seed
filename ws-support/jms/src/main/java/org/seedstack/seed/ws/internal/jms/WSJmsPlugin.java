@@ -12,8 +12,6 @@ package org.seedstack.seed.ws.internal.jms;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
-import com.google.common.cache.RemovalListener;
-import com.google.common.cache.RemovalNotification;
 import com.google.common.collect.ImmutableList;
 import io.nuun.kernel.api.Plugin;
 import io.nuun.kernel.api.plugin.InitState;
@@ -21,13 +19,16 @@ import io.nuun.kernel.api.plugin.PluginException;
 import io.nuun.kernel.api.plugin.context.InitContext;
 import io.nuun.kernel.core.AbstractPlugin;
 import org.apache.commons.configuration.Configuration;
+import org.apache.commons.lang.StringUtils;
+import org.seedstack.seed.core.api.SeedException;
 import org.seedstack.seed.core.internal.application.ApplicationPlugin;
 import org.seedstack.seed.jms.internal.JmsPlugin;
-import org.seedstack.seed.jms.spi.MessageListenerDefinition;
+import org.seedstack.seed.jms.spi.ConnectionDefinition;
+import org.seedstack.seed.jms.spi.JmsFactory;
+import org.seedstack.seed.jms.spi.MessageListenerInstanceDefinition;
+import org.seedstack.seed.jms.spi.MessagePoller;
 import org.seedstack.seed.ws.internal.EndpointDefinition;
 import org.seedstack.seed.ws.internal.WSPlugin;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.jms.Connection;
 import javax.jms.ConnectionFactory;
@@ -43,6 +44,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * This plugin provides JMS transport integration for WS support.
@@ -53,9 +55,10 @@ public class WSJmsPlugin extends AbstractPlugin {
     public static final List<String> SUPPORTED_BINDINGS = ImmutableList.of("http://www.w3.org/2010/soapjms/");
     public static final String WS_CONFIGURATION_PREFIX = "org.seedstack.seed.ws";
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(WSJmsPlugin.class);
-    private static final int DEFAULT_CACHE_CONCURRENCY = 4;
-    private static final int DEFAULT_CACHE_SIZE = 16;
+    public static final int DEFAULT_CACHE_CONCURRENCY = 4;
+    public static final int DEFAULT_CACHE_SIZE = 16;
+    public static final String LISTENER_NAME_PATTERN = "ws-%s-listener";
+    public static final String ANONYMOUS_CONNECTION_PATTERN = "ws-anon-connection-%d";
 
     private final Set<WSJmsMessageListener> wsJmsMessageListeners = new HashSet<WSJmsMessageListener>();
 
@@ -92,30 +95,55 @@ public class WSJmsPlugin extends AbstractPlugin {
         }
 
         int cacheSize = wsConfiguration.getInt("jms.transport-cache.max-size", DEFAULT_CACHE_SIZE);
+        final Configuration finalWsConfiguration = wsConfiguration;
         connectionCache = CacheBuilder.newBuilder()
                 .maximumSize(cacheSize)
                 .concurrencyLevel(wsConfiguration.getInt("transport-cache.concurrency", DEFAULT_CACHE_CONCURRENCY))
                 .initialCapacity(wsConfiguration.getInt("transport-cache.initial-size", cacheSize / 4))
-                .removalListener(new RemovalListener<SoapJmsUri, Connection>() {
-                    @Override
-                    public void onRemoval(RemovalNotification<SoapJmsUri, Connection> removal) {
-                        Connection connection = removal.getValue();
-                        SoapJmsUri soapJmsUri = removal.getKey();
-                        try {
-                            if (connection != null && soapJmsUri != null && soapJmsUri.getParameter("connectionName") == null) {
-                                // Don't close connections retrieved from the jms plugin
-                                connection.close();
-                            }
-                        } catch (JMSException e) {
-                            LOGGER.warn("Unable to cleanup cached JMS transport", e);
-                        }
-                    }
-                })
                 .build(new CacheLoader<SoapJmsUri, Connection>() {
+                    private AtomicInteger atomicInteger = new AtomicInteger(0);
+
                     @Override
                     public Connection load(SoapJmsUri soapJmsUri) throws NamingException, JMSException {
-                        Connection connection = getConnection(soapJmsUri, null, null);
-                        connection.start();
+                        String lookupVariant = soapJmsUri.getLookupVariant();
+                        JmsFactory jmsFactory = jmsPlugin.getJmsFactory();
+                        Connection connection;
+
+                        if (SoapJmsUri.JNDI_LOOKUP_VARIANT.equals(lookupVariant)) {
+                            String jndiConnectionFactoryName = soapJmsUri.getParameter("jndiConnectionFactoryName");
+                            if (StringUtils.isBlank(jndiConnectionFactoryName)) {
+                                throw new IllegalArgumentException("Missing jndiConnectionFactoryName parameter for JMS URI " + soapJmsUri.toString());
+                            }
+
+                            String connectionName = soapJmsUri.getConnectionName();
+                            if (connectionName == null) {
+                                connectionName = String.format(ANONYMOUS_CONNECTION_PATTERN, atomicInteger.getAndIncrement());
+                            }
+
+                            ConnectionDefinition connectionDefinition = jmsFactory.createConnectionDefinition(
+                                    connectionName,
+                                    soapJmsUri.getConfiguration(finalWsConfiguration),
+                                    (ConnectionFactory) SoapJmsUri.getContext(soapJmsUri).lookup(jndiConnectionFactoryName)
+                            );
+
+                            connection = jmsFactory.createConnection(connectionDefinition);
+                            jmsPlugin.registerConnection(connection, connectionDefinition);
+                        } else if (SoapJmsUri.SEED_QUEUE_LOOKUP_VARIANT.equals(lookupVariant) || SoapJmsUri.SEED_TOPIC_LOOKUP_VARIANT.equals(lookupVariant)) {
+                            String connectionName = soapJmsUri.getConnectionName();
+
+                            if (StringUtils.isBlank(connectionName)) {
+                                throw new IllegalArgumentException("Missing connectionName parameter for JMS URI " + soapJmsUri.toString());
+                            }
+
+                            connection = jmsPlugin.getConnection(connectionName);
+                        } else {
+                            throw new IllegalArgumentException("Unsupported lookup variant " + lookupVariant + " for JMS URI " + soapJmsUri.toString());
+                        }
+
+                        if (connection == null) {
+                            throw new PluginException("Unable to resolve connection for JMS URI " + soapJmsUri.toString());
+                        }
+
                         return connection;
                     }
                 });
@@ -130,22 +158,22 @@ public class WSJmsPlugin extends AbstractPlugin {
             SoapJmsUri uri;
             try {
                 uri = SoapJmsUri.parse(new URI(endpointDefinition.getUrl()));
+                uri.setEndpointName(endpointName);
             } catch (URISyntaxException e) {
                 throw new PluginException("Unable to parse endpoint URI", e);
             }
 
+            Configuration endpointConfiguration = uri.getConfiguration(wsConfiguration);
             Connection connection;
-            String jmsName = "WS-" + endpointName;
             try {
-                connection = getConnection(uri, endpointDefinition.getConfiguration().subset("jms"), jmsName);
-                jmsPlugin.registerConnection(jmsName, connection);
+                connection = connectionCache.get(uri);
             } catch (Exception e) {
                 throw new PluginException("Unable to create JMS connection for WS " + serviceNameAndServicePort, e);
             }
 
             Session session;
             try {
-                session = connection.createSession(true, Session.AUTO_ACKNOWLEDGE);
+                session = connection.createSession(endpointConfiguration.getBoolean("transactional", true), Session.AUTO_ACKNOWLEDGE);
             } catch (JMSException e) {
                 throw new PluginException("Unable to create JMS session for WS " + serviceNameAndServicePort, e);
             }
@@ -157,16 +185,39 @@ public class WSJmsPlugin extends AbstractPlugin {
                 throw new PluginException("Unable to create JMS destination for WS " + serviceNameAndServicePort, e);
             }
 
-            WSJmsMessageListener messageListener = new WSJmsMessageListener(session, uri,
-                    new JmsAdapter(wsPlugin.createWSEndpoint(endpointDefinition, null)));
+            WSJmsMessageListener messageListener = new WSJmsMessageListener(uri, new JmsAdapter(wsPlugin.createWSEndpoint(endpointDefinition, null)), session);
 
-            jmsPlugin.registerMessageListener(jmsName, new MessageListenerDefinition(
-                    messageListener, session, destination, null));
+            String messageListenerName = String.format(LISTENER_NAME_PATTERN, endpointName);
+            try {
+                Class<? extends MessagePoller> poller = getPoller(endpointConfiguration);
 
+                jmsPlugin.registerMessageListener(
+                        new MessageListenerInstanceDefinition(
+                                messageListenerName,
+                                uri.getConnectionName(),
+                                session,
+                                destination,
+                                endpointConfiguration.getString("selector"),
+                                messageListener,
+                                poller
+                        )
+                );
+            } catch (Exception e) {
+                throw SeedException.wrap(e, WSJmsErrorCodes.UNABLE_TO_REGISTER_MESSAGE_LISTENER).put("messageListenerName", messageListenerName);
+            }
             wsJmsMessageListeners.add(messageListener);
         }
 
         return InitState.INITIALIZED;
+    }
+
+    @SuppressWarnings("unchecked")
+    private Class<? extends MessagePoller> getPoller(Configuration endpointConfiguration) throws ClassNotFoundException {
+        String pollerClassName = endpointConfiguration.getString("poller");
+        if (pollerClassName != null) {
+            return (Class<? extends MessagePoller>) Class.forName(pollerClassName);
+        }
+        return null;
     }
 
     @Override
@@ -189,29 +240,6 @@ public class WSJmsPlugin extends AbstractPlugin {
 
     @Override
     public Object nativeUnitModule() {
-        return new WSJmsModule(this, wsJmsMessageListeners, connectionCache);
-    }
-
-    private Connection getConnection(SoapJmsUri soapJmsUri, Configuration jmsConfiguration, String connectionName) throws NamingException, JMSException {
-        Connection connection;
-
-        String lookupVariant = soapJmsUri.getLookupVariant();
-        if (SoapJmsUri.JNDI_LOOKUP_VARIANT.equals(lookupVariant)) {
-            connection = jmsPlugin.createConnection(
-                    (ConnectionFactory) SoapJmsUri.getContext(soapJmsUri).lookup(soapJmsUri.getParameter("jndiConnectionFactoryName")),
-                    jmsPlugin.createConnectionDefinitionFromConfiguration(jmsConfiguration),
-                    connectionName
-            );
-        } else if (SoapJmsUri.SEED_QUEUE_LOOKUP_VARIANT.equals(lookupVariant) || SoapJmsUri.SEED_TOPIC_LOOKUP_VARIANT.equals(lookupVariant)) {
-            connection = jmsPlugin.getConnection(soapJmsUri.getParameter("connectionName"));
-        } else {
-            throw new IllegalArgumentException("Unsupported lookup variant " + lookupVariant + " for JMS URI " + soapJmsUri.toString());
-        }
-
-        if (connection == null) {
-            throw new PluginException("Unable to resolve connection for JMS URI " + soapJmsUri.toString());
-        }
-
-        return connection;
+        return new WSJmsModule(wsJmsMessageListeners, connectionCache);
     }
 }

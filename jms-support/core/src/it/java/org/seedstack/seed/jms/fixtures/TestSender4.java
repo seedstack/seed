@@ -7,29 +7,26 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-package org.seedstack.seed.jms;
+package org.seedstack.seed.jms.fixtures;
 
 import org.seedstack.seed.it.api.ITBind;
 import org.seedstack.seed.jms.api.JmsConnection;
 import org.seedstack.seed.transaction.api.Transactional;
 
 import javax.inject.Inject;
-import javax.jms.Destination;
-import javax.jms.JMSException;
-import javax.jms.MessageProducer;
-import javax.jms.Session;
-import javax.jms.TextMessage;
+import javax.jms.*;
 
 @ITBind
-public class MyManagedMessageSender {
+public class TestSender4 implements TestSender {
+
     @Inject
     private Session session;
 
     @Transactional
-    @JmsConnection("connection1")
+    @JmsConnection("connection4")
     public void send(String stringMessage) throws JMSException {
         // Queue
-        Destination queue = session.createQueue("queue1");
+        Destination queue = session.createQueue("queue4");
         //create Message
         TextMessage message1 = session.createTextMessage();
         message1.setText(stringMessage);
@@ -39,5 +36,5 @@ public class MyManagedMessageSender {
         //send Message
         producer.send(message1);
     }
-}
 
+}

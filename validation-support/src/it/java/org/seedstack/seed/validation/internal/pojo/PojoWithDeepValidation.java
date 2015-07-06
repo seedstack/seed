@@ -13,7 +13,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.Null;
 
 /**
- * @author Pierre Thirouin <pierre.thirouin@ext.mpsa.com>
+ * @author pierre.thirouin@ext.mpsa.com
  *         14/10/2014
  */
 public class PojoWithDeepValidation {

@@ -7,40 +7,34 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-package org.seedstack.seed.jms.internal;
+package org.seedstack.seed.jms.fixtures;
 
 import org.seedstack.seed.it.api.ITBind;
+import org.seedstack.seed.jms.api.JmsConnection;
+import org.seedstack.seed.transaction.api.Transactional;
 
 import javax.inject.Inject;
-import javax.inject.Named;
 import javax.jms.*;
 
-/**
- * @author Pierre Thirouin <pierre.thirouin@ext.mpsa.com>
- *         18/11/2014
- */
 @ITBind
-public class MyUnManagedMessageSender3 implements MySender {
+public class TestSender3 implements TestSender {
 
     @Inject
-    @Named("connection4")
-    private Connection connection;
+    private Session session;
 
+    @Transactional
+    @JmsConnection("connection3")
     public void send(String stringMessage) throws JMSException {
-        //create connection
-        Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
-        // create destination
-        Destination queue = session.createQueue("queue4");
+        // Queue
+        Destination queue = session.createQueue("queue3");
         //create Message
         TextMessage message1 = session.createTextMessage();
         message1.setText(stringMessage);
-        //add Message Properties
-        message1.setJMSExpiration(1000);
-        message1.setJMSReplyTo(queue);
+
         //get Message Producer
         MessageProducer producer = session.createProducer(queue);
         //send Message
         producer.send(message1);
-        session.close();
     }
+
 }
