@@ -43,7 +43,7 @@ public class WithWithCommandLineIT extends AbstractSeedIT {
     }
 
     @Test
-    @WithCommandLine(value = "--option=value", expectedExitCode = 255)
+    @WithCommandLine(value = { "arg0", "arg1", "--option=value" }, expectedExitCode = 255, command = "dummy")
     public void test_with_annotation() {
         assertThat(passedBeforeClass).isTrue();
         assertThat(passedBefore).isTrue();

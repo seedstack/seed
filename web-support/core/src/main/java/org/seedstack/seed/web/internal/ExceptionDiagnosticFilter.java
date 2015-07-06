@@ -35,9 +35,12 @@ class ExceptionDiagnosticFilter implements Filter {
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         try {
             chain.doFilter(request, response);
+        } catch (SeedException e) {
+            diagnosticManager.dumpDiagnosticReport(e);
+            throw e;
         } catch (Exception e) {
             diagnosticManager.dumpDiagnosticReport(e);
-            throw SeedException.wrap(e, WebErrorCode.UNEXPECTED_WEB_EXCEPTION);
+            throw SeedException.wrap(e, WebErrorCode.UNEXPECTED_EXCEPTION);
         }
     }
 

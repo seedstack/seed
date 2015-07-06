@@ -9,18 +9,29 @@
  */
 package org.seedstack.seed.cli;
 
-import org.seedstack.seed.cli.spi.CommandLineHandler;
+import org.seedstack.seed.cli.api.CliArgs;
+import org.seedstack.seed.cli.api.CliCommand;
+import org.seedstack.seed.cli.api.CliOption;
+import org.seedstack.seed.cli.api.CommandLineHandler;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
+@CliCommand("dummy")
 public class DummyCommandLineHandler implements CommandLineHandler {
     static boolean called = false;
 
-    @Override
-    public String name() {
-        return "dummy-cmd-line-handler";
-    }
+    @CliOption(name = "o", longName = "option", valueCount = 1)
+    private String option;
+
+    @CliArgs
+    private String[] args;
 
     @Override
     public Integer call() throws Exception {
+        assertThat(args.length).isEqualTo(2);
+        assertThat(args[0]).isEqualTo("arg0");
+        assertThat(args[1]).isEqualTo("arg1");
+        assertThat(option).isEqualTo("value");
         called = true;
         return 255;
     }

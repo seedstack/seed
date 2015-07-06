@@ -12,7 +12,6 @@ package org.seedstack.seed.cli.internal;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import org.seedstack.seed.cli.api.WithCommandLine;
-import org.seedstack.seed.cli.rule.CommandLineITRule;
 import org.seedstack.seed.it.spi.ITKernelMode;
 import org.seedstack.seed.it.spi.ITRunnerPlugin;
 import org.junit.rules.MethodRule;

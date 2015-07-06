@@ -9,8 +9,8 @@
  */
 package org.seedstack.seed.cli;
 
-import org.seedstack.seed.it.AbstractSeedIT;
 import org.junit.Test;
+import org.seedstack.seed.it.AbstractSeedIT;
 
 import javax.inject.Inject;
 

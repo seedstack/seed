@@ -370,7 +370,11 @@ public class SeedITRunner extends BlockJUnit4ClassRunner {
         }
 
         if (expectedClass == null && unwrappedThrowable != null) {
-            throw SeedException.wrap(unwrappedThrowable, ITErrorCode.UNEXPECTED_EXCEPTION_OCCURRED).put("occurredClass", unwrappedThrowable.getClass());
+            if (unwrappedThrowable instanceof SeedException) {
+                throw (SeedException) unwrappedThrowable;
+            } else {
+                throw SeedException.wrap(unwrappedThrowable, ITErrorCode.UNEXPECTED_EXCEPTION_OCCURRED).put("occurredClass", unwrappedThrowable.getClass());
+            }
         }
 
         if (expectedClass != null) {

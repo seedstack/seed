@@ -79,7 +79,7 @@ public class CorePlugin extends AbstractPlugin {
         // Overwrites all url types to Vfs
         Vfs.setDefaultURLTypes(urlTypes);
 
-        //
+        // Default uncaught exception handler
         Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
             @Override
             public void uncaughtException(Thread t, Throwable e) {

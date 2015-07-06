@@ -14,22 +14,28 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /**
- * Apply this annotation on a test method or a test class to execute SEED with the specified command-line. Standard
- * SEED startup through SeedITRunner is disabled for the whole class test. Only methods with this annotation (or all
- * method if it is applied on the class) will start a SEED environment.
+ * Apply this annotation on a test method or a test class to execute a Seed CLI command with the specified arguments.
+ * Standard Seed startup through SeedITRunner is disabled for the whole class test. Only methods with this annotation
+ * (or all method if it is applied on the class) will start a Seed environment.
  *
  * @author epo.jemba@ext.mpsa.com
+ * @author adrien.lauer@mpsa.com
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface WithCommandLine {
     /**
-     * @return the array of command line arguments
+     * @return the name of the command to execute.
      */
-	String[] value();
+    String command();
 
     /**
-     * @return the expected return code
+     * @return the array of command line arguments.
      */
-	int expectedExitCode() default 0;
+    String[] value() default {};
+
+    /**
+     * @return the expected return code.
+     */
+    int expectedExitCode() default 0;
 }

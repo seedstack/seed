@@ -160,11 +160,11 @@ class InteractiveShell extends AbstractShell {
                         e.printStackTrace(errorPrintStream); // NOSONAR
                     } else {
                         if (e instanceof SeedException) {
-                            String seedMessage = ((SeedException) e).getSeedMessage();
+                            String description = ((SeedException) e).getDescription();
                             String fix = ((SeedException) e).getFix();
 
-                            if (seedMessage != null) {
-                                errorPrintStream.println(seedMessage);
+                            if (description != null) {
+                                errorPrintStream.println(description);
                             } else {
                                 errorPrintStream.println(e.getMessage());
                             }

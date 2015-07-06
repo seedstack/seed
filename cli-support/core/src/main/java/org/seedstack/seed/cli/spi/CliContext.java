@@ -9,15 +9,19 @@
  */
 package org.seedstack.seed.cli.spi;
 
-import org.seedstack.seed.core.api.ErrorCode;
-
 /**
- * Enumerates all error codes for command line support.
+ * Describes a command line context.
  *
  * @author adrien.lauer@mpsa.com
  */
-public enum CliErrorCode implements ErrorCode {
-    NO_COMMAND_LINE_HANDLER_FOUND,
-    EXCEPTION_OCCURRED_BEFORE_CLI_TEST,
-    UNEXPECTED_CLI_ERROR
+public class CliContext {
+    private final String[] args;
+
+    public CliContext(String[] args) {
+        this.args = args;
     }
+
+    public String[] getArgs() {
+        return args;
+    }
+}

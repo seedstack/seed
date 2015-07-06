@@ -21,8 +21,16 @@ import org.seedstack.seed.web.api.WebErrorCode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.servlet.*;
-import java.util.*;
+import javax.servlet.ServletContext;
+import javax.servlet.ServletContextAttributeEvent;
+import javax.servlet.ServletContextAttributeListener;
+import javax.servlet.ServletContextEvent;
+import javax.servlet.ServletContextListener;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.Iterator;
+import java.util.List;
+import java.util.ServiceLoader;
 
 /**
  * This context listener has the responsibility to initialize the Seed framework in a web environment and
@@ -74,11 +82,15 @@ public class SeedServletContextListener extends GuiceServletContextListener impl
                 }
             });
             delegateListeners.contextInitialized(sce);
-        } catch (Exception e) { // NOSONAR
-            LOGGER.error("An unexpected error occurred during web application startup, collecting diagnostic information");
-            CorePlugin.getDiagnosticManager().dumpDiagnosticReport(e);
-            throw SeedException.wrap(e, WebErrorCode.UNEXPECTED_WEB_EXCEPTION);
+        } catch (SeedException e) {
+            handleException(e);
+            throw e;
+        } catch (Exception e) {
+            handleException(e);
+            throw SeedException.wrap(e, WebErrorCode.UNEXPECTED_EXCEPTION);
         }
+
+        // java.lang.Error handling is delegated to the container
 
         LOGGER.info("Seed Web application started");
     }
@@ -93,11 +105,15 @@ public class SeedServletContextListener extends GuiceServletContextListener impl
             if (kernel != null && kernel.isStarted()) {
                 kernel.stop();
             }
-        } catch (Exception e) { // NOSONAR
-            LOGGER.error("An unexpected error occurred during web application shutdown, collecting diagnostic information");
-            CorePlugin.getDiagnosticManager().dumpDiagnosticReport(e);
-            throw SeedException.wrap(e, WebErrorCode.UNEXPECTED_WEB_EXCEPTION);
+        } catch (SeedException e) {
+            handleException(e);
+            throw e;
+        } catch (Exception e) {
+            handleException(e);
+            throw SeedException.wrap(e, WebErrorCode.UNEXPECTED_EXCEPTION);
         }
+
+        // java.lang.Error handling is delegated to the container
 
         LOGGER.info("Seed Web application stopped");
     }
@@ -122,6 +138,11 @@ public class SeedServletContextListener extends GuiceServletContextListener impl
         delegateListeners.attributeReplaced(scab);
     }
 
+    private void handleException(Throwable t) {
+        LOGGER.error("An exception occurred during web application startup, collecting diagnostic information");
+        CorePlugin.getDiagnosticManager().dumpDiagnosticReport(t);
+    }
+
     private Kernel createKernel(ServletContext servletContext) {
         List<String> params = new ArrayList<String>();
         Enumeration<?> initparams = servletContext.getInitParameterNames();
@@ -135,7 +156,7 @@ public class SeedServletContextListener extends GuiceServletContextListener impl
             }
         }
 
-        return NuunCore.createKernel(NuunCore.newKernelConfiguration().containerContext(servletContext));
+        return NuunCore.createKernel(NuunCore.newKernelConfiguration().containerContext(servletContext).params(params.toArray(new String[params.size()])));
     }
 
     abstract class AbstractCallback {
