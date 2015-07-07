@@ -39,8 +39,8 @@ public class C3p0DataSourceProvider implements DataSourceProvider {
         try {
             cpds.setDriverClass(driverClass);
             cpds.setJdbcUrl(url);
-            cpds.setUser(url);
-            cpds.setPassword(user);
+            cpds.setUser(user);
+            cpds.setPassword(password);
             cpds.setProperties(jdbcProperties);
             return cpds;
         } catch (PropertyVetoException e) {
