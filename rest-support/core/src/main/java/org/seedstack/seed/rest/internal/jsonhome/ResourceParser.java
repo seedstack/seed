@@ -31,6 +31,12 @@ class ResourceParser {
     private final String baseRel;
     private final String baseParam;
 
+    /**
+     * Resource parser constructor.
+     *
+     * @param baseRel   the base URI for relation types
+     * @param baseParam the base URI for parameters
+     */
     public ResourceParser(String baseRel, String baseParam) {
         this.baseRel = baseRel;
         this.baseParam = baseParam;
