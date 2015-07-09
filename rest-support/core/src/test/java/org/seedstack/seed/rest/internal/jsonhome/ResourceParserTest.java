@@ -9,15 +9,17 @@
  */
 package org.seedstack.seed.rest.internal.jsonhome;
 
+import com.google.common.collect.Lists;
 import io.nuun.kernel.api.annotations.Ignore;
 import org.assertj.core.api.Assertions;
 import org.junit.Before;
 import org.junit.Test;
 import org.seedstack.seed.rest.api.Rel;
+import org.seedstack.seed.rest.api.hal.Link;
+import org.seedstack.seed.rest.internal.ResourceScanner;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
-import java.lang.reflect.Method;
 import java.util.Map;
 
 /**
@@ -28,171 +30,61 @@ public class ResourceParserTest {
 
     private static final String BASE_REL = "http://example.org/rel/";
     private static final String BASE_PARAM = "http://example.org/param/";
-    private ResourceParser underTest;
 
-    @Before
-    public void before() {
-        underTest = new ResourceParser(BASE_REL, BASE_PARAM);
-    }
+    private Map<String, Resource> resourceMap;
+    private Map<String, Link> links;
 
     @Ignore
-    static class MethodResource {
-
-        @Rel(value = "/widgets/", expose = true)
-        @Path("/widgets")
-        public Response post() { return null; }
-    }
-
-    @Ignore
-    @Path("/catalog1")
-    static class ClassResource {
-
-        @Rel(value = "catalog1", expose = true)
-        public Response post() { return null; }
-    }
-
-    @Ignore
-    @Rel(value = "catalog2")
-    @Path("/catalog2/")
-    static class ClassAndMethodResource {
-
-        @Rel(value = "widgets", expose = true)
-        @Path("/widgets/")
-        public Response post() { return null; }
-    }
-
-    @Ignore
-    @Path("/catalog3/")
-    static class ClassAndMethodResource2 {
-
-        @Rel(value = "widgets", expose = true)
-        @Path("/widgets/")
-        public Response post() { return null; }
-    }
-
-    @Ignore
-    @Rel(value = "bla", expose = true)
-    @Path("/catalog4/")
-    static class ClassAndMethodResource3 {
-
-        @Rel("widgets")
-        @Path("/widgets/")
-        public Response post() { return null; }
-    }
-
-    @Ignore
-    static class FakeResource {
-
-        @Rel(value = "", expose = true)
-        public Response post() { return null; }
-    }
-
-    @Ignore
-    static class FakeResource2 {
-
-        @Path("fake")
-        public Response post() { return null; }
-    }
-
-    @Test
-    public void testCreateDirectLinkResource() {
-        // Path on method
-        Resource widgetResource = underTest.parse(method(MethodResource.class, "post"));
-        Assertions.assertThat(widgetResource.rel()).isEqualTo(UriBuilder.path(BASE_REL, "widgets"));
-        Assertions.assertThat(widgetResource.href()).isEqualTo("/widgets");
-
-        // Path on class
-        Resource catalogResource = underTest.parse(method(ClassResource.class, "post"));
-        Assertions.assertThat(catalogResource.rel()).isEqualTo(UriBuilder.path(BASE_REL, "catalog1"));
-        Assertions.assertThat(catalogResource.href()).isEqualTo("/catalog1");
-
-        // Path on method and class (with two rel)
-        Resource catalogWidgetResource = underTest.parse(method(ClassAndMethodResource.class, "post"));
-        Assertions.assertThat(catalogWidgetResource.rel()).isEqualTo(UriBuilder.path(BASE_REL, "widgets"));
-        Assertions.assertThat(catalogWidgetResource.href()).isEqualTo("/catalog2/widgets");
-
-        // Path on method and class
-        Resource catalogWidgetResource2 = underTest.parse(method(ClassAndMethodResource2.class, "post"));
-        Assertions.assertThat(catalogWidgetResource2.rel()).isEqualTo(UriBuilder.path(BASE_REL, "widgets"));
-        Assertions.assertThat(catalogWidgetResource2.href()).isEqualTo("/catalog3/widgets");
-
-        // Path on method and class
-        Resource catalogWidgetResource3 = underTest.parse(method(ClassAndMethodResource3.class, "post"));
-        Assertions.assertThat(catalogWidgetResource3).isNull();
-    }
-
-    @Test
-    public void testRelDetection() {
-        Assertions.assertThat(underTest.findRel(method(MethodResource.class, "post"))).isEqualTo(UriBuilder.path(BASE_REL, "widgets"));
-        Assertions.assertThat(underTest.findRel(method(ClassAndMethodResource.class, "post"))).isEqualTo(UriBuilder.path(BASE_REL, "widgets"));
-        Assertions.assertThat(underTest.findRel(method(MyLinkTemplateResource.class, "get", String.class, Integer.class))).isEqualTo(UriBuilder.path(BASE_REL, "widget"));
-    }
-
     @Rel(value = "widget", expose = true)
-    @Path("/widgets/{widgetName: [a-zA-Z][a-zA-Z_0-9]}")
-    static class MyLinkTemplateResource {
+    @Path("widgets/{widgetName: [a-zA-Z][a-zA-Z_0-9]}")
+    private static class MyLinkTemplateResource {
 
         @GET
-        public Response get(@PathParam("widgetName") String widgetId, @QueryParam("pageSize") Integer pageSize) { return null; }
+        public Response get(@PathParam("widgetName") String widgetId, @QueryParam("lang") String lang) { return null; }
 
         @PUT
         public Response put(@PathParam("widgetName") String widgetId) { return null; }
     }
 
-
-    @Rel(value = "widgets", expose = true)
-    @Path("/widgets/")
-    static class MyLinkTemplateResource2 {
-
-        @GET
-        public Response get(@QueryParam("pageSize") Integer pageSize, @QueryParam("pageNumber") Integer pageNumber) { return null; }
+    @Before
+    public void before() {
+        ResourceScanner resourceScanner = new ResourceScanner(BASE_REL, BASE_PARAM);
+        resourceScanner.scan(Lists.<Class<?>>newArrayList(MyLinkTemplateResource.class));
+        resourceMap = resourceScanner.jsonHomeResources();
+        links = resourceScanner.halLinks();
+        Assertions.assertThat(resourceMap).isNotNull();
     }
 
     @Test
     public void testCreateLinkTemplateResource() {
         // Path on method
-        Resource linkTemplateResource = underTest.parse(method(MyLinkTemplateResource.class, "get", String.class, Integer.class));
-        Assertions.assertThat(linkTemplateResource).isNotNull();
-        Assertions.assertThat(linkTemplateResource.rel()).isEqualTo(UriBuilder.path(BASE_REL, "widget"));
+        Resource underTest = resourceMap.get(UriBuilder.path(BASE_REL, "widget"));
+        Assertions.assertThat(underTest).isNotNull();
+        Assertions.assertThat(underTest.rel()).isEqualTo(UriBuilder.path(BASE_REL, "widget"));
 
-        Assertions.assertThat(linkTemplateResource.hrefTemplate()).isEqualTo("/widgets/{widgetName}");
-        Assertions.assertThat(linkTemplateResource.hrefVars()).hasSize(2);
-        Assertions.assertThat(linkTemplateResource.hrefVars().get("widgetName")).isEqualTo(UriBuilder.path(BASE_PARAM, "widgetName"));
-        Assertions.assertThat(linkTemplateResource.hrefVars().get("pageSize")).isEqualTo(UriBuilder.path(BASE_PARAM, "pageSize"));
+        Assertions.assertThat(underTest.hrefTemplate()).isEqualTo("/widgets/{widgetName}{?lang}");
+        Assertions.assertThat(underTest.hrefVars()).hasSize(2);
+        Assertions.assertThat(underTest.hrefVars().get("widgetName")).isEqualTo(UriBuilder.path(BASE_PARAM, "widgetName"));
+        Assertions.assertThat(underTest.hrefVars().get("lang")).isEqualTo(UriBuilder.path(BASE_PARAM, "lang"));
     }
 
     @Test
     public void testCreateResource() {
-        Map<String, Resource> resources = new ResourceParser(BASE_REL, BASE_PARAM).parse(MyLinkTemplateResource.class);
-
-        Assertions.assertThat(resources).hasSize(1);
-
-        Resource widgetResource = resources.get(UriBuilder.path(BASE_REL, "/widget"));
+        Resource widgetResource = resourceMap.get(UriBuilder.path(BASE_REL, "widget"));
         Assertions.assertThat(widgetResource).isNotNull();
+        Map<String, Object> underTest = widgetResource.toRepresentation();
 
-        Map<String, Object> representation = widgetResource.toRepresentation();
-        Assertions.assertThat(representation).hasSize(3);
+        Assertions.assertThat(underTest).hasSize(3);
 
-        String hrefTemplate = (String) representation.get("href-template");
+        String hrefTemplate = (String) underTest.get("href-template");
         Assertions.assertThat(hrefTemplate).isEqualTo("/widgets/{widgetName}");
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void testCreateResourceWithNoPath() {
-        underTest.parse(method(FakeResource.class, "post"));
-    }
-
     @Test
-    public void testCreateResourceWithNoRel() {
-        Resource resource = underTest.parse(method(FakeResource2.class, "post"));
-        Assertions.assertThat(resource).isNull();
-    }
-
-    private Method method(Class<?> clazz, String methodName, Class<?>... params) {
-        try {
-            return clazz.getMethod(methodName, params);
-        } catch (NoSuchMethodException e) {
-            throw new IllegalArgumentException(e);
-        }
+    public void testHalLinks() {
+        Link widgetLink = links.get("widget");
+        Assertions.assertThat(widgetLink).isNotNull();
+        Assertions.assertThat(widgetLink.getHref()).isEqualTo("/widgets/{widgetName}{?lang}");
+        Assertions.assertThat(widgetLink.set("lang", "EN").set("widgetName", 1).expand()).isEqualTo("/widgets/1?lang=EN");
     }
 }

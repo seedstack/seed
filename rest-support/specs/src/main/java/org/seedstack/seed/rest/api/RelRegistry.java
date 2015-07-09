@@ -16,6 +16,8 @@ import org.seedstack.seed.rest.api.hal.Link;
  */
 public interface RelRegistry {
 
+    String href(String rel);
+
     /**
      * Finds the link representation associated to a rel. Rel are found by scanning the class for the
      * {@link org.seedstack.seed.rest.api.Rel} annotation
@@ -23,5 +25,5 @@ public interface RelRegistry {
      * @param rel the relation type
      * @return a link or null if the rel is not found
      */
-    Link linkForRel(String rel);
+    Link link(String rel);
 }

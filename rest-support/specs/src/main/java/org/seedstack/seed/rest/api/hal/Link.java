@@ -9,9 +9,12 @@
  */
 package org.seedstack.seed.rest.api.hal;
 
+import com.damnhandy.uri.template.UriTemplate;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 import java.net.URI;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Defines a Link representation as described by the
@@ -24,11 +27,14 @@ public class Link {
 
     private String href;
     private boolean templated = false;
+    private String type;
     private String deprecation;
     private String name;
     private URI profile;
     private String title;
     private String hrefLang;
+
+    private Map<String, Object> hrefVars = new HashMap<String, Object>();
 
     /**
      * Default constructor required by Jackson.
@@ -36,20 +42,69 @@ public class Link {
     Link() {
     }
 
+    /**
+     * Constructor.
+     *
+     * @param href the href
+     */
     public Link(String href) {
         this.href = href;
     }
 
+    /**
+     * Copy constructor.
+     *
+     * @param link link to copy
+     */
+    public Link(Link link) {
+        this.href = link.href;
+        this.templated = link.templated;
+        this.type = link.type;
+        this.deprecation = link.deprecation;
+        this.name = link.name;
+        this.profile = link.profile;
+        this.title = link.title;
+        this.hrefLang = link.hrefLang;
+        this.hrefVars = link.hrefVars;
+    }
+
+    /**
+     * Indicates that the href is templated.
+     *
+     * @return itself
+     */
     public Link templated() {
         this.templated = true;
         return this;
     }
 
+    /**
+     * Indicates that the resource is deprecated and
+     * specify the URI for deprecation information.
+     *
+     * @param deprecation the deprecation URI
+     * @return itself
+     */
     public Link deprecate(String deprecation) {
         this.deprecation = deprecation;
         return this;
     }
 
+    /**
+     * Indicates the media type used by the resource.
+     *
+     * @param type the media type
+     */
+    public void type(String type) {
+        this.type = type;
+    }
+
+    /**
+     * Specifies an additional name for the link.
+     *
+     * @param name the link name
+     * @return itself
+     */
     public Link name(String name) {
         this.name = name;
         return this;
@@ -74,8 +129,22 @@ public class Link {
         return href;
     }
 
+    public Link set(String variableName, Object value) {
+        Link link = new Link(this);
+        link.hrefVars.put(variableName, value);
+        return link;
+    }
+
+    public String expand() {
+        return UriTemplate.fromTemplate(href).expand(hrefVars);
+    }
+
     public boolean isTemplated() {
         return templated;
+    }
+
+    public String getType() {
+        return type;
     }
 
     public String getDeprecation() {

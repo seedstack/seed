@@ -20,8 +20,11 @@ import org.apache.commons.configuration.Configuration;
 import org.kametic.specifications.Specification;
 import org.seedstack.seed.core.internal.application.ApplicationPlugin;
 import org.seedstack.seed.core.utils.SeedConfigurationUtils;
+import org.seedstack.seed.rest.api.RelRegistry;
 import org.seedstack.seed.rest.api.ResourceFiltering;
+import org.seedstack.seed.rest.internal.hal.RelRegistryImpl;
 import org.seedstack.seed.rest.internal.jsonhome.JsonHome;
+import org.seedstack.seed.rest.internal.jsonhome.Resource;
 import org.seedstack.seed.web.internal.WebPlugin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,6 +39,7 @@ import java.util.*;
  * @author adrien.lauer@mpsa.com
  */
 public class RestPlugin extends AbstractPlugin {
+
     private static final String REST_PLUGIN_CONFIGURATION_PREFIX = "org.seedstack.seed.rest";
     private static final Logger LOGGER = LoggerFactory.getLogger(RestPlugin.class);
 
@@ -43,7 +47,6 @@ public class RestPlugin extends AbstractPlugin {
     private final Specification<Class<?>> providersSpecification = new JaxRsProviderSpecification();
 
     private ServletContext servletContext;
-    private JsonHome jsonHome;
 
     @Override
     public String name() {
@@ -99,15 +102,22 @@ public class RestPlugin extends AbstractPlugin {
         String baseRel = restConfiguration.getString("baseRel", "");
         String baseParam = restConfiguration.getString("baseParam", "");
 
-        jsonHome = new JsonHome(baseRel, baseParam, scannedClassesBySpecification.get(resourcesSpecification));
+        Collection<Class<?>> resourceClasses = scannedClassesBySpecification.get(resourcesSpecification);
+
+        ResourceScanner resourceScanner = new ResourceScanner(baseRel, baseParam)
+                .scan(resourceClasses);
+        Map<String, Resource> resourceMap = resourceScanner.jsonHomeResources();
+
+        RelRegistry relRegistry = new RelRegistryImpl(resourceScanner.halLinks());
+        JsonHome jsonHome = new JsonHome(resourceMap);
 
         webPlugin.registerAdditionalModule(
                 new RestModule(
-                        scannedClassesBySpecification.get(resourcesSpecification),
+                        resourceClasses,
                         scannedClassesBySpecification.get(providersSpecification),
                         jerseyParameters,
                         resourceFilterFactories,
-                        restPath, jspPath, jsonHome)
+                        restPath, jspPath, jsonHome, relRegistry)
         );
 
         return InitState.INITIALIZED;

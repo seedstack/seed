@@ -11,6 +11,7 @@ package org.seedstack.seed.rest.internal.hal;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import org.seedstack.seed.rest.api.hal.HalRepresentation;
 
 import javax.ws.rs.WebApplicationException;
@@ -42,8 +43,8 @@ public class HalMessageBodyWriter implements MessageBodyWriter<HalRepresentation
 
     @Override
     public void writeTo(HalRepresentation halRepresentation, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException, WebApplicationException {
-        ObjectMapper objectMapper = new ObjectMapper();
-        //objectMapper.setSerializationInclusion(JsonInclude.Include.NON_DEFAULT);
+        ObjectMapper objectMapper = new ObjectMapper()
+                .enable(SerializationFeature.WRITE_SINGLE_ELEM_ARRAYS_UNWRAPPED);
         try {
             entityStream.write(objectMapper.writeValueAsBytes(halRepresentation));
             entityStream.flush();

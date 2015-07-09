@@ -9,11 +9,14 @@
  */
 package org.seedstack.seed.rest.fixtures;
 
+import org.seedstack.seed.rest.api.Rel;
+import org.seedstack.seed.rest.api.RelRegistry;
 import org.seedstack.seed.rest.internal.hal.HalBuilderImpl;
 import org.seedstack.seed.rest.internal.hal.fixture.OrderHal;
 import org.seedstack.seed.rest.internal.hal.fixture.OrderRepresentation;
 import org.seedstack.seed.rest.internal.hal.fixture.RepresentationFactory;
 
+import javax.inject.Inject;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -23,8 +26,14 @@ import javax.ws.rs.core.Response;
 /**
  * @author pierre.thirouin@ext.mpsa.com (Pierre Thirouin)
  */
-@Path("/orders")
+@Path("orders")
 public class HalResource {
+
+    public static final String ORDER_REL = "order";
+    public static final String ORDER_REL2 = "order2";
+
+    @Inject
+    private RelRegistry relRegistry;
 
     @GET
     @Produces("application/json+hal")
@@ -32,23 +41,26 @@ public class HalResource {
         return Response.ok(new RepresentationFactory().createOrders()).build();
     }
 
+    @Rel(value = ORDER_REL, expose = true)
     @GET
-    @Path("/{id}")
+    @Path("{id}")
     @Produces("application/json+hal")
     public Response getOrders(@PathParam("id") String id) {
         return Response.ok(
                 new OrderHal(id, "USD", "shipped", 10.20f)
-                        .link("warehouse", "/warehouse/" + 56 )
+                        .link("warehouse", "/warehouse/" + 56)
                         .link("invoice", "/invoices/873"))
                 .build();
     }
 
+    @Rel(value = ORDER_REL2, expose = true)
     @GET
-    @Path("/{id}")
+    @Path("v2/{id}")
     @Produces("application/json+hal")
     public Response getOrders2(@PathParam("id") String id) {
         return Response.ok(new HalBuilderImpl()
                 .create(new OrderRepresentation(10.20f, "USD", "shipped"))
+                .self(relRegistry.link(ORDER_REL2).set("id",id).expand())
                 .link("warehouse", "/warehouse/56")
                 .link("invoice", "/invoices/873"))
                 .build();

@@ -14,6 +14,7 @@ import com.google.inject.multibindings.Multibinder;
 import com.google.inject.name.Names;
 import com.google.inject.servlet.ServletModule;
 import com.sun.jersey.spi.container.ResourceFilterFactory;
+import org.seedstack.seed.rest.api.RelRegistry;
 import org.seedstack.seed.rest.internal.jsonhome.JsonHome;
 
 import java.util.Collection;
@@ -29,9 +30,10 @@ class RestModule extends ServletModule {
     private final Collection<Class<?>> resourceClasses;
     private final Collection<Class<?>> providerClasses;
     private final JsonHome jsonHome;
+    private final RelRegistry relRegistry;
 
     RestModule(Collection<Class<?>> resourceClasses, Collection<Class<?>> providerClasses, Map<String, String> jerseyParameters,
-               Set<Class<? extends ResourceFilterFactory>> resourceFilterFactories, String restPath, String jspPath, JsonHome jsonHome) {
+               Set<Class<? extends ResourceFilterFactory>> resourceFilterFactories, String restPath, String jspPath, JsonHome jsonHome, RelRegistry relRegistry) {
         this.resourceFilterFactories = resourceFilterFactories;
         this.restPath = restPath;
         this.jspPath = jspPath;
@@ -39,6 +41,7 @@ class RestModule extends ServletModule {
         this.resourceClasses = resourceClasses;
         this.providerClasses = providerClasses;
         this.jsonHome = jsonHome;
+        this.relRegistry = relRegistry;
     }
 
     @Override
@@ -76,6 +79,7 @@ class RestModule extends ServletModule {
             bind(providerClass).in(Scopes.SINGLETON);
         }
 
+        bind(RelRegistry.class).toInstance(relRegistry);
         bind(JsonHome.class).toInstance(jsonHome);
     }
 }

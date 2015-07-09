@@ -28,9 +28,9 @@ import java.util.Iterator;
  * @author pierre.thirouin@ext.mpsa.com (Pierre Thirouin)
  */
 @Ignore
-public class HintGeneratorTest {
+public class HintScannerTest {
 
-    private HintGenerator underTest;
+    private HintScanner underTest;
 
 
     @Rel(value = "product", expose = true)
@@ -47,7 +47,7 @@ public class HintGeneratorTest {
 
     @Before
     public void before() {
-        underTest = new HintGenerator();
+        underTest = new HintScanner();
     }
 
     @Test

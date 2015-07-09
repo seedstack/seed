@@ -32,6 +32,10 @@ public class HalResourceIT  extends AbstractSeedWebIT {
     private static final String order1 = "{\"currency\":\"USD\",\"status\":\"shipped\",\"total\":10.2," +
             "\"_links\":{\"invoice\":{\"href\":\"/invoices/873\"},\"self\":{\"href\":\"/orders/1\"},\"warehouse\":{\"href\":\"/warehouse/56\"}}}";
 
+
+    private static final String order2 = "{\"currency\":\"USD\",\"status\":\"shipped\",\"total\":10.2," +
+            "\"_links\":{\"invoice\":{\"href\":\"/invoices/873\"},\"self\":{\"href\":\"/orders/v2/1\"},\"warehouse\":{\"href\":\"/warehouse/56\"}}}";
+
     private static final String orders = "{\"currentlyProcessing\":14,\"shippedToday\":20," +
             "\"_links\":{\"next\":{\"href\":\"/orders?page=2\"},\"self\":{\"href\":\"/orders\"},\"find\":{\"href\":\"/orders{?id}\",\"templated\":true}}," +
             "\"_embedded\":{\"orders\":[" +
@@ -62,5 +66,14 @@ public class HalResourceIT  extends AbstractSeedWebIT {
                 .get(baseURL.toString() + "rest/orders/1");
 
         JSONAssert.assertEquals(order1, response.asString(), true);
+    }
+
+    @RunAsClient
+    @Test
+    public void hal_representation2() throws JSONException {
+        Response response = expect().statusCode(200).given().header("Content-Type", "application/json-home")
+                .get(baseURL.toString() + "rest/orders/v2/1");
+
+        JSONAssert.assertEquals(order2, response.asString(), true);
     }
 }

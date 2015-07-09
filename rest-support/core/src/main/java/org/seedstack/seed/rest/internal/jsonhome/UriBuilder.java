@@ -15,7 +15,7 @@ import java.util.regex.Pattern;
 /**
  * @author pierre.thirouin@ext.mpsa.com (Pierre Thirouin)
  */
-class UriBuilder {
+public class UriBuilder {
 
     private static final Pattern JAX_RS_TEMPLATE_PARAMETERS = Pattern.compile("\\{(\\w[\\w\\.-]*): .+?\\}");
     private static final Pattern JAX_RS_TEMPLATE = Pattern.compile(".*\\{(\\w[\\w\\.-]*)(: .+?)?\\}.*");
@@ -24,8 +24,7 @@ class UriBuilder {
     }
 
     /**
-     * Constructs a URI. Slashes in the parameters don't matter.
-     * The final slash will always be removed.
+     * Constructs a URI. The final slash will always be removed.
      * <p>
      * No encoding or replacement will be done.
      * </p>
