@@ -9,12 +9,12 @@
  */
 package org.seedstack.seed.security.internal.authorization;
 
-import org.seedstack.seed.security.api.SecuritySupport;
-import org.seedstack.seed.security.api.annotations.RequiresRoles;
-import org.seedstack.seed.security.api.exceptions.AuthorizationException;
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
-import org.apache.shiro.authz.annotation.Logical;
+import org.seedstack.seed.security.api.SecuritySupport;
+import org.seedstack.seed.security.api.annotations.Logical;
+import org.seedstack.seed.security.api.annotations.RequiresRoles;
+import org.seedstack.seed.security.api.exceptions.AuthorizationException;
 
 import java.lang.annotation.Annotation;
 
@@ -49,11 +49,7 @@ public class RequiresRolesInterceptor implements MethodInterceptor {
         if (roles.length == 1) {
             securitySupport.checkRole(roles[0]);
             return invocation.proceed();
-        }
-        if (Logical.AND.equals(rrAnnotation.logical())) {
-            securitySupport.checkRoles(roles);
-        }
-        if (Logical.OR.equals(rrAnnotation.logical())) {
+        } else if (Logical.OR.equals(rrAnnotation.logical())) {
             boolean hasAtLeastOneRole = false;
             for (String role : roles) {
                 if (securitySupport.hasRole(role)) {
@@ -64,6 +60,9 @@ public class RequiresRolesInterceptor implements MethodInterceptor {
             if (!hasAtLeastOneRole) {
                 throw new AuthorizationException("User does not have any of the roles to access method " + invocation.getMethod().toString());
             }
+        } else {
+            // Otherwise rrAnnotation.logical() is by default considered as Logical.AND
+            securitySupport.checkRoles(roles);
         }
         return invocation.proceed();
     }

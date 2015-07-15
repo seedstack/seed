@@ -9,12 +9,12 @@
  */
 package org.seedstack.seed.security.internal.authorization;
 
-import org.seedstack.seed.security.api.SecuritySupport;
-import org.seedstack.seed.security.api.annotations.RequiresPermissions;
-import org.seedstack.seed.security.api.exceptions.AuthorizationException;
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
-import org.apache.shiro.authz.annotation.Logical;
+import org.seedstack.seed.security.api.SecuritySupport;
+import org.seedstack.seed.security.api.annotations.Logical;
+import org.seedstack.seed.security.api.annotations.RequiresPermissions;
+import org.seedstack.seed.security.api.exceptions.AuthorizationException;
 
 import java.lang.annotation.Annotation;
 
@@ -49,11 +49,7 @@ public class RequiresPermissionsInterceptor implements MethodInterceptor {
         if (perms.length == 1) {
             securitySupport.checkPermission(perms[0]);
             return invocation.proceed();
-        }
-        if (Logical.AND.equals(rpAnnotation.logical())) {
-            securitySupport.checkPermissions(perms);
-        }
-        if (Logical.OR.equals(rpAnnotation.logical())) {
+        } else if (Logical.OR.equals(rpAnnotation.logical())) {
             boolean hasAtLeastOnePermission = false;
             for (String permission : perms) {
                 if (securitySupport.isPermitted(permission)) {
@@ -64,6 +60,9 @@ public class RequiresPermissionsInterceptor implements MethodInterceptor {
             if (!hasAtLeastOnePermission) {
                 throw new AuthorizationException("User does not have any of the permissions to access method " + invocation.getMethod().toString());
             }
+        } else {
+            // Otherwise rrAnnotation.logical() is by default considered as Logical.AND
+            securitySupport.checkPermissions(perms);
         }
         return invocation.proceed();
     }
