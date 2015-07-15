@@ -39,7 +39,7 @@ public class ResourceTest {
     public void merge_formats() {
         Hints newHints = new Hints();
         newHints.format("application/json", null);
-        newHints.format("application/json+hal", null);
+        newHints.format("application/hal+json", null);
         Resource newResource = new Resource(REL, HREF, newHints);
 
         Assertions.assertThat(resource.hints().getFormats()).hasSize(2);

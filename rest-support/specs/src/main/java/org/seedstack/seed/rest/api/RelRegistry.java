@@ -12,10 +12,21 @@ package org.seedstack.seed.rest.api;
 import org.seedstack.seed.rest.api.hal.Link;
 
 /**
+ * A registry which can provide href or HAL link associated to a given relation type.
+ * It avoids you to duplicate href over the application.
+ *
  * @author pierre.thirouin@ext.mpsa.com (Pierre Thirouin)
+ * @see org.seedstack.seed.rest.api.hal.HalBuilder
  */
 public interface RelRegistry {
 
+    /**
+     * Provides the href associated with the given rel.
+     * The href can be templated or not.
+     *
+     * @param rel the relation type
+     * @return the href
+     */
     String href(String rel);
 
     /**
@@ -25,5 +36,5 @@ public interface RelRegistry {
      * @param rel the relation type
      * @return a link or null if the rel is not found
      */
-    Link link(String rel);
+    Link uri(String rel);
 }

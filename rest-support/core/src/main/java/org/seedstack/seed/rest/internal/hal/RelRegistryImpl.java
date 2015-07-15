@@ -44,7 +44,7 @@ public class RelRegistryImpl implements RelRegistry {
     }
 
     @Override
-    public Link link(String rel) {
+    public Link uri(String rel) {
         if (rel == null || rel.equals("")) {
             throw new IllegalArgumentException("rel can't be blank");
         }

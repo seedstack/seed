@@ -13,7 +13,6 @@ import org.seedstack.seed.rest.api.hal.HalBuilder;
 import org.seedstack.seed.rest.api.hal.HalDefaultRepresentation;
 import org.seedstack.seed.rest.api.hal.HalRepresentation;
 import org.seedstack.seed.rest.api.hal.Link;
-import org.seedstack.seed.rest.internal.hal.HalBuilderImpl;
 
 import javax.ws.rs.core.UriBuilder;
 import java.util.ArrayList;
@@ -25,19 +24,18 @@ import java.util.List;
 public class RepresentationFactory {
 
     public HalDefaultRepresentation createOrders() {
-        HalBuilder halBuilder = new HalBuilderImpl();
 
         OrdersRepresentation orders = new OrdersRepresentation(14, 20);
 
         List<HalRepresentation> embedded = new ArrayList<HalRepresentation>();
 
-        embedded.add(halBuilder.create(new OrderRepresentation(30.00f, "USD", "shipped"))
+        embedded.add(HalBuilder.create(new OrderRepresentation(30.00f, "USD", "shipped"))
                 .self("/order/123").link("basket", "/baskets/98712").link("customer", "/customers/7809"));
 
-        embedded.add(halBuilder.create(new OrderRepresentation(20.00f, "USD", "processing"))
+        embedded.add(HalBuilder.create(new OrderRepresentation(20.00f, "USD", "processing"))
                 .self("/order/124").link("basket", "/baskets/97213").link("customer", "/customers/12369"));
 
-        return (HalDefaultRepresentation) halBuilder.create(orders)
+        return (HalDefaultRepresentation) HalBuilder.create(orders)
                 .link("self", "/orders")
                 .link("next", UriBuilder.fromPath("/orders").queryParam("page", 2).build().toString())
                 .link("find", new Link("/orders{?id}").templated())

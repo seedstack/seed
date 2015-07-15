@@ -27,7 +27,7 @@ import static com.jayway.restassured.RestAssured.expect;
 /**
  * @author pierre.thirouin@ext.mpsa.com (Pierre Thirouin)
  */
-public class HalResourceIT  extends AbstractSeedWebIT {
+public class HalResourceIT extends AbstractSeedWebIT {
 
     private static final String order1 = "{\"currency\":\"USD\",\"status\":\"shipped\",\"total\":10.2," +
             "\"_links\":{\"invoice\":{\"href\":\"/invoices/873\"},\"self\":{\"href\":\"/orders/1\"},\"warehouse\":{\"href\":\"/warehouse/56\"}}}";
@@ -53,7 +53,7 @@ public class HalResourceIT  extends AbstractSeedWebIT {
     @RunAsClient
     @Test
     public void hal_builder() throws JSONException {
-        Response response = expect().statusCode(200).given().header("Content-Type", "application/json-home")
+        Response response = expect().statusCode(200).given().header("Content-Type", "application/hal+json")
                 .get(baseURL.toString() + "rest/orders");
 
         JSONAssert.assertEquals(orders, response.asString(), true);
@@ -62,7 +62,7 @@ public class HalResourceIT  extends AbstractSeedWebIT {
     @RunAsClient
     @Test
     public void hal_representation() throws JSONException {
-        Response response = expect().statusCode(200).given().header("Content-Type", "application/json-home")
+        Response response = expect().statusCode(200).given().header("Content-Type", "application/hal+json")
                 .get(baseURL.toString() + "rest/orders/1");
 
         JSONAssert.assertEquals(order1, response.asString(), true);
@@ -71,7 +71,7 @@ public class HalResourceIT  extends AbstractSeedWebIT {
     @RunAsClient
     @Test
     public void hal_representation2() throws JSONException {
-        Response response = expect().statusCode(200).given().header("Content-Type", "application/json-home")
+        Response response = expect().statusCode(200).given().header("Content-Type", "application/hal+json")
                 .get(baseURL.toString() + "rest/orders/v2/1");
 
         JSONAssert.assertEquals(order2, response.asString(), true);

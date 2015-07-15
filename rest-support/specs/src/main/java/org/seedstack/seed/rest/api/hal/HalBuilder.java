@@ -14,7 +14,10 @@ package org.seedstack.seed.rest.api.hal;
  *
  * @author pierre.thirouin@ext.mpsa.com (Pierre Thirouin)
  */
-public interface HalBuilder {
+public final class HalBuilder {
+
+    private HalBuilder() {
+    }
 
     /**
      * Creates a new HAL representation based on a given representation.
@@ -22,6 +25,8 @@ public interface HalBuilder {
      * @param representation the representation
      * @return the HAL representation
      */
-    HalRepresentation create(Object representation);
+    public static HalRepresentation create(Object representation) {
+        return new HalDefaultRepresentation(representation);
+    }
 
 }

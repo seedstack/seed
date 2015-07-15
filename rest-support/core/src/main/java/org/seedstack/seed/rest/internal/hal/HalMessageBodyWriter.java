@@ -32,7 +32,7 @@ public class HalMessageBodyWriter implements MessageBodyWriter<HalRepresentation
 
     @Override
     public boolean isWriteable(Class type, Type genericType, Annotation[] annotations, MediaType mediaType) {
-        return HalRepresentation.class.isAssignableFrom(type) && (mediaType == MediaType.APPLICATION_JSON_TYPE || mediaType.equals(new MediaType("application", "json+hal")));
+        return HalRepresentation.class.isAssignableFrom(type) && (mediaType == MediaType.APPLICATION_JSON_TYPE || mediaType.equals(new MediaType("application", "hal+json")));
     }
 
     @Override

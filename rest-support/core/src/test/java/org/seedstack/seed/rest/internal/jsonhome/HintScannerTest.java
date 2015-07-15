@@ -39,7 +39,7 @@ public class HintScannerTest {
 
         @GET
         @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-        @Produces({MediaType.APPLICATION_JSON, "application/json+hal"})
+        @Produces({MediaType.APPLICATION_JSON, "application/hal+json"})
         public Response get() {
             return null;
         }
@@ -58,8 +58,8 @@ public class HintScannerTest {
 
         Assertions.assertThat(hints.getFormats()).hasSize(3);
         Iterator<String> formatIterator = hints.getFormats().keySet().iterator();
+        Assertions.assertThat(formatIterator.next()).isEqualTo("application/hal+json");
         Assertions.assertThat(formatIterator.next()).isEqualTo(MediaType.APPLICATION_JSON); // the map's keys are sorted
-        Assertions.assertThat(formatIterator.next()).isEqualTo("application/json+hal");
         Assertions.assertThat(formatIterator.next()).isEqualTo(MediaType.APPLICATION_XML);
     }
 

@@ -55,10 +55,10 @@ import java.util.Map;
 public class HalRepresentation {
 
     @JsonProperty("_links")
-    protected final Map<String, List<Link>> links = new HashMap<String, List<Link>>();
+    private final Map<String, List<Link>> links = new HashMap<String, List<Link>>();
 
     @JsonProperty("_embedded")
-    protected final Map<String, Object> embedded = new HashMap<String, Object>();
+    private final Map<String, Object> embedded = new HashMap<String, Object>();
 
     /**
      * Default constructor required by Jackson.

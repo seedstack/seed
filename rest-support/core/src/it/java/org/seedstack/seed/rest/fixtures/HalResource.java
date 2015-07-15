@@ -11,7 +11,7 @@ package org.seedstack.seed.rest.fixtures;
 
 import org.seedstack.seed.rest.api.Rel;
 import org.seedstack.seed.rest.api.RelRegistry;
-import org.seedstack.seed.rest.internal.hal.HalBuilderImpl;
+import org.seedstack.seed.rest.api.hal.HalBuilder;
 import org.seedstack.seed.rest.internal.hal.fixture.OrderHal;
 import org.seedstack.seed.rest.internal.hal.fixture.OrderRepresentation;
 import org.seedstack.seed.rest.internal.hal.fixture.RepresentationFactory;
@@ -36,7 +36,7 @@ public class HalResource {
     private RelRegistry relRegistry;
 
     @GET
-    @Produces("application/json+hal")
+    @Produces("application/hal+json")
     public Response getOrders() {
         return Response.ok(new RepresentationFactory().createOrders()).build();
     }
@@ -44,7 +44,7 @@ public class HalResource {
     @Rel(value = ORDER_REL, expose = true)
     @GET
     @Path("{id}")
-    @Produces("application/json+hal")
+    @Produces("application/hal+json")
     public Response getOrders(@PathParam("id") String id) {
         return Response.ok(
                 new OrderHal(id, "USD", "shipped", 10.20f)
@@ -56,11 +56,10 @@ public class HalResource {
     @Rel(value = ORDER_REL2, expose = true)
     @GET
     @Path("v2/{id}")
-    @Produces("application/json+hal")
+    @Produces("application/hal+json")
     public Response getOrders2(@PathParam("id") String id) {
-        return Response.ok(new HalBuilderImpl()
-                .create(new OrderRepresentation(10.20f, "USD", "shipped"))
-                .self(relRegistry.link(ORDER_REL2).set("id",id).expand())
+        return Response.ok(HalBuilder.create(new OrderRepresentation(10.20f, "USD", "shipped"))
+                .self(relRegistry.uri(ORDER_REL2).set("id", id).expand())
                 .link("warehouse", "/warehouse/56")
                 .link("invoice", "/invoices/873"))
                 .build();
