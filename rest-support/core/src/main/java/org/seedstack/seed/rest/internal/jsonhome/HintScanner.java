@@ -16,11 +16,19 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 
 /**
+ * Scans methods for JSON-HOME hints.
+ *
  * @author pierre.thirouin@ext.mpsa.com (Pierre Thirouin)
  */
-class HintGenerator {
+public class HintScanner {
 
-    Hints findHint(Method method) {
+    /**
+     * Finds the JSON-HOME hints on the given method.
+     *
+     * @param method the method to scan
+     * @return the hints
+     */
+    public Hints findHint(Method method) {
         Hints hints = new Hints();
         for (Annotation annotation : method.getDeclaredAnnotations()) {
             findAllow(hints, annotation);

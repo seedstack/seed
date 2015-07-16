@@ -15,19 +15,19 @@ import org.seedstack.seed.rest.api.Rel;
 import java.lang.reflect.Method;
 
 /**
- * The specification matches HTTP methods which should be exposed as JSON-HOME resources.
+ * The specification matches the method exposing a REST resource and declaring a relation type.
  * <p>
  * In order to be exposed the method should be:
  * </p>
  * <ol>
  *   <li>meta annotated by {@link javax.ws.rs.HttpMethod};</li>
- *   <li>annotated by {@link org.seedstack.seed.rest.api.Rel} with {@code expose=true};</li>
+ *   <li>annotated by {@link org.seedstack.seed.rest.api.Rel};</li>
  *   <li>If the annotated is not found on the method, the declaring class is checked.</li>
  * </ol>
  *
  * @author pierre.thirouin@ext.mpsa.com (Pierre Thirouin)
  */
-class JsonHomeSpecification extends AbstractSpecification<Method> {
+class RelSpecification extends AbstractSpecification<Method> {
 
     private static final HttpMethodSpecification HTTP_METHOD_SPECIFICATION = new HttpMethodSpecification();
 
@@ -39,11 +39,6 @@ class JsonHomeSpecification extends AbstractSpecification<Method> {
 
         Rel rootRel = method.getDeclaringClass().getAnnotation(Rel.class);
         Rel rel = method.getAnnotation(Rel.class);
-        if (rel != null) {
-            return rel.expose();
-        } else if (rootRel != null) {
-            return rootRel.expose();
-        }
-        return false;
+        return rootRel != null || rel != null;
     }
 }

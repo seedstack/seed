@@ -14,6 +14,7 @@ import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.seedstack.seed.rest.api.Rel;
 
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Response;
 
@@ -43,21 +44,21 @@ public class JsonHomeSpecificationTest {
     static class ValidResource1 {
 
         @Rel(value = "ValidResource1", expose = true)
-        @Path("/JsonHomeValidResource1")
+        @Path("/JsonHomeValidResource1") @POST
         public Response post() { return null;}
     }
 
     static interface InterfaceResource1 {
 
         @Rel(value = "InterfaceResource1", expose = true)
-        @Path("/JsonHomeInterfaceResource1")
+        @Path("/JsonHomeInterfaceResource1") @POST
         Response post();
     }
 
     static class ValidResource2 extends ValidResource1 {
     }
     static class ValidResource3 implements InterfaceResource1 {
-        @Override
+        @Override @POST
         public Response post() {
             return null;
         }
@@ -65,7 +66,7 @@ public class JsonHomeSpecificationTest {
 
     static class InvalidResource1 {
 
-        @Path("/JsonHomeInvalidResource1")
+        @Path("/JsonHomeInvalidResource1") @POST
         public Response post() { return null; }
     }
 

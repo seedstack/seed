@@ -9,6 +9,8 @@
  */
 package org.seedstack.seed.rest.internal.jsonhome;
 
+import com.damnhandy.uri.template.UriTemplate;
+import com.damnhandy.uri.template.UriTemplateBuilder;
 import org.seedstack.seed.core.api.SeedException;
 import org.seedstack.seed.core.utils.SeedCheckUtils;
 import org.seedstack.seed.rest.internal.RestErrorCode;
@@ -18,11 +20,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * The JSON-HOME representation of a REST resource.
+ * The JSON-HOME representation of a REST resource as defined by the
+ * <a href="http://tools.ietf.org/html/draft-nottingham-json-home-03#section-3">IETF draft</a>.
  *
  * @author pierre.thirouin@ext.mpsa.com (Pierre Thirouin)
+ * @see org.seedstack.seed.rest.internal.jsonhome.JsonHome
  */
-class Resource {
+public class Resource {
 
     private final String rel;
 
@@ -30,7 +34,8 @@ class Resource {
 
     private String hrefTemplate;
 
-    private Map<String, String> hrefVars;
+    private Map<String, String> pathParams = new HashMap<String, String>();
+    private Map<String, String> queryParams = new HashMap<String, String>();
 
     private Hints hints;
 
@@ -54,48 +59,101 @@ class Resource {
      *
      * @param rel          the the relation type
      * @param hrefTemplate the href template
-     * @param hrefVars     the href variables
+     * @param pathParams     the href variables
      * @param hints        the the resource hints
      */
-    public Resource(String rel, String hrefTemplate, @Nullable Map<String, String> hrefVars, @Nullable Hints hints) {
+    public Resource(String rel, String hrefTemplate, @Nullable Map<String, String> pathParams, @Nullable Map<String, String> queryParams, @Nullable Hints hints) {
         SeedCheckUtils.checkIfNotNull(rel);
         SeedCheckUtils.checkIfNotNull(hrefTemplate);
         this.rel = rel;
         this.hrefTemplate = hrefTemplate;
-        this.hrefVars = hrefVars;
+        if (this.pathParams != null) {
+            this.pathParams = pathParams;
+        }
+        if (this.queryParams != null) {
+            this.queryParams = queryParams;
+        }
         this.hints = hints;
     }
 
+    /**
+     * Returns the relation type.
+     *
+     * @return rel
+     */
     public String rel() {
         return rel;
     }
 
+    /**
+     * Returns the href. It can be empty if the path is templated.
+     *
+     * @return href
+     */
     public String href() {
         return href;
     }
 
+    /**
+     * Return the href template. It's empty unless the path is templated.
+     *
+     * @return hrefTemplate
+     */
     public String hrefTemplate() {
-        return hrefTemplate;
+        UriTemplateBuilder uriTemplateBuilder = UriTemplate.buildFromTemplate(hrefTemplate);
+        if (!queryParams.isEmpty()) {
+            uriTemplateBuilder = uriTemplateBuilder.query(queryParams.keySet().toArray(new String[queryParams.keySet().size()]));
+        }
+        return uriTemplateBuilder.build().getTemplate();
     }
 
+    /**
+     * Return the hrefVars. It's empty unless the path is templated.
+     *
+     * @return hrefVars
+     */
     public Map<String, String> hrefVars() {
-        return hrefVars;
+        Map<String, String> map = new HashMap<String, String>(pathParams);
+        map.putAll(queryParams);
+        return map;
     }
 
+    /**
+     * Returns hints about the resource.
+     *
+     * @return the hints
+     */
     public Hints hints() {
         return hints;
     }
 
+    /**
+     * Indicates whether the href is templated.
+     *
+     * @return true if the href is templated, false otherwise
+     */
     public boolean templated() {
-        return hrefTemplate != null && !hrefTemplate.equals("");
+        return hrefTemplate != null && !"".equals(hrefTemplate);
     }
 
+    /**
+     * Merges the current resource with another resource instance.
+     * The merge objects must represent the same resource but can
+     * come from multiple methods.
+     *
+     * @param resource the resource object to merge
+     */
     public void merge(Resource resource) {
+        if (resource == null) {
+            return;
+        }
+
         checkRel(resource);
         checkHrefs(resource);
 
         if (resource.templated()) {
-            this.hrefVars.putAll(resource.hrefVars());
+            this.pathParams.putAll(resource.pathParams);
+            this.queryParams.putAll(resource.queryParams);
         }
         if (resource.hints() != null) {
             this.hints.merge(resource.hints());
@@ -113,51 +171,62 @@ class Resource {
         if (resource == null) {
             throw new IllegalArgumentException("Resource should not be null");
         }
-        if (resource.templated() && !this.templated()) {
+
+        if (this.templated() != resource.templated()) {
             throw SeedException.createNew(RestErrorCode.MULTIPLE_PATH_FOR_THE_SAME_REL)
                     .put("rel", rel)
                     .put("oldHref", this.hrefTemplate != null ? hrefTemplate : href)
-                    .put("newHref", resource.hrefTemplate() != null ? resource.hrefTemplate() : resource.href());
+                    .put("newHref", resource.hrefTemplate != null ? resource.hrefTemplate : resource.href);
         }
-        if (resource.templated() && !resource.hrefTemplate().equals(this.hrefTemplate())) {
-            throw SeedException.createNew(RestErrorCode.MULTIPLE_PATH_FOR_THE_SAME_REL)
-                    .put("rel", rel)
-                    .put("oldHref", this.hrefTemplate)
-                    .put("newHref", resource.hrefTemplate());
 
-        } else if (!resource.templated() && !resource.href().equals(this.href())) {
-            throw SeedException.createNew(RestErrorCode.MULTIPLE_PATH_FOR_THE_SAME_REL)
-                    .put("rel", rel)
-                    .put("oldHref", this.href)
-                    .put("newHref", resource.href());
-        }
-    }
+        if (this.templated()) {
+            if (!resource.hrefTemplate.equals(this.hrefTemplate)) {
+                throw SeedException.createNew(RestErrorCode.MULTIPLE_PATH_FOR_THE_SAME_REL)
+                        .put("rel", rel)
+                        .put("oldHref", this.hrefTemplate)
+                        .put("newHref", resource.hrefTemplate);
+            }
 
-    public Map<String, Object> toRepresentation() {
-        Map<String, Object> representation = new HashMap<String, Object>();
-        if (templated()) {
-            representation.put("href-template", hrefTemplate);
-            representation.put("href-vars", hrefVars);
         } else {
-            representation.put("href", href);
-        }
-        if (hints != null) {
-            Map<String, Object> hintsRepresentation = hints.toRepresentation();
-            if (!hintsRepresentation.isEmpty()) {
-                representation.put("hints", hintsRepresentation);
+            if (!resource.href().equals(this.href())) {
+                throw SeedException.createNew(RestErrorCode.MULTIPLE_PATH_FOR_THE_SAME_REL)
+                        .put("rel", rel)
+                        .put("oldHref", this.href)
+                        .put("newHref", resource.href);
             }
         }
-        return representation;
     }
 
-    @Override
-    public String toString() {
-        return "Resource{" +
-                "rel='" + rel + '\'' +
-                ", href='" + href + '\'' +
-                ", hrefTemplate='" + hrefTemplate + '\'' +
-                ", hrefVars=" + hrefVars +
-                ", hints=" + hints +
-                '}';
+        /**
+         * Serializes the resource into a map.
+         *
+         * @return the resource map
+         */
+        public Map<String, Object> toRepresentation () {
+            Map<String, Object> representation = new HashMap<String, Object>();
+            if (templated()) {
+                representation.put("href-template", hrefTemplate);
+                representation.put("href-vars", hrefVars());
+            } else {
+                representation.put("href", href);
+            }
+            if (hints != null) {
+                Map<String, Object> hintsRepresentation = hints.toRepresentation();
+                if (!hintsRepresentation.isEmpty()) {
+                    representation.put("hints", hintsRepresentation);
+                }
+            }
+            return representation;
+        }
+
+        @Override
+        public String toString () {
+            return "Resource{" +
+                    "rel='" + rel + '\'' +
+                    ", href='" + href + '\'' +
+                    ", hrefTemplate='" + hrefTemplate + '\'' +
+                    ", hrefVars=" + hrefVars() +
+                    ", hints=" + hints +
+                    '}';
+        }
     }
-}

@@ -16,9 +16,13 @@ import java.net.URI;
 import java.util.*;
 
 /**
+ * Defines the hints representation as defined by the
+ * <a href="http://tools.ietf.org/html/draft-nottingham-json-home-03#section-4">IETF draft</a>.
+ *
  * @author pierre.thirouin@ext.mpsa.com (Pierre Thirouin)
+ * @see org.seedstack.seed.rest.internal.jsonhome.JsonHome
  */
-class Hints {
+public class Hints {
 
     private List<String> allow = new ArrayList<String>();
 
@@ -40,11 +44,16 @@ class Hints {
 
     private Status status;
 
-    enum Status {
+    public enum Status {
         GONE,
         DEPRECATED
     }
 
+    /**
+     * Merges the current hints with hints comming from another method of the resource.
+     *
+     * @param hints the hints to merge
+     */
     public void merge(Hints hints) {
         this.allow.addAll(hints.getAllow());
         this.formats.putAll(hints.getFormats());

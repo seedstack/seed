@@ -1,0 +1,90 @@
+/**
+ * Copyright (c) 2013-2015 by The SeedStack authors. All rights reserved.
+ *
+ * This file is part of SeedStack, An enterprise-oriented full development stack.
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+package org.seedstack.seed.rest.internal;
+
+import com.google.common.collect.Lists;
+import io.nuun.kernel.api.annotations.Ignore;
+import org.assertj.core.api.Assertions;
+import org.junit.Before;
+import org.junit.Test;
+import org.seedstack.seed.rest.api.Rel;
+import org.seedstack.seed.rest.api.hal.Link;
+import org.seedstack.seed.rest.internal.jsonhome.Resource;
+
+import javax.ws.rs.*;
+import javax.ws.rs.core.Response;
+import java.util.Map;
+
+/**
+ * @author pierre.thirouin@ext.mpsa.com (Pierre Thirouin)
+ */
+@Ignore // Tells nuun to not scan the test class
+public class ResourceParserTest {
+
+    private static final String BASE_REL = "http://example.org/rel/";
+    private static final String BASE_PARAM = "http://example.org/param/";
+
+    private Map<String, Resource> resourceMap;
+    private Map<String, Link> links;
+
+    @Ignore
+    @Rel(value = "widget", expose = true)
+    @Path("widgets/{widgetName: [a-zA-Z][a-zA-Z_0-9]}")
+    private static class MyLinkTemplateResource {
+
+        @GET
+        public Response get(@PathParam("widgetName") String widgetId, @QueryParam("lang") String lang) { return null; }
+
+        @PUT
+        public Response put(@PathParam("widgetName") String widgetId) { return null; }
+    }
+
+    @Before
+    public void before() {
+        ResourceScanner resourceScanner = new ResourceScanner(BASE_REL, BASE_PARAM);
+        resourceScanner.scan(Lists.<Class<?>>newArrayList(MyLinkTemplateResource.class));
+        resourceMap = resourceScanner.jsonHomeResources();
+        links = resourceScanner.halLinks();
+        Assertions.assertThat(resourceMap).isNotNull();
+    }
+
+    @Test
+    public void testCreateLinkTemplateResource() {
+        // Path on method
+        Resource underTest = resourceMap.get(UriBuilder.path(BASE_REL, "widget"));
+        Assertions.assertThat(underTest).isNotNull();
+        Assertions.assertThat(underTest.rel()).isEqualTo(UriBuilder.path(BASE_REL, "widget"));
+
+        Assertions.assertThat(underTest.hrefTemplate()).isEqualTo("/widgets/{widgetName}{?lang}");
+        Assertions.assertThat(underTest.hrefVars()).hasSize(2);
+        Assertions.assertThat(underTest.hrefVars().get("widgetName")).isEqualTo(UriBuilder.path(BASE_PARAM, "widgetName"));
+        Assertions.assertThat(underTest.hrefVars().get("lang")).isEqualTo(UriBuilder.path(BASE_PARAM, "lang"));
+    }
+
+    @Test
+    public void testCreateResource() {
+        Resource widgetResource = resourceMap.get(UriBuilder.path(BASE_REL, "widget"));
+        Assertions.assertThat(widgetResource).isNotNull();
+        Map<String, Object> underTest = widgetResource.toRepresentation();
+
+        Assertions.assertThat(underTest).hasSize(3);
+
+        String hrefTemplate = (String) underTest.get("href-template");
+        Assertions.assertThat(hrefTemplate).isEqualTo("/widgets/{widgetName}");
+    }
+
+    @Test
+    public void testHalLinks() {
+        Link widgetLink = links.get("widget");
+        Assertions.assertThat(widgetLink).isNotNull();
+        Assertions.assertThat(widgetLink.getHref()).isEqualTo("/widgets/{widgetName}{?lang}");
+        Assertions.assertThat(widgetLink.set("lang", "EN").set("widgetName", 1).expand()).isEqualTo("/widgets/1?lang=EN");
+    }
+}

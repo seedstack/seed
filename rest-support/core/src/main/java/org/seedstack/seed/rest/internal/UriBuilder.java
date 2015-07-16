@@ -7,7 +7,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-package org.seedstack.seed.rest.internal.jsonhome;
+package org.seedstack.seed.rest.internal;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -24,8 +24,7 @@ class UriBuilder {
     }
 
     /**
-     * Constructs a URI. Slashes in the parameters don't matter.
-     * The final slash will always be removed.
+     * Constructs a URI. The final slash will always be removed.
      * <p>
      * No encoding or replacement will be done.
      * </p>
@@ -34,7 +33,7 @@ class UriBuilder {
      * @param paths the paths
      * @return the built path
      */
-    public static String path(final String... paths) {
+    static String path(final String... paths) {
         StringBuilder sb = new StringBuilder();
         boolean firstPath = true;
         for (String s : paths) {
@@ -56,7 +55,7 @@ class UriBuilder {
      * @param path the path
      * @return the new path
      */
-    public static String stripLeadingSlash(String path) {
+    static String stripLeadingSlash(String path) {
         if (path.endsWith("/")) {
             return path.substring(0, path.length() - 1);
         } else {
@@ -77,7 +76,7 @@ class UriBuilder {
      * @param hrefTemplate the href template
      * @return the new href template
      */
-    public static String stripJaxRsRegex(String hrefTemplate) {
+    static String stripJaxRsRegex(String hrefTemplate) {
         Matcher m = JAX_RS_TEMPLATE_PARAMETERS.matcher(hrefTemplate);
 
         StringBuffer newHref = new StringBuffer();
@@ -95,7 +94,7 @@ class UriBuilder {
      * @param href the href to check
      * @return true if the href is templated, false otherwise
      */
-    public static boolean jaxTemplate(String href) {
+    static boolean jaxTemplate(String href) {
         Matcher m = JAX_RS_TEMPLATE.matcher(href);
         return m.matches();
     }

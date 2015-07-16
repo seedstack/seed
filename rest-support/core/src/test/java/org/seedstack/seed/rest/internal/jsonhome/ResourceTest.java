@@ -39,7 +39,7 @@ public class ResourceTest {
     public void merge_formats() {
         Hints newHints = new Hints();
         newHints.format("application/json", null);
-        newHints.format("application/json+hal", null);
+        newHints.format("application/hal+json", null);
         Resource newResource = new Resource(REL, HREF, newHints);
 
         Assertions.assertThat(resource.hints().getFormats()).hasSize(2);
@@ -77,7 +77,7 @@ public class ResourceTest {
 
     @Test(expected = SeedException.class)
     public void resources_cannot_have_different_href2() {
-        Resource newResource = new Resource(REL, "http://example.org/catalogs/{id}", new HashMap<String, String>(), hints);
+        Resource newResource = new Resource(REL, "http://example.org/catalogs/{id}", new HashMap<String, String>(), new HashMap<String, String>(), hints);
         resource.merge(newResource);
     }
 }
