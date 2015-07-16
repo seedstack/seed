@@ -10,7 +10,6 @@
 package org.seedstack.seed.rest.internal;
 
 import org.seedstack.seed.rest.api.Rel;
-import org.seedstack.seed.rest.internal.jsonhome.UriBuilder;
 
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -26,7 +25,7 @@ import java.util.Map;
  *
  * @author pierre.thirouin@ext.mpsa.com (Pierre Thirouin)
  */
-public class RESTReflect {
+class RESTReflect {
 
     private RESTReflect() {
     }
@@ -38,7 +37,7 @@ public class RESTReflect {
      * @param method the method to scan
      * @return the rel annotation
      */
-    public static Rel findRel(Method method) {
+    static Rel findRel(Method method) {
         Rel rootRel = method.getDeclaringClass().getAnnotation(Rel.class);
         Rel rel = method.getAnnotation(Rel.class);
         if (rel != null) {
@@ -68,7 +67,7 @@ public class RESTReflect {
      * @param method the method to scan
      * @return the resource's path
      */
-    public static String findPath(Method method) {
+    static String findPath(Method method) {
         Path rootPath = method.getDeclaringClass().getAnnotation(Path.class);
         Path path = method.getAnnotation(Path.class);
 
@@ -102,7 +101,7 @@ public class RESTReflect {
      * @param method    the method to scan
      * @return the map of parameter URI by parameter name
      */
-    public static Map<String, String> findPathParams(String baseParam, Method method) {
+    static Map<String, String> findPathParams(String baseParam, Method method) {
         Map<String, String> hrefVars = new HashMap<String, String>();
         for (Annotation[] annotations : method.getParameterAnnotations()) {
             for (Annotation annotation : annotations) {
@@ -123,7 +122,7 @@ public class RESTReflect {
      * @param method    the method to scan
      * @return the map of parameter URI by parameter name
      */
-    public static Map<String, String> findQueryParams(String baseParam, Method method) {
+    static Map<String, String> findQueryParams(String baseParam, Method method) {
         Map<String, String> hrefVars = new HashMap<String, String>();
         for (Annotation[] annotations : method.getParameterAnnotations()) {
             for (Annotation annotation : annotations) {

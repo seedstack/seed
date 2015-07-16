@@ -15,7 +15,6 @@ import org.seedstack.seed.rest.api.hal.Link;
 import org.seedstack.seed.rest.internal.jsonhome.HintScanner;
 import org.seedstack.seed.rest.internal.jsonhome.Hints;
 import org.seedstack.seed.rest.internal.jsonhome.Resource;
-import org.seedstack.seed.rest.internal.jsonhome.UriBuilder;
 
 import java.lang.reflect.Method;
 import java.util.*;
@@ -25,7 +24,7 @@ import java.util.*;
  *
  * @author pierre.thirouin@ext.mpsa.com (Pierre Thirouin)
  */
-public class ResourceScanner {
+class ResourceScanner {
 
     private static final RelSpecification REL_SPECIFICATION = new RelSpecification();
     private static final JsonHomeSpecification JSON_HOME_SPECIFICATION = new JsonHomeSpecification();

@@ -7,7 +7,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-package org.seedstack.seed.rest.internal.jsonhome;
+package org.seedstack.seed.rest.internal;
 
 import com.google.common.collect.Lists;
 import io.nuun.kernel.api.annotations.Ignore;
@@ -16,7 +16,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.seedstack.seed.rest.api.Rel;
 import org.seedstack.seed.rest.api.hal.Link;
-import org.seedstack.seed.rest.internal.ResourceScanner;
+import org.seedstack.seed.rest.internal.jsonhome.Resource;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.Response;

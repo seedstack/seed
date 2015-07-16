@@ -9,6 +9,7 @@
  */
 package org.seedstack.seed.rest.internal;
 
+import com.google.inject.AbstractModule;
 import com.sun.jersey.spi.container.ResourceFilterFactory;
 import io.nuun.kernel.api.Plugin;
 import io.nuun.kernel.api.plugin.InitState;
@@ -46,6 +47,12 @@ public class RestPlugin extends AbstractPlugin {
     private final Specification<Class<?>> resourcesSpecification = new JaxRsResourceSpecification();
     private final Specification<Class<?>> providersSpecification = new JaxRsProviderSpecification();
 
+    private WebPlugin webPlugin;
+    private Configuration restConfiguration;
+
+    private RelRegistry relRegistry;
+    private JsonHome jsonHome;
+
     private ServletContext servletContext;
 
     @Override
@@ -55,13 +62,43 @@ public class RestPlugin extends AbstractPlugin {
 
     @Override
     public InitState init(InitContext initContext) {
+        // Initialize required and dependent plugins
+        collectPlugins(initContext);
+
+        Map<Specification, Collection<Class<?>>> scannedClassesBySpecification = initContext.scannedTypesBySpecification();
+        Collection<Class<?>> resourceClasses = scannedClassesBySpecification.get(resourcesSpecification);
+
+        // Scan resource for HAL and JSON-HOME
+        scanResources(restConfiguration, resourceClasses);
+
+        // Skip the rest of the init phase if we are not in a servlet context
         if (servletContext == null) {
             LOGGER.info("No servlet context detected, REST support disabled");
             return InitState.INITIALIZED;
         }
 
-        Configuration restConfiguration = null;
-        WebPlugin webPlugin = null;
+        String restPath = restConfiguration.getString("path", "/rest");
+        String jspPath = restConfiguration.getString("jsp-path", "/WEB-INF/jsp");
+
+        Set<Class<? extends ResourceFilterFactory>> resourceFilterFactories = scanResourceFilterFactories(initContext);
+
+        Map<String, String> jerseyParameters = scanJerseyParameters();
+
+        webPlugin.registerAdditionalModule(
+                new RestModule(
+                        resourceClasses,
+                        scannedClassesBySpecification.get(providersSpecification),
+                        jerseyParameters,
+                        resourceFilterFactories,
+                        restPath, jspPath, jsonHome)
+        );
+
+        return InitState.INITIALIZED;
+    }
+
+    private void collectPlugins(InitContext initContext) {
+        restConfiguration = null;
+        webPlugin = null;
         for (Plugin plugin : initContext.pluginsRequired()) {
             if (plugin instanceof ApplicationPlugin) {
                 restConfiguration = ((ApplicationPlugin) plugin).getApplication().getConfiguration().subset(RestPlugin.REST_PLUGIN_CONFIGURATION_PREFIX);
@@ -73,18 +110,33 @@ public class RestPlugin extends AbstractPlugin {
         if (restConfiguration == null) {
             throw new PluginException("Unable to find SEED application plugin");
         }
+
         if (webPlugin == null) {
             throw new PluginException("Unable to find SEED Web plugin");
         }
+    }
 
-        String restPath = restConfiguration.getString("path", "/rest");
-        String jspPath = restConfiguration.getString("jsp-path", "/WEB-INF/jsp");
+    private Collection<Class<?>> scanResources(Configuration restConfiguration, Collection<Class<?>> resourceClasses) {
+        String baseRel = restConfiguration.getString("baseRel", "");
+        String baseParam = restConfiguration.getString("baseParam", "");
 
+        ResourceScanner resourceScanner = new ResourceScanner(baseRel, baseParam)
+                .scan(resourceClasses);
+        Map<String, Resource> resourceMap = resourceScanner.jsonHomeResources();
+
+        relRegistry = new RelRegistryImpl(resourceScanner.halLinks());
+        jsonHome = new JsonHome(resourceMap);
+
+        return resourceClasses;
+    }
+
+    private Set<Class<? extends ResourceFilterFactory>> scanResourceFilterFactories(InitContext initContext) {
         Map<Class<? extends Annotation>, Collection<Class<?>>> scannedClassesByAnnotationClass = initContext.scannedClassesByAnnotationClass();
-        Map<Specification, Collection<Class<?>>> scannedClassesBySpecification = initContext.scannedTypesBySpecification();
 
         Collection<Class<?>> resourceFilterFactoryClasses = scannedClassesByAnnotationClass.get(ResourceFiltering.class);
+
         Set<Class<? extends ResourceFilterFactory>> resourceFilterFactories = new HashSet<Class<? extends ResourceFilterFactory>>();
+
         if (resourceFilterFactoryClasses != null) {
             for (Class<?> candidate : resourceFilterFactoryClasses) {
                 if (ResourceFilterFactory.class.isAssignableFrom(candidate)) {
@@ -92,35 +144,28 @@ public class RestPlugin extends AbstractPlugin {
                 }
             }
         }
+        return resourceFilterFactories;
+    }
 
+    private Map<String, String> scanJerseyParameters() {
         Map<String, String> jerseyParameters = new HashMap<String, String>();
+
         Properties jerseyProperties = SeedConfigurationUtils.buildPropertiesFromConfiguration(restConfiguration, "jersey.property");
+
         for (Object key : jerseyProperties.keySet()) {
             jerseyParameters.put(key.toString(), jerseyProperties.getProperty(key.toString()));
         }
+        return jerseyParameters;
+    }
 
-        String baseRel = restConfiguration.getString("baseRel", "");
-        String baseParam = restConfiguration.getString("baseParam", "");
-
-        Collection<Class<?>> resourceClasses = scannedClassesBySpecification.get(resourcesSpecification);
-
-        ResourceScanner resourceScanner = new ResourceScanner(baseRel, baseParam)
-                .scan(resourceClasses);
-        Map<String, Resource> resourceMap = resourceScanner.jsonHomeResources();
-
-        RelRegistry relRegistry = new RelRegistryImpl(resourceScanner.halLinks());
-        JsonHome jsonHome = new JsonHome(resourceMap);
-
-        webPlugin.registerAdditionalModule(
-                new RestModule(
-                        resourceClasses,
-                        scannedClassesBySpecification.get(providersSpecification),
-                        jerseyParameters,
-                        resourceFilterFactories,
-                        restPath, jspPath, jsonHome, relRegistry)
-        );
-
-        return InitState.INITIALIZED;
+    @Override
+    public Object nativeUnitModule() {
+        return new AbstractModule() {
+            @Override
+            protected void configure() {
+                bind(RelRegistry.class).toInstance(relRegistry);
+            }
+        };
     }
 
     @Override

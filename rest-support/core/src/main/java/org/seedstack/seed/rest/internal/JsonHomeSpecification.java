@@ -27,7 +27,7 @@ import java.lang.reflect.Method;
  *
  * @author pierre.thirouin@ext.mpsa.com (Pierre Thirouin)
  */
-public class JsonHomeSpecification extends AbstractSpecification<Method> {
+class JsonHomeSpecification extends AbstractSpecification<Method> {
 
     private static final HttpMethodSpecification HTTP_METHOD_SPECIFICATION = new HttpMethodSpecification();
 
