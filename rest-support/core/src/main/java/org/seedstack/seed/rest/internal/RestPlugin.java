@@ -10,10 +10,12 @@
 package org.seedstack.seed.rest.internal;
 
 import com.google.inject.AbstractModule;
+import com.google.inject.Injector;
 import com.sun.jersey.spi.container.ResourceFilterFactory;
 import io.nuun.kernel.api.Plugin;
 import io.nuun.kernel.api.plugin.InitState;
 import io.nuun.kernel.api.plugin.PluginException;
+import io.nuun.kernel.api.plugin.context.Context;
 import io.nuun.kernel.api.plugin.context.InitContext;
 import io.nuun.kernel.api.plugin.request.ClasspathScanRequest;
 import io.nuun.kernel.core.AbstractPlugin;
@@ -23,6 +25,10 @@ import org.seedstack.seed.core.internal.application.ApplicationPlugin;
 import org.seedstack.seed.core.utils.SeedConfigurationUtils;
 import org.seedstack.seed.rest.api.RelRegistry;
 import org.seedstack.seed.rest.api.ResourceFiltering;
+import org.seedstack.seed.rest.internal.exceptionmapper.AuthenticationExceptionMapper;
+import org.seedstack.seed.rest.internal.exceptionmapper.AuthorizationExceptionMapper;
+import org.seedstack.seed.rest.internal.exceptionmapper.InternalErrorExceptionMapper;
+import org.seedstack.seed.rest.internal.exceptionmapper.WebApplicationExcetionMapper;
 import org.seedstack.seed.rest.internal.hal.RelRegistryImpl;
 import org.seedstack.seed.rest.internal.jsonhome.JsonHome;
 import org.seedstack.seed.rest.internal.jsonhome.Resource;
@@ -30,6 +36,7 @@ import org.seedstack.seed.web.internal.WebPlugin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.inject.Inject;
 import javax.servlet.ServletContext;
 import java.lang.annotation.Annotation;
 import java.util.*;
@@ -94,6 +101,23 @@ public class RestPlugin extends AbstractPlugin {
         );
 
         return InitState.INITIALIZED;
+    }
+
+    @Inject
+    private Injector injector;
+
+    @Override
+    public void start(Context context) {
+        if (servletContext != null) {
+            SeedContainer seedContainer = injector.getInstance(SeedContainer.class);
+            seedContainer.registerClass(AuthenticationExceptionMapper.class);
+            seedContainer.registerClass(AuthorizationExceptionMapper.class);
+
+            if (restConfiguration.getBoolean("map-all-exceptions", true)) {
+                seedContainer.registerClass(WebApplicationExcetionMapper.class);
+                seedContainer.registerClass(InternalErrorExceptionMapper.class);
+            }
+        }
     }
 
     private void collectPlugins(InitContext initContext) {
