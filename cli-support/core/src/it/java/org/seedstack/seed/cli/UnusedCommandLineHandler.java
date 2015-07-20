@@ -9,15 +9,19 @@
  */
 package org.seedstack.seed.cli;
 
-import org.junit.Test;
+import org.seedstack.seed.cli.api.CliCommand;
+import org.seedstack.seed.cli.api.CommandLineHandler;
 
-import static org.assertj.core.api.Assertions.assertThat;
+/**
+ * @author adrien.lauer@mpsa.com
+ */
+@CliCommand("test2")
+public class UnusedCommandLineHandler implements CommandLineHandler {
+    static boolean called = false;
 
-public class CommandLinePluginIT {
-    @Test
-    public void test() throws Exception {
-        SeedRunner.execute(new String[]{"-a", "-b", "babar", "zob", "-Pkey1=value1", "-Pkey2=value2"});
-        assertThat(SampleCommandLineHandler.called).isTrue();
-        assertThat(UnusedCommandLineHandler.called).isFalse();
+    @Override
+    public Integer call() throws Exception {
+        called = true;
+        return 0;
     }
 }

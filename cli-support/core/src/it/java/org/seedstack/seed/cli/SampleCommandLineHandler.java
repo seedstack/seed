@@ -26,7 +26,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @CliCommand("test")
 public class SampleCommandLineHandler implements CommandLineHandler {
-    private static final Logger LOGGER = LoggerFactory.getLogger(SampleCommandLineHandler.class);
+    static boolean called = false;
 
     @CliOption(name = "a")
     private Boolean hasA;
@@ -60,6 +60,8 @@ public class SampleCommandLineHandler implements CommandLineHandler {
 
         assertThat(P2).isNotNull();
         assertThat(P2).containsExactly("key1", "value1", "key2", "value2");
+
+        called = true;
 
         return 0;
     }
