@@ -19,9 +19,9 @@ public class UriBuilderTest {
 
     @Test
     public void testBuildPath() {
-        Assertions.assertThat(UriBuilder.path("/base", "/foo", "bar")).isEqualTo("/base/foo/bar");
-        Assertions.assertThat(UriBuilder.path("/base/", "/foo/", "bar")).isEqualTo("/base/foo/bar");
-        Assertions.assertThat(UriBuilder.path("http://base/", "/foo/", "/bar/")).isEqualTo("http://base/foo/bar");
+        Assertions.assertThat(UriBuilder.uri("/base", "/foo", "bar")).isEqualTo("/base/foo/bar");
+        Assertions.assertThat(UriBuilder.uri("/base/", "/foo/", "bar")).isEqualTo("/base/foo/bar");
+        Assertions.assertThat(UriBuilder.uri("http://base/", "/foo/", "/bar/")).isEqualTo("http://base/foo/bar");
     }
 
     @Test

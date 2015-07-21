@@ -35,14 +35,17 @@ class ResourceScanner {
 
     private final String baseRel;
     private final String baseParam;
+    private final String restPath;
 
     /**
      * Constructor.
      *
+     * @param restPath  the base SEED path
      * @param baseRel   the base URI for the relation types
      * @param baseParam the base URI for the href parameters
      */
-    public ResourceScanner(final String baseRel, final String baseParam) {
+    public ResourceScanner(String restPath, final String baseRel, final String baseParam) {
+        this.restPath = restPath;
         this.baseRel = baseRel;
         this.baseParam = baseParam;
     }
@@ -105,7 +108,7 @@ class ResourceScanner {
         for (Map.Entry<String, List<Method>> entry : resourceByRel.entrySet()) {
             // Extends the rel with baseRel
             String rel = entry.getKey();
-            String absoluteRel = UriBuilder.path(baseRel, rel);
+            String absoluteRel = UriBuilder.uri(baseRel, rel);
 
             Resource resource = null;
             List<Method> methods = entry.getValue();
@@ -136,6 +139,9 @@ class ResourceScanner {
 
             Hints hints = new HintScanner().findHint(method);
 
+            // Add the Seed REST path
+            path = UriBuilder.uri(this.restPath, path);
+
             if (isTemplated(path)) {
                 Map<String, String> pathParams = RESTReflect.findPathParams(baseParam, method);
                 Map<String, String> queryParams = RESTReflect.findQueryParams(baseParam, method);
@@ -164,11 +170,18 @@ class ResourceScanner {
                 throw new IllegalStateException("Path not found for rel: " + entry.getKey());
             }
 
+            // Build an URI template level 4
             UriTemplateBuilder uriTemplateBuilder = UriTemplate.buildFromTemplate(path);
+
+            // Add eventual query parameters to the URI
             if (!queryParams.isEmpty()) {
                 uriTemplateBuilder.query(queryParams.keySet().toArray(new String[queryParams.keySet().size()]));
             }
-            halLinks.put(entry.getKey(), new Link(uriTemplateBuilder.build().getTemplate()));
+
+            // Add the Seed Rest path
+            String finalPath = UriBuilder.uri(this.restPath, uriTemplateBuilder.build().getTemplate());
+
+            halLinks.put(entry.getKey(), new Link(finalPath));
         }
     }
 }
