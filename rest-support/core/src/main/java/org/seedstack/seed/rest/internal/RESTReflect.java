@@ -74,11 +74,11 @@ class RESTReflect {
         // Concatenates paths form class and method
         String pathValue = null;
         if (path != null && rootPath != null) {
-            pathValue = UriBuilder.path(rootPath.value(), path.value());
+            pathValue = UriBuilder.uri(rootPath.value(), path.value());
         } else if (rootPath != null) {
-            pathValue = UriBuilder.path(rootPath.value());
+            pathValue = UriBuilder.uri(rootPath.value());
         } else if (path != null) {
-            pathValue = UriBuilder.path(path.value());
+            pathValue = UriBuilder.uri(path.value());
         }
 
         if (pathValue != null) {
@@ -107,7 +107,7 @@ class RESTReflect {
             for (Annotation annotation : annotations) {
                 if (annotation.annotationType().equals(PathParam.class)) {
                     String varName = ((PathParam) annotation).value();
-                    hrefVars.put(varName, UriBuilder.path(baseParam, varName));
+                    hrefVars.put(varName, UriBuilder.uri(baseParam, varName));
                 }
             }
         }
@@ -128,7 +128,7 @@ class RESTReflect {
             for (Annotation annotation : annotations) {
                 if (annotation.annotationType().equals(QueryParam.class)) {
                     String varName = ((QueryParam) annotation).value();
-                    hrefVars.put(varName, UriBuilder.path(baseParam, varName));
+                    hrefVars.put(varName, UriBuilder.uri(baseParam, varName));
                 }
             }
         }

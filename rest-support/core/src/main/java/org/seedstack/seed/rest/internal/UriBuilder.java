@@ -33,7 +33,7 @@ class UriBuilder {
      * @param paths the paths
      * @return the built path
      */
-    static String path(final String... paths) {
+    static String uri(final String... paths) {
         StringBuilder sb = new StringBuilder();
         boolean firstPath = true;
         for (String s : paths) {

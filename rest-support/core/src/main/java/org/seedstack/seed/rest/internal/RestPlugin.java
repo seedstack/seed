@@ -68,17 +68,17 @@ public class RestPlugin extends AbstractPlugin {
         Map<Specification, Collection<Class<?>>> scannedClassesBySpecification = initContext.scannedTypesBySpecification();
         Collection<Class<?>> resourceClasses = scannedClassesBySpecification.get(resourcesSpecification);
 
+        String restPath = restConfiguration.getString("path", "/rest");
+        String jspPath = restConfiguration.getString("jsp-path", "/WEB-INF/jsp");
+
         // Scan resource for HAL and JSON-HOME
-        scanResources(restConfiguration, resourceClasses);
+        scanResources(restPath, restConfiguration, resourceClasses);
 
         // Skip the rest of the init phase if we are not in a servlet context
         if (servletContext == null) {
             LOGGER.info("No servlet context detected, REST support disabled");
             return InitState.INITIALIZED;
         }
-
-        String restPath = restConfiguration.getString("path", "/rest");
-        String jspPath = restConfiguration.getString("jsp-path", "/WEB-INF/jsp");
 
         Set<Class<? extends ResourceFilterFactory>> resourceFilterFactories = scanResourceFilterFactories(initContext);
 
@@ -116,11 +116,11 @@ public class RestPlugin extends AbstractPlugin {
         }
     }
 
-    private Collection<Class<?>> scanResources(Configuration restConfiguration, Collection<Class<?>> resourceClasses) {
+    private Collection<Class<?>> scanResources(String restPath, Configuration restConfiguration, Collection<Class<?>> resourceClasses) {
         String baseRel = restConfiguration.getString("baseRel", "");
         String baseParam = restConfiguration.getString("baseParam", "");
 
-        ResourceScanner resourceScanner = new ResourceScanner(baseRel, baseParam)
+        ResourceScanner resourceScanner = new ResourceScanner(restPath, baseRel, baseParam)
                 .scan(resourceClasses);
         Map<String, Resource> resourceMap = resourceScanner.jsonHomeResources();
 
