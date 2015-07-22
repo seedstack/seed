@@ -48,7 +48,7 @@ public class JsonHomeResource {
      * @return JAX-RS response
      */
     @GET
-    @Produces("application/json-home")
+    @Produces({"application/json", "application/json-home"})
     public Response entryPoint() {
         final ObjectMapper mapper = new ObjectMapper();
         try {
