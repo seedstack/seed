@@ -28,6 +28,11 @@
         </dependency>
         <dependency>
             <groupId>org.seedstack.seed</groupId>
+            <artifactId>seed-security-support-specs</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.seedstack.seed</groupId>
             <artifactId>seed-web-support-core</artifactId>
             <version>${project.version}</version>
         </dependency>

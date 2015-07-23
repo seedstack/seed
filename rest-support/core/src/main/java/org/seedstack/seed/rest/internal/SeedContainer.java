@@ -14,6 +14,7 @@ import com.sun.jersey.api.core.DefaultResourceConfig;
 import com.sun.jersey.api.core.ResourceConfig;
 import com.sun.jersey.guice.spi.container.servlet.GuiceContainer;
 import com.sun.jersey.spi.container.ResourceFilterFactory;
+import com.sun.jersey.spi.container.WebApplication;
 import com.sun.jersey.spi.container.servlet.WebConfig;
 
 import javax.inject.Inject;
@@ -29,6 +30,7 @@ class SeedContainer extends GuiceContainer {
     private static final long serialVersionUID = 1L;
 
     private final List<ResourceFilterFactory> resourceFilterFactories;
+    private final List<Class<?>> providers = new ArrayList<Class<?>>();
 
     @SuppressWarnings("all")
     @Inject
@@ -48,5 +50,24 @@ class SeedContainer extends GuiceContainer {
         ResourceConfig resourceConfig = new DefaultResourceConfig();
         resourceConfig.setPropertiesAndFeatures(propertiesAndFeatures);
         return resourceConfig;
+    }
+
+    @Override
+    protected void initiate(ResourceConfig config, WebApplication webapp) {
+        config.getClasses().addAll(providers);
+        super.initiate(config, webapp);
+    }
+
+    /**
+     * Registers a root resource and provider class.
+     * <p>
+     * The default lifecycle for resource class instances is per-request.
+     * The default lifecycle for providers is singleton.
+     * </p>
+     *
+     * @param aClass the class to register
+     */
+    public void registerClass(Class<?> aClass) {
+        providers.add(aClass);
     }
 }
