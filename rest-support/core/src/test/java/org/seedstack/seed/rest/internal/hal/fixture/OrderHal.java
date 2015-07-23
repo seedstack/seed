@@ -24,7 +24,7 @@ public class OrderHal extends HalRepresentation {
     }
 
     public OrderHal(String id, String currency, String status, float total) {
-        self("/rest/orders/" + id);
+        self("/orders/" + id);
         this.currency = currency;
         this.status = status;
         this.total = total;

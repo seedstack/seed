@@ -144,7 +144,7 @@ public class WebPlugin extends AbstractPlugin {
         boolean resourcesEnabled = webConfiguration.getBoolean("resources.enabled", true);
         String resourcesPrefix = null;
         if (resourcesEnabled) {
-            resourcesPrefix = webConfiguration.getString("resources.path", "/resources");
+            resourcesPrefix = webConfiguration.getString("resources.path", "");
             LOGGER.info("Static resources served on {}", resourcesPrefix);
         }
 

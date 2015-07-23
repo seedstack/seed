@@ -30,16 +30,16 @@ import static com.jayway.restassured.RestAssured.expect;
 public class HalResourceIT extends AbstractSeedWebIT {
 
     private static final String order1 = "{\"currency\":\"USD\",\"status\":\"shipped\",\"total\":10.2," +
-            "\"_links\":{\"invoice\":{\"href\":\"/rest/invoices/873\"},\"self\":{\"href\":\"/rest/orders/1\"},\"warehouse\":{\"href\":\"/rest/warehouse/56\"}}}";
+            "\"_links\":{\"invoice\":{\"href\":\"/invoices/873\"},\"self\":{\"href\":\"/orders/1\"},\"warehouse\":{\"href\":\"/warehouse/56\"}}}";
 
     private static final String order2 = "{\"currency\":\"USD\",\"status\":\"shipped\",\"total\":10.2," +
-            "\"_links\":{\"invoice\":{\"href\":\"/rest/invoices/873\"},\"self\":{\"href\":\"/rest/orders/v2/1\"},\"warehouse\":{\"href\":\"/rest/warehouse/56\"}}}";
+            "\"_links\":{\"invoice\":{\"href\":\"/invoices/873\"},\"self\":{\"href\":\"/orders/v2/1\"},\"warehouse\":{\"href\":\"/warehouse/56\"}}}";
 
     private static final String orders = "{\"currentlyProcessing\":14,\"shippedToday\":20," +
-            "\"_links\":{\"next\":{\"href\":\"/rest/orders?page=2\"},\"self\":{\"href\":\"/rest/orders\"},\"find\":{\"href\":\"/rest/orders{?id}\",\"templated\":true}}," +
+            "\"_links\":{\"next\":{\"href\":\"/orders?page=2\"},\"self\":{\"href\":\"/orders\"},\"find\":{\"href\":\"/orders{?id}\",\"templated\":true}}," +
             "\"_embedded\":{\"orders\":[" +
-            "{\"total\":30.0,\"currency\":\"USD\",\"status\":\"shipped\",\"_links\":{\"basket\":{\"href\":\"/rest/baskets/98712\"},\"self\":{\"href\":\"/rest/order/123\"},\"customer\":{\"href\":\"/rest/customers/7809\"}}}," +
-            "{\"total\":20.0,\"currency\":\"USD\",\"status\":\"processing\",\"_links\":{\"basket\":{\"href\":\"/rest/baskets/97213\"},\"self\":{\"href\":\"/rest/order/124\"},\"customer\":{\"href\":\"/rest/customers/12369\"}}}]}}";
+            "{\"total\":30.0,\"currency\":\"USD\",\"status\":\"shipped\",\"_links\":{\"basket\":{\"href\":\"/baskets/98712\"},\"self\":{\"href\":\"/order/123\"},\"customer\":{\"href\":\"/customers/7809\"}}}," +
+            "{\"total\":20.0,\"currency\":\"USD\",\"status\":\"processing\",\"_links\":{\"basket\":{\"href\":\"/baskets/97213\"},\"self\":{\"href\":\"/order/124\"},\"customer\":{\"href\":\"/customers/12369\"}}}]}}";
 
     @ArquillianResource
     private URL baseURL;
@@ -53,7 +53,7 @@ public class HalResourceIT extends AbstractSeedWebIT {
     @Test
     public void hal_builder() throws JSONException {
         Response response = expect().statusCode(200).given().header("Content-Type", "application/hal+json")
-                .get(baseURL.toString() + "rest/orders");
+                .get(baseURL.toString() + "orders");
 
         JSONAssert.assertEquals(orders, response.asString(), true);
     }
@@ -62,7 +62,7 @@ public class HalResourceIT extends AbstractSeedWebIT {
     @Test
     public void hal_representation() throws JSONException {
         Response response = expect().statusCode(200).given().header("Content-Type", "application/hal+json")
-                .get(baseURL.toString() + "rest/orders/1");
+                .get(baseURL.toString() + "orders/1");
 
         JSONAssert.assertEquals(order1, response.asString(), true);
     }
@@ -71,7 +71,7 @@ public class HalResourceIT extends AbstractSeedWebIT {
     @Test
     public void hal_representation2() throws JSONException {
         Response response = expect().statusCode(200).given().header("Content-Type", "application/hal+json")
-                .get(baseURL.toString() + "rest/orders/v2/1");
+                .get(baseURL.toString() + "orders/v2/1");
 
         JSONAssert.assertEquals(order2, response.asString(), true);
     }

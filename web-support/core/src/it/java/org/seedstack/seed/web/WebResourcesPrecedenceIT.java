@@ -25,12 +25,12 @@ import static org.hamcrest.Matchers.containsString;
 public class WebResourcesPrecedenceIT extends AbstractSeedWebIT {
     @Deployment
     public static WebArchive createDeployment() {
-        return ShrinkWrap.create(WebArchive.class).addAsWebResource("resources/precedence-test.js", "resources/precedence-test.js").setWebXML("WEB-INF/web.xml");
+        return ShrinkWrap.create(WebArchive.class).addAsWebResource("precedence-test.js", "precedence-test.js").setWebXML("WEB-INF/web.xml");
     }
 
     @Test
     @RunAsClient
     public void docroot_webresources_have_precedence(@ArquillianResource URL baseURL) throws Exception {
-        expect().statusCode(200).body(containsString("var docrootJS = {};")).when().get(baseURL.toString() + "resources/precedence-test.js");
+        expect().statusCode(200).body(containsString("var docrootJS = {};")).when().get(baseURL.toString() + "precedence-test.js");
     }
 }

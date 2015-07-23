@@ -27,18 +27,18 @@ import static org.hamcrest.Matchers.not;
 public class WebResourcesAllDisabledIT extends AbstractSeedWebIT {
     @Deployment
     public static WebArchive createDeployment() {
-        return ShrinkWrap.create(WebArchive.class).addAsResource("configuration/org.seedstack.seed.web.all-disabled.properties", "META-INF/configuration/org.seedstack.seed.web.all-disabled.properties").addAsWebResource("META-INF/resources/resources/test.js", "/resources/docroot-test.js").addAsWebResource("META-INF/resources/resources/test.js.gz", "/resources/docroot-test.js.gz").addAsWebResource("META-INF/resources/resources/test.min.js", "/resources/docroot-test.min.js").addAsWebResource("META-INF/resources/resources/test.min.js.gz", "/resources/docroot-test.min.js.gz").setWebXML("WEB-INF/web.xml");
+        return ShrinkWrap.create(WebArchive.class).addAsResource("configuration/org.seedstack.seed.web.all-disabled.properties", "META-INF/configuration/org.seedstack.seed.web.all-disabled.properties").addAsWebResource("META-INF/resources/test.js", "/docroot-test.js").addAsWebResource("META-INF/resources/test.js.gz", "/docroot-test.js.gz").addAsWebResource("META-INF/resources/test.min.js", "/docroot-test.min.js").addAsWebResource("META-INF/resources/test.min.js.gz", "/docroot-test.min.js.gz").setWebXML("WEB-INF/web.xml");
     }
 
     @Test
     @RunAsClient
     public void classpath_webresources_with_all_disabled_are_not_gzipped_nor_minified(@ArquillianResource URL baseURL) throws Exception {
-        expect().statusCode(200).header("Content-Encoding", not(equalTo("gzip"))).body(containsString("var JS = {};")).when().get(baseURL.toString() + "resources/test.js");
+        expect().statusCode(200).header("Content-Encoding", not(equalTo("gzip"))).body(containsString("var JS = {};")).when().get(baseURL.toString() + "test.js");
     }
 
     @Test
     @RunAsClient
     public void docroot_webresources_with_all_disabled_are_not_gzipped_nor_minified(@ArquillianResource URL baseURL) throws Exception {
-        expect().statusCode(200).header("Content-Encoding", not(equalTo("gzip"))).body(containsString("var JS = {};")).when().get(baseURL.toString() + "resources/docroot-test.js");
+        expect().statusCode(200).header("Content-Encoding", not(equalTo("gzip"))).body(containsString("var JS = {};")).when().get(baseURL.toString() + "docroot-test.js");
     }
 }

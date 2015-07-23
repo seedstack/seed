@@ -26,31 +26,31 @@ import static org.hamcrest.Matchers.equalTo;
 public class WebResourcesDefaultsIT extends AbstractSeedWebIT {
     @Deployment
     public static WebArchive createDeployment() {
-        return ShrinkWrap.create(WebArchive.class).addAsWebResource("META-INF/resources/resources/test.js", "/resources/docroot-test.js").addAsWebResource("META-INF/resources/resources/test.js.gz", "/resources/docroot-test.js.gz").addAsWebResource("META-INF/resources/resources/test.min.js", "/resources/docroot-test.min.js").addAsWebResource("META-INF/resources/resources/test.min.js.gz", "/resources/docroot-test.min.js.gz").addAsWebResource("META-INF/resources/resources/test2.js", "/resources/docroot-test2.js").setWebXML("WEB-INF/web.xml");
+        return ShrinkWrap.create(WebArchive.class).addAsWebResource("META-INF/resources/test.js", "/docroot-test.js").addAsWebResource("META-INF/resources/test.js.gz", "/docroot-test.js.gz").addAsWebResource("META-INF/resources/test.min.js", "/docroot-test.min.js").addAsWebResource("META-INF/resources/test.min.js.gz", "/docroot-test.min.js.gz").addAsWebResource("META-INF/resources/test2.js", "/docroot-test2.js").setWebXML("WEB-INF/web.xml");
     }
 
     @Test
     @RunAsClient
     public void classpath_webresources_with_default_configuration_are_gzipped_and_minified(@ArquillianResource URL baseURL) throws Exception {
-        expect().statusCode(200).header("Content-Encoding", equalTo("gzip")).body(containsString("var minifiedJS = {};")).when().get(baseURL.toString() + "resources/test.js");
+        expect().statusCode(200).header("Content-Encoding", equalTo("gzip")).body(containsString("var minifiedJS = {};")).when().get(baseURL.toString() + "test.js");
     }
 
     @Test
     @RunAsClient
     public void docroot_webresources_with_default_configuration_are_gzipped_and_minified(@ArquillianResource URL baseURL) throws Exception {
-        expect().statusCode(200).header("Content-Encoding", equalTo("gzip")).body(containsString("var minifiedJS = {};")).when().get(baseURL.toString() + "resources/docroot-test.js");
+        expect().statusCode(200).header("Content-Encoding", equalTo("gzip")).body(containsString("var minifiedJS = {};")).when().get(baseURL.toString() + "docroot-test.js");
     }
 
     @Test
     @RunAsClient
     public void classpath_webresources_with_default_configuration_are_gzipped_on_the_fly(@ArquillianResource URL baseURL) throws Exception {
-        expect().statusCode(200).header("Content-Encoding", equalTo("gzip")).body(containsString("var JS2 = {};")).when().get(baseURL.toString() + "resources/test2.js");
+        expect().statusCode(200).header("Content-Encoding", equalTo("gzip")).body(containsString("var JS2 = {};")).when().get(baseURL.toString() + "test2.js");
     }
 
     @Test
     @RunAsClient
     public void docroot_webresources_with_default_configuration_are_gzipped_on_the_fly(@ArquillianResource URL baseURL) throws Exception {
-        expect().statusCode(200).header("Content-Encoding", equalTo("gzip")).body(containsString("var JS2 = {};")).when().get(baseURL.toString() + "resources/docroot-test2.js");
+        expect().statusCode(200).header("Content-Encoding", equalTo("gzip")).body(containsString("var JS2 = {};")).when().get(baseURL.toString() + "docroot-test2.js");
     }
 
     @Test
@@ -62,8 +62,8 @@ public class WebResourcesDefaultsIT extends AbstractSeedWebIT {
     @Test
     @RunAsClient
     public void not_pregzipped_resource_is_gzipped_on_the_fly_twice(@ArquillianResource URL baseURL) throws Exception {
-        expect().statusCode(200).header("Content-Encoding", equalTo("gzip")).body(containsString("var JS2 = {};")).when().get(baseURL.toString() + "resources/docroot-test2.js");
+        expect().statusCode(200).header("Content-Encoding", equalTo("gzip")).body(containsString("var JS2 = {};")).when().get(baseURL.toString() + "docroot-test2.js");
 
-        expect().statusCode(200).header("Content-Encoding", equalTo("gzip")).body(containsString("var JS2 = {};")).when().get(baseURL.toString() + "resources/docroot-test2.js");
+        expect().statusCode(200).header("Content-Encoding", equalTo("gzip")).body(containsString("var JS2 = {};")).when().get(baseURL.toString() + "docroot-test2.js");
     }
 }

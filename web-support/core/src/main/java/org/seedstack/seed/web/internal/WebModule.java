@@ -16,7 +16,6 @@ import org.seedstack.seed.web.spi.WebConcern;
 
 import javax.inject.Singleton;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 @WebConcern
@@ -47,16 +46,10 @@ class WebModule extends ServletModule {
         bind(String.class).annotatedWith(Names.named("SeedWebResourcesPath")).toInstance(this.resourcesPrefix);
         bind(WebResourceResolver.class).to(WebResourceResolverImpl.class);
 
-        // Diagnostic
+        // Diagnostic (highest dispatching priority)
         if (requestDiagnosticEnabled) {
             bind(ExceptionDiagnosticFilter.class).in(Singleton.class);
             filter("/*").through(ExceptionDiagnosticFilter.class);
-        }
-
-        // Static resources servlet
-        if (resourcesEnabled) {
-            bind(WebResourceServlet.class).in(Singleton.class);
-            serve(resourcesPrefix + "/*").with(WebResourceServlet.class);
         }
 
         // User filters
@@ -78,6 +71,12 @@ class WebModule extends ServletModule {
         // Additional web modules (with lower dispatching priority)
         for (ServletModule additionalModule : additionalModules) {
             install(additionalModule);
+        }
+
+        // Static resources filter (with the lowest dispatching priority)
+        if (resourcesEnabled) {
+            bind(WebResourceFilter.class).in(Singleton.class);
+            filter(resourcesPrefix + "/*").through(WebResourceFilter.class);
         }
     }
 }

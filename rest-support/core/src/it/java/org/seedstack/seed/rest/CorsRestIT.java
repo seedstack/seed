@@ -31,36 +31,36 @@ public class CorsRestIT extends AbstractSeedWebIT {
     @RunAsClient
     @Test
     public void cors_is_applied_to_rest_resources_get(@ArquillianResource URL baseURL) throws JSONException {
-        expect().statusCode(200).given().header("Origin", baseURL.toExternalForm()).get(baseURL.toString() + "rest/cors");
+        expect().statusCode(200).given().header("Origin", baseURL.toExternalForm()).get(baseURL.toString() + "cors");
     }
 
     @RunAsClient
     @Test
     public void cors_is_applied_to_rest_resources_post(@ArquillianResource URL baseURL) throws JSONException {
-        expect().statusCode(200).given().header("Origin", baseURL.toExternalForm()).post(baseURL.toString() + "rest/cors");
+        expect().statusCode(200).given().header("Origin", baseURL.toExternalForm()).post(baseURL.toString() + "cors");
     }
 
     @RunAsClient
     @Test
     public void cors_is_applied_to_rest_resources_options(@ArquillianResource URL baseURL) throws JSONException {
-        expect().statusCode(200).given().header("Origin", baseURL.toExternalForm()).options(baseURL.toString() + "rest/cors");
+        expect().statusCode(200).given().header("Origin", baseURL.toExternalForm()).options(baseURL.toString() + "cors");
     }
 
     @RunAsClient
     @Test
     public void cors_is_applied_to_rest_resources_head(@ArquillianResource URL baseURL) throws JSONException {
-        expect().statusCode(200).given().header("Origin", baseURL.toExternalForm()).head(baseURL.toString() + "rest/cors");
+        expect().statusCode(200).given().header("Origin", baseURL.toExternalForm()).head(baseURL.toString() + "cors");
     }
 
     @RunAsClient
     @Test
     public void cors_is_applied_to_rest_resources_delete(@ArquillianResource URL baseURL) throws JSONException {
-        expect().statusCode(200).given().header("Origin", baseURL.toExternalForm()).delete(baseURL.toString() + "rest/cors");
+        expect().statusCode(200).given().header("Origin", baseURL.toExternalForm()).delete(baseURL.toString() + "cors");
     }
 
     @RunAsClient
     @Test
     public void cors_is_applied_to_rest_resources_put(@ArquillianResource URL baseURL) throws JSONException {
-        expect().statusCode(200).given().header("Origin", baseURL.toExternalForm()).put(baseURL.toString() + "rest/cors");
+        expect().statusCode(200).given().header("Origin", baseURL.toExternalForm()).put(baseURL.toString() + "cors");
     }
 }

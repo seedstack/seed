@@ -13,17 +13,21 @@ import com.google.common.base.Optional;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
+import org.apache.commons.configuration.Configuration;
 import org.seedstack.seed.core.api.Application;
 import org.seedstack.seed.core.api.SeedException;
 import org.seedstack.seed.web.api.ResourceInfo;
 import org.seedstack.seed.web.api.ResourceRequest;
 import org.seedstack.seed.web.api.WebErrorCode;
 import org.seedstack.seed.web.api.WebResourceResolver;
-import org.apache.commons.configuration.Configuration;
 
 import javax.inject.Inject;
+import javax.servlet.Filter;
+import javax.servlet.FilterChain;
+import javax.servlet.FilterConfig;
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.ByteArrayOutputStream;
@@ -34,7 +38,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.zip.GZIPOutputStream;
 
 /**
- * This web resource servlet provides automatic static resource serving from the classpath and the docroot with some
+ * This web resource filter serves static resource from the classpath and the docroot with some
  * benefits over the container default resource serving:
  * <p>
  * <ul>
@@ -46,18 +50,19 @@ import java.util.zip.GZIPOutputStream;
  *
  * @author adrien.lauer@mpsa.com
  */
-class WebResourceServlet extends HttpServlet {
-    private static final long serialVersionUID = 8596896504265605922L;
+class WebResourceFilter implements Filter {
     private static final int DEFAULT_CACHE_SIZE = 8192;
     private static final int DEFAULT_CACHE_CONCURRENCY = 32;
     private static final int DEFAULT_BUFFER_SIZE = 65536;
+    private static final String HEADER_IFMODSINCE = "If-Modified-Since";
+    private static final String HEADER_LASTMOD = "Last-Modified";
 
     private final LoadingCache<ResourceRequest, Optional<ResourceInfo>> resourceInfoCache;
     private final long servletInitTime;
     private final WebResourceResolver webResourceResolver;
 
     @Inject
-    WebResourceServlet(final Application application, final WebResourceResolver webResourceResolver) {
+    WebResourceFilter(final Application application, final WebResourceResolver webResourceResolver) {
         Configuration configuration = application.getConfiguration();
 
         this.servletInitTime = System.currentTimeMillis();
@@ -111,42 +116,75 @@ class WebResourceServlet extends HttpServlet {
     }
 
     @Override
-    public final void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        String acceptEncodingHeader = request.getHeader("Accept-Encoding");
+    public final void doFilter(ServletRequest request, ServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+        HttpServletRequest httpServletRequest;
+        HttpServletResponse httpServletResponse;
+
+        if (request instanceof HttpServletRequest && response instanceof HttpServletResponse) {
+            httpServletRequest = (HttpServletRequest) request;
+            httpServletResponse = (HttpServletResponse) response;
+        } else {
+            throw new ServletException("WebResourceFilter can only serve HTTP request");
+        }
+
+        long ifModifiedSince;
+        try {
+            ifModifiedSince = httpServletRequest.getDateHeader(HEADER_IFMODSINCE);
+        } catch (IllegalArgumentException iae) {
+            // Invalid date header - proceed as if none was set
+            ifModifiedSince = -1;
+        }
+        if (ifModifiedSince < (servletInitTime / 1000 * 1000)) {
+            httpServletResponse.setDateHeader(HEADER_LASTMOD, servletInitTime);
+        } else {
+            httpServletResponse.setStatus(HttpServletResponse.SC_NOT_MODIFIED);
+            return;
+        }
+
+        String acceptEncodingHeader = httpServletRequest.getHeader("Accept-Encoding");
         boolean acceptGzip = acceptEncodingHeader != null && acceptEncodingHeader.contains("gzip");
 
         // Find resource
         ResourceInfo resourceInfo = null;
         try {
-            Optional<ResourceInfo> cached = resourceInfoCache.get(new ResourceRequest(request.getPathInfo(), acceptGzip));
+            Optional<ResourceInfo> cached = resourceInfoCache.get(new ResourceRequest(getPathInfo(httpServletRequest), acceptGzip));
             if (cached.isPresent()) {
                 resourceInfo = cached.get();
             }
         } catch (ExecutionException e) {
-            throw SeedException.wrap(e, WebErrorCode.UNABLE_TO_DETERMINE_RESOURCE_INFO).put("path", request.getPathInfo());
+            throw SeedException.wrap(e, WebErrorCode.UNABLE_TO_DETERMINE_RESOURCE_INFO).put("path", getPathInfo(httpServletRequest));
         }
 
-        // Return 404 when resource is not found anywhere
-        if (resourceInfo == null) {
-            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+        if (resourceInfo != null) {
+            // Prepare response
+            response.setContentType(resourceInfo.getContentType());
+            ResourceData resourceData = prepareResourceData(resourceInfo, acceptGzip);
+            if (resourceData.gzipped) {
+                httpServletResponse.addHeader("Content-Encoding", "gzip");
+            }
+            httpServletResponse.addHeader("Content-Length", Integer.toString(resourceData.data.length));
+
+            // Write data
+            response.getOutputStream().write(resourceData.data);
             return;
         }
 
-        // Prepare response
-        response.setContentType(resourceInfo.getContentType());
-        ResourceData resourceData = prepareResourceData(resourceInfo, acceptGzip);
-        if (resourceData.gzipped) {
-            response.addHeader("Content-Encoding", "gzip");
-        }
-        response.addHeader("Content-Length", Integer.toString(resourceData.data.length));
-
-        // Write data
-        response.getOutputStream().write(resourceData.data);
+        // Chain to next filter if no response was sent
+        filterChain.doFilter(request, response);
     }
 
     @Override
-    public final long getLastModified(HttpServletRequest req) {
-        return this.servletInitTime;
+    public void init(FilterConfig filterConfig) throws ServletException {
+        // nothing to do
+    }
+
+    @Override
+    public void destroy() {
+        // nothing to do
+    }
+
+    private String getPathInfo(HttpServletRequest httpServletRequest) {
+        return httpServletRequest.getRequestURI().substring(httpServletRequest.getContextPath().length());
     }
 
     private static class ResourceData {

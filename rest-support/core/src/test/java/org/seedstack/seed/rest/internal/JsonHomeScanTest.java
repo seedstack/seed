@@ -30,7 +30,7 @@ import java.util.Map;
 @Ignore // Tells nuun to not scan the test class
 public class JsonHomeScanTest {
 
-    private static final String REST_PATH = "/rest/";
+    private static final String REST_PATH = "/";
     private static final String BASE_REL = "http://example.org/rel/";
     private static final String BASE_PARAM = "http://example.org/param/";
 
@@ -151,25 +151,25 @@ public class JsonHomeScanTest {
         Resource widgetResource = resourceMap.get(UriBuilder.uri(BASE_REL, "widgets"));
         Assertions.assertThat(widgetResource).isNotNull();
         Assertions.assertThat(widgetResource.rel()).isEqualTo(UriBuilder.uri(BASE_REL, "widgets"));
-        Assertions.assertThat(widgetResource.href()).isEqualTo("/rest/widgets");
+        Assertions.assertThat(widgetResource.href()).isEqualTo("/widgets");
 
         // Path on class
         Resource catalogResource = resourceMap.get(UriBuilder.uri(BASE_REL, "catalog1"));
         Assertions.assertThat(catalogResource).isNotNull();
         Assertions.assertThat(catalogResource.rel()).isEqualTo(UriBuilder.uri(BASE_REL, "catalog1"));
-        Assertions.assertThat(catalogResource.href()).isEqualTo("/rest/catalog1");
+        Assertions.assertThat(catalogResource.href()).isEqualTo("/catalog1");
 
         // Path on method and class (with two rel)
         Resource catalogWidgetResource = resourceMap.get(UriBuilder.uri(BASE_REL, "catalog2"));
         Assertions.assertThat(catalogWidgetResource).isNotNull();
         Assertions.assertThat(catalogWidgetResource.rel()).isEqualTo(UriBuilder.uri(BASE_REL, "catalog2"));
-        Assertions.assertThat(catalogWidgetResource.href()).isEqualTo("/rest/catalog2/widgets");
+        Assertions.assertThat(catalogWidgetResource.href()).isEqualTo("/catalog2/widgets");
 
         // Path on method and class
         Resource catalogWidgetResource2 = resourceMap.get(UriBuilder.uri(BASE_REL, "catalog3"));
         Assertions.assertThat(catalogWidgetResource2).isNotNull();
         Assertions.assertThat(catalogWidgetResource2.rel()).isEqualTo(UriBuilder.uri(BASE_REL, "catalog3"));
-        Assertions.assertThat(catalogWidgetResource2.href()).isEqualTo("/rest/catalog3/widgets");
+        Assertions.assertThat(catalogWidgetResource2.href()).isEqualTo("/catalog3/widgets");
 
         // Path on method and class
         Resource catalogResource4 = resourceMap.get(UriBuilder.uri(BASE_REL, "catalog4"));

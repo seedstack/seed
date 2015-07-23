@@ -28,7 +28,7 @@ import java.util.Map;
 @Ignore // Tells nuun to not scan the test class
 public class ResourceParserTest {
 
-    private static final String REST_PATH = "/rest/";
+    private static final String REST_PATH = "/";
     private static final String BASE_REL = "http://example.org/rel/";
     private static final String BASE_PARAM = "http://example.org/param/";
 
@@ -63,7 +63,7 @@ public class ResourceParserTest {
         Assertions.assertThat(underTest).isNotNull();
         Assertions.assertThat(underTest.rel()).isEqualTo(UriBuilder.uri(BASE_REL, "widget"));
 
-        Assertions.assertThat(underTest.hrefTemplate()).isEqualTo("/rest/widgets/{widgetName}{?lang}");
+        Assertions.assertThat(underTest.hrefTemplate()).isEqualTo("/widgets/{widgetName}{?lang}");
         Assertions.assertThat(underTest.hrefVars()).hasSize(2);
         Assertions.assertThat(underTest.hrefVars().get("widgetName")).isEqualTo(UriBuilder.uri(BASE_PARAM, "widgetName"));
         Assertions.assertThat(underTest.hrefVars().get("lang")).isEqualTo(UriBuilder.uri(BASE_PARAM, "lang"));
@@ -78,14 +78,14 @@ public class ResourceParserTest {
         Assertions.assertThat(underTest).hasSize(3);
 
         String hrefTemplate = (String) underTest.get("href-template");
-        Assertions.assertThat(hrefTemplate).isEqualTo("/rest/widgets/{widgetName}");
+        Assertions.assertThat(hrefTemplate).isEqualTo("/widgets/{widgetName}");
     }
 
     @Test
     public void testHalLinks() {
         Link widgetLink = links.get("widget");
         Assertions.assertThat(widgetLink).isNotNull();
-        Assertions.assertThat(widgetLink.getHref()).isEqualTo("/rest/widgets/{widgetName}{?lang}");
-        Assertions.assertThat(widgetLink.set("lang", "EN").set("widgetName", 1).expand()).isEqualTo("/rest/widgets/1?lang=EN");
+        Assertions.assertThat(widgetLink.getHref()).isEqualTo("/widgets/{widgetName}{?lang}");
+        Assertions.assertThat(widgetLink.set("lang", "EN").set("widgetName", 1).expand()).isEqualTo("/widgets/1?lang=EN");
     }
 }

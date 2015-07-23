@@ -62,6 +62,9 @@ public class RestPlugin extends AbstractPlugin {
 
     private ServletContext servletContext;
 
+    @Inject
+    private Injector injector;
+
     @Override
     public String name() {
         return "seed-rest-plugin";
@@ -75,7 +78,7 @@ public class RestPlugin extends AbstractPlugin {
         Map<Specification, Collection<Class<?>>> scannedClassesBySpecification = initContext.scannedTypesBySpecification();
         Collection<Class<?>> resourceClasses = scannedClassesBySpecification.get(resourcesSpecification);
 
-        String restPath = restConfiguration.getString("path", "/rest");
+        String restPath = restConfiguration.getString("path", "");
         String jspPath = restConfiguration.getString("jsp-path", "/WEB-INF/jsp");
 
         // Scan resource for HAL and JSON-HOME
@@ -102,9 +105,6 @@ public class RestPlugin extends AbstractPlugin {
 
         return InitState.INITIALIZED;
     }
-
-    @Inject
-    private Injector injector;
 
     @Override
     public void start(Context context) {

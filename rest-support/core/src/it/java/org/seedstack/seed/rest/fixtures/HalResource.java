@@ -48,8 +48,8 @@ public class HalResource {
     public Response getOrders(@PathParam("id") String id) {
         return Response.ok(
                 new OrderHal(id, "USD", "shipped", 10.20f)
-                        .link("warehouse", "/rest/warehouse/" + 56)
-                        .link("invoice", "/rest/invoices/873"))
+                        .link("warehouse", "/warehouse/" + 56)
+                        .link("invoice", "/invoices/873"))
                 .build();
     }
 
@@ -60,8 +60,8 @@ public class HalResource {
     public Response getOrders2(@PathParam("id") String id) {
         return Response.ok(HalBuilder.create(new OrderRepresentation(10.20f, "USD", "shipped"))
                 .self(relRegistry.uri(ORDER_REL2).set("id", id).expand())
-                .link("warehouse", "/rest/warehouse/56")
-                .link("invoice", "/rest/invoices/873"))
+                .link("warehouse", "/warehouse/56")
+                .link("invoice", "/invoices/873"))
                 .build();
     }
 }

@@ -30,15 +30,15 @@ public class RepresentationFactory {
         List<HalRepresentation> embedded = new ArrayList<HalRepresentation>();
 
         embedded.add(HalBuilder.create(new OrderRepresentation(30.00f, "USD", "shipped"))
-                .self("/rest/order/123").link("basket", "/rest/baskets/98712").link("customer", "/rest/customers/7809"));
+                .self("/order/123").link("basket", "/baskets/98712").link("customer", "/customers/7809"));
 
         embedded.add(HalBuilder.create(new OrderRepresentation(20.00f, "USD", "processing"))
-                .self("/rest/order/124").link("basket", "/rest/baskets/97213").link("customer", "/rest/customers/12369"));
+                .self("/order/124").link("basket", "/baskets/97213").link("customer", "/customers/12369"));
 
         return (HalDefaultRepresentation) HalBuilder.create(orders)
-                .link("self", "/rest/orders")
-                .link("next", UriBuilder.fromPath("/rest/orders").queryParam("page", 2).build().toString())
-                .link("find", new Link("/rest/orders{?id}").templated())
+                .link("self", "/orders")
+                .link("next", UriBuilder.fromPath("/orders").queryParam("page", 2).build().toString())
+                .link("find", new Link("/orders{?id}").templated())
                 .embedded("orders", embedded);
     }
 }
