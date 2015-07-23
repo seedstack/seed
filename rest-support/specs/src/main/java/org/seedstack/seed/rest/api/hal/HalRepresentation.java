@@ -51,13 +51,14 @@ import java.util.Map;
  *
  * @author pierre.thirouin@ext.mpsa.com (Pierre Thirouin)
  */
-@JsonInclude(JsonInclude.Include.NON_DEFAULT)
 public class HalRepresentation {
 
     @JsonProperty("_links")
+    @JsonInclude(JsonInclude.Include.NON_DEFAULT)
     private final Map<String, List<Link>> links = new HashMap<String, List<Link>>();
 
     @JsonProperty("_embedded")
+    @JsonInclude(JsonInclude.Include.NON_DEFAULT)
     private final Map<String, Object> embedded = new HashMap<String, Object>();
 
     /**
