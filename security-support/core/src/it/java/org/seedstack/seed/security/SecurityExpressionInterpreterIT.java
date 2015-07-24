@@ -7,13 +7,14 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-package org.seedstack.seed.security.internal.securityexpr;
+package org.seedstack.seed.security;
 
 import org.seedstack.seed.it.SeedITRunner;
 import org.seedstack.seed.security.api.WithUser;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.seedstack.seed.security.internal.securityexpr.SecurityExpressionInterpreter;
 
 import javax.inject.Inject;
 
