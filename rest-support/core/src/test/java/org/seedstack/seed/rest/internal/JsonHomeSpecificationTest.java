@@ -43,14 +43,14 @@ public class JsonHomeSpecificationTest {
 
     static class ValidResource1 {
 
-        @Rel(value = "ValidResource1", expose = true)
+        @Rel(value = "ValidResource1", home = true)
         @Path("/JsonHomeValidResource1") @POST
         public Response post() { return null;}
     }
 
     static interface InterfaceResource1 {
 
-        @Rel(value = "InterfaceResource1", expose = true)
+        @Rel(value = "InterfaceResource1", home = true)
         @Path("/JsonHomeInterfaceResource1") @POST
         Response post();
     }

@@ -37,7 +37,7 @@ public class JsonHomeScanTest {
     @Ignore
     static class MethodResource {
 
-        @Rel(value = "/widgets/", expose = true)
+        @Rel(value = "/widgets/", home = true)
         @Path("/widgets")
         @POST
         public Response post() {
@@ -49,7 +49,7 @@ public class JsonHomeScanTest {
     @Path("/catalog1")
     static class ClassResource {
 
-        @Rel(value = "catalog1", expose = true)
+        @Rel(value = "catalog1", home = true)
         @POST
         public Response post() {
             return null;
@@ -61,7 +61,7 @@ public class JsonHomeScanTest {
     @Path("/catalog2/")
     static class ClassAndMethodResource {
 
-        @Rel(value = "catalog2", expose = true)
+        @Rel(value = "catalog2", home = true)
         @Path("/widgets/")
         @POST
         public Response post() {
@@ -73,7 +73,7 @@ public class JsonHomeScanTest {
     @Path("/catalog3/")
     static class ClassAndMethodResource2 {
 
-        @Rel(value = "catalog3", expose = true)
+        @Rel(value = "catalog3", home = true)
         @Path("/widgets/")
         @POST
         public Response post() {
@@ -82,7 +82,7 @@ public class JsonHomeScanTest {
     }
 
     @Ignore
-    @Rel(value = "catalog4", expose = true)
+    @Rel(value = "catalog4", home = true)
     @Path("/catalog4/")
     static class ClassAndMethodResource3 {
 
@@ -97,7 +97,7 @@ public class JsonHomeScanTest {
     @Ignore
     static class FakeResource {
 
-        @Rel(value = "", expose = true)
+        @Rel(value = "", home = true)
         @POST
         public Response post() {
             return null;
@@ -114,7 +114,7 @@ public class JsonHomeScanTest {
         }
     }
 
-    @Rel(value = "widget", expose = true)
+    @Rel(value = "widget", home = true)
     @Path("/widgets/{widgetName: [a-zA-Z][a-zA-Z_0-9]}")
     static class MyLinkTemplateResource {
 

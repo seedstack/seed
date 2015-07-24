@@ -33,5 +33,5 @@ public @interface Rel {
      *
      * @return true if the resource should be exposed, false otherwise
      */
-    boolean expose() default false;
+    boolean home() default false;
 }

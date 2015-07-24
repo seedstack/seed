@@ -36,7 +36,7 @@ public class ResourceParserTest {
     private Map<String, Link> links;
 
     @Ignore
-    @Rel(value = "widget", expose = true)
+    @Rel(value = "widget", home = true)
     @Path("widgets/{widgetName: [a-zA-Z][a-zA-Z_0-9]}")
     private static class MyLinkTemplateResource {
 

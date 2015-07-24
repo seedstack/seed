@@ -21,7 +21,7 @@ import java.lang.reflect.Method;
  * </p>
  * <ol>
  *   <li>meta annotated by {@link javax.ws.rs.HttpMethod};</li>
- *   <li>annotated by {@link org.seedstack.seed.rest.api.Rel} with {@code expose=true};</li>
+ *   <li>annotated by {@link org.seedstack.seed.rest.api.Rel} with {@code home=true};</li>
  *   <li>If the annotated is not found on the method, the declaring class is checked.</li>
  * </ol>
  *
@@ -40,9 +40,9 @@ class JsonHomeSpecification extends AbstractSpecification<Method> {
         Rel rootRel = method.getDeclaringClass().getAnnotation(Rel.class);
         Rel rel = method.getAnnotation(Rel.class);
         if (rel != null) {
-            return rel.expose();
+            return rel.home();
         } else if (rootRel != null) {
-            return rootRel.expose();
+            return rootRel.home();
         }
         return false;
     }

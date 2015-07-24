@@ -41,7 +41,7 @@ public class HalResource {
         return Response.ok(new RepresentationFactory().createOrders()).build();
     }
 
-    @Rel(value = ORDER_REL, expose = true)
+    @Rel(value = ORDER_REL, home = true)
     @GET
     @Path("{id}")
     @Produces("application/hal+json")
@@ -53,7 +53,7 @@ public class HalResource {
                 .build();
     }
 
-    @Rel(value = ORDER_REL2, expose = true)
+    @Rel(value = ORDER_REL2, home = true)
     @GET
     @Path("v2/{id}")
     @Produces("application/hal+json")

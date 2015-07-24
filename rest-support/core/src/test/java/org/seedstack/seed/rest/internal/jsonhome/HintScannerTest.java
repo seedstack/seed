@@ -33,7 +33,7 @@ public class HintScannerTest {
     private HintScanner underTest;
 
 
-    @Rel(value = "product", expose = true)
+    @Rel(value = "product", home = true)
     @Path("/product")
     static class MyResource {
 
