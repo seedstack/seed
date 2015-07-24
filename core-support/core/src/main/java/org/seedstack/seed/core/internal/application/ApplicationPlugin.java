@@ -148,7 +148,7 @@ public class ApplicationPlugin extends AbstractPlugin {
         }
 
         // Build configuration
-        Configuration configuration = buildConfiguration(props, propsOverride, configurationLookups, profiles);
+        MapConfiguration configuration = buildConfiguration(props, propsOverride, configurationLookups, profiles);
         applicationDiagnosticCollector.setConfiguration(configuration);
         Configuration coreConfiguration = configuration.subset(CorePlugin.CORE_PLUGIN_PREFIX);
 
@@ -303,7 +303,7 @@ public class ApplicationPlugin extends AbstractPlugin {
         }
     }
 
-    private Configuration buildConfiguration(Props props, Props propsOverride, Map<String, Class<? extends StrLookup>> configurationLookups, String... profiles) {
+    private MapConfiguration buildConfiguration(Props props, Props propsOverride, Map<String, Class<? extends StrLookup>> configurationLookups, String... profiles) {
         Map<String, String> finalConfiguration = new HashMap<String, String>();
         Map<String, String> configurationMap = new HashMap<String, String>();
         Map<String, String> configurationOverrideMap = new HashMap<String, String>();

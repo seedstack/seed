@@ -17,10 +17,12 @@ import io.nuun.kernel.core.AbstractPlugin;
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.lang.StringUtils;
 import org.kametic.specifications.Specification;
+import org.seedstack.seed.core.api.Application;
 import org.seedstack.seed.core.api.SeedException;
 import org.seedstack.seed.core.internal.application.ApplicationPlugin;
 import org.seedstack.seed.core.internal.jndi.JndiPlugin;
 import org.seedstack.seed.core.utils.SeedCheckUtils;
+import org.seedstack.seed.jms.api.DestinationType;
 import org.seedstack.seed.jms.api.JmsMessageListener;
 import org.seedstack.seed.jms.spi.ConnectionDefinition;
 import org.seedstack.seed.jms.spi.JmsErrorCodes;
@@ -61,6 +63,7 @@ public class JmsPlugin extends AbstractPlugin {
     public static final String JMS_PLUGIN_CONFIGURATION_PREFIX = "org.seedstack.seed.jms";
     public static final String ERROR_CONNECTION_NAME = "connectionName";
     public static final String ERROR_MESSAGE_LISTENER_NAME = "messageListenerName";
+    public static final String ERROR_DESTINATION_TYPE = "destinationType";
 
     @SuppressWarnings("unchecked")
     private final Specification<Class<?>> messageListenerSpec = and(classImplements(MessageListener.class), classAnnotatedWith(JmsMessageListener.class));
@@ -76,6 +79,7 @@ public class JmsPlugin extends AbstractPlugin {
     private final AtomicBoolean shouldStartConnections = new AtomicBoolean(false);
 
     private JmsFactory jmsFactory;
+    private Application application;
     private Configuration jmsConfiguration;
     private TransactionPlugin transactionPlugin;
     private Map<String, Context> jndiContexts;
@@ -91,7 +95,8 @@ public class JmsPlugin extends AbstractPlugin {
         transactionPlugin = null;
         for (Plugin plugin : initContext.pluginsRequired()) {
             if (plugin instanceof ApplicationPlugin) {
-                jmsConfiguration = ((ApplicationPlugin) plugin).getApplication().getConfiguration().subset(JmsPlugin.JMS_PLUGIN_CONFIGURATION_PREFIX);
+                application = ((ApplicationPlugin) plugin).getApplication();
+                jmsConfiguration = application.getConfiguration().subset(JmsPlugin.JMS_PLUGIN_CONFIGURATION_PREFIX);
                 applicationId = ((ApplicationPlugin) plugin).getApplication().getId();
             } else if (plugin instanceof TransactionPlugin) {
                 transactionPlugin = ((TransactionPlugin) plugin);
@@ -229,13 +234,27 @@ public class JmsPlugin extends AbstractPlugin {
                 }
 
                 Destination destination;
+                DestinationType destinationType;
+
+                if (!annotation.destinationTypeStr().isEmpty()) {
+                    try {
+                        destinationType = DestinationType.valueOf(application.substituteWithConfiguration(annotation.destinationTypeStr()));
+                    } catch (IllegalArgumentException e) {
+                        throw SeedException.wrap(e, JmsErrorCodes.UNKNOWN_DESTINATION_TYPE)
+                                .put(ERROR_DESTINATION_TYPE, annotation.destinationTypeStr())
+                                .put(ERROR_CONNECTION_NAME, annotation.connection())
+                                .put(ERROR_MESSAGE_LISTENER_NAME, messageListenerName);
+                    }
+                } else {
+                    destinationType = annotation.destinationType();
+                }
                 try {
-                    switch (annotation.destinationType()) {
+                    switch (destinationType) {
                         case QUEUE:
-                            destination = session.createQueue(annotation.destinationName());
+                            destination = session.createQueue(application.substituteWithConfiguration(annotation.destinationName()));
                             break;
                         case TOPIC:
-                            destination = session.createTopic(annotation.destinationName());
+                            destination = session.createTopic(application.substituteWithConfiguration(annotation.destinationName()));
                             break;
                         default:
                             throw SeedException.createNew(JmsErrorCodes.UNKNOWN_DESTINATION_TYPE)
@@ -244,6 +263,7 @@ public class JmsPlugin extends AbstractPlugin {
                     }
                 } catch (JMSException e) {
                     throw SeedException.wrap(e, JmsErrorCodes.UNABLE_TO_CREATE_DESTINATION)
+                            .put(ERROR_DESTINATION_TYPE, destinationType.name())
                             .put(ERROR_CONNECTION_NAME, annotation.connection())
                             .put(ERROR_MESSAGE_LISTENER_NAME, messageListenerName);
                 }
@@ -256,10 +276,10 @@ public class JmsPlugin extends AbstractPlugin {
                 registerMessageListener(
                         new MessageListenerDefinition(
                                 messageListenerName,
-                                annotation.connection(),
+                                application.substituteWithConfiguration(annotation.connection()),
                                 session,
                                 destination,
-                                annotation.selector(),
+                                application.substituteWithConfiguration(annotation.selector()),
                                 messageListenerClass,
                                 messagePollerClass
                         )

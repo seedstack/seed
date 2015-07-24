@@ -11,16 +11,15 @@ package org.seedstack.seed.core.api;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Map;
 
 /**
  * This class specifies an interface to the application global object which consists of:
  * <ul>
- *      <li>The identity of the application (human readable name, unique identifier and instance identifier),</li>
- *      <li>The application storage location,</li>
- *      <li>The list of available environments,</li>
- *      <li>The name of the current detected environment,</li>
- *      <li>The current status of debug mode (enabled or disabled).</li>
+ * <li>The identity of the application (human readable name, unique identifier and instance identifier),</li>
+ * <li>The application storage location,</li>
+ * <li>The list of available environments,</li>
+ * <li>The name of the current detected environment,</li>
+ * <li>The current status of debug mode (enabled or disabled).</li>
  * </ul>
  *
  * @author adrien.lauer@mpsa.com
@@ -72,6 +71,7 @@ public interface Application {
 
     /**
      * Return the application global configuration.
+     *
      * @return the configuration object.
      */
     org.apache.commons.configuration.Configuration getConfiguration();
@@ -82,4 +82,12 @@ public interface Application {
      * @return the configuration map
      */
     org.apache.commons.configuration.Configuration getConfiguration(Class<?> clazz);
+
+    /**
+     * Substitute any ${...} expression in the given string with the configuration values.
+     *
+     * @param value the string to substitute.
+     * @return the substituted string.
+     */
+    String substituteWithConfiguration(String value);
 }

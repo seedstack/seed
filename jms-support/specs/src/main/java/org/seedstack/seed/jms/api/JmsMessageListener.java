@@ -22,29 +22,48 @@ import java.lang.annotation.Target;
  * This annotations marks a JMS message listener that will be invoked when a message arrives.
  *
  * @author emmanuel.vinel@mpsa.com
+ * @author adrien.lauer@mpsa.com
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ ElementType.TYPE})
+@Target({ElementType.TYPE})
 @Inherited
-public @interface JmsMessageListener  {
+public @interface JmsMessageListener {
     /**
+     * The name of the JMS connection used to listen. Configuration macro are substituted (like ${config.property.name}).
+     *
      * @return name of the configured JMS connection to use.
      */
     String connection() default "default";
 
     /**
+     * The type of the JMS destination to listen to. If dynamic configuration of destination type is needed, use
+     * {@link #destinationTypeStr()} instead. Defaults to QUEUE.
+     *
      * @return the type of the JMS destination to listen to.
      */
-    DestinationType destinationType();
+    DestinationType destinationType() default DestinationType.QUEUE;
 
     /**
-     * @return the name of the JMS destination to listen to.
+     * The destination type as a string. Configuration macro are substituted (like ${config.property.name}).. If set, this
+     * overrides {@link #destinationType()}.
+     *
+     * @return the type of the JMS destination to listen to as string.
+     */
+    String destinationTypeStr() default "";
+
+    /**
+     * The name of the JMS destination to listen to. Configuration macro are substituted (like ${config.property.name}).
+     *
+     * @return the name of the JMS destination.
      */
     String destinationName();
 
     /**
-     * @return an optional selector to only retrieve messages that matches it.
+     * An optional selector to only retrieve messages that matches it. Configuration macro are substituted
+     * (like ${config.property.name}).
+     *
+     * @return the selector.
      */
     String selector() default "";
 
