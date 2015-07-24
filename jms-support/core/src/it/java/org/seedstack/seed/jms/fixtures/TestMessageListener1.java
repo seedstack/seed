@@ -22,7 +22,7 @@ import javax.jms.Message;
 import javax.jms.TextMessage;
 
 
-@JmsMessageListener(connection = "connection1", destinationType = DestinationType.QUEUE, destinationName = "queue1")
+@JmsMessageListener(connection = "connection1", destinationTypeStr = "${test.dest1.type}", destinationName = "${test.dest1.name}")
 public class TestMessageListener1 implements javax.jms.MessageListener {
 
     @Logging

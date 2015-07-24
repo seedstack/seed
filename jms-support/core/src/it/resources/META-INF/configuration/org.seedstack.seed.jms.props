@@ -29,3 +29,7 @@ connection.connection3.reconnection-delay=50
 connection.connection3.exception-listener=org.seedstack.seed.jms.fixtures.TestExceptionListener
 connection.connection4.connection-factory = connectionFactory4
 connection.connection4.jee-mode = true
+
+[]
+test.dest1.name = queue1
+test.dest1.type = QUEUE

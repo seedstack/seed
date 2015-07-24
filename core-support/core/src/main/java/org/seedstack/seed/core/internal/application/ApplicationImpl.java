@@ -17,10 +17,10 @@ import com.google.inject.grapher.NameFactory;
 import com.google.inject.grapher.ShortNameFactory;
 import com.google.inject.grapher.graphviz.PortIdFactory;
 import com.google.inject.grapher.graphviz.PortIdFactoryImpl;
+import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.MapConfiguration;
 import org.seedstack.seed.core.api.Application;
 import org.seedstack.seed.core.api.SeedException;
-import org.apache.commons.configuration.Configuration;
 
 import javax.inject.Inject;
 import java.io.File;
@@ -43,12 +43,12 @@ class ApplicationImpl implements Application {
     private final String id;
     private final String version;
     private final File storageRoot;
-    private final Configuration configuration;
+    private final MapConfiguration configuration;
 
     @Inject
     private Injector injector;
 
-    ApplicationImpl(String name, String id, String version, File storageRoot, Configuration configuration) {
+    ApplicationImpl(String name, String id, String version, File storageRoot, MapConfiguration configuration) {
         this.name = name;
         this.id = id;
         this.version = version;
@@ -131,6 +131,11 @@ class ApplicationImpl implements Application {
     @Override
     public Configuration getConfiguration(Class<?> clazz) {
         return new MapConfiguration(ImmutableMap.<String, Object>copyOf(getEntityConfiguration(clazz.getName())));
+    }
+
+    @Override
+    public String substituteWithConfiguration(String value) {
+        return configuration.getSubstitutor().replace(value);
     }
 
     /**
