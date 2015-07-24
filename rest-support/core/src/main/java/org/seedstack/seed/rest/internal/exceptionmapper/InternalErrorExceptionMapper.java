@@ -9,6 +9,13 @@
  */
 package org.seedstack.seed.rest.internal.exceptionmapper;
 
+import org.seedstack.seed.core.api.Application;
+import org.seedstack.seed.core.api.DiagnosticManager;
+import org.seedstack.seed.web.internal.WebPlugin;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.inject.Inject;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 
@@ -20,8 +27,21 @@ import javax.ws.rs.ext.ExceptionMapper;
  */
 public class InternalErrorExceptionMapper implements ExceptionMapper<Exception> {
 
+    private static final Logger logger = LoggerFactory.getLogger(InternalErrorExceptionMapper.class);
+    private static final String REQUEST_DIAGNOSTIC_ENABLE = WebPlugin.WEB_PLUGIN_PREFIX + ".request-diagnostic.enabled";
+
+    @Inject
+    private DiagnosticManager diagnosticManager;
+
+    @Inject
+    private Application application;
+
     @Override
     public Response toResponse(Exception exception) {
-        return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+        logger.error(exception.getMessage(), exception);
+        if (application.getConfiguration().getBoolean(REQUEST_DIAGNOSTIC_ENABLE, false)) {
+            diagnosticManager.dumpDiagnosticReport(exception);
+        }
+        return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Internal server error").build();
     }
 }

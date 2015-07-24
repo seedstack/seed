@@ -28,7 +28,7 @@ import org.seedstack.seed.rest.api.ResourceFiltering;
 import org.seedstack.seed.rest.internal.exceptionmapper.AuthenticationExceptionMapper;
 import org.seedstack.seed.rest.internal.exceptionmapper.AuthorizationExceptionMapper;
 import org.seedstack.seed.rest.internal.exceptionmapper.InternalErrorExceptionMapper;
-import org.seedstack.seed.rest.internal.exceptionmapper.WebApplicationExcetionMapper;
+import org.seedstack.seed.rest.internal.exceptionmapper.WebApplicationExceptionMapper;
 import org.seedstack.seed.rest.internal.hal.RelRegistryImpl;
 import org.seedstack.seed.rest.internal.jsonhome.JsonHome;
 import org.seedstack.seed.rest.internal.jsonhome.Resource;
@@ -110,11 +110,14 @@ public class RestPlugin extends AbstractPlugin {
     public void start(Context context) {
         if (servletContext != null) {
             SeedContainer seedContainer = injector.getInstance(SeedContainer.class);
-            seedContainer.registerClass(AuthenticationExceptionMapper.class);
-            seedContainer.registerClass(AuthorizationExceptionMapper.class);
+            if (restConfiguration.getBoolean("map-security-exceptions", true)) {
+                seedContainer.registerClass(AuthenticationExceptionMapper.class);
+                seedContainer.registerClass(AuthorizationExceptionMapper.class);
+            }
 
             if (restConfiguration.getBoolean("map-all-exceptions", true)) {
-                seedContainer.registerClass(WebApplicationExcetionMapper.class);
+                seedContainer.registerClass(WebApplicationExceptionMapper.class);
+                injector.injectMembers(InternalErrorExceptionMapper.class);
                 seedContainer.registerClass(InternalErrorExceptionMapper.class);
             }
         }
