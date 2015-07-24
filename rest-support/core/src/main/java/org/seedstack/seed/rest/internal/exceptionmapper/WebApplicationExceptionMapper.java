@@ -9,6 +9,9 @@
  */
 package org.seedstack.seed.rest.internal.exceptionmapper;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
@@ -16,10 +19,13 @@ import javax.ws.rs.ext.ExceptionMapper;
 /**
  * @author pierre.thirouin@ext.mpsa.com (Pierre Thirouin)
  */
-public class WebApplicationExcetionMapper implements ExceptionMapper<WebApplicationException> {
+public class WebApplicationExceptionMapper implements ExceptionMapper<WebApplicationException> {
+
+    private static final Logger logger = LoggerFactory.getLogger(WebApplicationExceptionMapper.class);
 
     @Override
     public Response toResponse(WebApplicationException exception) {
+        logger.debug(exception.getMessage(), exception);
         return exception.getResponse();
     }
 }

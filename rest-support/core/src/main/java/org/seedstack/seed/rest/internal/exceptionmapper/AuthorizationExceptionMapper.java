@@ -10,6 +10,8 @@
 package org.seedstack.seed.rest.internal.exceptionmapper;
 
 import org.seedstack.seed.security.api.exceptions.AuthorizationException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
@@ -20,8 +22,12 @@ import javax.ws.rs.ext.ExceptionMapper;
  * @author pierre.thirouin@ext.mpsa.com (Pierre Thirouin)
  */
 public class AuthorizationExceptionMapper implements ExceptionMapper<AuthorizationException> {
+
+    private static final Logger logger = LoggerFactory.getLogger(AuthorizationExceptionMapper.class);
+
     @Override
     public Response toResponse(AuthorizationException exception) {
-        return Response.status(Response.Status.FORBIDDEN).build();
+        logger.debug(exception.getMessage(), exception);
+        return Response.status(Response.Status.FORBIDDEN).entity("Forbidden").build();
     }
 }

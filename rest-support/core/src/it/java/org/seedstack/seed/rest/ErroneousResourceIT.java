@@ -37,10 +37,25 @@ public class ErroneousResourceIT extends AbstractSeedWebIT {
 
     @RunAsClient
     @Test
-    public void test_exception_mappers() throws JSONException {
+    public void test_map_all_exception() throws JSONException {
         expect().statusCode(500).given().get(baseURL.toString() + "rest/error/internal");
+    }
+
+    @RunAsClient
+    @Test
+    public void test_map_authentication_exception() throws JSONException {
         expect().statusCode(401).given().get(baseURL.toString() + "rest/error/authentication");
+    }
+
+    @RunAsClient
+    @Test
+    public void test_map_authorization_exception() throws JSONException {
         expect().statusCode(403).given().get(baseURL.toString() + "rest/error/authorization");
+    }
+
+    @RunAsClient
+    @Test
+    public void test_map_web_application_exception() throws JSONException {
         expect().statusCode(404).given().get(baseURL.toString() + "rest/error/notFound");
     }
 }
