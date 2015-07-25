@@ -11,6 +11,7 @@ package org.seedstack.seed.security.internal;
 
 import org.seedstack.seed.core.api.Application;
 import org.seedstack.seed.core.internal.application.ApplicationPlugin;
+import org.seedstack.seed.el.internal.ELPlugin;
 import org.seedstack.seed.security.api.Realm;
 import org.seedstack.seed.security.internal.realms.ConfigurationRealm;
 import io.nuun.kernel.api.Plugin;
@@ -61,17 +62,16 @@ public class SeedSecurityCorePluginUnitTest {
         types.put(Realm.class, realms);
         when(initContext.scannedSubTypesByAncestorClass()).thenReturn(types);
 
-        ApplicationPlugin confPlugin = mock(ApplicationPlugin.class);
-        Configuration conf = mock(Configuration.class);
-        Application application = mock(Application.class);
-        when(application.getConfiguration()).thenReturn(conf);
-        when(confPlugin.getApplication()).thenReturn(application);
         ApplicationPlugin appPlugin = mock(ApplicationPlugin.class);
-        Application app = mock(Application.class);
-        when(appPlugin.getApplication()).thenReturn(app);
+        ELPlugin elPlugin = mock(ELPlugin.class);
+        when(elPlugin.isDisabled()).thenReturn(false);
+        Application application = mock(Application.class);
+        Configuration conf = mock(Configuration.class);
+        when(appPlugin.getApplication()).thenReturn(application);
+        when(application.getConfiguration()).thenReturn(conf);
         Collection pluginsRequired = new ArrayList();
-        pluginsRequired.add(confPlugin);
         pluginsRequired.add(appPlugin);
+        pluginsRequired.add(elPlugin);
         when(initContext.pluginsRequired()).thenReturn(pluginsRequired);
 
         return initContext;

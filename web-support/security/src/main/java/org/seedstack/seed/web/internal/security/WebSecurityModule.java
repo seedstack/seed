@@ -36,7 +36,7 @@ import java.util.Map;
  * @author yves.dautremay@mpsa.com
  */
 @SecurityConcern
-class SecurityWebModule extends ShiroWebModule {
+class WebSecurityModule extends ShiroWebModule {
     private static final Logger LOGGER = LoggerFactory.getLogger(ShiroWebModule.class);
     private static final String PROPERTIES_PREFIX = "org.seedstack.seed.security.urls";
     private static final Map<String, Key<? extends Filter>> DEFAULT_FILTERS = new HashMap<String, Key<? extends Filter>>();
@@ -58,7 +58,7 @@ class SecurityWebModule extends ShiroWebModule {
     private final Props props;
     private final Collection<Class<? extends Filter>> customFilters;
 
-    SecurityWebModule(ServletContext servletContext, Props props, Collection<Class<? extends Filter>> customFilters, String applicationName) {
+    WebSecurityModule(ServletContext servletContext, Props props, Collection<Class<? extends Filter>> customFilters, String applicationName) {
         super(servletContext);
         this.props = props;
         this.customFilters = customFilters;
