@@ -71,7 +71,7 @@ class ValidationModule extends AbstractModule {
         try {
             this.executableValidator = validator.forExecutables();
         } catch(Throwable t) {
-            LOGGER.info("Unable to create the dynamic validator, supports for dynamic validation disabled");
+            LOGGER.info("Unable to create the dynamic validator, support for dynamic validation disabled");
             LOGGER.debug(CorePlugin.DETAILS_MESSAGE, t);
         }
 

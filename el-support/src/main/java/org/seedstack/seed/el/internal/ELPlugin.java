@@ -10,6 +10,7 @@
 package org.seedstack.seed.el.internal;
 
 import org.seedstack.seed.core.api.SeedException;
+import org.seedstack.seed.core.utils.SeedReflectionUtils;
 import org.seedstack.seed.el.spi.ELHandler;
 import io.nuun.kernel.api.plugin.InitState;
 import io.nuun.kernel.api.plugin.context.InitContext;
@@ -17,6 +18,8 @@ import io.nuun.kernel.api.plugin.request.ClasspathScanRequest;
 import io.nuun.kernel.core.AbstractPlugin;
 import net.jodah.typetools.TypeResolver;
 import org.kametic.specifications.Specification;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.lang.annotation.Annotation;
 import java.util.Collection;
@@ -25,12 +28,14 @@ import java.util.Map;
 
 /**
  * @author pierre.thirouin@ext.mpsa.com
- *         Date: 27/06/2014
+ * @author adrien.lauer@mpsa.com
  */
 public class ELPlugin extends AbstractPlugin {
+    private static final Logger LOGGER = LoggerFactory.getLogger(ELPlugin.class);
 
     private final Specification<Class<?>> specificationELHandlers = classImplements(ELHandler.class);
     private Map<Class<? extends Annotation>, Class<ELHandler>> elMap = new HashMap<Class<? extends Annotation>, Class<ELHandler>>();
+    private boolean disabled = false;
 
     @Override
     public String name() {
@@ -45,6 +50,12 @@ public class ELPlugin extends AbstractPlugin {
     @SuppressWarnings("unchecked")
     @Override
     public InitState init(InitContext initContext) {
+        if (!SeedReflectionUtils.isClassPresent("javax.el.Expression")) {
+            disabled = true;
+            LOGGER.info("Java EL is not present in the classpath, EL support disabled");
+            return InitState.INITIALIZED;
+        }
+
         // Scan all the ExpressionLanguageHandler
         Map<Specification, Collection<Class<?>>> scannedTypesBySpecification = initContext.scannedTypesBySpecification();
         Collection<Class<?>> elHandlerClasses = scannedTypesBySpecification.get(specificationELHandlers);
@@ -67,7 +78,14 @@ public class ELPlugin extends AbstractPlugin {
 
     @Override
     public Object nativeUnitModule() {
-        return new ELModule(elMap);
+        if (!disabled) {
+            return new ELModule(elMap);
+        } else {
+            return null;
+        }
     }
 
+    public boolean isDisabled() {
+        return disabled;
+    }
 }

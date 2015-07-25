@@ -20,6 +20,7 @@ import com.google.inject.util.Modules;
 import org.seedstack.seed.core.api.SeedException;
 import org.seedstack.seed.core.internal.application.ApplicationPlugin;
 import org.seedstack.seed.core.utils.SeedReflectionUtils;
+import org.seedstack.seed.el.internal.ELPlugin;
 import org.seedstack.seed.security.api.*;
 import org.seedstack.seed.security.internal.configure.SeedSecurityConfigurer;
 import org.seedstack.seed.security.internal.data.DataSecurityModule;
@@ -47,11 +48,11 @@ import java.util.*;
 /**
  * This plugin provides core security infrastructure, based on Apache Shiro
  * implementation.
- * 
+ *
  * @author yves.dautremay@mpsa.com
+ * @author adrien.lauer@mpsa.com
  */
 public class SeedSecurityCorePlugin extends AbstractPlugin {
-
     private static final Logger LOGGER = LoggerFactory.getLogger(SeedSecurityCorePlugin.class);
 
     public static final String SECURITY_PREFIX = "org.seedstack.seed.security";
@@ -69,6 +70,7 @@ public class SeedSecurityCorePlugin extends AbstractPlugin {
 
     private Collection<Class<? extends DataSecurityHandler<?>>> dataSecurityHandlers;
     private Collection<Class<?>> principalCustomizerClasses;
+    private boolean elDisabled;
 
 
     /**
@@ -91,17 +93,23 @@ public class SeedSecurityCorePlugin extends AbstractPlugin {
         return "seed-security-plugin";
     }
 
-    
-	@Override
-	@SuppressWarnings({ "rawtypes", "unchecked" })
+
+    @Override
+    @SuppressWarnings({"rawtypes", "unchecked"})
     public InitState init(InitContext initContext) {
-        ApplicationPlugin applicationPlugin = (ApplicationPlugin) initContext.pluginsRequired().iterator().next();
-        securityConfiguration = applicationPlugin.getApplication().getConfiguration().subset(SECURITY_PREFIX);
+        for (Plugin plugin : initContext.pluginsRequired()) {
+            if (plugin instanceof ApplicationPlugin) {
+                securityConfiguration = ((ApplicationPlugin) plugin).getApplication().getConfiguration().subset(SECURITY_PREFIX);
+            } else if (plugin instanceof ELPlugin) {
+                elDisabled = ((ELPlugin) plugin).isDisabled();
+            }
+        }
+
         scannedClasses = initContext.scannedSubTypesByAncestorClass();
         principalCustomizerClasses = initContext.scannedSubTypesByParentClass().get(PrincipalCustomizer.class);
-        
+
         Map<Specification, Collection<Class<?>>> scannedTypesBySpecification = initContext.scannedTypesBySpecification();
-        dataSecurityHandlers =  (Collection) scannedTypesBySpecification.get(specificationDataSecurityHandlers);
+        dataSecurityHandlers = (Collection) scannedTypesBySpecification.get(specificationDataSecurityHandlers);
 
         Collection<Class<?>> scopeCandidateClasses = scannedTypesBySpecification.get(specificationScopes);
         if (scopeCandidateClasses != null) {
@@ -143,6 +151,7 @@ public class SeedSecurityCorePlugin extends AbstractPlugin {
     public Collection<Class<? extends Plugin>> requiredPlugins() {
         Collection<Class<? extends Plugin>> plugins = new ArrayList<Class<? extends Plugin>>();
         plugins.add(ApplicationPlugin.class);
+        plugins.add(ELPlugin.class);
         return plugins;
     }
 
@@ -153,11 +162,18 @@ public class SeedSecurityCorePlugin extends AbstractPlugin {
 
     private Collection<Module> getCoreModules() {
         SeedSecurityConfigurer configurer = new SeedSecurityConfigurer(securityConfiguration, scannedClasses, principalCustomizerClasses);
+
         Collection<Module> coreModules = new ArrayList<Module>();
         coreModules.add(new SeedSecurityCoreModule(configurer, scopeClasses));
         coreModules.add(new SeedSecurityCoreAopModule());
-        coreModules.add(new DataSecurityModule(dataSecurityHandlers));
-        coreModules.add(new SecurityExpressionModule());
+
+        if (!elDisabled) {
+            coreModules.add(new SecurityExpressionModule());
+            coreModules.add(new DataSecurityModule(dataSecurityHandlers));
+        } else {
+            LOGGER.warn("No Java EL support, data security disabled");
+        }
+
         return coreModules;
     }
 
@@ -175,17 +191,15 @@ public class SeedSecurityCorePlugin extends AbstractPlugin {
         }
         return builder.build();
     }
-    
-    
+
 
     @Override
-	public Collection<BindingRequest> bindingRequests() {
-		return bindingRequestsBuilder().specification(specificationDataObfuscationHandlers).build();
-	}
+    public Collection<BindingRequest> bindingRequests() {
+        return bindingRequestsBuilder().specification(specificationDataObfuscationHandlers).build();
+    }
 
 
-
-	@SecurityConcern
+    @SecurityConcern
     private class SeedSecurityModule extends AbstractModule {
         @Override
         protected void configure() {

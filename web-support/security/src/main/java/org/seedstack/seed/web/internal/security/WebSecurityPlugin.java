@@ -10,13 +10,17 @@
 package org.seedstack.seed.web.internal.security;
 
 import com.google.inject.Module;
+import io.nuun.kernel.api.Plugin;
 import io.nuun.kernel.api.plugin.PluginException;
 import io.nuun.kernel.api.plugin.context.InitContext;
 import io.nuun.kernel.api.plugin.request.ClasspathScanRequestBuilder;
 import jodd.props.Props;
 import org.apache.shiro.guice.web.ShiroWebModule;
+import org.seedstack.seed.core.api.SeedException;
 import org.seedstack.seed.core.internal.application.ApplicationPlugin;
+import org.seedstack.seed.el.internal.ELPlugin;
 import org.seedstack.seed.security.internal.SeedSecurityPlugin;
+import org.seedstack.seed.web.api.WebErrorCode;
 import org.seedstack.seed.web.api.security.SecurityFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,8 +35,8 @@ import java.util.Collection;
  *
  * @author yves.dautremay@mpsa.com
  */
-public class SecurityWebPlugin implements SeedSecurityPlugin {
-	private static final Logger LOGGER = LoggerFactory.getLogger(SecurityWebPlugin.class);
+public class WebSecurityPlugin implements SeedSecurityPlugin {
+	private static final Logger LOGGER = LoggerFactory.getLogger(WebSecurityPlugin.class);
 
 	private ServletContext servletContext;
 
@@ -45,7 +49,17 @@ public class SecurityWebPlugin implements SeedSecurityPlugin {
 	@SuppressWarnings("unchecked")
 	@Override
 	public void init(InitContext initContext) {
-		ApplicationPlugin applicationPlugin = (ApplicationPlugin) initContext.pluginsRequired().iterator().next();
+		ApplicationPlugin applicationPlugin = null;
+		for (Plugin plugin : initContext.pluginsRequired()) {
+			if (plugin instanceof ApplicationPlugin) {
+				applicationPlugin = ((ApplicationPlugin) plugin);
+			}
+		}
+
+		if (applicationPlugin == null) {
+			throw SeedException.createNew(WebErrorCode.PLUGIN_NOT_FOUND).put("plugin", "application");
+		}
+
 		props = applicationPlugin.getProps();
 		applicationId = applicationPlugin.getApplication().getId();
 		for (Class<?> filterClass : initContext.scannedClassesByAnnotationClass().get(SecurityFilter.class)) {
@@ -72,7 +86,7 @@ public class SecurityWebPlugin implements SeedSecurityPlugin {
 	@Override
 	public Module provideShiroModule() {
 		if (servletContext != null) {
-			return new SecurityWebModule(servletContext, props, scannedFilters, applicationId);
+			return new WebSecurityModule(servletContext, props, scannedFilters, applicationId);
 		} else {
             LOGGER.warn("No servlet context could be found; web security disabled.");
         }

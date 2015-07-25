@@ -56,7 +56,7 @@ public final class SeedReflectionUtils {
      * From this list, the method will reach for the annotation class in all
      * annotation hierarchy.
      *
-     * @param <T> the annotation type to retrieve
+     * @param <T>                   the annotation type to retrieve
      * @param annotatedElement      The annotated element from where to start.
      * @param annotationClassToFind The annotation class to find.
      * @return ? extends Annotation
@@ -107,7 +107,7 @@ public final class SeedReflectionUtils {
      * From this list, the method will reach for the annotation class in all
      * annotation hierarchy.
      *
-     * @param <T> the annotation type to retrieve
+     * @param <T>                   the annotation type to retrieve
      * @param annotatedElement      The annotated element from where to start.
      * @param annotationClassToFind The annotation class to find.
      * @return ? extends Annotation
@@ -280,6 +280,20 @@ public final class SeedReflectionUtils {
         return SeedReflectionUtils.findMostCompleteClassLoader(null);
     }
 
+    /**
+     * Returns if a class is present in the classpath without initializing it.
+     *
+     * @param name the class name to check.
+     * @return true if the class is present in the classpath, false otherwise.
+     */
+    public static boolean isClassPresent(String name) {
+        try {
+            Class.forName(name, false, findMostCompleteClassLoader());
+            return true;
+        } catch (ClassNotFoundException e) {
+            return false;
+        }
+    }
 
     /**
      * Given the class targetClass (not an interface) the method will return all matched methods
@@ -438,7 +452,7 @@ public final class SeedReflectionUtils {
      * If the annotated element is a class, the method will go through all its parent class and interface to find an
      * annotation meta annotated.
      *
-     * @param <T> the annotation type to retrieve
+     * @param <T>                   the annotation type to retrieve
      * @param annotatedElementClass the annotated element to reach
      * @param metaAnnotationToFind  the meta annotation to find
      * @return the annotation meta annotated if exist, null otherwise
@@ -461,7 +475,7 @@ public final class SeedReflectionUtils {
     /**
      * Finds a annotation meta-annotated on the given annotated element.
      *
-     * @param <T> the annotation type to retrieve
+     * @param <T>                   the annotation type to retrieve
      * @param annotatedElementClass the annotated element
      * @param metaAnnotationToFind  the meta annotation to find
      * @return the annotation meta annotated if exist, null otherwise
