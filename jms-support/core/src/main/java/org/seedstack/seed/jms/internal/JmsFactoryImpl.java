@@ -61,13 +61,17 @@ class JmsFactoryImpl implements JmsFactory {
 
         if (connectionDefinition.isManaged()) {
             connection = new ManagedConnection(connectionDefinition, this);
-            LOGGER.debug("Setting exception listener {} on managed connection {}", connectionDefinition.getExceptionListenerClass(), connectionDefinition.getName());
-            connection.setExceptionListener(new ExceptionListenerAdapter(connectionDefinition.getName()));
+            if (connectionDefinition.getExceptionListenerClass() != null) {
+                LOGGER.debug("Setting exception listener {} on managed connection {}", connectionDefinition.getExceptionListenerClass(), connectionDefinition.getName());
+                connection.setExceptionListener(new ExceptionListenerAdapter(connectionDefinition.getName()));
+            }
         } else {
             connection = createRawConnection(connectionDefinition);
             if (!connectionDefinition.isJeeMode()) {
-                LOGGER.debug("Setting exception listener {} on connection {}", connectionDefinition.getExceptionListenerClass(), connectionDefinition.getName());
-                connection.setExceptionListener(new ExceptionListenerAdapter(connectionDefinition.getName()));
+                if (connectionDefinition.getExceptionListenerClass() != null) {
+                    LOGGER.debug("Setting exception listener {} on connection {}", connectionDefinition.getExceptionListenerClass(), connectionDefinition.getName());
+                    connection.setExceptionListener(new ExceptionListenerAdapter(connectionDefinition.getName()));
+                }
             }
         }
 
