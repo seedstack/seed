@@ -17,7 +17,7 @@ install: /bin/true
 
 script:
   - mvn -B -U -T 4 -Pjavadoc install jacoco:report
-#  - mvn -B coveralls:report -DrepoToken=$COVERALLS_TOKEN
+  - mvn -B coveralls:report -DrepoToken=$COVERALLS_TOKEN
 
 after_success:
   - echo "<settings><servers><server><id>sonatype-nexus-snapshots</id><username>\${env.SONATYPE_USER}</username><password>\${env.SONATYPE_PASS}</password></server></servers></settings>" > ~/settings.xml
