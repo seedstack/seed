@@ -12,16 +12,15 @@
 realms = ConfigurationRealm
 
 [org.seedstack.seed.security.users]
-Obiwan = yodarulez, SEED.JEDI
-Anakin = imsodark, SEED.PADAWAN
-ThePoltergeist = bouh, SEED.MU.GHOST, SEED.SX.GHOST, SEED.JEDI
-MDEFND00 = pouet, SEED.JEDI
+Obiwan = yodarulez, SEED.JEDI, UNKNOWN.ROLE,
+Anakin = imsodark, SEED.PADAWAN, OTHER.UNKNOWN.ROLE
+ThePoltergeist = bouh, SEED.JEDI, SEED.MU.GHOST, SEED.SX.GHOST
 nobody = foreverAlone
 
 [org.seedstack.seed.security.roles]
-padawan = SEED.PADAWAN, FND.ETUDES
+padawan = SEED.PADAWAN
 jedi = SEED.JEDI
-ghost = SEED.{scope}.GHOST, ETUDES
+ghost = SEED.{scope}.GHOST
 nothing = *
 
 [org.seedstack.seed.security.permissions]

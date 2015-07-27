@@ -124,6 +124,12 @@ public class SeedSecurityCorePlugin extends AbstractPlugin {
                         scopeName = scopeCandidateClass.getSimpleName();
                     }
 
+                    try {
+                        scopeCandidateClass.getConstructor(String.class);
+                    } catch (NoSuchMethodException e) {
+                        throw SeedException.wrap(e, SecurityErrorCodes.MISSING_ADEQUATE_SCOPE_CONSTRUCTOR).put("scopeName", scopeName);
+                    }
+
                     if (scopeClasses.containsKey(scopeName)) {
                         throw SeedException.createNew(SecurityErrorCodes.DUPLICATE_SCOPE_NAME).put("scopeName", scopeName);
                     }
