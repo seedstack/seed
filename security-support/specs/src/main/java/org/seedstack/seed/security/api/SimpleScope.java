@@ -23,14 +23,7 @@ public class SimpleScope implements Scope {
     /**
      * The value of the simple scope
      */
-    private String value;
-
-    /**
-     * Create a scope with an empty value.
-     */
-    public SimpleScope() {
-        this.value = "";
-    }
+    private final String value;
 
     /**
      * Constructor with simple scope as param
@@ -70,11 +63,6 @@ public class SimpleScope implements Scope {
     @Override
     public String getValue() {
         return this.value;
-    }
-
-    @Override
-    public void setValue(String value) {
-        this.value = value;
     }
 
     @Override

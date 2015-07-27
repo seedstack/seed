@@ -9,27 +9,21 @@
  */
 package org.seedstack.seed.security.internal.authorization;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
-
-import javax.inject.Inject;
-import javax.inject.Named;
-
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.lang.StringUtils;
 import org.seedstack.seed.core.api.SeedException;
 import org.seedstack.seed.security.api.Role;
+import org.seedstack.seed.security.api.RoleMapping;
 import org.seedstack.seed.security.api.Scope;
+import org.seedstack.seed.security.api.principals.PrincipalProvider;
 import org.seedstack.seed.security.spi.SecurityErrorCodes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.seedstack.seed.security.api.RoleMapping;
-import org.seedstack.seed.security.api.principals.PrincipalProvider;
+import javax.inject.Inject;
+import javax.inject.Named;
+import java.lang.reflect.Constructor;
+import java.util.*;
 
 /**
  * Resolve the role mappings from a Configuration:
@@ -58,25 +52,35 @@ import org.seedstack.seed.security.api.principals.PrincipalProvider;
  *
  * Means that subjects having the ADMIN.FR role from the realm(s) (like an LDAP directory) will be given the titi
  * local role within the FR scope only.
- * 
+ *
  * @author yves.dautremay@mpsa.com
  * @author adrien.lauer@mpsa.com
  */
 public class ConfigurationRoleMapping implements RoleMapping {
 
-    /** wildcard used to give role to every user */
+    /**
+     * wildcard used to give role to every user
+     */
     private final static String GLOBAL_WILDCARD = "*";
 
-    /** section name */
+    /**
+     * section name
+     */
     public static final String ROLES_SECTION_NAME = "roles";
 
-    /** logger */
+    /**
+     * logger
+     */
     private static final Logger LOGGER = LoggerFactory.getLogger(ConfigurationRoleMapping.class);
 
-    /** map : role = mapped roles */
+    /**
+     * map : role = mapped roles
+     */
     private final Map<String, Set<String>> map = new HashMap<String, Set<String>>();
-    
-    /** roles given to every user */
+
+    /**
+     * roles given to every user
+     */
     private final Set<String> givenRoles = new HashSet<String>();
 
     @Inject
@@ -86,22 +90,23 @@ public class ConfigurationRoleMapping implements RoleMapping {
     public Collection<Role> resolveRoles(Set<String> auths, Collection<PrincipalProvider<?>> principalProviders) {
         Map<String, Role> roleMap = new HashMap<String, Role>();
         for (String role : givenRoles) {
-			roleMap.put(role, new Role(role));
-		}
+            roleMap.put(role, new Role(role));
+        }
         for (String auth : auths) {
             if (map.containsKey(auth)) {
                 for (String roleName : map.get(auth)) {
-                    if(!roleMap.containsKey(roleName)){
+                    if (!roleMap.containsKey(roleName)) {
                         roleMap.put(roleName, new Role(roleName));
                     }
                 }
             } else {
-                // maybe a scope auth
+                // maybe a scoped auth
                 for (Map.Entry<String, Class<? extends Scope>> scopeClass : scopeClasses.entrySet()) {
                     for (String mapKey : map.keySet()) {
                         String wildcard = String.format("{%s}", scopeClass.getKey());
 
-                        if (mapKey.contains(wildcard)) {
+
+                        if (mapKey.contains(wildcard) && auth.matches(convertToRegex(mapKey, wildcard))) {
                             String scopeValue = findScope(wildcard, mapKey, auth);
                             Set<String> foundRoleNames = map.get(mapKey);
 
@@ -110,12 +115,12 @@ public class ConfigurationRoleMapping implements RoleMapping {
                                 Scope scope;
 
                                 try {
-                                    scope = scopeClass.getValue().newInstance();
+                                    Constructor<? extends Scope> constructor = scopeClass.getValue().getConstructor(String.class);
+                                    scope = constructor.newInstance(scopeValue);
                                 } catch (Exception e) {
                                     throw SeedException.wrap(e, SecurityErrorCodes.UNABLE_TO_CREATE_SCOPE);
                                 }
 
-                                scope.setValue(scopeValue);
                                 currentRole.getScopes().add(scope);
                             }
                         }
@@ -125,8 +130,8 @@ public class ConfigurationRoleMapping implements RoleMapping {
         }
         return roleMap.values();
     }
-    
-    private Role getOrCreateRoleInMap(String roleName, Map<String, Role> roleMap){
+
+    private Role getOrCreateRoleInMap(String roleName, Map<String, Role> roleMap) {
         Role currentRole;
         if (roleMap.containsKey(roleName)) {
             currentRole = roleMap.get(roleName);
@@ -139,9 +144,8 @@ public class ConfigurationRoleMapping implements RoleMapping {
 
     /**
      * Read the configuration to init role mappings
-     * 
-     * @param securityConfiguration
-     *            configuration of security
+     *
+     * @param securityConfiguration configuration of security
      */
     @Inject
     public void readConfiguration(@Named("seed-security-config") Configuration securityConfiguration) {
@@ -160,16 +164,16 @@ public class ConfigurationRoleMapping implements RoleMapping {
             String roleName = keys.next();
             String[] perms = rolesConfiguration.getStringArray(roleName);
             for (String token : perms) {
-            	if(GLOBAL_WILDCARD.equals(token)){
-            		givenRoles.add(roleName);
-            	}else{
-            		Set<String> roles = map.get(token);
-            		if(roles == null){
-            			roles = new HashSet<String>();
-            		}
-            		roles.add(roleName);
-            		map.put(token, roles);
-            	}
+                if (GLOBAL_WILDCARD.equals(token)) {
+                    givenRoles.add(roleName);
+                } else {
+                    Set<String> roles = map.get(token);
+                    if (roles == null) {
+                        roles = new HashSet<String>();
+                    }
+                    roles.add(roleName);
+                    map.put(token, roles);
+                }
             }
         }
     }
@@ -179,12 +183,9 @@ public class ConfigurationRoleMapping implements RoleMapping {
      * For example, if wildcardAuth is toto.{SCOPE} and auth is toto.foo then
      * scope is foo.
      *
-     * @param wildcard
-     *            the wildcard to search for
-     * @param wildcardAuth
-     *            auth with {wildcard}
-     * @param auth
-     *            auth that corresponds
+     * @param wildcard     the wildcard to search for
+     * @param wildcardAuth auth with {wildcard}
+     * @param auth         auth that corresponds
      * @return the scope.
      */
     private String findScope(String wildcard, String wildcardAuth, String auth) {
@@ -199,5 +200,9 @@ public class ConfigurationRoleMapping implements RoleMapping {
             scope = StringUtils.substringBetween(auth, before, after);
         }
         return scope;
+    }
+
+    private String convertToRegex(String value, String wildcard) {
+        return String.format("\\Q%s\\E", value.replace(wildcard, "\\E.*\\Q"));
     }
 }

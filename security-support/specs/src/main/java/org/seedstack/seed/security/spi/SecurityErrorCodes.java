@@ -12,16 +12,14 @@ package org.seedstack.seed.security.spi;
 import org.seedstack.seed.core.api.ErrorCode;
 
 /**
- *
- * 
  * @author epo.jemba@ext.mpsa.com
- *
+ * @author adrien.lauer@mpsa.com
  */
 public enum SecurityErrorCodes implements ErrorCode {
-	
-	UNEXPECTED_ERROR,
-	DUPLICATE_SCOPE_NAME, UNABLE_TO_CREATE_SCOPE
-	
-	
+
+    UNEXPECTED_ERROR,
+    DUPLICATE_SCOPE_NAME,
+    MISSING_ADEQUATE_SCOPE_CONSTRUCTOR,
+    UNABLE_TO_CREATE_SCOPE
 
 }
