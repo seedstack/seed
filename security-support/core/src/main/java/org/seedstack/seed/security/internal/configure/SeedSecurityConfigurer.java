@@ -9,14 +9,10 @@
  */
 package org.seedstack.seed.security.internal.configure;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Map;
-
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.shiro.util.CollectionUtils;
+import org.seedstack.seed.security.api.PrincipalCustomizer;
 import org.seedstack.seed.security.api.Realm;
 import org.seedstack.seed.security.api.RoleMapping;
 import org.seedstack.seed.security.api.RolePermissionResolver;
@@ -26,9 +22,14 @@ import org.seedstack.seed.security.internal.authorization.EmptyRolePermissionRes
 import org.seedstack.seed.security.internal.authorization.SameRoleMapping;
 import org.seedstack.seed.security.internal.realms.ConfigurationRealm;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Map;
+
 /**
  * Reads the configuration to configure whole security.
- * 
+ *
  * @author yves.dautremay@mpsa.com
  */
 public class SeedSecurityConfigurer {
@@ -46,22 +47,19 @@ public class SeedSecurityConfigurer {
     private static final Class<? extends RolePermissionResolver> CONFIGURATION_ROLE_PERMISSION_RESOLVER = ConfigurationRolePermissionResolver.class;
 
     private Configuration configuration;
-
     private Collection<RealmConfiguration> configurationRealms;
-
     private Map<Class<?>, Collection<Class<?>>> securityClasses;
-
-    private Collection<Class<?>> principalCustomizerClasses;
+    private Collection<Class<? extends PrincipalCustomizer<?>>> principalCustomizerClasses;
 
     /**
      * Constructor
-     * 
-     * @param configuration the configuration to use
-     * @param securityClasses the calsses found in the plugin
+     *
+     * @param configuration              the configuration to use
+     * @param securityClasses            the calsses found in the plugin
      * @param principalCustomizerClasses the classes of all principal customizers.
      */
     public SeedSecurityConfigurer(Configuration configuration, Map<Class<?>, Collection<Class<?>>> securityClasses,
-            Collection<Class<?>> principalCustomizerClasses) {
+                                  Collection<Class<? extends PrincipalCustomizer<?>>> principalCustomizerClasses) {
         this.configuration = configuration;
         this.securityClasses = securityClasses;
         this.principalCustomizerClasses = principalCustomizerClasses;
@@ -73,7 +71,7 @@ public class SeedSecurityConfigurer {
     /**
      * @return the collection of principal customizers.
      */
-    public Collection<Class<?>> getPrincipalCustomizers() {
+    public Collection<Class<? extends PrincipalCustomizer<?>>> getPrincipalCustomizers() {
         if (principalCustomizerClasses != null) {
             return principalCustomizerClasses;
         }
@@ -82,7 +80,7 @@ public class SeedSecurityConfigurer {
 
     /**
      * Return the realms represented by their configuration
-     * 
+     *
      * @return RealmConfiguration collection
      */
     public Collection<RealmConfiguration> getConfigurationRealms() {
@@ -94,7 +92,7 @@ public class SeedSecurityConfigurer {
 
     /**
      * Getter on the security configuration
-     * 
+     *
      * @return the configuration concerning the security
      */
     public Configuration getSecurityConfiguration() {
