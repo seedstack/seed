@@ -12,7 +12,6 @@ package org.seedstack.seed.persistence.jdbc.internal;
 import io.nuun.kernel.api.plugin.PluginException;
 import org.apache.commons.configuration.Configuration;
 import org.seedstack.seed.core.api.SeedException;
-import org.seedstack.seed.metrics.internal.MetricsPlugin;
 import org.seedstack.seed.persistence.jdbc.api.JdbcErrorCode;
 import org.seedstack.seed.persistence.jdbc.api.JdbcExceptionHandler;
 import org.seedstack.seed.persistence.jdbc.internal.datasource.PlainDataSourceProvider;
@@ -40,7 +39,7 @@ class DataSourceDefinitionFactory {
         this.dataSourceNames = jdbcConfiguration.getStringArray("datasources");
     }
 
-    Map<String, DataSourceDefinition> createDataSourceDefinitions(Map<String, Context> jndiContext, MetricsPlugin metricsPlugin, Collection<Class<?>> dataSourceProviderClasses) {
+    Map<String, DataSourceDefinition> createDataSourceDefinitions(Map<String, Context> jndiContext, Collection<Class<?>> dataSourceProviderClasses) {
         // if there is no datasource configured do nothing
         if (dataSourceNames.length == 0) {
             LOGGER.info("No datasource configured, JDBC support disabled");
@@ -52,13 +51,13 @@ class DataSourceDefinitionFactory {
         final Map<String, DataSourceDefinition> dataSourceDefinitions = new HashMap<String, DataSourceDefinition>();
 
         for (String dataSourceName : dataSourceNames) {
-            DataSourceDefinition dataSourceDefinition = createDataSourceDefinition(jndiContext, metricsPlugin, dataSourceProviderMap, dataSourceName);
+            DataSourceDefinition dataSourceDefinition = createDataSourceDefinition(jndiContext, dataSourceProviderMap, dataSourceName);
             dataSourceDefinitions.put(dataSourceName, dataSourceDefinition);
         }
         return dataSourceDefinitions;
     }
 
-    private DataSourceDefinition createDataSourceDefinition(Map<String, Context> jndiContext, MetricsPlugin metricsPlugin, Map<String, Class<? extends DataSourceProvider>> dataSourceProviderMap, String dataSourceName) {
+    private DataSourceDefinition createDataSourceDefinition(Map<String, Context> jndiContext, Map<String, Class<? extends DataSourceProvider>> dataSourceProviderMap, String dataSourceName) {
         Configuration dataSourceConfig = jdbcConfiguration.subset("datasource." + dataSourceName);
         if (dataSourceConfig.isEmpty()) {
             throw SeedException.createNew(JdbcErrorCode.MISSING_DATASOURCE_CONFIG).put("name", dataSourceName);
@@ -69,7 +68,7 @@ class DataSourceDefinitionFactory {
         if (dataSourceJndiName != null) {
             dataSourceDefinition = createJndiDataSource(jndiContext, dataSourceName, dataSourceConfig, dataSourceJndiName);
         } else {
-            dataSourceDefinition = createDataSource(metricsPlugin, dataSourceProviderMap, dataSourceName, dataSourceConfig);
+            dataSourceDefinition = createDataSource(dataSourceProviderMap, dataSourceName, dataSourceConfig);
         }
 
         String exceptionHandler = dataSourceConfig.getString("exception-handler");
@@ -84,7 +83,7 @@ class DataSourceDefinitionFactory {
         return dataSourceDefinition;
     }
 
-    private DataSourceDefinition createDataSource(MetricsPlugin metricsPlugin, Map<String, Class<? extends DataSourceProvider>> dataSourceProviderClasses, String datasourceName, Configuration dataSourceConfig) {
+    private DataSourceDefinition createDataSource(Map<String, Class<? extends DataSourceProvider>> dataSourceProviderClasses, String datasourceName, Configuration dataSourceConfig) {
         DataSourceDefinition dataSourceDefinition = new DataSourceDefinition(datasourceName);
         String dataSourceProviderName = dataSourceConfig.getString("provider", PlainDataSourceProvider.class.getSimpleName());
         Class<? extends DataSourceProvider> providerClass = dataSourceProviderClasses.get(dataSourceProviderName);
@@ -96,11 +95,6 @@ class DataSourceDefinitionFactory {
             provider = providerClass.newInstance();
         } catch (Exception e) {
             throw new PluginException("Unable to load class " + dataSourceProviderName, e);
-        }
-
-        if (metricsPlugin != null) {
-            provider.setHealthCheckRegistry(metricsPlugin.getHealthCheckRegistry());
-            provider.setMetricRegistry(metricsPlugin.getMetricRegistry());
         }
 
         Iterator<String> it = dataSourceConfig.getKeys("property");

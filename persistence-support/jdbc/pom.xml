@@ -9,7 +9,8 @@
     file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
@@ -20,7 +21,7 @@
 
     <artifactId>seed-persistence-support-jdbc</artifactId>
 
-	<dependencies>
+    <dependencies>
         <dependency>
             <groupId>org.seedstack.seed</groupId>
             <artifactId>seed-core-support-core</artifactId>
@@ -29,11 +30,6 @@
         <dependency>
             <groupId>org.seedstack.seed</groupId>
             <artifactId>seed-transaction-support</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.seedstack.seed</groupId>
-            <artifactId>seed-metrics-support</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
@@ -47,13 +43,13 @@
             <artifactId>commons-dbcp</artifactId>
             <version>1.4</version>
             <optional>true</optional>
-        </dependency>        
+        </dependency>
         <dependency>
             <groupId>com.mchange</groupId>
             <artifactId>c3p0</artifactId>
             <version>0.9.5</version>
             <optional>true</optional>
-        </dependency>        
+        </dependency>
         <dependency>
             <groupId>org.seedstack.seed</groupId>
             <artifactId>seed-unittest-support</artifactId>
@@ -82,5 +78,5 @@
             <version>1.0</version>
             <scope>test</scope>
         </dependency>
-	</dependencies>
+    </dependencies>
 </project>

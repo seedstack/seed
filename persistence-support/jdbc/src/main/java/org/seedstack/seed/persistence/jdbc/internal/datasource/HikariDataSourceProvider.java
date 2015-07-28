@@ -12,8 +12,6 @@
  */
 package org.seedstack.seed.persistence.jdbc.internal.datasource;
 
-import com.codahale.metrics.MetricRegistry;
-import com.codahale.metrics.health.HealthCheckRegistry;
 import com.zaxxer.hikari.HikariDataSource;
 import org.seedstack.seed.persistence.jdbc.spi.DataSourceProvider;
 import org.slf4j.Logger;
@@ -30,37 +28,17 @@ import java.util.Properties;
 public class HikariDataSourceProvider implements DataSourceProvider {
     private static final Logger LOGGER = LoggerFactory.getLogger(HikariDataSourceProvider.class);
 
-    private MetricRegistry metricRegistry;
-    private HealthCheckRegistry healthCheckRegistry;
-
     @Override
     public DataSource provide(String driverClass, String url, String user, String password, Properties dataSourceProperties) {
         HikariDataSource ds = new HikariDataSource();
-
-        if (healthCheckRegistry != null) {
-            ds.setHealthCheckRegistry(healthCheckRegistry);
-        }
-
-        if (metricRegistry != null) {
-            ds.setMetricRegistry(metricRegistry);
-        }
 
         ds.setDriverClassName(driverClass);
         ds.setJdbcUrl(url);
         ds.setUsername(user);
         ds.setPassword(password);
         ds.setDataSourceProperties(dataSourceProperties);
+
         return ds;
-    }
-
-    @Override
-    public void setMetricRegistry(MetricRegistry metricRegistry) {
-        this.metricRegistry = metricRegistry;
-    }
-
-    @Override
-    public void setHealthCheckRegistry(HealthCheckRegistry healthCheckRegistry) {
-        this.healthCheckRegistry = healthCheckRegistry;
     }
 
     @Override
