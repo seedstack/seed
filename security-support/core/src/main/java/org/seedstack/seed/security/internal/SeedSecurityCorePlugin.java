@@ -17,19 +17,6 @@ import com.google.inject.spi.Element;
 import com.google.inject.spi.Elements;
 import com.google.inject.spi.PrivateElements;
 import com.google.inject.util.Modules;
-import org.seedstack.seed.core.api.SeedException;
-import org.seedstack.seed.core.internal.application.ApplicationPlugin;
-import org.seedstack.seed.core.utils.SeedReflectionUtils;
-import org.seedstack.seed.el.internal.ELPlugin;
-import org.seedstack.seed.security.api.*;
-import org.seedstack.seed.security.internal.configure.SeedSecurityConfigurer;
-import org.seedstack.seed.security.internal.data.DataSecurityModule;
-import org.seedstack.seed.security.internal.securityexpr.SecurityExpressionModule;
-import org.seedstack.seed.security.spi.SecurityErrorCodes;
-import org.seedstack.seed.security.spi.SecurityScope;
-import org.seedstack.seed.security.spi.SecurityConcern;
-import org.seedstack.seed.security.spi.data.DataObfuscationHandler;
-import org.seedstack.seed.security.spi.data.DataSecurityHandler;
 import io.nuun.kernel.api.Plugin;
 import io.nuun.kernel.api.plugin.InitState;
 import io.nuun.kernel.api.plugin.context.InitContext;
@@ -39,11 +26,33 @@ import io.nuun.kernel.api.plugin.request.ClasspathScanRequestBuilder;
 import io.nuun.kernel.core.AbstractPlugin;
 import org.apache.commons.configuration.Configuration;
 import org.apache.shiro.mgt.SecurityManager;
-import org.kametic.specifications.Specification;
+import org.seedstack.seed.core.api.SeedException;
+import org.seedstack.seed.core.internal.application.ApplicationPlugin;
+import org.seedstack.seed.core.utils.SeedReflectionUtils;
+import org.seedstack.seed.el.internal.ELPlugin;
+import org.seedstack.seed.security.api.PrincipalCustomizer;
+import org.seedstack.seed.security.api.Realm;
+import org.seedstack.seed.security.api.RoleMapping;
+import org.seedstack.seed.security.api.RolePermissionResolver;
+import org.seedstack.seed.security.api.Scope;
+import org.seedstack.seed.security.internal.configure.SeedSecurityConfigurer;
+import org.seedstack.seed.security.internal.data.DataSecurityModule;
+import org.seedstack.seed.security.internal.securityexpr.SecurityExpressionModule;
+import org.seedstack.seed.security.spi.SecurityConcern;
+import org.seedstack.seed.security.spi.SecurityErrorCodes;
+import org.seedstack.seed.security.spi.SecurityScope;
+import org.seedstack.seed.security.spi.data.DataObfuscationHandler;
+import org.seedstack.seed.security.spi.data.DataSecurityHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.ServiceLoader;
 
 /**
  * This plugin provides core security infrastructure, based on Apache Shiro
@@ -57,21 +66,14 @@ public class SeedSecurityCorePlugin extends AbstractPlugin {
 
     public static final String SECURITY_PREFIX = "org.seedstack.seed.security";
 
-    private Configuration securityConfiguration;
-
-    private Map<Class<?>, Collection<Class<?>>> scannedClasses;
-
     private final Collection<SeedSecurityPlugin> securityPlugins = new ArrayList<SeedSecurityPlugin>();
     private final Map<String, Class<? extends Scope>> scopeClasses = new HashMap<String, Class<? extends Scope>>();
 
-    private final Specification<Class<?>> specificationScopes = classImplements(Scope.class);
-    private final Specification<Class<?>> specificationDataSecurityHandlers = classImplements(DataSecurityHandler.class);
-    private final Specification<Class<?>> specificationDataObfuscationHandlers = classImplements(DataObfuscationHandler.class);
-
+    private Configuration securityConfiguration;
+    private Map<Class<?>, Collection<Class<?>>> scannedClasses;
     private Collection<Class<? extends DataSecurityHandler<?>>> dataSecurityHandlers;
-    private Collection<Class<?>> principalCustomizerClasses;
+    private Collection<Class<? extends PrincipalCustomizer<?>>> principalCustomizerClasses;
     private boolean elDisabled;
-
 
     /**
      * Plugin constructor
@@ -106,12 +108,11 @@ public class SeedSecurityCorePlugin extends AbstractPlugin {
         }
 
         scannedClasses = initContext.scannedSubTypesByAncestorClass();
-        principalCustomizerClasses = initContext.scannedSubTypesByParentClass().get(PrincipalCustomizer.class);
 
-        Map<Specification, Collection<Class<?>>> scannedTypesBySpecification = initContext.scannedTypesBySpecification();
-        dataSecurityHandlers = (Collection) scannedTypesBySpecification.get(specificationDataSecurityHandlers);
+        principalCustomizerClasses = (Collection) scannedClasses.get(PrincipalCustomizer.class);
+        dataSecurityHandlers = (Collection) scannedClasses.get(DataSecurityHandler.class);
 
-        Collection<Class<?>> scopeCandidateClasses = scannedTypesBySpecification.get(specificationScopes);
+        Collection<Class<? extends Scope>> scopeCandidateClasses = (Collection) scannedClasses.get(Scope.class);
         if (scopeCandidateClasses != null) {
             for (Class<?> scopeCandidateClass : scopeCandidateClasses) {
                 if (Scope.class.isAssignableFrom(scopeCandidateClass)) {
@@ -143,6 +144,7 @@ public class SeedSecurityCorePlugin extends AbstractPlugin {
             LOGGER.debug("Loading security plugin {}", securityPlugin.getClass().getCanonicalName());
             securityPlugin.init(initContext);
         }
+
         return InitState.INITIALIZED;
     }
 
@@ -185,23 +187,26 @@ public class SeedSecurityCorePlugin extends AbstractPlugin {
 
     @Override
     public Collection<ClasspathScanRequest> classpathScanRequests() {
-        ClasspathScanRequestBuilder builder = classpathScanRequestBuilder().descendentTypeOf(Realm.class)
+        // Core plugin requests
+        ClasspathScanRequestBuilder builder = classpathScanRequestBuilder()
+                .descendentTypeOf(Realm.class)
                 .descendentTypeOf(RoleMapping.class)
                 .descendentTypeOf(RolePermissionResolver.class)
-                .specification(specificationDataSecurityHandlers)
-                .specification(specificationDataObfuscationHandlers)
-                .specification(specificationScopes)
-                .subtypeOf(PrincipalCustomizer.class);
+                .descendentTypeOf(Scope.class)
+                .descendentTypeOf(DataSecurityHandler.class)
+                .descendentTypeOf(PrincipalCustomizer.class);
+
+        // Additional plugins requests
         for (SeedSecurityPlugin securityPlugin : securityPlugins) {
             securityPlugin.classpathScanRequests(builder);
         }
+
         return builder.build();
     }
 
-
     @Override
     public Collection<BindingRequest> bindingRequests() {
-        return bindingRequestsBuilder().specification(specificationDataObfuscationHandlers).build();
+        return bindingRequestsBuilder().descendentTypeOf(DataObfuscationHandler.class).build();
     }
 
 
