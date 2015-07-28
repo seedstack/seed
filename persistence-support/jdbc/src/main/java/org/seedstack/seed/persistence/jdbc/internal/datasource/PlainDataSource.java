@@ -45,6 +45,7 @@ public class PlainDataSource implements DataSource {
         } catch (ClassNotFoundException e) {
             throw SeedException.wrap(e, JdbcErrorCode.WRONG_JDBC_DRIVER);
         }
+
         this.url = url;
         jdbcProperties.put("user", user);
         jdbcProperties.put("password", password);

@@ -12,8 +12,6 @@
  */
 package org.seedstack.seed.persistence.jdbc.internal.datasource;
 
-import com.codahale.metrics.MetricRegistry;
-import com.codahale.metrics.health.HealthCheckRegistry;
 import com.mchange.v2.c3p0.ComboPooledDataSource;
 import org.seedstack.seed.core.api.SeedException;
 import org.seedstack.seed.persistence.jdbc.api.JdbcErrorCode;
@@ -49,20 +47,10 @@ public class C3p0DataSourceProvider implements DataSourceProvider {
     }
 
     @Override
-    public void setHealthCheckRegistry(HealthCheckRegistry healthCheckRegistry) {
-        // not supported
-    }
-
-    @Override
-    public void setMetricRegistry(MetricRegistry metricRegistry) {
-        // not supported
-    }
-
-    @Override
     public void close(DataSource dataSource) {
         try {
             if (dataSource instanceof ComboPooledDataSource) {
-                ((ComboPooledDataSource)dataSource).close();
+                ((ComboPooledDataSource) dataSource).close();
             }
         } catch (Exception e) {
             LOGGER.warn("Unable to close datasource", e);

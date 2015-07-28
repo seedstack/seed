@@ -21,7 +21,6 @@ import io.nuun.kernel.core.AbstractPlugin;
 import org.apache.commons.configuration.Configuration;
 import org.seedstack.seed.core.internal.application.ApplicationPlugin;
 import org.seedstack.seed.core.internal.jndi.JndiPlugin;
-import org.seedstack.seed.metrics.internal.MetricsPlugin;
 import org.seedstack.seed.persistence.jdbc.spi.DataSourceProvider;
 import org.seedstack.seed.transaction.internal.TransactionPlugin;
 import org.slf4j.Logger;
@@ -37,7 +36,6 @@ import java.util.Map;
  * JDBC support plugin
  */
 public class JdbcPlugin extends AbstractPlugin implements JdbcRegistry {
-
     public static final String JDBC_PLUGIN_CONFIGURATION_PREFIX = "org.seedstack.seed.persistence.jdbc";
     private static final Logger LOGGER = LoggerFactory.getLogger(JdbcPlugin.class);
 
@@ -56,7 +54,6 @@ public class JdbcPlugin extends AbstractPlugin implements JdbcRegistry {
         Configuration jdbcConfiguration = null;
         TransactionPlugin transactionPlugin = null;
         JndiPlugin jndiPlugin = null;
-        MetricsPlugin metricsPlugin = null;
         for (Plugin plugin : initContext.pluginsRequired()) {
             if (plugin instanceof ApplicationPlugin) {
                 jdbcConfiguration = ((ApplicationPlugin) plugin).getApplication().getConfiguration().subset(JDBC_PLUGIN_CONFIGURATION_PREFIX);
@@ -64,8 +61,6 @@ public class JdbcPlugin extends AbstractPlugin implements JdbcRegistry {
                 transactionPlugin = ((TransactionPlugin) plugin);
             } else if (plugin instanceof JndiPlugin) {
                 jndiPlugin = ((JndiPlugin) plugin);
-            } else if (plugin instanceof MetricsPlugin) {
-                metricsPlugin = ((MetricsPlugin) plugin);
             }
         }
 
@@ -76,7 +71,7 @@ public class JdbcPlugin extends AbstractPlugin implements JdbcRegistry {
         Collection<Class<?>> dataSourceProviderClasses = initContext.scannedSubTypesByParentClass().get(DataSourceProvider.class);
 
         dataSourceDefinitions = new DataSourceDefinitionFactory(jdbcConfiguration)
-                .createDataSourceDefinitions(jndiPlugin.getJndiContexts(), metricsPlugin, dataSourceProviderClasses);
+                .createDataSourceDefinitions(jndiPlugin.getJndiContexts(), dataSourceProviderClasses);
 
         // If there is only one dataSource set it as the default
         if (dataSourceDefinitions.size() == 1) {
@@ -108,7 +103,6 @@ public class JdbcPlugin extends AbstractPlugin implements JdbcRegistry {
         plugins.add(ApplicationPlugin.class);
         plugins.add(TransactionPlugin.class);
         plugins.add(JndiPlugin.class);
-        plugins.add(MetricsPlugin.class);
         return plugins;
     }
 

@@ -12,8 +12,6 @@
  */
 package org.seedstack.seed.persistence.jdbc.internal.datasource;
 
-import com.codahale.metrics.MetricRegistry;
-import com.codahale.metrics.health.HealthCheckRegistry;
 import org.apache.commons.dbcp.BasicDataSource;
 import org.seedstack.seed.persistence.jdbc.spi.DataSourceProvider;
 import org.slf4j.Logger;
@@ -44,20 +42,10 @@ public class DbcpDataSourceProvider implements DataSourceProvider {
     }
 
     @Override
-    public void setHealthCheckRegistry(HealthCheckRegistry healthCheckRegistry) {
-        // not supported
-    }
-
-    @Override
-    public void setMetricRegistry(MetricRegistry metricRegistry) {
-        // not supported
-    }
-
-    @Override
     public void close(DataSource dataSource) {
         try {
             if (dataSource instanceof BasicDataSource) {
-                ((BasicDataSource)dataSource).close();
+                ((BasicDataSource) dataSource).close();
             }
         } catch (Exception e) {
             LOGGER.warn("Unable to close datasource", e);
