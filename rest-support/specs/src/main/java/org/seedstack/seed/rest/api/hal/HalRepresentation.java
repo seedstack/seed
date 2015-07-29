@@ -71,7 +71,7 @@ public class HalRepresentation {
     /**
      * Default constructor required by Jackson.
      */
-    protected HalRepresentation() {
+    public HalRepresentation() {
     }
 
     /**
