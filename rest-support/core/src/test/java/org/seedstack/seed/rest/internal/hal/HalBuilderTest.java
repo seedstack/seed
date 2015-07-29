@@ -11,6 +11,7 @@ package org.seedstack.seed.rest.internal.hal;
 
 import org.junit.Test;
 import org.seedstack.seed.rest.api.hal.HalDefaultRepresentation;
+import org.seedstack.seed.rest.api.hal.Link;
 import org.seedstack.seed.rest.internal.hal.fixture.OrderRepresentation;
 import org.seedstack.seed.rest.internal.hal.fixture.OrdersRepresentation;
 import org.seedstack.seed.rest.internal.hal.fixture.RepresentationFactory;
@@ -37,10 +38,10 @@ public class HalBuilderTest {
         assertThat(((OrdersRepresentation) halRep.getResource()).getShippedToday()).isEqualTo(20);
 
         assertThat(halRep.getLinks()).hasSize(3);
-        assertThat(halRep.getLinks().get("self").get(0).getHref()).isEqualTo("/rest/orders");
-        assertThat(halRep.getLinks().get("next").get(0).getHref()).isEqualTo("/rest/orders?page=2");
-        assertThat(halRep.getLinks().get("find").get(0).getHref()).isEqualTo("/rest/orders{?id}");
-        assertThat(halRep.getLinks().get("find").get(0).isTemplated()).isTrue();
+        assertThat(((Link) halRep.getLink("self")).getHref()).isEqualTo("/rest/orders");
+        assertThat(((Link)halRep.getLink("next")).getHref()).isEqualTo("/rest/orders?page=2");
+        assertThat(((Link)halRep.getLink("find")).getHref()).isEqualTo("/rest/orders{?id}");
+        assertThat(((Link)halRep.getLink("find")).isTemplated()).isTrue();
 
         assertThat(halRep.getEmbedded()).isNotNull();
         assertThat((List) halRep.getEmbedded().get("orders")).hasSize(2);
@@ -48,9 +49,9 @@ public class HalBuilderTest {
         // check embedded 1
         HalDefaultRepresentation halRep1 = ((HalDefaultRepresentation) ((List) halRep.getEmbedded().get("orders")).get(0));
         assertThat(halRep1.getLinks()).hasSize(3);
-        assertThat(halRep1.getLinks().get("self").get(0).getHref()).isEqualTo("/rest/order/123");
-        assertThat(halRep1.getLinks().get("basket").get(0).getHref()).isEqualTo("/rest/baskets/98712");
-        assertThat(halRep1.getLinks().get("customer").get(0).getHref()).isEqualTo("/rest/customers/7809");
+        assertThat(((Link)halRep1.getLink("self")).getHref()).isEqualTo("/rest/order/123");
+        assertThat(((Link)halRep1.getLink("basket")).getHref()).isEqualTo("/rest/baskets/98712");
+        assertThat(((Link)halRep1.getLink("customer")).getHref()).isEqualTo("/rest/customers/7809");
 
         OrderRepresentation order1 = (OrderRepresentation) halRep1.getResource();
         assertThat(order1.getTotal()).isEqualTo(30.00f);
@@ -60,9 +61,9 @@ public class HalBuilderTest {
         // check embedded 2
         HalDefaultRepresentation halRep2 = ((HalDefaultRepresentation) ((List) halRep.getEmbedded().get("orders")).get(1));
         assertThat(halRep2.getLinks()).hasSize(3);
-        assertThat(halRep2.getLinks().get("self").get(0).getHref()).isEqualTo("/rest/order/124");
-        assertThat(halRep2.getLinks().get("basket").get(0).getHref()).isEqualTo("/rest/baskets/97213");
-        assertThat(halRep2.getLinks().get("customer").get(0).getHref()).isEqualTo("/rest/customers/12369");
+        assertThat(((Link)halRep2.getLink("self")).getHref()).isEqualTo("/rest/order/124");
+        assertThat(((Link)halRep2.getLink("basket")).getHref()).isEqualTo("/rest/baskets/97213");
+        assertThat(((Link)halRep2.getLink("customer")).getHref()).isEqualTo("/rest/customers/12369");
 
         OrderRepresentation order2 = (OrderRepresentation) halRep2.getResource();
         assertThat(order2.getTotal()).isEqualTo(20.00f);

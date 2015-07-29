@@ -53,9 +53,16 @@ import java.util.Map;
  */
 public class HalRepresentation {
 
+    /**
+     * Links as defined in the <a href="https://tools.ietf.org/html/draft-kelly-json-hal-06#section-4.1.1">specification</a>
+     * is a map whose keys are rel and values can be either an object link or an array of object links.
+     * <p>
+     * So Object can be a List&lt;Link&gt; or a {@link org.seedstack.seed.rest.api.hal.Link}
+     * </p>
+     */
     @JsonProperty("_links")
     @JsonInclude(JsonInclude.Include.NON_DEFAULT)
-    private final Map<String, List<Link>> links = new HashMap<String, List<Link>>();
+    private final Map<String, Object> links = new HashMap<String, Object>();
 
     @JsonProperty("_embedded")
     @JsonInclude(JsonInclude.Include.NON_DEFAULT)
@@ -107,17 +114,35 @@ public class HalRepresentation {
      *
      * @return map of links
      */
-    public Map<String, List<Link>> getLinks() {
+    public Object getLink(String rel) {
+        return links.get(rel);
+    }
+
+    /**
+     * Returns the resource's links.
+     *
+     * @return map of links
+     */
+    public Map<String, Object> getLinks() {
         return links;
     }
 
     private void addLink(String rel, Link link) {
-        List<Link> linksForRel = links.get(rel);
-        if (linksForRel == null) {
-            linksForRel = new ArrayList<Link>();
+        Object obj = links.get(rel);
+        if (obj == null) {
+            links.put(rel, link);
+        } else if (obj instanceof List) {
+            //noinspection unchecked
+            List<Link> linksForRel = (List<Link>) obj;
+            linksForRel.add(link);
+            links.put(rel, linksForRel);
+        } else if (obj instanceof Link){
+            Link linkCopy = (Link) obj;
+            List<Link> linksForRel = new ArrayList<Link>();
+            linksForRel.add(linkCopy);
+            linksForRel.add(link);
+            links.put(rel, linksForRel);
         }
-        linksForRel.add(link);
-        links.put(rel, linksForRel);
     }
 
     /**
