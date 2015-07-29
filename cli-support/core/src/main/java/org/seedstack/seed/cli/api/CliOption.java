@@ -16,7 +16,19 @@ import java.lang.annotation.Target;
 
 
 /**
- * This annotation marks a field as an option of the commandline.
+ * This annotation marks a field as an option of the commandline. Field can be of type:
+ * <ul>
+ * <li>boolean in which case the option must take no value and the field will be set to true if the option
+ * is present of false otherwise.</li>
+ * <li>String in which case the option must take at least one value and the field will be set to the first
+ * value of the option. If option is not present or has no value, the field will be set to null.</li>
+ * <li>String[] in which case the option must take zero or more values and the field will be set to an array
+ * containing all values of the option. If option is not present or has no value, the field will be set to
+ * null.</li>
+ * <li>Map&lt;String, String&gt; in which case the option must take an even number of values and the field
+ * will be set to a map containing odd option values as keys and even option values as values. If option is
+ * not present or has no value, the field will be set to an empty map.</li>
+ * </ul>
  *
  * @author epo.jemba@ext.mpsa.com
  * @author adrien.lauer@mpsa.com
@@ -40,17 +52,26 @@ public @interface CliOption {
     boolean mandatory() default false;
 
     /**
-     * The number of values this option can take (or -1 if unlimited).
+     * The number of values this option can take (or -1 if unlimited). Checked only if the option is present in the
+     * command line.
      */
     int valueCount() default 0;
 
     /**
-     * The character for separating values.
+     * The character for separating option values. It can be set to '=' to parse named option values. When providing
+     * -Okey1=value1 -Okey2=value2 on the command line, the result can then be injected into a String array containing
+     * key/value pairs ([ "key1", "value1", "key2", "value2"]) or directly into a Map&lt;String, String&gt;.
      */
-    char valueSeparator() default '=';
+    char valueSeparator() default ',';
 
     /**
-     * The default value(s) of the option.
+     * If the option values are mandatory. Checked only if the option is present in the command line.
+     */
+    boolean mandatoryValue() default false;
+
+    /**
+     * The default value(s) of the option. Used when the option is not mandatory and not present in the command line.
+     * Also used when the option is present, its values are not mandatory and are not present in the command line.
      */
     String[] defaultValues() default {};
 

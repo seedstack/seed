@@ -40,10 +40,10 @@ public class CommandLineITRule implements MethodRule {
                 }
 
                 if (annotation != null) {
-                    String[] value = annotation.value();
+                    String[] value = annotation.args();
                     int expectedExitCode = annotation.expectedExitCode();
 
-                    int returnCode = SeedRunner.execute(value, new CommandLineITCallable(target, statement, annotation.command(), annotation.value()));
+                    int returnCode = SeedRunner.execute(value, new CommandLineITCallable(target, statement, annotation.command(), annotation.args()));
 
                     assertThat(returnCode).as("Exit code returned by SeedRunner").isEqualTo(expectedExitCode);
                 }

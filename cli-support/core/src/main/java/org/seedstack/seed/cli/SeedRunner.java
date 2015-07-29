@@ -84,7 +84,7 @@ public final class SeedRunner {
     /**
      * Execute a Seed CLI command (implemented by a {@link CommandLineHandler}.
      *
-     * @param args the command line arguments. First argument is the name of the CLI command. Subsequent argument are
+     * @param args the command line arguments. First argument is the name of the CLI command. Subsequent arguments are
      *             passed to the CLI command.
      * @return the return code of the CLI command.
      * @throws Exception when the CLI command fails to complete.
@@ -112,6 +112,7 @@ public final class SeedRunner {
             }
 
             injector.injectMembers(callable);
+
             return callable.call();
         } finally {
             stopKernel(kernel);
@@ -208,7 +209,8 @@ public final class SeedRunner {
                     }
 
                     option.setValueSeparator(optionAnnotation.valueSeparator());
-
+                    option.setRequired(optionAnnotation.mandatory());
+                    option.setOptionalArg(!optionAnnotation.mandatoryValue());
                     optionAnnotations.add(optionAnnotation);
                     optionFields.add(field);
                     options.addOption(option);
@@ -238,19 +240,17 @@ public final class SeedRunner {
                 if (cliOption.valueCount() > 0 || cliOption.valueCount() == -1) {
                     if (commandLine.hasOption(cliOption.name())) {
                         value = commandLine.getOptionValues(cliOption.name());
-                    } else {
-                        if (cliOption.mandatory()) {
-                            if (cliOption.defaultValues().length == 0) {
-                                throw SeedException.createNew(CliErrorCode.MISSING_MANDATORY_OPTION).put("command", cliCommand).put("option", cliOption.name());
-                            } else {
-                                value = cliOption.defaultValues();
-                            }
-                        } else if (cliOption.defaultValues().length != 0) {
-                            value = cliOption.defaultValues();
-                        }
+                    }
+
+                    if (value == null && cliOption.defaultValues().length > 0) {
+                        value = cliOption.defaultValues();
                     }
 
                     if (value != null) {
+                        if (cliOption.valueCount() != -1 && cliOption.valueCount() != value.length) {
+                            SeedException.createNew(CliErrorCode.WRONG_NUMBER_OF_OPTION_ARGUMENTS).put("command", cliCommand);
+                        }
+
                         try {
                             Class<?> fieldType = field.getType();
 

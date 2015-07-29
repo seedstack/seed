@@ -32,7 +32,7 @@ public @interface WithCommandLine {
     /**
      * @return the array of command line arguments.
      */
-    String[] value() default {};
+    String[] args() default {};
 
     /**
      * @return the expected return code.

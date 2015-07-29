@@ -13,8 +13,6 @@ import org.seedstack.seed.cli.api.CliArgs;
 import org.seedstack.seed.cli.api.CliCommand;
 import org.seedstack.seed.cli.api.CliOption;
 import org.seedstack.seed.cli.api.CommandLineHandler;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.Map;
 
@@ -34,13 +32,28 @@ public class SampleCommandLineHandler implements CommandLineHandler {
     @CliOption(name = "b", valueCount = 1)
     private String b;
 
-    @CliOption(name = "P", valueCount = -1)
+    @CliOption(name = "P", valueCount = -1, valueSeparator = '=')
     private Map<String, String> P1;
 
-    @CliOption(name = "P", valueCount = -1)
+    @CliOption(name = "P", valueCount = -1, valueSeparator = '=')
     private String[] P2;
 
-    @CliArgs
+    @CliOption(name = "A", valueCount = -1, mandatory = true, defaultValues = "2")
+    private String[] A1;
+
+    @CliOption(name = "A", valueCount = -1, mandatory = true, defaultValues = "2")
+    private String A2;
+
+    @CliOption(name = "B", valueCount = 2, mandatoryValue = true, defaultValues = {"2", "3"})
+    private String[] B;
+
+    @CliOption(name = "C", valueCount = 5)
+    private String[] C;
+
+    @CliOption(name = "D", valueCount = 5)
+    private String D;
+
+    @CliArgs(mandatoryCount = 1)
     private String[] args;
 
     @Override
@@ -60,6 +73,19 @@ public class SampleCommandLineHandler implements CommandLineHandler {
 
         assertThat(P2).isNotNull();
         assertThat(P2).containsExactly("key1", "value1", "key2", "value2");
+
+        assertThat(A1).isNotNull();
+        assertThat(A1).containsExactly("5", "6", "7", "8", "5", "4", "5", "6");
+
+        assertThat(A2).isNotNull();
+        assertThat(A2).isEqualTo("5");
+
+        assertThat(B).isNotNull();
+        assertThat(B).containsExactly("2", "3");
+
+        assertThat(C).isNull();
+
+        assertThat(D).isNull();
 
         called = true;
 
