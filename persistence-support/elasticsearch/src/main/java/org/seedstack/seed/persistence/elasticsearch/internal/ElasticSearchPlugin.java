@@ -109,12 +109,20 @@ public class ElasticSearchPlugin extends AbstractPlugin {
     public void stop() {
         for (Entry<String, Client> entry : elasticSearchClients.entrySet()) {
             LOGGER.info("Closing ElasticSearch client {}", entry.getKey());
-            entry.getValue().close();
+            try {
+                entry.getValue().close();
+            } catch (Exception e) {
+                LOGGER.error(String.format("Unable to properly close ElasticSearch client %s", entry.getKey()), e);
+            }
         }
 
         for (Entry<String, Node> entry : elasticSearchLocalNodes.entrySet()) {
             LOGGER.info("Closing ElasticSearch local node {}", entry.getKey());
-            entry.getValue().close();
+            try {
+                entry.getValue().close();
+            } catch (Exception e) {
+                LOGGER.error(String.format("Unable to properly close ElasticSearch local node %s", entry.getKey()), e);
+            }
         }
     }
 

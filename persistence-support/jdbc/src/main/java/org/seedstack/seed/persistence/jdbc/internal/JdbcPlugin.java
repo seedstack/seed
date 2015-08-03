@@ -91,8 +91,12 @@ public class JdbcPlugin extends AbstractPlugin implements JdbcRegistry {
         for (DataSourceDefinition dataSourceDefinition : dataSourceDefinitions.values()) {
             DataSourceProvider dataSourceProvider = dataSourceDefinition.getDataSourceProvider();
             if (dataSourceProvider != null) {
-                LOGGER.info("Closing datasource {}", dataSourceDefinition.getName());
-                dataSourceProvider.close(dataSourceDefinition.getDataSource());
+                LOGGER.info("Closing JDBC datasource {}", dataSourceDefinition.getName());
+                try {
+                    dataSourceProvider.close(dataSourceDefinition.getDataSource());
+                } catch (Exception e) {
+                    LOGGER.error(String.format("Unable to properly close JDBC datasource %s", dataSourceDefinition.getName()), e);
+                }
             }
         }
     }

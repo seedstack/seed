@@ -104,6 +104,18 @@ public class TinkerpopPlugin extends AbstractPlugin {
     }
 
     @Override
+    public void stop() {
+        for (Map.Entry<String, Graph> graphEntry : graphs.entrySet()) {
+            LOGGER.info("Shutting down Tinkerpop graph {}", graphEntry.getKey());
+            try {
+                graphEntry.getValue().shutdown();
+            } catch (Exception e) {
+                LOGGER.error(String.format("Unable to properly shutdown Tinkerpop graph %s", graphEntry.getKey()), e);
+            }
+        }
+    }
+
+    @Override
     public Collection<Class<? extends Plugin>> requiredPlugins() {
         Collection<Class<? extends Plugin>> plugins = new ArrayList<Class<? extends Plugin>>();
         plugins.add(ApplicationPlugin.class);

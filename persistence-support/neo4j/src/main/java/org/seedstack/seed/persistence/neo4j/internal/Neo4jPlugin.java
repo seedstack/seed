@@ -114,7 +114,11 @@ public class Neo4jPlugin extends AbstractPlugin {
     public void stop() {
         for (Map.Entry<String, GraphDatabaseService> graphDatabaseServiceEntry : graphDatabaseServices.entrySet()) {
             LOGGER.info("Shutting down {} graph database", graphDatabaseServiceEntry.getKey());
-            graphDatabaseServiceEntry.getValue().shutdown();
+            try {
+                graphDatabaseServiceEntry.getValue().shutdown();
+            } catch (Exception e) {
+                LOGGER.error(String.format("Unable to properly shutdown %s graph database", graphDatabaseServiceEntry.getKey()), e);
+            }
         }
     }
 
