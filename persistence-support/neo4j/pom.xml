@@ -20,7 +20,11 @@
 
     <artifactId>seed-persistence-support-neo4j</artifactId>
 
-	<dependencies>
+    <properties>
+        <compatibility-check.skip>true</compatibility-check.skip>
+    </properties>
+
+    <dependencies>
         <dependency>
             <groupId>org.seedstack.seed</groupId>
             <artifactId>seed-core-support-core</artifactId>
