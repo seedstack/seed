@@ -16,7 +16,6 @@ import org.seedstack.seed.web.spi.WebConcern;
 
 import javax.inject.Singleton;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 @WebConcern
@@ -44,17 +43,16 @@ class WebModule extends ServletModule {
 
     @Override
     protected void configureServlets() {
-        bind(String.class).annotatedWith(Names.named("SeedWebResourcesPath")).toInstance(this.resourcesPrefix);
-        bind(WebResourceResolver.class).to(WebResourceResolverImpl.class);
-
         // Diagnostic
         if (requestDiagnosticEnabled) {
             bind(ExceptionDiagnosticFilter.class).in(Singleton.class);
             filter("/*").through(ExceptionDiagnosticFilter.class);
         }
 
-        // Static resources servlet
+        // Static resources
         if (resourcesEnabled) {
+            bind(WebResourceResolver.class).to(WebResourceResolverImpl.class);
+            bind(String.class).annotatedWith(Names.named("SeedWebResourcesPath")).toInstance(this.resourcesPrefix);
             bind(WebResourceServlet.class).in(Singleton.class);
             serve(resourcesPrefix + "/*").with(WebResourceServlet.class);
         }
