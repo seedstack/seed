@@ -72,7 +72,7 @@ class ApplicationImpl implements Application {
     }
 
     @Override
-    public File getStorageLocation(String context) throws IOException {
+    public File getStorageLocation(String context) {
         File location = new File(this.storageRoot, context);
 
         if (!location.exists() && !location.mkdirs()) {
