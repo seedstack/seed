@@ -12,9 +12,9 @@
  */
 package org.seedstack.seed.crypto.internal;
 
-import org.apache.commons.configuration.AbstractConfiguration;
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.lang.text.StrLookup;
+import org.seedstack.seed.core.api.Application;
 import org.seedstack.seed.core.spi.configuration.ConfigurationLookup;
 import org.seedstack.seed.crypto.api.EncryptionService;
 
@@ -30,9 +30,9 @@ import java.security.InvalidKeyException;
 public class PasswordLookup extends StrLookup {
     private final EncryptionService encryptionService;
 
-    public PasswordLookup(AbstractConfiguration abstractConfiguration) {
+    public PasswordLookup(Application application) {
         EncryptionServiceFactory encryptionServiceFactory = new EncryptionServiceFactory();
-        Configuration configuration = abstractConfiguration.subset(CryptoPlugin.CRYPTO_PLUGIN_PREFIX);
+        Configuration configuration = application.getConfiguration().subset(CryptoPlugin.CRYPTO_PLUGIN_PREFIX);
 
         encryptionService = encryptionServiceFactory.createEncryptionService(
                 encryptionServiceFactory.createKeyStoreDefinition(configuration, CryptoPlugin.MASTER_KEY_NAME),

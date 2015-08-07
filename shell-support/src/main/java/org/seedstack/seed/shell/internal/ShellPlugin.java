@@ -9,7 +9,6 @@
  */
 package org.seedstack.seed.shell.internal;
 
-import org.seedstack.seed.core.internal.application.ApplicationPlugin;
 import io.nuun.kernel.api.Plugin;
 import io.nuun.kernel.api.plugin.InitState;
 import io.nuun.kernel.api.plugin.PluginException;
@@ -32,6 +31,7 @@ import org.apache.sshd.server.CommandFactory;
 import org.apache.sshd.server.UserAuth;
 import org.apache.sshd.server.keyprovider.SimpleGeneratorHostKeyProvider;
 import org.apache.sshd.server.session.ServerSession;
+import org.seedstack.seed.core.internal.application.ApplicationPlugin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -85,12 +85,7 @@ public class ShellPlugin extends AbstractPlugin {
 
         String keyType = shellConfiguration.getString("key.type", "generated");
         if ("generated".equals(keyType)) {
-            File storage;
-            try {
-                storage = applicationPlugin.getApplication().getStorageLocation("shell");
-            } catch (IOException e) {
-                throw new PluginException("Unable to acces storage location for context shell", e);
-            }
+            File storage = applicationPlugin.getApplication().getStorageLocation("shell");
             sshServer.setKeyPairProvider(new SimpleGeneratorHostKeyProvider(new File(storage, "generate-key.ser").getAbsolutePath()));
         } else if ("file".equals(keyType)) {
             sshServer.setKeyPairProvider(new FileKeyPairProvider(new String[]{shellConfiguration.getString("key.location")}));

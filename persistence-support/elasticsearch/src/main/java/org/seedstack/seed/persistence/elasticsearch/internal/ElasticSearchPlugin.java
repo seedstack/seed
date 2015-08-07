@@ -9,11 +9,8 @@
  */
 package org.seedstack.seed.persistence.elasticsearch.internal;
 
-import org.seedstack.seed.core.api.SeedException;
-import org.seedstack.seed.core.internal.application.ApplicationPlugin;
 import io.nuun.kernel.api.Plugin;
 import io.nuun.kernel.api.plugin.InitState;
-import io.nuun.kernel.api.plugin.PluginException;
 import io.nuun.kernel.api.plugin.context.Context;
 import io.nuun.kernel.api.plugin.context.InitContext;
 import io.nuun.kernel.core.AbstractPlugin;
@@ -25,11 +22,12 @@ import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.transport.InetSocketTransportAddress;
 import org.elasticsearch.node.Node;
 import org.elasticsearch.node.NodeBuilder;
+import org.seedstack.seed.core.api.SeedException;
+import org.seedstack.seed.core.internal.application.ApplicationPlugin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -75,11 +73,7 @@ public class ElasticSearchPlugin extends AbstractPlugin {
                 }
 
                 if (!propertiesMap.containsKey("path.home")) {
-                    try {
-                        propertiesMap.put("path.home", applicationPlugin.getApplication().getStorageLocation(ElasticSearchPlugin.ELASTIC_SEARCH_STORAGE_ROOT + elasticSearchClientName).getAbsolutePath());
-                    } catch (IOException e) {
-                        throw new PluginException("Unable to create ElasticSearch home directory", e);
-                    }
+                    propertiesMap.put("path.home", applicationPlugin.getApplication().getStorageLocation(ElasticSearchPlugin.ELASTIC_SEARCH_STORAGE_ROOT + elasticSearchClientName).getAbsolutePath());
                 }
 
                 String[] hosts = elasticSearchClientConfiguration.getStringArray("hosts");

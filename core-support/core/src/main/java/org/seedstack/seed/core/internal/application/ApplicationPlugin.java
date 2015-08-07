@@ -17,7 +17,6 @@ import io.nuun.kernel.api.plugin.context.InitContext;
 import io.nuun.kernel.api.plugin.request.ClasspathScanRequest;
 import io.nuun.kernel.core.AbstractPlugin;
 import jodd.props.Props;
-import org.apache.commons.configuration.AbstractConfiguration;
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.MapConfiguration;
 import org.apache.commons.lang.text.StrLookup;
@@ -41,7 +40,6 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -203,7 +201,14 @@ public class ApplicationPlugin extends AbstractPlugin {
             LOGGER.debug("Java logging to SLF4J redirection enabled, if you're using logback be sure to have a LevelChangePropagator in your configuration");
         }
 
-        this.application = new ApplicationImpl(appName, appId, appVersion, seedDirectory, configuration);
+        ApplicationImpl application = new ApplicationImpl(appName, appId, appVersion, seedDirectory, configuration);
+
+        // Register configuration lookups
+        for (Map.Entry<String, Class<? extends StrLookup>> configurationLookup : configurationLookups.entrySet()) {
+            configuration.getInterpolator().registerLookup(configurationLookup.getKey(), buildStrLookup(configurationLookup.getValue(), application));
+        }
+
+        this.application = application;
 
         return InitState.INITIALIZED;
     }
@@ -287,10 +292,10 @@ public class ApplicationPlugin extends AbstractPlugin {
         return newProps;
     }
 
-    private StrLookup buildStrLookup(Class<? extends StrLookup> strLookupClass, AbstractConfiguration abstractConfiguration) {
+    private StrLookup buildStrLookup(Class<? extends StrLookup> strLookupClass, Application application) {
         try {
             try {
-                return strLookupClass.getConstructor(AbstractConfiguration.class).newInstance(abstractConfiguration);
+                return strLookupClass.getConstructor(Application.class).newInstance(application);
             } catch (NoSuchMethodException e1) {
                 try {
                     return strLookupClass.getConstructor().newInstance();
@@ -332,13 +337,6 @@ public class ApplicationPlugin extends AbstractPlugin {
         finalConfiguration.putAll(configurationOverrideMap);
 
         // Convert final configuration to an immutable Apache Commons Configuration
-        MapConfiguration mapConfiguration = new MapConfiguration(new ImmutableMap.Builder<String, Object>().putAll(finalConfiguration).build());
-
-        // Register configuration lookups
-        for (Entry<String, Class<? extends StrLookup>> configurationLookup : configurationLookups.entrySet()) {
-            mapConfiguration.getInterpolator().registerLookup(configurationLookup.getKey(), buildStrLookup(configurationLookup.getValue(), mapConfiguration));
-        }
-
-        return mapConfiguration;
+        return new MapConfiguration(new ImmutableMap.Builder<String, Object>().putAll(finalConfiguration).build());
     }
 }

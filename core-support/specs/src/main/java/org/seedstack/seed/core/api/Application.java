@@ -52,7 +52,7 @@ public interface Application {
      * @param context The storage context.
      * @return The file object denoting application storage directory.
      */
-    File getStorageLocation(String context) throws IOException;
+    File getStorageLocation(String context);
 
     /**
      * Return the DOT format of the application injector graph filtered by filter regular expression.
