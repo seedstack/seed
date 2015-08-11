@@ -58,6 +58,7 @@
         <module>jpa</module>
         <module>jdbc</module>
         <module>neo4j</module>
+        <module>mongodb</module>
         <module>elasticsearch</module>
         <module>tinkerpop</module>
         <module>inmemory</module>
