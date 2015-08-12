@@ -114,6 +114,31 @@ public class SolrPlugin extends AbstractPlugin {
         return InitState.INITIALIZED;
     }
 
+    @Override
+    public void stop() {
+        for (Map.Entry<String, SolrClient> solrClientEntry : solrClients.entrySet()) {
+            LOGGER.info("Closing Solr client {}", solrClientEntry.getKey());
+            try {
+                solrClientEntry.getValue().close();
+            } catch (Exception e) {
+                LOGGER.error(String.format("Unable to properly close Solr client %s", solrClientEntry.getKey()), e);
+            }
+        }
+    }
+
+    @Override
+    public Collection<Class<? extends Plugin>> requiredPlugins() {
+        Collection<Class<? extends Plugin>> plugins = new ArrayList<Class<? extends Plugin>>();
+        plugins.add(ApplicationPlugin.class);
+        plugins.add(TransactionPlugin.class);
+        return plugins;
+    }
+
+    @Override
+    public Object nativeUnitModule() {
+        return new SolrModule(solrClients, solrTransactionHandlers);
+    }
+
     private SolrClient buildSolrClient(Configuration solrClientConfiguration) throws MalformedURLException {
         SolrClientType clientType = SolrClientType.valueOf(solrClientConfiguration.getString(SolrConfigurationConstants.TYPE, SolrClientType.HTTP.toString()));
         String[] urls = solrClientConfiguration.getStringArray(SolrConfigurationConstants.URLS);
@@ -237,18 +262,5 @@ public class SolrPlugin extends AbstractPlugin {
             cloudSolrClient.setZkConnectTimeout(solrClientConfiguration.getInt(SolrConfigurationConstants.ZK_CONNECT_TIMEOUT));
         }
         return cloudSolrClient;
-    }
-
-    @Override
-    public Collection<Class<? extends Plugin>> requiredPlugins() {
-        Collection<Class<? extends Plugin>> plugins = new ArrayList<Class<? extends Plugin>>();
-        plugins.add(ApplicationPlugin.class);
-        plugins.add(TransactionPlugin.class);
-        return plugins;
-    }
-
-    @Override
-    public Object nativeUnitModule() {
-        return new SolrModule(solrClients, solrTransactionHandlers);
     }
 }

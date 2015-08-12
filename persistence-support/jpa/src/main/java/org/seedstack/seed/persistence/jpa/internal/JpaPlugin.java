@@ -141,8 +141,12 @@ public class JpaPlugin extends AbstractPlugin {
     @Override
     public void stop() {
         for (Map.Entry<String, EntityManagerFactory> entityManagerFactory : entityManagerFactories.entrySet()) {
-            LOGGER.info("Closing entity manager factory for persistence unit " + entityManagerFactory.getKey());
-            entityManagerFactory.getValue().close();
+            LOGGER.info("Closing entity manager factory for persistence unit {}", entityManagerFactory.getKey());
+            try {
+                entityManagerFactory.getValue().close();
+            } catch (Exception e) {
+                LOGGER.error(String.format("Unable to properly close entity manager factory for persistence unit %s", entityManagerFactory.getKey()), e);
+            }
         }
     }
 

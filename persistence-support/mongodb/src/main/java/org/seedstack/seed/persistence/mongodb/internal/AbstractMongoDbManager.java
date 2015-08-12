@@ -57,7 +57,7 @@ abstract class AbstractMongoDbManager<C, D> implements MongoDbManager {
                 try {
                     doClose(mongoClientEntry.getValue());
                 } catch (Exception e) {
-                    LOGGER.warn(String.format("Unable to properly close MongoDB client %s", mongoClientEntry.getKey()), e);
+                    LOGGER.error(String.format("Unable to properly close MongoDB client %s", mongoClientEntry.getKey()), e);
                 }
             }
         } finally {

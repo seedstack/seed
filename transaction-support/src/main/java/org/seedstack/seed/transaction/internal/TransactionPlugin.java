@@ -37,9 +37,9 @@ import java.util.Set;
  * This plugin manages transactional matters in SEED code:
  *
  * <ul>
- *  <li>detects transaction-enabled methods and add the corresponding interceptor around them,</li>
- *  <li>holds a registry of all transaction handlers,</li>
- *  <li>provides various utilities for implementing transactional behavior.</li>
+ * <li>detects transaction-enabled methods and add the corresponding interceptor around them,</li>
+ * <li>holds a registry of all transaction handlers,</li>
+ * <li>provides various utilities for implementing transactional behavior.</li>
  * </ul>
  *
  * @author adrien.lauer@mpsa.com
@@ -90,7 +90,7 @@ public class TransactionPlugin extends AbstractPlugin {
         if (scannedTransactionMetadataResolverClasses != null) {
             for (Class<?> candidate : scannedTransactionMetadataResolverClasses) {
                 if (TransactionMetadataResolver.class.isAssignableFrom(candidate)) {
-                    transactionMetadataResolvers.add((Class<? extends TransactionMetadataResolver>)candidate);
+                    transactionMetadataResolvers.add((Class<? extends TransactionMetadataResolver>) candidate);
                     LOGGER.trace("Detected transaction metadata resolver {}", candidate.getCanonicalName());
                 }
             }
@@ -115,13 +115,12 @@ public class TransactionPlugin extends AbstractPlugin {
 
     @Override
     public Object nativeUnitModule() {
-        if (this.defaultTransactionHandlerClass != null) {
-            LOGGER.debug("Using " + this.defaultTransactionHandlerClass.getCanonicalName() + " as default transaction handler");
-        } else {
-            LOGGER.debug("No default transaction handler could be determined, explicit configuration of transactions will be required");
-        }
-
-        return new TransactionModule(this.transactionManager, this.defaultTransactionHandlerClass, this.transactionMetadataResolvers, this.registeredTransactionHandlers);
+        return new TransactionModule(
+                this.transactionManager,
+                this.defaultTransactionHandlerClass,
+                this.transactionMetadataResolvers,
+                this.registeredTransactionHandlers
+        );
     }
 
     /**
@@ -140,6 +139,7 @@ public class TransactionPlugin extends AbstractPlugin {
      * @param transactionHandler the transaction handler to register.
      */
     public void registerTransactionHandler(Class<? extends TransactionHandler> transactionHandler) {
+        LOGGER.trace("Registered transaction handler {}", transactionHandler.getCanonicalName());
         this.registeredTransactionHandlers.add(transactionHandler);
     }
 }
