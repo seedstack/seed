@@ -60,6 +60,7 @@
         <module>neo4j</module>
         <module>mongodb</module>
         <module>elasticsearch</module>
+        <module>solr</module>
         <module>tinkerpop</module>
         <module>inmemory</module>
     </modules>

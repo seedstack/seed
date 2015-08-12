@@ -22,7 +22,7 @@ import org.seedstack.seed.transaction.spi.TransactionMetadataResolver;
  *
  * @author adrien.lauer@mpsa.com
  */
-public class GraphTransactionMetadataResolver implements TransactionMetadataResolver {
+class GraphTransactionMetadataResolver implements TransactionMetadataResolver {
     static String defaultGraph;
 
     @Override

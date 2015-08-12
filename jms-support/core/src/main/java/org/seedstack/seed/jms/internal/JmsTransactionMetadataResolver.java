@@ -23,7 +23,7 @@ import javax.jms.MessageListener;
  *
  * @author adrien.lauer@mpsa.com
  */
-public class JmsTransactionMetadataResolver implements TransactionMetadataResolver {
+class JmsTransactionMetadataResolver implements TransactionMetadataResolver {
     @Override
     public TransactionMetadata resolve(MethodInvocation methodInvocation, TransactionMetadata defaults) {
         Class<?> declaringClass = methodInvocation.getMethod().getDeclaringClass();
