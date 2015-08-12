@@ -24,36 +24,36 @@ import java.lang.reflect.Method;
 /**
  * @author redouane.loulou@ext.mpsa.com
  */
-public class InMemoryMetadataResolver implements TransactionMetadataResolver {
+class InMemoryMetadataResolver implements TransactionMetadataResolver {
 
-	@Override
-	public TransactionMetadata resolve(MethodInvocation methodInvocation, TransactionMetadata defaults) {
-		
-		Method method = methodInvocation.getMethod();
-		
-		TransactionMetadata transactionMetadata = null;
-		
-		// Get Store from method
-		// =====================
-		Store annotation = method.getAnnotation(Store.class);
-		
-		// if null, getting information from class
-        if ( annotation == null ) { 
-        	Class<?> methodClass =  SeedReflectionUtils.cleanProxy(methodInvocation.getThis().getClass());
-        	annotation = methodClass.getAnnotation(Store.class);
-        } 
-        
-        // if annotation always null
-        
-        if ( annotation != null ) { 
-	        transactionMetadata = new TransactionMetadata();
-	        transactionMetadata.setHandler(InMemoryTransactionHandler.class);
-	        transactionMetadata.setPropagation(Propagation.REQUIRES_NEW);
-	        transactionMetadata.addMetadata("store", annotation.value());
+    @Override
+    public TransactionMetadata resolve(MethodInvocation methodInvocation, TransactionMetadata defaults) {
+
+        Method method = methodInvocation.getMethod();
+
+        TransactionMetadata transactionMetadata = null;
+
+        // Get Store from method
+        // =====================
+        Store annotation = method.getAnnotation(Store.class);
+
+        // if null, getting information from class
+        if (annotation == null) {
+            Class<?> methodClass = SeedReflectionUtils.cleanProxy(methodInvocation.getThis().getClass());
+            annotation = methodClass.getAnnotation(Store.class);
         }
-        
-        
+
+        // if annotation always null
+
+        if (annotation != null) {
+            transactionMetadata = new TransactionMetadata();
+            transactionMetadata.setHandler(InMemoryTransactionHandler.class);
+            transactionMetadata.setPropagation(Propagation.REQUIRES_NEW);
+            transactionMetadata.addMetadata("store", annotation.value());
+        }
+
+
         return transactionMetadata;
-	}
+    }
 
 }

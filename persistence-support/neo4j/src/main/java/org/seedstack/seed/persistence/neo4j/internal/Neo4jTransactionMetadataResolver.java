@@ -22,7 +22,7 @@ import org.seedstack.seed.transaction.spi.TransactionMetadataResolver;
  *
  * @author adrien.lauer@mpsa.com
  */
-public class Neo4jTransactionMetadataResolver implements TransactionMetadataResolver {
+class Neo4jTransactionMetadataResolver implements TransactionMetadataResolver {
     static String defaultDb;
 
     @Override

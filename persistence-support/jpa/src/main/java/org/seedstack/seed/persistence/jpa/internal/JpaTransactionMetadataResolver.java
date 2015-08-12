@@ -22,7 +22,7 @@ import org.seedstack.seed.transaction.spi.TransactionMetadataResolver;
  *
  * @author adrien.lauer@mpsa.com
  */
-public class JpaTransactionMetadataResolver implements TransactionMetadataResolver {
+class JpaTransactionMetadataResolver implements TransactionMetadataResolver {
     static String defaultJpaUnit;
 
     @Override
