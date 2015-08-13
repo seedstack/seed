@@ -13,13 +13,16 @@ import com.mongodb.MongoClient;
 import com.mongodb.client.MongoDatabase;
 import org.bson.Document;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.seedstack.seed.it.AbstractSeedIT;
+import org.seedstack.seed.it.categories.NotSelfContained;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@Category(NotSelfContained.class)
 public class MongoDbIT extends AbstractSeedIT {
     @Inject
     @Named("client1")

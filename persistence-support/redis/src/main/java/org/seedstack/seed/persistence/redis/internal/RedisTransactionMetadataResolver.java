@@ -29,18 +29,18 @@ class RedisTransactionMetadataResolver implements TransactionMetadataResolver {
     public TransactionMetadata resolve(MethodInvocation methodInvocation, TransactionMetadata defaults) {
         Redis redis = SeedReflectionUtils.getMethodOrAncestorMetaAnnotatedWith(methodInvocation.getMethod(), Redis.class);
 
-        if (redis != null || RedisTransactionHandler.class.equals(defaults.getHandler()) || PipelineTransactionHandler.class.equals(defaults.getHandler())) {
+        if (redis != null || RedisTransactionHandler.class.equals(defaults.getHandler()) || RedisPipelinedTransactionHandler.class.equals(defaults.getHandler())) {
             TransactionMetadata result = new TransactionMetadata();
 
             result.setExceptionHandler(RedisExceptionHandler.class);
             result.setResource(redis == null ? defaultClient : redis.value());
 
             if (redis != null) {
-                result.setHandler(redis.pipelined() ? PipelineTransactionHandler.class : RedisTransactionHandler.class);
+                result.setHandler(redis.pipelined() ? RedisPipelinedTransactionHandler.class : RedisTransactionHandler.class);
             } else if (RedisTransactionHandler.class.equals(defaults.getHandler())) {
                 result.setHandler(RedisTransactionHandler.class);
-            } else if (PipelineTransactionHandler.class.equals(defaults.getHandler())) {
-                result.setHandler(PipelineTransactionHandler.class);
+            } else if (RedisPipelinedTransactionHandler.class.equals(defaults.getHandler())) {
+                result.setHandler(RedisPipelinedTransactionHandler.class);
             }
 
             return result;

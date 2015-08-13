@@ -60,11 +60,11 @@ class RedisModule extends PrivateModule {
         RedisTransactionHandler redisTransactionHandler = new RedisTransactionHandler(transactionRedisLink, jedisPool);
         bind(RedisTransactionHandler.class).annotatedWith(Names.named(name)).toInstance(redisTransactionHandler);
 
-        PipelineTransactionHandler pipelineTransactionHandler = new PipelineTransactionHandler(pipelineRedisLink, jedisPool);
-        bind(PipelineTransactionHandler.class).annotatedWith(Names.named(name)).toInstance(pipelineTransactionHandler);
+        RedisPipelinedTransactionHandler redisPipelinedTransactionHandler = new RedisPipelinedTransactionHandler(pipelineRedisLink, jedisPool);
+        bind(RedisPipelinedTransactionHandler.class).annotatedWith(Names.named(name)).toInstance(redisPipelinedTransactionHandler);
 
         expose(RedisExceptionHandler.class).annotatedWith(Names.named(name));
         expose(RedisTransactionHandler.class).annotatedWith(Names.named(name));
-        expose(PipelineTransactionHandler.class).annotatedWith(Names.named(name));
+        expose(RedisPipelinedTransactionHandler.class).annotatedWith(Names.named(name));
     }
 }

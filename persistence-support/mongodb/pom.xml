@@ -47,12 +47,6 @@
 
         <dependency>
             <groupId>org.seedstack.seed</groupId>
-            <artifactId>seed-unittest-support</artifactId>
-            <version>${project.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.seedstack.seed</groupId>
             <artifactId>seed-integrationtest-support-core</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>
@@ -63,36 +57,4 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
-
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>com.syncleus.maven.plugins</groupId>
-                <artifactId>maven-mongodb-plugin</artifactId>
-                <version>1.1.1</version>
-                <configuration>
-                    <!-- configure your proxy here if needed
-                    <proxyHost></proxyHost>
-                    <proxyPort></proxyPort>
-                    <proxyUser></proxyUser>
-                    <proxyPassword></proxyPassword>
-                    -->
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>start-mongodb</id>
-                        <goals>
-                            <goal>start</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <id>stop-mongodb</id>
-                        <goals>
-                            <goal>stop</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-        </plugins>
-    </build>
 </project>

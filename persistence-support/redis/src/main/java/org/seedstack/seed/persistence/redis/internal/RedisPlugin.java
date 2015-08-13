@@ -88,17 +88,18 @@ public class RedisPlugin extends AbstractPlugin {
             }
 
             try {
-                jedisPools.put(client, createJediPool(clientConfiguration));
+                jedisPools.put(client, createJedisPool(clientConfiguration));
             } catch (Exception e) {
                 throw SeedException.wrap(e, RedisErrorCodes.UNABLE_TO_CREATE_CLIENT).put("clientName", client);
             }
         }
 
-//        if (clients.length == 1) {
-//            // TODO Neo4jTransactionMetadataResolver.defaultDb = clients[0];
-//        }
+        if (clients.length == 1) {
+            RedisTransactionMetadataResolver.defaultClient = clients[0];
+        }
 
-//        transactionPlugin.registerTransactionHandler(Neo4jTransactionHandler.class);
+        transactionPlugin.registerTransactionHandler(RedisTransactionHandler.class);
+        transactionPlugin.registerTransactionHandler(RedisPipelinedTransactionHandler.class);
 
         return InitState.INITIALIZED;
     }
@@ -133,7 +134,7 @@ public class RedisPlugin extends AbstractPlugin {
         return new RedisModule(jedisPools, exceptionHandlerClasses);
     }
 
-    private JedisPool createJediPool(Configuration clientConfiguration) {
+    private JedisPool createJedisPool(Configuration clientConfiguration) {
         String url = clientConfiguration.getString("url");
 
         if (url == null || url.isEmpty()) {

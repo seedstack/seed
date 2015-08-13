@@ -18,10 +18,10 @@ import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocumentList;
 import org.assertj.core.api.Assertions;
-import org.junit.Ignore;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.seedstack.seed.it.SeedITRunner;
+import org.junit.experimental.categories.Category;
+import org.seedstack.seed.it.AbstractSeedIT;
+import org.seedstack.seed.it.categories.NotSelfContained;
 import org.seedstack.seed.persistence.solr.api.Solr;
 import org.seedstack.seed.persistence.solr.fixtures.Person;
 import org.seedstack.seed.transaction.api.Transactional;
@@ -34,9 +34,8 @@ import java.util.Collection;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@RunWith(SeedITRunner.class)
-@Ignore("Needs a running Solr instance. One can use docker image at https://hub.docker.com/r/makuk66/docker-solr/")
-public class SolrIT {
+@Category(NotSelfContained.class)
+public class SolrIT extends AbstractSeedIT {
     @Inject
     SolrClient solrClient;
 
@@ -57,7 +56,7 @@ public class SolrIT {
             addDocuments2();
 
             try {
-                QueryResponse queryResponse = query();
+                QueryResponse queryResponse = transactional_multicore_query();
                 SolrDocumentList docs = queryResponse.getResults();
                 assertThat(docs).isNotNull();
                 assertThat(docs.getNumFound()).isEqualTo(1);
@@ -74,7 +73,7 @@ public class SolrIT {
         addDocuments1();
 
         try {
-            QueryResponse queryResponse = solrClient1.query(new SolrQuery("firstname:Gerard"));
+            QueryResponse queryResponse = solrClient1.query(new SolrQuery("name:Gerard"));
             SolrDocumentList docs = queryResponse.getResults();
             assertThat(docs).isNotNull();
             assertThat(docs.getNumFound()).isEqualTo(1);
@@ -85,8 +84,8 @@ public class SolrIT {
 
     @Transactional
     @Solr("client1")
-    protected QueryResponse query() throws SolrServerException, IOException {
-        return solrClient.query(new SolrQuery("{!join from=id to=id fromIndex=collection2}firstname:Gerard"));
+    protected QueryResponse transactional_multicore_query() throws SolrServerException, IOException {
+        return solrClient.query(new SolrQuery("{!join from=id to=id fromIndex=core1}name:Gerard"));
     }
 
     @Transactional
@@ -108,13 +107,11 @@ public class SolrIT {
 
         Person person1 = new Person();
         person1.setId("1");
-        person1.setFirstname("Gerard");
-        person1.setLastname("Menvussa");
+        person1.setName("Gerard");
 
         Person person2 = new Person();
         person2.setId("2");
-        person2.setFirstname("Sarah");
-        person2.setLastname("FRAICHI");
+        person2.setName("Sarah");
 
         Collection<Person> persons = new ArrayList<Person>();
         persons.add(person1);
@@ -130,13 +127,11 @@ public class SolrIT {
 
         Person person1 = new Person();
         person1.setId("2");
-        person1.setFirstname("Gerard");
-        person1.setLastname("Menvussa");
+        person1.setName("Gerard");
 
         Person person2 = new Person();
         person2.setId("1");
-        person2.setFirstname("Sarah");
-        person2.setLastname("FRAICHI");
+        person2.setName("Sarah");
 
         Collection<Person> persons = new ArrayList<Person>();
         persons.add(person1);
