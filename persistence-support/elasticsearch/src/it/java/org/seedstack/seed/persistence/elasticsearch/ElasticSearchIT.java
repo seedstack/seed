@@ -16,8 +16,10 @@ import org.elasticsearch.client.Client;
 import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.json.JSONException;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.seedstack.seed.core.api.SeedException;
 import org.seedstack.seed.it.AbstractSeedIT;
+import org.seedstack.seed.it.categories.NotSelfContained;
 import org.skyscreamer.jsonassert.JSONAssert;
 
 import javax.inject.Inject;
@@ -27,24 +29,43 @@ import java.util.Date;
 
 import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
 
-public class ElasticSearchClientIT extends AbstractSeedIT {
+@Category(NotSelfContained.class)
+public class ElasticSearchIT extends AbstractSeedIT {
     @Inject
     @Named("client1")
+    Client remoteClient;
+
+    @Inject
+    @Named("client2")
     Client inMemoryClient;
 
     @Test
-    public void assert_inmemory_client() {
+    public void clients_are_injectable() {
+        Assertions.assertThat(remoteClient).isNotNull();
         Assertions.assertThat(inMemoryClient).isNotNull();
     }
 
     @Test(expected = SeedException.class)
     public void assert_inmemory_client_close_exception() {
-        Assertions.assertThat(inMemoryClient).isNotNull();
         inMemoryClient.close();
     }
 
+    @Test(expected = SeedException.class)
+    public void assert_remote_client_close_exception() {
+        remoteClient.close();
+    }
+
     @Test
-    public void assert_inmemory_indexing_and_searching() throws ElasticsearchException, IOException, JSONException {
+    public void remote_indexing_and_searching() throws ElasticsearchException, IOException, JSONException {
+        indexing_and_searching(remoteClient);
+    }
+
+    @Test
+    public void inmemory_indexing_and_searching() throws ElasticsearchException, IOException, JSONException {
+        indexing_and_searching(inMemoryClient);
+    }
+
+    public void indexing_and_searching(Client client) throws ElasticsearchException, IOException, JSONException {
         XContentBuilder xContentBuilder = jsonBuilder()
                 .startObject()
                 .field("user", "seed")
@@ -52,12 +73,12 @@ public class ElasticSearchClientIT extends AbstractSeedIT {
                 .field("message", "trying out Elasticsearch")
                 .endObject();
 
-        inMemoryClient.prepareIndex("index1", "mapping1", "1")
+        client.prepareIndex("index1", "mapping1", "1")
                 .setSource(xContentBuilder)
                 .execute()
                 .actionGet();
 
-        GetResponse response = inMemoryClient.prepareGet("index1", "mapping1", "1")
+        GetResponse response = client.prepareGet("index1", "mapping1", "1")
                 .execute()
                 .actionGet();
 

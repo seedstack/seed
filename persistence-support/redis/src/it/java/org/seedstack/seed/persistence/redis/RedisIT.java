@@ -9,20 +9,25 @@
  */
 package org.seedstack.seed.persistence.redis;
 
-import org.junit.Ignore;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.seedstack.seed.core.api.SeedException;
 import org.seedstack.seed.it.AbstractSeedIT;
+import org.seedstack.seed.it.categories.NotSelfContained;
 import org.seedstack.seed.persistence.redis.api.Redis;
 import org.seedstack.seed.transaction.api.Transactional;
-import redis.clients.jedis.*;
+import redis.clients.jedis.Jedis;
+import redis.clients.jedis.JedisPool;
+import redis.clients.jedis.Pipeline;
+import redis.clients.jedis.Response;
+import redis.clients.jedis.Transaction;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@Ignore("Needs a running redis instance. One can use docker image at https://hub.docker.com/_/redis/")
+@Category(NotSelfContained.class)
 public class RedisIT extends AbstractSeedIT {
     @Inject
     Transaction transaction;

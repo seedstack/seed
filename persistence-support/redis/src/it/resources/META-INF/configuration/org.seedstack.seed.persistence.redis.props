@@ -12,4 +12,4 @@
 clients = client1
 
 [org.seedstack.seed.persistence.redis.client.client1]
-url = docker
+url = localhost

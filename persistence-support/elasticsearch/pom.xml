@@ -34,9 +34,10 @@
         <dependency>
             <groupId>org.elasticsearch</groupId>
             <artifactId>elasticsearch</artifactId>
-            <version>1.4.4</version>
+            <version>1.7.1</version>
             <scope>provided</scope>
         </dependency>
+
         <dependency>
             <groupId>org.seedstack.seed</groupId>
             <artifactId>seed-integrationtest-support-core</artifactId>

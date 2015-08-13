@@ -9,7 +9,8 @@
 #
 
 [org.seedstack.seed]
-persistence.elasticsearch.clients = client1
+persistence.elasticsearch.clients = client1, client2
 
 [org.seedstack.seed.persistence.elasticsearch.client.client1]
-property.cluster.name = test-cluster-1
+hosts = localhost
+

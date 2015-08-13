@@ -12,7 +12,7 @@
 persistence.solr.clients = client1, client2
 
 [org.seedstack.seed.persistence.solr.client.client1]
-url = http://localhost:8983/solr/collection1
+url = http://localhost:8983/solr/core0
 
 [org.seedstack.seed.persistence.solr.client.client2]
-url = http://localhost:8983/solr/collection2
+url = http://localhost:8983/solr/core1

@@ -18,11 +18,11 @@ import redis.clients.jedis.Pipeline;
 import java.io.IOException;
 
 
-class PipelineTransactionHandler implements org.seedstack.seed.transaction.spi.TransactionHandler<Pipeline> {
+class RedisPipelinedTransactionHandler implements org.seedstack.seed.transaction.spi.TransactionHandler<Pipeline> {
     private final RedisLink<Pipeline> redisLink;
     private final JedisPool jedisPool;
 
-    PipelineTransactionHandler(RedisLink<Pipeline> redisLink, JedisPool jedisPool) {
+    RedisPipelinedTransactionHandler(RedisLink<Pipeline> redisLink, JedisPool jedisPool) {
         this.redisLink = redisLink;
         this.jedisPool = jedisPool;
     }

@@ -15,15 +15,11 @@ package org.seedstack.seed.persistence.solr.fixtures;
 import org.apache.solr.client.solrj.beans.Field;
 
 public class Person {
-
     @Field
     private String id;
 
     @Field
-    private String lastname;
-
-    @Field
-    private String firstname;
+    private String name;
 
     public String getId() {
         return id;
@@ -33,20 +29,11 @@ public class Person {
         this.id = id;
     }
 
-    public String getLastname() {
-        return lastname;
+    public String getName() {
+        return name;
     }
 
-    public void setLastname(String lastname) {
-        this.lastname = lastname;
+    public void setName(String name) {
+        this.name = name;
     }
-
-    public String getFirstname() {
-        return firstname;
-    }
-
-    public void setFirstname(String firstname) {
-        this.firstname = firstname;
-    }
-
 }
