@@ -16,7 +16,7 @@ import org.bson.Document;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.seedstack.seed.it.AbstractSeedIT;
-import org.seedstack.seed.it.categories.NotSelfContained;
+import org.seedstack.seed.it.internal.categories.NotSelfContained;
 
 import javax.inject.Inject;
 import javax.inject.Named;
