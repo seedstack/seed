@@ -13,7 +13,7 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.seedstack.seed.core.api.SeedException;
 import org.seedstack.seed.it.AbstractSeedIT;
-import org.seedstack.seed.it.categories.NotSelfContained;
+import org.seedstack.seed.it.internal.categories.NotSelfContained;
 import org.seedstack.seed.persistence.redis.api.Redis;
 import org.seedstack.seed.transaction.api.Transactional;
 import redis.clients.jedis.Jedis;

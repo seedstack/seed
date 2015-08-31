@@ -21,7 +21,7 @@ import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.seedstack.seed.it.AbstractSeedIT;
-import org.seedstack.seed.it.categories.NotSelfContained;
+import org.seedstack.seed.it.internal.categories.NotSelfContained;
 import org.seedstack.seed.persistence.solr.api.Solr;
 import org.seedstack.seed.persistence.solr.fixtures.Person;
 import org.seedstack.seed.transaction.api.Transactional;
