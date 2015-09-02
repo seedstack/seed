@@ -18,7 +18,11 @@
         <version>2.0.1-SNAPSHOT</version>
     </parent>
 
-    <artifactId>seed-rest-support-core</artifactId>
+    <artifactId>seed-rest-support-jersey1</artifactId>
+
+    <properties>
+        <compatibility-check.skip>true</compatibility-check.skip>
+    </properties>
 
 	<dependencies>
         <dependency>

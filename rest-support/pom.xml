@@ -23,7 +23,7 @@
 
     <modules>
         <module>specs</module>
-        <module>core</module>
+        <module>jersey1</module>
     </modules>
 
     <dependencyManagement>
