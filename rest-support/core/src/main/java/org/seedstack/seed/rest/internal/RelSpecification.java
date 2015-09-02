@@ -27,7 +27,7 @@ import java.lang.reflect.Method;
  *
  * @author pierre.thirouin@ext.mpsa.com (Pierre Thirouin)
  */
-class RelSpecification extends AbstractSpecification<Method> {
+public class RelSpecification extends AbstractSpecification<Method> {
 
     private static final HttpMethodSpecification HTTP_METHOD_SPECIFICATION = new HttpMethodSpecification();
 

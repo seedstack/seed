@@ -36,7 +36,7 @@ import static org.seedstack.seed.core.utils.BaseClassSpecifications.classMethods
  *
  * @author pierre.thirouin@ext.mpsa.com (Pierre Thirouin)
  */
-class JaxRsResourceSpecification extends AbstractSpecification<Class<?>> {
+public class JaxRsResourceSpecification extends AbstractSpecification<Class<?>> {
 
     @Override
     public boolean isSatisfiedBy(Class<?> candidate) {

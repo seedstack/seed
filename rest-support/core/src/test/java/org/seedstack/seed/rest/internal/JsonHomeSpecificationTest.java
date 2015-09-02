@@ -9,7 +9,6 @@
  */
 package org.seedstack.seed.rest.internal;
 
-import io.nuun.kernel.api.annotations.Ignore;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.seedstack.seed.rest.api.Rel;
@@ -21,7 +20,6 @@ import javax.ws.rs.core.Response;
 /**
  * @author pierre.thirouin@ext.mpsa.com (Pierre Thirouin)
  */
-@Ignore // Tells nuun to not scan the test class
 public class JsonHomeSpecificationTest {
 
     private JsonHomeSpecification underTest = new JsonHomeSpecification();

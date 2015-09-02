@@ -43,7 +43,7 @@ public class JsonHomeResourceIT extends AbstractSeedWebIT {
         Response response = expect().statusCode(200).given().header("Content-Type", "application/json-home")
                 .get(baseURL.toString() + "rest/");
 
-        String expectedBody = "{\"resources\":{\"http://example.org/rel/product\":{\"hints\":{\"allow\":[\"GET\"],\"formats\":{\"application/json\":\"\",\"application/hal+json\":\"\",\"application/xml\":\"\"}},\"href\":\"/rest/product\"},\"http://example.org/rel/order\":{\"href-template\":\"/rest/orders/{id}\",\"hints\":{\"allow\":[\"GET\"],\"formats\":{\"application/hal+json\":\"\"}},\"href-vars\":{\"id\":\"id\"}},\"http://example.org/rel/order2\":{\"href-template\":\"/rest/orders/v2/{id}\",\"hints\":{\"allow\":[\"GET\"],\"formats\":{\"application/hal+json\":\"\"}},\"href-vars\":{\"id\":\"id\"}},\"http://example.org/rel/widget\":{\"href-template\":\"/rest/widgets/{widgetName}\",\"hints\":{\"allow\":[\"GET\",\"PUT\"]},\"href-vars\":{\"widgetName\":\"widgetName\",\"pageSize\":\"pageSize\"}},\"http://example.org/rel/ValidResource1\":{\"href\":\"/rest/JsonHomeValidResource1\"}}}";
+        String expectedBody = "{\"resources\":{\"http://example.org/rel/order\":{\"href-template\":\"/rest/orders/{id}\",\"hints\":{\"allow\":[\"GET\"],\"formats\":{\"application/hal+json\":\"\"}},\"href-vars\":{\"id\":\"id\"}},\"http://example.org/rel/order2\":{\"href-template\":\"/rest/orders/v2/{id}\",\"hints\":{\"allow\":[\"GET\"],\"formats\":{\"application/hal+json\":\"\"}},\"href-vars\":{\"id\":\"id\"}}}}";
 
         JSONAssert.assertEquals(expectedBody, response.asString(), false);
     }
