@@ -100,37 +100,40 @@ abstract class AbstractMongoDbManager<C, D> implements MongoDbManager {
         return serverAddresses;
     }
 
-    protected List<MongoCredential> buildMongoCredentials(Configuration clientConfiguration) {
+    protected List<MongoCredential> buildMongoCredentials(String[] credentials) {
         List<MongoCredential> mongoCredentials = new ArrayList<MongoCredential>();
-        Configuration credentialConfiguration;
-        int i = 0;
 
-        while (!(credentialConfiguration = clientConfiguration.subset(String.format("credential[%d]", i++))).isEmpty()) {
-            mongoCredentials.add(buildMongoCredential(credentialConfiguration));
+        if (credentials != null) {
+            for (String credential : credentials) {
+                String[] elements = credential.split(":", 3);
+                if (elements.length == 3) {
+                    String[] sourceElements = elements[0].split("/", 2);
+                    if (sourceElements.length == 2) {
+                        mongoCredentials.add(buildMongoCredential(elements[1], elements[2], sourceElements[1], sourceElements[0]));
+                    } else if (sourceElements.length == 1) {
+                        mongoCredentials.add(buildMongoCredential(elements[1], elements[2], sourceElements[0], null));
+                    } else {
+                        throw SeedException.createNew(MongoDbErrorCodes.INVALID_CREDENTIAL_SYNTAX).put("credential", credential);
+                    }
+                } else {
+                    throw SeedException.createNew(MongoDbErrorCodes.INVALID_CREDENTIAL_SYNTAX).put("credential", credential);
+                }
+            }
         }
 
         return mongoCredentials;
     }
 
-    protected MongoCredential buildMongoCredential(Configuration credentialConfiguration) {
-        AuthenticationMechanism authenticationMechanism = null;
-        String mechanism = credentialConfiguration.getString("mechanism");
+    protected MongoCredential buildMongoCredential(String user, String password, String source, String mechanism) {
         if (mechanism != null) {
-            authenticationMechanism = AuthenticationMechanism.fromMechanismName(mechanism);
-        }
-
-        String user = credentialConfiguration.getString("user");
-        String source = credentialConfiguration.getString("source");
-        char[] password = credentialConfiguration.getString("password").toCharArray();
-
-        if (authenticationMechanism != null) {
+            AuthenticationMechanism authenticationMechanism = AuthenticationMechanism.fromMechanismName(mechanism);
             switch (authenticationMechanism) {
                 case PLAIN:
-                    return MongoCredential.createPlainCredential(user, source, password);
+                    return MongoCredential.createPlainCredential(user, source, password.toCharArray());
                 case MONGODB_CR:
-                    return MongoCredential.createMongoCRCredential(user, source, password);
+                    return MongoCredential.createMongoCRCredential(user, source, password.toCharArray());
                 case SCRAM_SHA_1:
-                    return MongoCredential.createScramSha1Credential(user, source, password);
+                    return MongoCredential.createScramSha1Credential(user, source, password.toCharArray());
                 case MONGODB_X509:
                     return MongoCredential.createMongoX509Credential(user);
                 case GSSAPI:
@@ -142,7 +145,7 @@ abstract class AbstractMongoDbManager<C, D> implements MongoDbManager {
             return MongoCredential.createCredential(
                     user,
                     source,
-                    password
+                    password.toCharArray()
             );
         }
     }

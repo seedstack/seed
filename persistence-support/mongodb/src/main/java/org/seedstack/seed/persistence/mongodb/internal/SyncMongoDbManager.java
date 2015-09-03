@@ -73,8 +73,10 @@ class SyncMongoDbManager extends AbstractMongoDbManager<MongoClient, MongoDataba
             throw SeedException.createNew(MongoDbErrorCodes.MISSING_HOSTS_CONFIGURATION);
         }
 
+        List<MongoCredential> mongoCredentials = buildMongoCredentials(clientConfiguration.getStringArray("credentials"));
+
         MongoClientOptions mongoClientOptions = buildMongoClientOptions(clientConfiguration);
-        List<MongoCredential> mongoCredentials = buildMongoCredentials(clientConfiguration);
+
         if (mongoClientOptions == null) {
             if (mongoCredentials.isEmpty()) {
                 if (serverAddresses.size() == 1) {
