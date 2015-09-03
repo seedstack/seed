@@ -61,11 +61,14 @@ class AsyncMongoDbManager extends AbstractMongoDbManager<MongoClient, MongoDatab
         ServerSettings.Builder serverSettingsBuilder = ServerSettings.builder();
         SslSettings.Builder sslSettingsBuilder = SslSettings.builder();
 
-        // Apply aliases
+        // Apply hosts
         String[] hosts = clientConfiguration.getStringArray("hosts");
         if (hosts != null && hosts.length > 0) {
             clusterSettingsBuilder.hosts(buildServerAddresses(hosts));
         }
+
+        // Apply credentials
+        settingsBuilder.credentialList(buildMongoCredentials(clientConfiguration.getStringArray("credentials")));
 
         // Apply configuration properties
         Iterator<String> it = clientConfiguration.getKeys("setting");
@@ -76,8 +79,6 @@ class AsyncMongoDbManager extends AbstractMongoDbManager<MongoClient, MongoDatab
             // cluster settings
             if ("cluster.description".equals(setting)) {
                 clusterSettingsBuilder.description(clientConfiguration.getString(key));
-            } else if ("cluster.hosts".equals(setting)) {
-                clusterSettingsBuilder.hosts(buildServerAddresses(clientConfiguration.getStringArray(key)));
             } else if ("cluster.mode".equals(setting)) {
                 clusterSettingsBuilder.mode(ClusterConnectionMode.valueOf(clientConfiguration.getString(key)));
             } else if ("cluster.requiredReplicaSetName".equals(setting)) {
@@ -158,8 +159,6 @@ class AsyncMongoDbManager extends AbstractMongoDbManager<MongoClient, MongoDatab
                 settingsBuilder.writeConcern(WriteConcern.valueOf(clientConfiguration.getString(key)));
             } else if ("codecRegistry".equals(setting)) {
                 settingsBuilder.codecRegistry(instanceFromClassName(CodecRegistry.class, clientConfiguration.getString(key)));
-            } else if (setting.startsWith("credential")) {
-                settingsBuilder.credentialList(buildMongoCredentials(clientConfiguration.subset("setting")));
             } else {
                 throw SeedException.createNew(MongoDbErrorCodes.UNKNOWN_CLIENT_SETTING).put("setting", setting);
             }
