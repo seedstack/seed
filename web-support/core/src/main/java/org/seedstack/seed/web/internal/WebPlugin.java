@@ -34,14 +34,7 @@ import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServlet;
 import java.lang.annotation.Annotation;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * This plugin provides web support for an application, more specifically:
@@ -162,7 +155,8 @@ public class WebPlugin extends AbstractPlugin {
     public Set<URL> computeAdditionalClasspathScan() {
         Set<URL> additionalUrls = new HashSet<URL>();
 
-        if (servletContext != null) {
+        // resource paths for WEB-INF/lib can be null when SEED run in the Undertow servlet container
+        if (servletContext != null && servletContext.getResourcePaths("/WEB-INF/lib") != null) {
             additionalUrls.addAll(ClasspathHelper.forWebInfLib(servletContext));
             additionalUrls.add(ClasspathHelper.forWebInfClasses(servletContext));
         }
@@ -171,7 +165,6 @@ public class WebPlugin extends AbstractPlugin {
 
         return additionalUrls;
     }
-
 
     @Override
     public void provideContainerContext(Object containerContext) {
