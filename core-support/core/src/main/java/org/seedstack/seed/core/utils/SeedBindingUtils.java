@@ -102,16 +102,15 @@ public final class SeedBindingUtils {
                     parentTypeLiteral = TypeLiteral.get(resolvedType);
                 }
                 Annotation annotation = SeedReflectionUtils.getAnnotationMetaAnnotatedFromAncestor(subClass, Qualifier.class);
-                Key<?> key = null;
+                Key<?> key;
                 if (annotation != null) {
                     key = Key.get(parentTypeLiteral, annotation);
                 } else {
                     key = Key.get(parentTypeLiteral);
                 }
                 if (typeLiterals.containsKey(key)) {
-                    SeedException.createNew(CoreUtilsErrorCode.DUPLICATED_KEYS_FOUND).put("duplicatedKey", key)
-                            .put("firstClass", subClass.getName()).put("secondClass", typeLiterals.get(key).getName())
-                            .thenThrows();
+                    throw SeedException.createNew(CoreUtilsErrorCode.DUPLICATED_KEYS_FOUND).put("duplicatedKey", key)
+                            .put("firstClass", subClass.getName()).put("secondClass", typeLiterals.get(key).getName());
                 }
                 typeLiterals.put(key, subClass);
             }

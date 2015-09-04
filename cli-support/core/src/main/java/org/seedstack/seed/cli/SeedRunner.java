@@ -248,7 +248,7 @@ public final class SeedRunner {
 
                     if (value != null) {
                         if (cliOption.valueCount() != -1 && cliOption.valueCount() != value.length) {
-                            SeedException.createNew(CliErrorCode.WRONG_NUMBER_OF_OPTION_ARGUMENTS).put("command", cliCommand);
+                            throw SeedException.createNew(CliErrorCode.WRONG_NUMBER_OF_OPTION_ARGUMENTS).put("command", cliCommand);
                         }
 
                         try {

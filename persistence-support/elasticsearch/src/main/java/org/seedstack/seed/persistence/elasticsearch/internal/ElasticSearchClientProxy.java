@@ -35,7 +35,7 @@ final class ElasticSearchClientProxy implements InvocationHandler {
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable { // NOSONAR
         if (METHOD_CLOSE.contentEquals(method.getName())) {
-            SeedException.createNew(ElasticSearchErrorCode.FORBIDDEN_CLIENT_CLOSE).thenThrows();
+            throw SeedException.createNew(ElasticSearchErrorCode.FORBIDDEN_CLIENT_CLOSE);
         }
 
         try {
