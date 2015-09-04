@@ -12,39 +12,34 @@
  */
 package org.seedstack.seed.crypto.internal;
 
-import java.security.KeyStore;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
-import java.security.UnrecoverableKeyException;
+import mockit.Expectations;
+import mockit.Mocked;
+import mockit.Verifications;
+import org.junit.Test;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
-
-import mockit.Expectations;
-import mockit.Mocked;
-import mockit.Verifications;
-
-import org.junit.Test;
+import java.security.*;
 
 /**
  * Unit test for {@link EncryptionServiceImpl}
- * 
+ *
  * @author thierry.bouvet@mpsa.com
  */
 public class EncryptionServiceImplTest {
 
     /**
      * Test method for {@link EncryptionServiceImpl#encrypt(byte[])}. Test encrypt without any problem.
-     * 
+     *
      * @throws Exception if an error occurred
      */
     @Test
-    public void testEncrypt(@Mocked final KeyStore keyStore, @Mocked final KeyDefinition certificateDefintion, @Mocked final Cipher cipher)
+    public void testEncrypt(@Mocked final PublicKey publicKey, @Mocked final Cipher cipher)
             throws Exception {
 
-        EncryptionServiceImpl asymetricCrypting = new EncryptionServiceImpl(keyStore, certificateDefintion);
+        EncryptionServiceImpl asymetricCrypting = new EncryptionServiceImpl("alias", publicKey, null);
         final String toCrypt = "text to crypt";
         asymetricCrypting.encrypt(toCrypt.getBytes());
 
@@ -56,14 +51,26 @@ public class EncryptionServiceImplTest {
         };
     }
 
+
     /**
-     * Test method for {@link EncryptionServiceImpl#encrypt(byte[])}. Test encrypt Cipher problem.
-     * 
+     * Test method for {@link EncryptionServiceImpl#encrypt(byte[])}. Test encrypt without any problem.
+     *
      * @throws Exception if an error occurred
      */
     @Test(expected = IllegalArgumentException.class)
-    public void testEncryptWithNoSuchAlgorithmException(@Mocked final KeyStore keyStore, @Mocked final KeyDefinition certificateDefintion,
-            @SuppressWarnings("unused") @Mocked final Cipher cipher) throws Exception {
+    public void testEncryptWithoutPublicKey() throws Exception {
+        EncryptionServiceImpl asymetricCrypting = new EncryptionServiceImpl("alias", null, null);
+        final String toCrypt = "text to crypt";
+        asymetricCrypting.encrypt(toCrypt.getBytes());
+    }
+
+    /**
+     * Test method for {@link EncryptionServiceImpl#encrypt(byte[])}. Test encrypt Cipher problem.
+     *
+     * @throws Exception if an error occurred
+     */
+    @Test(expected = IllegalArgumentException.class)
+    public void testEncryptWithNoSuchAlgorithmException(@Mocked final PublicKey publicKey, @Mocked final Cipher cipher) throws Exception {
 
         new Expectations() {
             {
@@ -71,7 +78,7 @@ public class EncryptionServiceImplTest {
                 result = new NoSuchAlgorithmException("dummy exception");
             }
         };
-        EncryptionServiceImpl asymetricCrypting = new EncryptionServiceImpl(keyStore, certificateDefintion);
+        EncryptionServiceImpl asymetricCrypting = new EncryptionServiceImpl("alias", publicKey, null);
         final String toCrypt = "text to crypt";
         asymetricCrypting.encrypt(toCrypt.getBytes());
 
@@ -79,12 +86,11 @@ public class EncryptionServiceImplTest {
 
     /**
      * Test method for {@link EncryptionServiceImpl#encrypt(byte[])}. Test encrypt Cipher problem.
-     * 
+     *
      * @throws Exception if an error occurred
      */
     @Test(expected = IllegalArgumentException.class)
-    public void testEncryptWithNoSuchPaddingException(@Mocked final KeyStore keyStore, @Mocked final KeyDefinition certificateDefintion,
-            @SuppressWarnings("unused") @Mocked final Cipher cipher) throws Exception {
+    public void testEncryptWithNoSuchPaddingException(@Mocked final PublicKey publicKey, @Mocked final Cipher cipher) throws Exception {
 
         new Expectations() {
             {
@@ -92,20 +98,19 @@ public class EncryptionServiceImplTest {
                 result = new NoSuchPaddingException("dummy exception");
             }
         };
-        EncryptionServiceImpl asymetricCrypting = new EncryptionServiceImpl(keyStore, certificateDefintion);
+        EncryptionServiceImpl asymetricCrypting = new EncryptionServiceImpl("alias", publicKey, null);
         final String toCrypt = "text to crypt";
         asymetricCrypting.encrypt(toCrypt.getBytes());
-
     }
 
     /**
      * Test method for {@link EncryptionServiceImpl#encrypt(byte[])}. Test encrypt Cipher problem.
-     * 
+     *
      * @throws Exception if an error occurred
      */
     @Test(expected = IllegalArgumentException.class)
-    public void testEncryptWithIllegalBlockSizeException(@Mocked final KeyStore keyStore, @Mocked final KeyDefinition certificateDefintion,
-            @Mocked final Cipher cipher) throws Exception {
+    public void testEncryptWithIllegalBlockSizeException(@Mocked final PublicKey publicKey,
+                                                         @Mocked final Cipher cipher) throws Exception {
 
         final String toCrypt = "text to crypt";
 
@@ -118,19 +123,18 @@ public class EncryptionServiceImplTest {
                 result = new IllegalBlockSizeException("dummy exception");
             }
         };
-        EncryptionServiceImpl asymetricCrypting = new EncryptionServiceImpl(keyStore, certificateDefintion);
+        EncryptionServiceImpl asymetricCrypting = new EncryptionServiceImpl("alias", publicKey, null);
         asymetricCrypting.encrypt(toCrypt.getBytes());
-
     }
 
     /**
      * Test method for {@link EncryptionServiceImpl#encrypt(byte[])}. Test encrypt Cipher problem.
-     * 
+     *
      * @throws Exception if an error occurred
      */
     @Test(expected = IllegalArgumentException.class)
-    public void testEncryptWithBadPaddingException(@Mocked final KeyStore keyStore, @Mocked final KeyDefinition certificateDefintion,
-            @Mocked final Cipher cipher) throws Exception {
+    public void testEncryptWithBadPaddingException(@Mocked final PublicKey publicKey,
+                                                   @Mocked final Cipher cipher) throws Exception {
 
         final String toCrypt = "text to crypt";
 
@@ -143,31 +147,22 @@ public class EncryptionServiceImplTest {
                 result = new BadPaddingException("dummy exception");
             }
         };
-        EncryptionServiceImpl asymetricCrypting = new EncryptionServiceImpl(keyStore, certificateDefintion);
+        EncryptionServiceImpl asymetricCrypting = new EncryptionServiceImpl("alias", publicKey, null);
         asymetricCrypting.encrypt(toCrypt.getBytes());
 
     }
 
     /**
      * Test method for {@link EncryptionServiceImpl#decrypt(byte[])}.
-     * 
+     *
      * @throws Exception if an error occurred
      */
     @Test
-    public void testDecrypt(@Mocked final KeyStore keyStore, @Mocked final KeyDefinition certificateDefintion, @Mocked final Cipher cipher)
+    public void testDecrypt(@Mocked final Key key, @Mocked final Cipher cipher)
             throws Exception {
         final String toDecrypt = "ADEF0985C";
 
-        new Expectations() {
-            {
-                certificateDefintion.getAlias();
-                result = "alias";
-
-                certificateDefintion.getPassword();
-                result = "password";
-            }
-        };
-        EncryptionServiceImpl asymetricCrypting = new EncryptionServiceImpl(keyStore, certificateDefintion);
+        EncryptionServiceImpl asymetricCrypting = new EncryptionServiceImpl("alias", null, key);
         asymetricCrypting.decrypt(toDecrypt.getBytes());
         new Verifications() {
             {
@@ -180,123 +175,15 @@ public class EncryptionServiceImplTest {
 
     /**
      * Test method for {@link EncryptionServiceImpl#decrypt(byte[])}. Test witout keystore so it's not possible.
-     * 
+     *
      * @throws Exception if an error occurred
      */
     @Test(expected = IllegalArgumentException.class)
-    public void testDecryptWitoutKeystore(@Mocked final KeyDefinition certificateDefintion) throws Exception {
+    public void testDecryptWithoutPrivateKey() throws Exception {
         final String toDecrypt = "ADEF0985C";
 
-        EncryptionServiceImpl asymetricCrypting = new EncryptionServiceImpl(null, certificateDefintion);
+        EncryptionServiceImpl asymetricCrypting = new EncryptionServiceImpl("alias", null, null);
         asymetricCrypting.decrypt(toDecrypt.getBytes());
-
-    }
-
-    /**
-     * Test method for {@link EncryptionServiceImpl#decrypt(byte[])}. Test error to decrypt.
-     * 
-     * @throws Exception if an error occurred
-     */
-    @Test(expected = IllegalArgumentException.class)
-    public void testDecryptWithUnrecoverableKeyException(@Mocked final KeyStore keyStore, @Mocked final KeyDefinition certificateDefintion,
-            @Mocked final Cipher cipher) throws Exception {
-        final String toDecrypt = "ADEF0985C";
-
-        new Expectations() {
-            final String alias = "alias";
-            final String password = "password";
-
-            {
-                certificateDefintion.getAlias();
-                result = alias;
-
-                certificateDefintion.getPassword();
-                result = password;
-
-                keyStore.getKey(alias, password.toCharArray());
-                result = new UnrecoverableKeyException("dummy exception");
-            }
-        };
-        EncryptionServiceImpl asymetricCrypting = new EncryptionServiceImpl(keyStore, certificateDefintion);
-        asymetricCrypting.decrypt(toDecrypt.getBytes());
-        new Verifications() {
-            {
-                cipher.doFinal(toDecrypt.getBytes());
-                times = 1;
-            }
-        };
-
-    }
-
-    /**
-     * Test method for {@link EncryptionServiceImpl#decrypt(byte[])}. Test error to decrypt.
-     * 
-     * @throws Exception if an error occurred
-     */
-    @Test(expected = IllegalArgumentException.class)
-    public void testDecryptWithKeyStoreException(@Mocked final KeyStore keyStore, @Mocked final KeyDefinition certificateDefintion,
-            @Mocked final Cipher cipher) throws Exception {
-        final String toDecrypt = "ADEF0985C";
-
-        new Expectations() {
-            final String alias = "alias";
-            final String password = "password";
-
-            {
-                certificateDefintion.getAlias();
-                result = alias;
-
-                certificateDefintion.getPassword();
-                result = password;
-
-                keyStore.getKey(alias, password.toCharArray());
-                result = new KeyStoreException("dummy exception");
-            }
-        };
-        EncryptionServiceImpl asymetricCrypting = new EncryptionServiceImpl(keyStore, certificateDefintion);
-        asymetricCrypting.decrypt(toDecrypt.getBytes());
-        new Verifications() {
-            {
-                cipher.doFinal(toDecrypt.getBytes());
-                times = 1;
-            }
-        };
-
-    }
-
-    /**
-     * Test method for {@link EncryptionServiceImpl#decrypt(byte[])}. Test error to decrypt.
-     * 
-     * @throws Exception if an error occurred
-     */
-    @Test(expected = IllegalArgumentException.class)
-    public void testDecryptWithNoSuchAlgorithmException(@Mocked final KeyStore keyStore, @Mocked final KeyDefinition certificateDefintion,
-            @Mocked final Cipher cipher) throws Exception {
-        final String toDecrypt = "ADEF0985C";
-
-        new Expectations() {
-            final String alias = "alias";
-            final String password = "password";
-
-            {
-                certificateDefintion.getAlias();
-                result = alias;
-
-                certificateDefintion.getPassword();
-                result = password;
-
-                keyStore.getKey(alias, password.toCharArray());
-                result = new NoSuchAlgorithmException("dummy exception");
-            }
-        };
-        EncryptionServiceImpl asymetricCrypting = new EncryptionServiceImpl(keyStore, certificateDefintion);
-        asymetricCrypting.decrypt(toDecrypt.getBytes());
-        new Verifications() {
-            {
-                cipher.doFinal(toDecrypt.getBytes());
-                times = 1;
-            }
-        };
 
     }
 

@@ -38,11 +38,11 @@ public class CryptoIT {
     private static final Logger LOGGER = LoggerFactory.getLogger(CryptoIT.class);
 
     @Inject
-    @Named("key1")
+    @Named("client")
     private EncryptionService key1EncryptionService;
 
     @Inject
-    @Named("master")
+    @Named("seed")
     private EncryptionService masterEncryptionService;
 
     @Rule

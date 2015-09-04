@@ -9,18 +9,16 @@
  */
 package org.seedstack.seed.web.internal;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import com.google.common.collect.Lists;
+import org.seedstack.seed.core.spi.diagnostic.DiagnosticInfoCollector;
 
 import javax.servlet.FilterRegistration;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletRegistration;
-
-import org.seedstack.seed.core.spi.diagnostic.DiagnosticInfoCollector;
-
-import com.google.common.collect.Lists;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 class WebDiagnosticCollector implements DiagnosticInfoCollector {
     private final ServletContext servletContext;
@@ -33,12 +31,14 @@ class WebDiagnosticCollector implements DiagnosticInfoCollector {
     public Map<String, Object> collect() {
         Map<String, Object> result = new HashMap<String, Object>();
 
-        result.put("version", String.format("%d.%d", servletContext.getMajorVersion(), servletContext.getMinorVersion()));
-        if (servletContext.getMajorVersion() >= 3) {
-            result.put("effective-version",
-                    String.format("%d.%d", servletContext.getEffectiveMajorVersion(), servletContext.getEffectiveMinorVersion()));
-            result.put("servlets", buildServletList());
-            result.put("filters", buildFilterList());
+        if (servletContext != null) {
+            result.put("version", String.format("%d.%d", servletContext.getMajorVersion(), servletContext.getMinorVersion()));
+            if (servletContext.getMajorVersion() >= 3) {
+                result.put("effective-version",
+                        String.format("%d.%d", servletContext.getEffectiveMajorVersion(), servletContext.getEffectiveMinorVersion()));
+                result.put("servlets", buildServletList());
+                result.put("filters", buildFilterList());
+            }
         }
         return result;
     }

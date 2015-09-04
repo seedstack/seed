@@ -16,21 +16,29 @@
     <parent>
         <groupId>org.seedstack.seed</groupId>
         <artifactId>seed-web-support</artifactId>
-        <version>2.0.1-SNAPSHOT</version>
+        <version>2.1.0-M1-SNAPSHOT</version>
     </parent>
 
     <artifactId>seed-web-support-undertow</artifactId>
 
+    <properties>
+        <compatibility.skip>true</compatibility.skip>
+    </properties>
+
     <dependencies>
-        <dependency>
-            <groupId>org.seedstack.seed</groupId>
-            <artifactId>seed-web-support-core</artifactId>
-            <version>${project.version}</version>
-        </dependency>
         <dependency>
             <groupId>org.seedstack.seed</groupId>
             <artifactId>seed-core-support-core</artifactId>
             <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.seedstack.seed</groupId>
+            <artifactId>seed-crypto-support</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.sonatype.sisu.inject</groupId>
+            <artifactId>guice-servlet</artifactId>
         </dependency>
 
         <dependency>
@@ -38,22 +46,16 @@
             <artifactId>undertow-core</artifactId>
             <version>1.2.11.Final</version>
         </dependency>
-
         <dependency>
             <groupId>io.undertow</groupId>
             <artifactId>undertow-servlet</artifactId>
             <version>1.2.11.Final</version>
         </dependency>
-        <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>javax.servlet-api</artifactId>
-            <scope>provided</scope>
-        </dependency>
 
         <dependency>
-            <groupId>org.jmockit</groupId>
-            <artifactId>jmockit</artifactId>
-            <version>1.17</version>
+            <groupId>org.seedstack.seed</groupId>
+            <artifactId>seed-web-support-core</artifactId>
+            <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>

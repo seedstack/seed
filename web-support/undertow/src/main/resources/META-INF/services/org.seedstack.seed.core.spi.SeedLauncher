@@ -8,13 +8,4 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 #
 
-[org.seedstack.seed.core]
-application-id = test-app
-
-[org.seedstack.seed.server]
-host=0.0.0.0
-port=9001
-https-enabled=true
-
-[org.seedstack.seed.crypto.ssl]
-generate-keystore=true
+org.seedstack.seed.web.internal.UndertowLauncher
