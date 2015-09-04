@@ -153,7 +153,7 @@ public class ElasticSearchPlugin extends AbstractPlugin {
         for (String host : hosts) {
             String[] hostInfo = host.split(":");
             if (hostInfo.length > 2) {
-                SeedException.createNew(ElasticSearchErrorCode.INVALID_HOST).put("host", host).thenThrows();
+                throw SeedException.createNew(ElasticSearchErrorCode.INVALID_HOST).put("host", host);
             }
             String address = hostInfo[0].trim();
             int port = DEFAULT_ELASTIC_SEARCH_PORT;
@@ -162,7 +162,7 @@ public class ElasticSearchPlugin extends AbstractPlugin {
                     port = Integer.valueOf(hostInfo[1]);
                 }
             } catch (NumberFormatException e) {
-                SeedException.wrap(e, ElasticSearchErrorCode.CLIENT_INVALID_PORT).put("host", hostInfo[0]).thenThrows();
+                throw SeedException.wrap(e, ElasticSearchErrorCode.CLIENT_INVALID_PORT).put("host", hostInfo[0]);
             }
 
             transportClient.addTransportAddress(new InetSocketTransportAddress(address, port));

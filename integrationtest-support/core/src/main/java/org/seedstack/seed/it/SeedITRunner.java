@@ -294,7 +294,7 @@ public class SeedITRunner extends BlockJUnit4ClassRunner {
             try {
                 beforeKernelMethod.invokeExplosively(null);
             } catch (Throwable throwable) {
-                SeedException.wrap(throwable, ITErrorCode.EXCEPTION_OCCURRED_BEFORE_KERNEL);
+                throw SeedException.wrap(throwable, ITErrorCode.EXCEPTION_OCCURRED_BEFORE_KERNEL);
             }
         }
 
@@ -348,15 +348,22 @@ public class SeedITRunner extends BlockJUnit4ClassRunner {
             if (kernel != null) {
                 kernel.stop();
             }
+        } catch (Exception e) {
+            try {
+                processException(e);
+            } catch (Exception e2) {
+                throw SeedException.wrap(e2, ITErrorCode.FAILED_TO_STOP_KERNEL);
+            }
         } finally {
-            List<FrameworkMethod> beforeKernelMethods = getTestClass().getAnnotatedMethods(AfterKernel.class);
-            for (FrameworkMethod beforeKernelMethod : beforeKernelMethods) {
+            List<FrameworkMethod> afterKernelMethods = getTestClass().getAnnotatedMethods(AfterKernel.class);
+            for (FrameworkMethod afterKernelMethod : afterKernelMethods) {
                 try {
-                    beforeKernelMethod.invokeExplosively(null);
-                } catch (Throwable throwable) {
-                    SeedException.wrap(throwable, ITErrorCode.EXCEPTION_OCCURRED_AFTER_KERNEL);
+                    afterKernelMethod.invokeExplosively(null);
+                } catch (Throwable t) {
+                    throw SeedException.wrap(t, ITErrorCode.EXCEPTION_OCCURRED_AFTER_KERNEL);
                 }
             }
+
             kernel = null;
         }
     }

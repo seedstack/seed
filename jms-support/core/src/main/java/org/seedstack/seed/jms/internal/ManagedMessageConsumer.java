@@ -70,7 +70,7 @@ class ManagedMessageConsumer implements MessageConsumer {
                 messageConsumer.setMessageListener(messageListener);
             }
         } catch (JMSException e) {
-            SeedException.wrap(e, JmsErrorCodes.INITIALIZATION_EXCEPTION);
+            throw SeedException.wrap(e, JmsErrorCodes.INITIALIZATION_EXCEPTION);
         } finally {
             messageConsumerLock.writeLock().unlock();
         }
