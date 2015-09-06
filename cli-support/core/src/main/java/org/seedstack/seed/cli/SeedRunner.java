@@ -31,6 +31,7 @@ import org.seedstack.seed.cli.spi.CliContext;
 import org.seedstack.seed.core.api.Application;
 import org.seedstack.seed.core.api.SeedException;
 import org.seedstack.seed.core.internal.CorePlugin;
+import org.seedstack.seed.core.spi.SeedRunnable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,10 +49,12 @@ import java.util.concurrent.Callable;
  * @author epo.jemba@ext.mpsa.com
  * @author adrien.lauer@mpsa.com
  */
-public final class SeedRunner {
+public class SeedRunner implements SeedRunnable {
     private static final Logger LOGGER = LoggerFactory.getLogger(SeedRunner.class);
 
-    private SeedRunner() {
+    @Override
+    public int run(String[] args) throws Exception {
+        return execute(args);
     }
 
     /**
