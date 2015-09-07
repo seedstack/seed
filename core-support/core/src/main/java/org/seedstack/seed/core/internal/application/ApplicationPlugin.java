@@ -9,7 +9,6 @@
  */
 package org.seedstack.seed.core.internal.application;
 
-import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Sets;
 import io.nuun.kernel.api.Plugin;
 import io.nuun.kernel.api.plugin.InitState;
@@ -20,31 +19,22 @@ import jodd.props.Props;
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.MapConfiguration;
 import org.apache.commons.lang.text.StrLookup;
+import org.javatuples.Pair;
 import org.seedstack.seed.core.api.Application;
 import org.seedstack.seed.core.api.SeedException;
 import org.seedstack.seed.core.internal.CorePlugin;
+import org.seedstack.seed.core.internal.SeedConfigLoader;
 import org.seedstack.seed.core.spi.configuration.ConfigurationLookup;
-import org.seedstack.seed.core.utils.SeedReflectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.bridge.SLF4JBridgeHandler;
 
 import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Plugin that initialize the application identity, storage location and configuration.
+ * Plugin that initializes the application identity, storage location and configuration.
  *
  * @author adrien.lauer@mpsa.com
  */
@@ -55,9 +45,7 @@ public class ApplicationPlugin extends AbstractPlugin {
     static final String PROPERTIES_REGEX = ".*\\.properties";
 
     private final Map<String, String> defaultConfiguration = new ConcurrentHashMap<String, String>();
-    private final ClassLoader classLoader = SeedReflectionUtils.findMostCompleteClassLoader(ApplicationPlugin.class);
-    private final Props props = buildProps();
-    private final Props propsOverride = buildProps();
+    private Props props;
 
     private Application application;
 
@@ -100,42 +88,15 @@ public class ApplicationPlugin extends AbstractPlugin {
             }
         }
 
-        for (String configurationResource : allConfigurationResources) {
-            boolean isOverrideResource = configurationResource.endsWith(".override.properties") || configurationResource.endsWith(".override.props");
+        SeedConfigLoader seedConfigLoader = new SeedConfigLoader();
 
-            try {
-                Enumeration<URL> urlEnumeration = classLoader.getResources(configurationResource);
-                while (urlEnumeration.hasMoreElements()) {
-                    URL url = urlEnumeration.nextElement();
-                    InputStream resourceAsStream = null;
-
-                    try {
-                        resourceAsStream = url.openStream();
-
-                        if (isOverrideResource) {
-                            LOGGER.debug("Adding {} to configuration override", url.toExternalForm());
-                            propsOverride.load(resourceAsStream);
-                        } else {
-                            LOGGER.debug("Adding {} to configuration", url.toExternalForm());
-                            props.load(resourceAsStream);
-                        }
-                    } finally {
-                        if (resourceAsStream != null) {
-                            try { // NOSONAR
-                                resourceAsStream.close();
-                            } catch (IOException e) {
-                                LOGGER.warn("Unable to close configuration resource " + configurationResource, e);
-                            }
-                        }
-                    }
-                }
-            } catch (IOException e) {
-                throw SeedException.wrap(e, ApplicationErrorCode.UNABLE_TO_LOAD_CONFIGURATION_RESOURCE).put("resource", configurationResource);
-            }
-        }
+        // Build configuration
+        Pair<MapConfiguration, Props> confs = seedConfigLoader.buildConfiguration(allConfigurationResources, defaultConfiguration);
+        MapConfiguration configuration = confs.getValue0();
+        props = confs.getValue1();
 
         // Determine configuration profile
-        String[] profiles = getStringArray(System.getProperty("org.seedstack.seed.profiles"));
+        String[] profiles = seedConfigLoader.applicationProfiles();
         if (profiles == null || profiles.length == 0) {
             LOGGER.info("No configuration profile selected");
             applicationDiagnosticCollector.setActiveProfiles("");
@@ -145,9 +106,8 @@ public class ApplicationPlugin extends AbstractPlugin {
             applicationDiagnosticCollector.setActiveProfiles(activeProfiles);
         }
 
-        // Build configuration
-        MapConfiguration configuration = buildConfiguration(props, propsOverride, configurationLookups, profiles);
         applicationDiagnosticCollector.setConfiguration(configuration);
+
         Configuration coreConfiguration = configuration.subset(CorePlugin.CORE_PLUGIN_PREFIX);
 
         String appId = coreConfiguration.getString("application-id");
@@ -171,25 +131,7 @@ public class ApplicationPlugin extends AbstractPlugin {
         applicationDiagnosticCollector.setApplicationName(appName);
         applicationDiagnosticCollector.setApplicationVersion(appVersion);
 
-        String seedStorage = coreConfiguration.getString("storage");
-        File seedDirectory;
-        if (seedStorage == null) {
-            seedDirectory = new File(new File(getUserHome(), ".seed"), appId);
-        } else {
-            seedDirectory = new File(seedStorage);
-        }
-
-        if (!seedDirectory.exists() && !seedDirectory.mkdirs()) {
-            throw SeedException.createNew(ApplicationErrorCode.UNABLE_TO_CREATE_STORAGE_DIRECTORY).put("path", seedDirectory.getAbsolutePath());
-        }
-
-        if (!seedDirectory.isDirectory()) {
-            throw SeedException.createNew(ApplicationErrorCode.STORAGE_PATH_IS_NOT_A_DIRECTORY).put("path", seedDirectory.getAbsolutePath());
-        }
-
-        if (!seedDirectory.canWrite()) {
-            throw SeedException.createNew(ApplicationErrorCode.STORAGE_DIRECTORY_IS_NOT_WRITABLE).put("path", seedDirectory.getAbsolutePath());
-        }
+        File seedDirectory = registerApplicationStorage(coreConfiguration, appId);
 
         LOGGER.debug("Application storage location is {}", seedDirectory.getAbsolutePath());
         applicationDiagnosticCollector.setStorageLocation(seedDirectory.getAbsolutePath());
@@ -211,6 +153,29 @@ public class ApplicationPlugin extends AbstractPlugin {
         this.application = application;
 
         return InitState.INITIALIZED;
+    }
+
+    private File registerApplicationStorage(Configuration coreConfiguration, String appId) {
+        String seedStorage = coreConfiguration.getString("storage");
+        File seedDirectory;
+        if (seedStorage == null) {
+            seedDirectory = new File(new File(getUserHome(), ".seed"), appId);
+        } else {
+            seedDirectory = new File(seedStorage);
+        }
+
+        if (!seedDirectory.exists() && !seedDirectory.mkdirs()) {
+            throw SeedException.createNew(ApplicationErrorCode.UNABLE_TO_CREATE_STORAGE_DIRECTORY).put("path", seedDirectory.getAbsolutePath());
+        }
+
+        if (!seedDirectory.isDirectory()) {
+            throw SeedException.createNew(ApplicationErrorCode.STORAGE_PATH_IS_NOT_A_DIRECTORY).put("path", seedDirectory.getAbsolutePath());
+        }
+
+        if (!seedDirectory.canWrite()) {
+            throw SeedException.createNew(ApplicationErrorCode.STORAGE_DIRECTORY_IS_NOT_WRITABLE).put("path", seedDirectory.getAbsolutePath());
+        }
+        return seedDirectory;
     }
 
     @Override
@@ -266,32 +231,6 @@ public class ApplicationPlugin extends AbstractPlugin {
         }
     }
 
-    private String[] getStringArray(String value) {
-        if (value == null) {
-            return null;
-        } else {
-            String[] split = value.split(",");
-            for (int i = 0; i < split.length; i++) {
-                split[i] = split[i].trim();
-            }
-
-            if (split.length == 0) {
-                return null;
-            } else {
-                return split;
-            }
-        }
-    }
-
-    private Props buildProps() {
-        Props newProps = new Props();
-
-        newProps.setSkipEmptyProps(false);
-        newProps.setAppendDuplicateProps(true);
-
-        return newProps;
-    }
-
     private StrLookup buildStrLookup(Class<? extends StrLookup> strLookupClass, Application application) {
         try {
             try {
@@ -306,37 +245,5 @@ public class ApplicationPlugin extends AbstractPlugin {
         } catch (Exception e) {
             throw SeedException.wrap(e, ApplicationErrorCode.UNABLE_TO_INSTANTIATE_CONFIGURATION_LOOKUP).put("className", strLookupClass.getCanonicalName());
         }
-    }
-
-    private MapConfiguration buildConfiguration(Props props, Props propsOverride, Map<String, Class<? extends StrLookup>> configurationLookups, String... profiles) {
-        Map<String, String> finalConfiguration = new HashMap<String, String>();
-        Map<String, String> configurationMap = new HashMap<String, String>();
-        Map<String, String> configurationOverrideMap = new HashMap<String, String>();
-
-        // Extract props to maps
-        props.extractProps(configurationMap, profiles);
-        propsOverride.extractProps(configurationOverrideMap, profiles);
-
-        // Put defaults to final configuration
-        finalConfiguration.putAll(defaultConfiguration);
-
-        // Put nominal to final configuration
-        finalConfiguration.putAll(configurationMap);
-
-        // Apply removal behavior
-        Iterator<Map.Entry<String, String>> overrideIterator = configurationOverrideMap.entrySet().iterator();
-        while (overrideIterator.hasNext()) {
-            String overrideKey = overrideIterator.next().getKey();
-            if (overrideKey.startsWith("-")) {
-                finalConfiguration.remove(overrideKey.substring(1));
-                overrideIterator.remove();
-            }
-        }
-
-        // Put override to final configuration
-        finalConfiguration.putAll(configurationOverrideMap);
-
-        // Convert final configuration to an immutable Apache Commons Configuration
-        return new MapConfiguration(new ImmutableMap.Builder<String, Object>().putAll(finalConfiguration).build());
     }
 }
