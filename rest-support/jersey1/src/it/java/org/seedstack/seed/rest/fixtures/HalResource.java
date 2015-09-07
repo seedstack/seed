@@ -12,9 +12,6 @@ package org.seedstack.seed.rest.fixtures;
 import org.seedstack.seed.rest.api.Rel;
 import org.seedstack.seed.rest.api.RelRegistry;
 import org.seedstack.seed.rest.api.hal.HalBuilder;
-import org.seedstack.seed.rest.internal.hal.fixture.OrderHal;
-import org.seedstack.seed.rest.internal.hal.fixture.OrderRepresentation;
-import org.seedstack.seed.rest.internal.hal.fixture.RepresentationFactory;
 
 import javax.inject.Inject;
 import javax.ws.rs.GET;

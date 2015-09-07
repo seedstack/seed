@@ -24,7 +24,7 @@ import java.util.*;
  *
  * @author pierre.thirouin@ext.mpsa.com (Pierre Thirouin)
  */
-class ResourceScanner {
+public class ResourceScanner {
 
     private static final RelSpecification REL_SPECIFICATION = new RelSpecification();
     private static final JsonHomeSpecification JSON_HOME_SPECIFICATION = new JsonHomeSpecification();

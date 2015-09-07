@@ -20,7 +20,7 @@ import static org.seedstack.seed.core.utils.BaseClassSpecifications.classImpleme
 /**
  * @author pierre.thirouin@ext.mpsa.com (Pierre Thirouin)
  */
-class JaxRsProviderSpecification extends AbstractSpecification<Class<?>> {
+public class JaxRsProviderSpecification extends AbstractSpecification<Class<?>> {
     @Override
     public boolean isSatisfiedBy(Class<?> candidate) {
         //noinspection unchecked
