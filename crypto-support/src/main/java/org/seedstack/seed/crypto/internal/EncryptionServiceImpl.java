@@ -12,24 +12,17 @@
  */
 package org.seedstack.seed.crypto.internal;
 
-import java.security.InvalidKeyException;
-import java.security.Key;
-import java.security.KeyStore;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
-import java.security.PublicKey;
-import java.security.UnrecoverableKeyException;
+import org.seedstack.seed.crypto.api.EncryptionService;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import javax.security.cert.X509Certificate;
-
-import org.seedstack.seed.crypto.api.EncryptionService;
+import java.security.*;
 
 /**
- * Asymetric crypting. It's used to encrypt and decrypt a text. Encrypt uses a {@link X509Certificate}. Decrypt uses the provate key stored in a
+ * Asymmetric crypting. It's used to encrypt and decrypt a text. Encrypt uses a {@link X509Certificate}. Decrypt uses the private key stored in a
  * keystore.
  * 
  * @author thierry.bouvet@mpsa.com
@@ -38,16 +31,16 @@ class EncryptionServiceImpl implements EncryptionService {
 
     private KeyStore keyStore;
 
-    private CertificateDefinition certificateDefinition;
+    private KeyDefinition keyDefinition;
 
-    public EncryptionServiceImpl(KeyStore ks, CertificateDefinition certificateDefinition) {
+    public EncryptionServiceImpl(KeyStore ks, KeyDefinition keyDefinition) {
         this.keyStore = ks;
-        this.certificateDefinition = certificateDefinition;
+        this.keyDefinition = keyDefinition;
     }
 
     @Override
     public byte[] encrypt(byte[] toCrypt) throws InvalidKeyException {
-        PublicKey pk = this.certificateDefinition.getCertificate().getPublicKey();
+        PublicKey pk = this.keyDefinition.getCertificate().getPublicKey();
         return crypt(toCrypt, pk, Cipher.ENCRYPT_MODE);
     }
 
@@ -58,7 +51,7 @@ class EncryptionServiceImpl implements EncryptionService {
         }
         Key key;
         try {
-            key = keyStore.getKey(this.certificateDefinition.getAlias(), this.certificateDefinition.getPassword().toCharArray());
+            key = keyStore.getKey(this.keyDefinition.getAlias(), this.keyDefinition.getPassword().toCharArray());
         } catch (UnrecoverableKeyException e) {
             throw new IllegalArgumentException(e);
         } catch (KeyStoreException e) {

@@ -15,14 +15,17 @@ package org.seedstack.seed.crypto.internal;
 import javax.security.cert.X509Certificate;
 
 /**
- * Definition which contains all parameters to encrypt or decrypt a text. So informations are for the private key and for the certificate.
+ * Definition which contains all parameters to encrypt or decrypt a text. So information are for the private key and for the certificate.
  * 
  * @author thierry.bouvet@mpsa.com
  */
-class CertificateDefinition {
+class KeyDefinition {
+
+    private KeyStoreDefinition keyStoreDefinition;
+
+    private X509Certificate certificate;
 
     private String alias;
-    private X509Certificate certificate;
     private String password;
 
     /**
@@ -35,8 +38,8 @@ class CertificateDefinition {
     }
 
     /**
-     * Set the Key alias in the keystore for the private key (used to decrypt a text).
-     * 
+     * Sets the Key alias in the keystore for the private key (used to decrypt a text).
+     *
      * @param alias the key alias in the keystore
      */
     public void setAlias(String alias) {
@@ -53,8 +56,8 @@ class CertificateDefinition {
     }
 
     /**
-     * Set the {@link X509Certificate} to use to encrypt text.
-     * 
+     * Sets the {@link X509Certificate} to use to encrypt text.
+     *
      * @param certificate the {@link X509Certificate} to use to encrypt text
      */
     public void setCertificate(X509Certificate certificate) {
@@ -71,12 +74,29 @@ class CertificateDefinition {
     }
 
     /**
-     * Set the password for the private key (used to decrypt a text).
-     * 
+     * Sets the password for the private key (used to decrypt a text).
+     *
      * @param password the password to use to read the private key
      */
     public void setPassword(String password) {
         this.password = password;
     }
 
+    /**
+     * The keyStore associated to the key.
+     *
+     * @return the keyStoreDefinition definition
+     */
+    public KeyStoreDefinition getKeyStoreDefinition() {
+        return keyStoreDefinition;
+    }
+
+    /**
+     * Sets the keyStore to use for the key
+     *
+     * @param keyStoreDefinition the keyStoreDefinition definition
+     */
+    public void setKeyStoreDefinition(KeyStoreDefinition keyStoreDefinition) {
+        this.keyStoreDefinition = keyStoreDefinition;
+    }
 }

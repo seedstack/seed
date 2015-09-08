@@ -25,8 +25,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class CryptoPlugin extends AbstractPlugin {
-    public static final String CRYPTO_PLUGIN_PREFIX = "org.seedstack.seed.cryptography";
-    public static final String MASTER_KEY_NAME = "master";
+    public static final String CRYPTO_PLUGIN_PREFIX = "org.seedstack.seed.crypto";
+    public static final String MASTER_KEY_NAME = "master-key";
+    public static final String DEFAULT_KEYSTORE_NAME = "keystore";
     private static final Logger LOGGER = LoggerFactory.getLogger(CryptoPlugin.class);
 
     private final Map<String, EncryptionService> encryptionServices = new HashMap<String, EncryptionService>();
@@ -43,43 +44,43 @@ public class CryptoPlugin extends AbstractPlugin {
 
     @Override
     public InitState init(InitContext initContext) {
-        for (Plugin plugin : initContext.pluginsRequired()) {
-            if (plugin instanceof ApplicationPlugin) {
-                Configuration cryptoConfiguration = ((ApplicationPlugin) plugin).getApplication().getConfiguration().subset(CRYPTO_PLUGIN_PREFIX);
-                EncryptionServiceFactory encryptionServiceFactory = new EncryptionServiceFactory();
+        Plugin applicationPlugin = initContext.pluginsRequired().iterator().next();
+        if (applicationPlugin instanceof ApplicationPlugin) {
+            Configuration cryptoConfiguration = ((ApplicationPlugin) applicationPlugin).getApplication().getConfiguration().subset(CRYPTO_PLUGIN_PREFIX);
+            EncryptionServiceFactory encryptionServiceFactory = new EncryptionServiceFactory();
 
-                // Load configured keys
-                String[] keys = cryptoConfiguration.getStringArray("keys");
-                int keyCount = 0;
+            // Load configured keys
+            String[] keys = cryptoConfiguration.getStringArray("keys");
+            int keyCount = 0;
 
-                if (keys != null) {
-                    keyCount = keys.length;
-                    for (String key : keys) {
-                        LOGGER.trace("Registering cryptographic key {}", key);
-                        encryptionServices.put(
-                                key,
-                                encryptionServiceFactory.createEncryptionService(
-                                        encryptionServiceFactory.createKeyStoreDefinition(cryptoConfiguration, key),
-                                        encryptionServiceFactory.createCertificateDefinition(cryptoConfiguration, key)
-                                )
-                        );
-                    }
+            if (keys != null) {
+                keyCount = keys.length;
+                JCADefinitionFactory jcaDefinitionFactory = new JCADefinitionFactory();
+                KeyStoreDefinition defaultKS = jcaDefinitionFactory.createKeyStoreDefinition(cryptoConfiguration, DEFAULT_KEYSTORE_NAME);
+                for (String key : keys) {
+                    LOGGER.trace("Registering cryptographic key {}", key);
+                    Configuration keyConfiguration = configurationForKey(cryptoConfiguration, key);
+                    KeyDefinition keyDefinition = jcaDefinitionFactory.createKeyDefinition(keyConfiguration, key, defaultKS);
+                    encryptionServices.put(key, encryptionServiceFactory.createEncryptionService(keyDefinition));
                 }
-
-                // Load the master key
-                LOGGER.trace("Registering master cryptographic key");
-                encryptionServices.put(MASTER_KEY_NAME,
-                        encryptionServiceFactory.createEncryptionService(
-                                encryptionServiceFactory.createKeyStoreDefinition(cryptoConfiguration, MASTER_KEY_NAME),
-                                encryptionServiceFactory.createCertificateDefinition(cryptoConfiguration, MASTER_KEY_NAME)
-                        )
-                );
-
-                LOGGER.debug("Registered {} cryptographic key(s)", keyCount + 1);
             }
+
+            // Load the master key
+            LOGGER.trace("Registering master cryptographic key");
+            encryptionServices.put("master", encryptionServiceFactory.createEncryptionService());
+            LOGGER.debug("Registered {} cryptographic key(s)", keyCount + 1);
         }
 
         return InitState.INITIALIZED;
+    }
+
+    private Configuration configurationForKey(Configuration configuration, String keyName) {
+        Configuration keyConfiguration = configuration.subset("key." + keyName);
+        if (keyConfiguration.isEmpty()) {
+            throw new RuntimeException("Key configuration [" + keyName + "] is not defined !");
+        }
+
+        return keyConfiguration;
     }
 
     @Override

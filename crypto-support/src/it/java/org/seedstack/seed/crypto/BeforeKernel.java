@@ -15,6 +15,7 @@
  */
 package org.seedstack.seed.crypto;
 
+import com.google.common.annotations.Beta;
 import io.nuun.kernel.api.Kernel;
 
 import java.lang.annotation.Annotation;
@@ -28,6 +29,7 @@ import java.lang.annotation.Target;
  * 
  * @author thierry.bouvet@mpsa.com
  */
+@Beta
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
 public @interface BeforeKernel {

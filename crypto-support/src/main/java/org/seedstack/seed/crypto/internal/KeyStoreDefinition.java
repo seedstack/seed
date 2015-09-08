@@ -12,18 +12,58 @@
  */
 package org.seedstack.seed.crypto.internal;
 
+import javax.annotation.Nullable;
+
 /**
  * Definition which contains all parameters to access to the keystore.
  *
  * @author thierry.bouvet@mpsa.com
  */
 class KeyStoreDefinition {
+
     private final String path;
     private final String password;
+    private final String type;
+    private final String provider;
 
+    /**
+     * Constructor.
+     *
+     * @param path the keyStore path
+     * @param password the keyStore password
+     */
     public KeyStoreDefinition(String path, String password) {
+        this(path, password, null, null);
+    }
+
+    /**
+     * Constructor.
+     *
+     * @param path the keyStore path
+     * @param password the keyStore password
+     * @param type the keyStore type
+     */
+    public KeyStoreDefinition(String path, String password, @Nullable String type) {
+        this(path, password, type, null);
+    }
+
+    /**
+     * Constructor.
+     *
+     * @param path the keyStore path
+     * @param password the keyStore password
+     * @param type the keyStore type
+     * @param provider the provider name
+     */
+    public KeyStoreDefinition(String path, String password, @Nullable String type, @Nullable String provider) {
         this.path = path;
         this.password = password;
+        if (type == null || type.equals("")) {
+            this.type = "JKS";
+        } else {
+            this.type = type;
+        }
+        this.provider = provider;
     }
 
     /**
@@ -31,7 +71,7 @@ class KeyStoreDefinition {
      *
      * @return the keystore path
      */
-    String getPath() {
+    public String getPath() {
         return path;
     }
 
@@ -40,7 +80,26 @@ class KeyStoreDefinition {
      *
      * @return the password to access to the keystore
      */
-    String getPassword() {
+    public String getPassword() {
         return password;
+    }
+
+    /**
+     * The type of keystore. The type is JKS by default.
+     *
+     * @return the keystore type
+     * @see <a href="http://docs.oracle.com/javase/7/docs/technotes/guides/security/StandardNames.html#KeyStore">Standard names</a>
+     */
+    public String getType() {
+        return type;
+    }
+
+    /**
+     * The provider name. The provider is null by default.
+     *
+     * @return the provider name
+     */
+    public String getProvider() {
+        return provider;
     }
 }
