@@ -82,6 +82,11 @@
             </dependency>
             <dependency>
                 <groupId>org.seedstack.seed</groupId>
+                <artifactId>seed-rest-support-jersey1</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.seedstack.seed</groupId>
                 <artifactId>seed-rest-support-specs</artifactId>
                 <version>${project.version}</version>
             </dependency>
