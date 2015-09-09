@@ -24,7 +24,7 @@ before_script:
   - (mkdir target && cd target && curl -sSL https://raw.githubusercontent.com/moliware/travis-solr/master/travis-solr.sh | bash)
 
 script:
-  - mvn -B -U -T 4 -Pjavadoc,all-tests install jacoco:report
+  - mvn -B -U -T 4 -Pjavadoc,all-tests,compatibility-check install jacoco:report
   - mvn -B coveralls:report -DrepoToken=$COVERALLS_TOKEN
 
 after_success:

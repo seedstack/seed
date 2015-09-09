@@ -24,7 +24,6 @@
     <packaging>pom</packaging>
 
     <properties>
-        <compatibility-check.skip>false</compatibility-check.skip>
         <compatibility-check.reference>2.0.0</compatibility-check.reference>
     </properties>
 
