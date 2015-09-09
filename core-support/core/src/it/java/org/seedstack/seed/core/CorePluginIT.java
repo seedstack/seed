@@ -13,19 +13,18 @@ import com.google.inject.AbstractModule;
 import com.google.inject.ConfigurationException;
 import com.google.inject.Injector;
 import com.google.inject.Module;
-import org.seedstack.seed.core.api.Logging;
 import io.nuun.kernel.api.Kernel;
 import org.assertj.core.api.Assertions;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.seedstack.seed.core.api.Logging;
 import org.seedstack.seed.core.fixtures.Service1;
 import org.seedstack.seed.core.fixtures.Service2;
 import org.seedstack.seed.core.fixtures.Service3;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import some.different.pkg.AnotherForeignClass;
 import some.other.pkg.ForeignClass;
 
 import javax.annotation.Nullable;
@@ -65,8 +64,6 @@ public class CorePluginIT {
         Service3 s3;
         @Inject
         ForeignClass foreignClass;
-        @Inject
-        AnotherForeignClass anotherForeignClass;
     }
 
     static class HolderException {
@@ -116,6 +113,5 @@ public class CorePluginIT {
         HolderNominal holder = injector.getInstance(HolderNominal.class);
 
         Assertions.assertThat(holder.foreignClass).isNotNull();
-        Assertions.assertThat(holder.anotherForeignClass).isNotNull();
     }
 }

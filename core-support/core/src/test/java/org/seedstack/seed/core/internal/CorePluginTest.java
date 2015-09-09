@@ -129,6 +129,5 @@ public class CorePluginTest {
         String pluginPackageRoot = pluginUnderTest.pluginPackageRoot();
         Assertions.assertThat(pluginPackageRoot).contains(CorePlugin.SEED_PACKAGE_ROOT);
         Assertions.assertThat(pluginPackageRoot).contains("some.other.pkg");
-        Assertions.assertThat(pluginPackageRoot).contains("some.different.pkg");
     }
 }
