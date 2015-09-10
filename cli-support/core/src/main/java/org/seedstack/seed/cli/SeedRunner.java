@@ -31,7 +31,7 @@ import org.seedstack.seed.cli.spi.CliContext;
 import org.seedstack.seed.core.api.Application;
 import org.seedstack.seed.core.api.SeedException;
 import org.seedstack.seed.core.internal.CorePlugin;
-import org.seedstack.seed.core.spi.SeedRunnable;
+import org.seedstack.seed.core.spi.SeedLauncher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,16 +44,18 @@ import java.util.Map;
 import java.util.concurrent.Callable;
 
 /**
- * This class executes {@link org.seedstack.seed.cli.api.CommandLineHandler}s found in the classpath.
+ * This class executes {@link org.seedstack.seed.cli.api.CommandLineHandler}s found in the classpath. It can be executed
+ * directly as a Java application (i.e. it has a main method) but should preferably be executed with
+ * {@link org.seedstack.seed.core.SeedMain}.
  *
  * @author epo.jemba@ext.mpsa.com
  * @author adrien.lauer@mpsa.com
  */
-public class SeedRunner implements SeedRunnable {
+public class SeedRunner implements SeedLauncher {
     private static final Logger LOGGER = LoggerFactory.getLogger(SeedRunner.class);
 
     @Override
-    public int run(String[] args) throws Exception {
+    public int launch(String[] args) throws Exception {
         return execute(args);
     }
 

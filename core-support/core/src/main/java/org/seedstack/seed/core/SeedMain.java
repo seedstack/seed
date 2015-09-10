@@ -13,18 +13,30 @@ import com.google.common.collect.Lists;
 import org.seedstack.seed.core.api.CoreErrorCode;
 import org.seedstack.seed.core.api.SeedException;
 import org.seedstack.seed.core.internal.CorePlugin;
-import org.seedstack.seed.core.spi.SeedRunnable;
+import org.seedstack.seed.core.spi.SeedLauncher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.ServiceLoader;
 
-public class SeedRunner {
-    private static final Logger LOGGER = LoggerFactory.getLogger(SeedRunner.class);
+/**
+ * <p>
+ *  Main Seed Java application entry point. It searches classes implementing {@link SeedLauncher} through the
+ *  {@link ServiceLoader} mechanism. If no class or more than one class is found, it throws an exception. If exactly one
+ *  class is found, it delegates the Seed application startup to its {@link SeedLauncher#launch(String[])} method.
+ * </p>
+ * <p>
+ *  High-level exception handling and diagnostic is done directly in this class.
+ * </p>
+ * 
+ * @author adrien.lauer@mpsa.com
+ */
+public class SeedMain {
+    private static final Logger LOGGER = LoggerFactory.getLogger(SeedMain.class);
 
     public static void main(String[] args) {
-        List<SeedRunnable> entryPointServices = Lists.newArrayList(ServiceLoader.load(SeedRunnable.class));
+        List<org.seedstack.seed.core.spi.SeedLauncher> entryPointServices = Lists.newArrayList(ServiceLoader.load(SeedLauncher.class));
         int returnCode = 0;
 
         if (entryPointServices.size() < 1) {
@@ -33,8 +45,12 @@ public class SeedRunner {
             throw SeedException.createNew(CoreErrorCode.MULTIPLE_SEED_ENTRY_POINTS);
         }
 
+        SeedLauncher seedLauncher = entryPointServices.get(0);
+
+        LOGGER.info("Seed application starting with launcher {}", seedLauncher.getClass().getCanonicalName());
+
         try {
-            returnCode = entryPointServices.get(0).run(args);
+            returnCode = seedLauncher.launch(args);
         } catch (SeedException e) {
             handleException(e);
             e.printStackTrace(System.err);
@@ -45,11 +61,13 @@ public class SeedRunner {
 
         // no java.lang.Error handling is done
 
+        LOGGER.info("Seed application stopped (return code {})", String.valueOf(returnCode));
+
         System.exit(returnCode);
     }
 
     private static void handleException(Exception e) {
-        LOGGER.error("An exception occurred during CLI application startup, collecting diagnostic information");
+        LOGGER.error("An exception occurred, collecting diagnostic information");
         CorePlugin.getDiagnosticManager().dumpDiagnosticReport(e);
     }
 }

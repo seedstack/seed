@@ -10,17 +10,17 @@
 package org.seedstack.seed.core.spi;
 
 /**
- * This interface defines a Seed executable entry point. It must be declared as a {@link java.util.ServiceLoader} service
- * in META-INF/services to be detected.
+ * This interface defines a method that can launch a Seed application.
+ * It must be declared as a {@link java.util.ServiceLoader} service in META-INF/services to be detected.
  *
  * @author adrien.lauer@gmail.com
  */
-public interface SeedRunnable {
+public interface SeedLauncher {
     /**
-     * The entry-point method that is executed upon startup.
+     * The method that launches the Seed application.
      *
-     * @param args the arguments.
+     * @param args arguments of the Seed application.
      * @return the return code.
      */
-    int run(String[] args) throws Exception;
+    int launch(String[] args) throws Exception;
 }
