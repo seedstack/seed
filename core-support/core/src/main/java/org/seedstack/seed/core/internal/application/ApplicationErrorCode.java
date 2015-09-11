@@ -16,7 +16,7 @@ import org.seedstack.seed.core.api.ErrorCode;
  *
  * @author adrien.lauer@mpsa.com
  */
-enum ApplicationErrorCode implements ErrorCode {
+public enum ApplicationErrorCode implements ErrorCode {
     MISSING_APPLICATION_IDENTIFIER,
     STORAGE_PATH_IS_NOT_A_DIRECTORY,
     UNABLE_TO_CREATE_STORAGE_DIRECTORY,

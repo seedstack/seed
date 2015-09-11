@@ -9,7 +9,6 @@
  */
 package org.seedstack.seed.core.internal;
 
-import com.google.common.collect.ImmutableMap;
 import com.google.inject.Module;
 import io.nuun.kernel.api.plugin.InitState;
 import io.nuun.kernel.api.plugin.PluginException;
@@ -18,16 +17,14 @@ import io.nuun.kernel.api.plugin.request.ClasspathScanRequest;
 import io.nuun.kernel.core.AbstractPlugin;
 import io.nuun.kernel.core.internal.scanner.AbstractClasspathScanner;
 import org.apache.commons.configuration.Configuration;
-import org.apache.commons.configuration.MapConfiguration;
-import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.commons.lang.StringUtils;
 import org.reflections.vfs.Vfs;
+import org.seedstack.seed.core.api.CoreErrorCode;
 import org.seedstack.seed.core.api.DiagnosticManager;
 import org.seedstack.seed.core.api.Install;
 import org.seedstack.seed.core.api.SeedException;
 import org.seedstack.seed.core.internal.scan.ClasspathScanHandler;
 import org.seedstack.seed.core.internal.scan.FallbackUrlType;
-import org.seedstack.seed.core.api.CoreErrorCode;
 import org.seedstack.seed.core.spi.diagnostic.DiagnosticDomain;
 import org.seedstack.seed.core.spi.diagnostic.DiagnosticInfoCollector;
 import org.seedstack.seed.core.utils.SeedReflectionUtils;
@@ -49,8 +46,6 @@ public class CorePlugin extends AbstractPlugin {
     public static final String SEED_PACKAGE_ROOT = "org.seedstack";
     public static final String CORE_PLUGIN_PREFIX = "org.seedstack.seed.core";
     public static final String DETAILS_MESSAGE = "Details of the previous error below";
-
-    private static final String SEED_BOOTSTRAP_PATH = "META-INF/seed-bootstrap.properties";
     private static final Logger LOGGER = LoggerFactory.getLogger(CorePlugin.class);
 
     private static final DiagnosticManagerImpl DIAGNOSTIC_MANAGER = new DiagnosticManagerImpl();
@@ -102,7 +97,7 @@ public class CorePlugin extends AbstractPlugin {
     }
 
     public CorePlugin() {
-        bootstrapConfiguration = loadBootstrapConfiguration();
+        bootstrapConfiguration = new SeedConfigLoader().bootstrapConfig();
     }
 
     @Override
@@ -174,28 +169,6 @@ public class CorePlugin extends AbstractPlugin {
             packageRoots += "," + StringUtils.join(applicationPackageRoots, ",");
         }
         return packageRoots;
-    }
-
-    private Configuration loadBootstrapConfiguration() {
-        MapConfiguration globalConfiguration = new MapConfiguration(new HashMap<String, Object>());
-
-        ClassLoader classLoader = SeedReflectionUtils.findMostCompleteClassLoader();
-        if (classLoader == null) {
-            throw SeedException.createNew(CoreErrorCode.UNABLE_TO_FIND_CLASSLOADER);
-        }
-
-        try {
-            Enumeration<URL> urls = classLoader.getResources(SEED_BOOTSTRAP_PATH);
-
-            while (urls.hasMoreElements()) {
-                URL url = urls.nextElement();
-                globalConfiguration.append(new PropertiesConfiguration(url));
-            }
-        } catch (Exception e) {
-            throw SeedException.wrap(e, CoreErrorCode.UNEXPECTED_EXCEPTION);
-        }
-
-        return new MapConfiguration(new ImmutableMap.Builder<String, Object>().putAll(globalConfiguration.getMap()).build());
     }
 
     /**
