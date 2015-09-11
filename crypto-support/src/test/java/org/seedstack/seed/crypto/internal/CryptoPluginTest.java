@@ -82,7 +82,7 @@ public class CryptoPluginTest {
 
         new Expectations() {
             @Mocked
-            CertificateDefinition certificateDefinition;
+            KeyDefinition keyDefinition;
 
             {
                 context.pluginsRequired();
@@ -94,7 +94,7 @@ public class CryptoPluginTest {
                 application.getConfiguration();
                 result = configuration;
 
-                configuration.subset("org.seedstack.seed.cryptography");
+                configuration.subset("org.seedstack.seed.crypto");
                 result = configuration;
 
                 configuration.getStringArray("keys");
@@ -107,13 +107,12 @@ public class CryptoPluginTest {
 
         new Verifications() {
             Map<String, EncryptionService> encryptionServices = Deencapsulation.getField(plugin, "encryptionServices");
-            final int configurations = 2; // master + key1
 
             {
-                factory.createEncryptionService((KeyStoreDefinition) any, (CertificateDefinition) any);
-                times = configurations;
+                factory.createEncryptionService(); //master
+                factory.createEncryptionService((KeyDefinition) any); //key1
 
-                Assertions.assertThat(encryptionServices.size()).isEqualTo(configurations);
+                Assertions.assertThat(encryptionServices.size()).isEqualTo(2);
             }
         };
 
@@ -131,7 +130,7 @@ public class CryptoPluginTest {
 
         new Expectations() {
             @Mocked
-            CertificateDefinition certificateDefinition;
+            KeyDefinition keyDefinition;
 
             {
                 context.pluginsRequired();
@@ -143,7 +142,7 @@ public class CryptoPluginTest {
                 application.getConfiguration();
                 result = configuration;
 
-                configuration.subset("org.seedstack.seed.cryptography");
+                configuration.subset("org.seedstack.seed.crypto");
                 result = configuration;
 
                 configuration.getStringArray("keys");
@@ -158,8 +157,8 @@ public class CryptoPluginTest {
             final int configurations = 2; // master + key1
 
             {
-                factory.createEncryptionService((KeyStoreDefinition) any, (CertificateDefinition) any);
-                times = configurations;
+                factory.createEncryptionService();
+                factory.createEncryptionService((KeyDefinition) any);
 
                 Assertions.assertThat(encryptionServices.size()).isEqualTo(configurations);
             }
@@ -179,7 +178,7 @@ public class CryptoPluginTest {
 
         new Expectations() {
             @Mocked
-            CertificateDefinition certificateDefinition;
+            KeyDefinition keyDefinition;
 
             {
                 context.pluginsRequired();
@@ -191,7 +190,7 @@ public class CryptoPluginTest {
                 application.getConfiguration();
                 result = configuration;
 
-                configuration.subset("org.seedstack.seed.cryptography");
+                configuration.subset("org.seedstack.seed.crypto");
                 result = configuration;
 
                 configuration.getStringArray("keys");
@@ -218,7 +217,7 @@ public class CryptoPluginTest {
 
         new Expectations() {
             @Mocked
-            CertificateDefinition certificateDefinition;
+            KeyDefinition keyDefinition;
 
             {
                 context.pluginsRequired();

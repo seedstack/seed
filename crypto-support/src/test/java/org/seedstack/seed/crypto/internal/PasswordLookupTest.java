@@ -20,7 +20,6 @@ import mockit.Expectations;
 import mockit.Mocked;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
-import org.seedstack.seed.core.api.Application;
 import org.seedstack.seed.crypto.api.EncryptionService;
 
 import javax.xml.bind.DatatypeConverter;
@@ -39,18 +38,22 @@ public class PasswordLookupTest {
      * @throws Exception if an error occurred
      */
     @Test
-    public void testLookupString(@Mocked final Application application, @Mocked final EncryptionService service) throws Exception {
+    public void testLookupString(@Mocked final EncryptionService service, @Mocked final EncryptionServiceFactory serviceFactory) throws Exception {
         final String toDecrypt = "essai crypting";
         final String cryptingString = DatatypeConverter.printHexBinary(toDecrypt.getBytes());
 
         new Expectations() {
             {
+
+                serviceFactory.createEncryptionService();
+                result = service;
+
                 service.decrypt(DatatypeConverter.parseHexBinary(cryptingString));
                 result = toDecrypt.getBytes();
             }
         };
-        PasswordLookup lookup = new PasswordLookup(application);
-        Deencapsulation.setField(lookup, "encryptionService", service);
+        PasswordLookup lookup = new PasswordLookup();
+        //Deencapsulation.setField(lookup, "encryptionService", service);
         Assertions.assertThat(lookup.lookup(cryptingString)).isEqualTo(toDecrypt);
     }
 
@@ -60,17 +63,20 @@ public class PasswordLookupTest {
      * @throws Exception if an error occurred
      */
     @Test(expected = RuntimeException.class)
-    public void testLookupStringWithInvalidKey(@Mocked final Application application, @Mocked final EncryptionService service) throws Exception {
+    public void testLookupStringWithInvalidKey(@Mocked final EncryptionService service, @Mocked final EncryptionServiceFactory serviceFactory) throws Exception {
         final String toDecrypt = "essai crypting";
         final String cryptingString = DatatypeConverter.printHexBinary(toDecrypt.getBytes());
 
         new Expectations() {
             {
+                serviceFactory.createEncryptionService();
+                result = service;
+                
                 service.decrypt(DatatypeConverter.parseHexBinary(cryptingString));
                 result = new InvalidKeyException("dummy exception");
             }
         };
-        PasswordLookup lookup = new PasswordLookup(application);
+        PasswordLookup lookup = new PasswordLookup();
         Deencapsulation.setField(lookup, "encryptionService", service);
         lookup.lookup(cryptingString);
     }

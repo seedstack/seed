@@ -41,7 +41,7 @@ public class EncryptionServiceImplTest {
      * @throws Exception if an error occurred
      */
     @Test
-    public void testEncrypt(@Mocked final KeyStore keyStore, @Mocked final CertificateDefinition certificateDefintion, @Mocked final Cipher cipher)
+    public void testEncrypt(@Mocked final KeyStore keyStore, @Mocked final KeyDefinition certificateDefintion, @Mocked final Cipher cipher)
             throws Exception {
 
         EncryptionServiceImpl asymetricCrypting = new EncryptionServiceImpl(keyStore, certificateDefintion);
@@ -62,7 +62,7 @@ public class EncryptionServiceImplTest {
      * @throws Exception if an error occurred
      */
     @Test(expected = IllegalArgumentException.class)
-    public void testEncryptWithNoSuchAlgorithmException(@Mocked final KeyStore keyStore, @Mocked final CertificateDefinition certificateDefintion,
+    public void testEncryptWithNoSuchAlgorithmException(@Mocked final KeyStore keyStore, @Mocked final KeyDefinition certificateDefintion,
             @SuppressWarnings("unused") @Mocked final Cipher cipher) throws Exception {
 
         new Expectations() {
@@ -83,7 +83,7 @@ public class EncryptionServiceImplTest {
      * @throws Exception if an error occurred
      */
     @Test(expected = IllegalArgumentException.class)
-    public void testEncryptWithNoSuchPaddingException(@Mocked final KeyStore keyStore, @Mocked final CertificateDefinition certificateDefintion,
+    public void testEncryptWithNoSuchPaddingException(@Mocked final KeyStore keyStore, @Mocked final KeyDefinition certificateDefintion,
             @SuppressWarnings("unused") @Mocked final Cipher cipher) throws Exception {
 
         new Expectations() {
@@ -104,7 +104,7 @@ public class EncryptionServiceImplTest {
      * @throws Exception if an error occurred
      */
     @Test(expected = IllegalArgumentException.class)
-    public void testEncryptWithIllegalBlockSizeException(@Mocked final KeyStore keyStore, @Mocked final CertificateDefinition certificateDefintion,
+    public void testEncryptWithIllegalBlockSizeException(@Mocked final KeyStore keyStore, @Mocked final KeyDefinition certificateDefintion,
             @Mocked final Cipher cipher) throws Exception {
 
         final String toCrypt = "text to crypt";
@@ -129,7 +129,7 @@ public class EncryptionServiceImplTest {
      * @throws Exception if an error occurred
      */
     @Test(expected = IllegalArgumentException.class)
-    public void testEncryptWithBadPaddingException(@Mocked final KeyStore keyStore, @Mocked final CertificateDefinition certificateDefintion,
+    public void testEncryptWithBadPaddingException(@Mocked final KeyStore keyStore, @Mocked final KeyDefinition certificateDefintion,
             @Mocked final Cipher cipher) throws Exception {
 
         final String toCrypt = "text to crypt";
@@ -154,7 +154,7 @@ public class EncryptionServiceImplTest {
      * @throws Exception if an error occurred
      */
     @Test
-    public void testDecrypt(@Mocked final KeyStore keyStore, @Mocked final CertificateDefinition certificateDefintion, @Mocked final Cipher cipher)
+    public void testDecrypt(@Mocked final KeyStore keyStore, @Mocked final KeyDefinition certificateDefintion, @Mocked final Cipher cipher)
             throws Exception {
         final String toDecrypt = "ADEF0985C";
 
@@ -184,7 +184,7 @@ public class EncryptionServiceImplTest {
      * @throws Exception if an error occurred
      */
     @Test(expected = IllegalArgumentException.class)
-    public void testDecryptWitoutKeystore(@Mocked final CertificateDefinition certificateDefintion) throws Exception {
+    public void testDecryptWitoutKeystore(@Mocked final KeyDefinition certificateDefintion) throws Exception {
         final String toDecrypt = "ADEF0985C";
 
         EncryptionServiceImpl asymetricCrypting = new EncryptionServiceImpl(null, certificateDefintion);
@@ -198,7 +198,7 @@ public class EncryptionServiceImplTest {
      * @throws Exception if an error occurred
      */
     @Test(expected = IllegalArgumentException.class)
-    public void testDecryptWithUnrecoverableKeyException(@Mocked final KeyStore keyStore, @Mocked final CertificateDefinition certificateDefintion,
+    public void testDecryptWithUnrecoverableKeyException(@Mocked final KeyStore keyStore, @Mocked final KeyDefinition certificateDefintion,
             @Mocked final Cipher cipher) throws Exception {
         final String toDecrypt = "ADEF0985C";
 
@@ -234,7 +234,7 @@ public class EncryptionServiceImplTest {
      * @throws Exception if an error occurred
      */
     @Test(expected = IllegalArgumentException.class)
-    public void testDecryptWithKeyStoreException(@Mocked final KeyStore keyStore, @Mocked final CertificateDefinition certificateDefintion,
+    public void testDecryptWithKeyStoreException(@Mocked final KeyStore keyStore, @Mocked final KeyDefinition certificateDefintion,
             @Mocked final Cipher cipher) throws Exception {
         final String toDecrypt = "ADEF0985C";
 
@@ -270,7 +270,7 @@ public class EncryptionServiceImplTest {
      * @throws Exception if an error occurred
      */
     @Test(expected = IllegalArgumentException.class)
-    public void testDecryptWithNoSuchAlgorithmException(@Mocked final KeyStore keyStore, @Mocked final CertificateDefinition certificateDefintion,
+    public void testDecryptWithNoSuchAlgorithmException(@Mocked final KeyStore keyStore, @Mocked final KeyDefinition certificateDefintion,
             @Mocked final Cipher cipher) throws Exception {
         final String toDecrypt = "ADEF0985C";
 

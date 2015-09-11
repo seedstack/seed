@@ -28,7 +28,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Integration test for a {@link EncryptionService}. A new asymetric key (key1) is defined in a property file (certificate and private key in a
+ * Integration test for a {@link EncryptionService}. A new asymmetric key (key1) is defined in a property file (certificate and private key in a
  * keystore).
  *
  * @author thierry.bouvet@mpsa.com

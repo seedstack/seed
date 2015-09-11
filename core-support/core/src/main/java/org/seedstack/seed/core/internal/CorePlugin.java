@@ -23,6 +23,7 @@ import org.seedstack.seed.core.api.CoreErrorCode;
 import org.seedstack.seed.core.api.DiagnosticManager;
 import org.seedstack.seed.core.api.Install;
 import org.seedstack.seed.core.api.SeedException;
+import org.seedstack.seed.core.internal.application.SeedConfigLoader;
 import org.seedstack.seed.core.internal.scan.ClasspathScanHandler;
 import org.seedstack.seed.core.internal.scan.FallbackUrlType;
 import org.seedstack.seed.core.spi.diagnostic.DiagnosticDomain;
