@@ -55,8 +55,15 @@ public class SeedRunner implements SeedLauncher {
     private static final Logger LOGGER = LoggerFactory.getLogger(SeedRunner.class);
 
     @Override
-    public int launch(String[] args) throws Exception {
-        return execute(args);
+    public void launch(String[] args) throws Exception {
+        int returnCode = execute(args);
+        LOGGER.info("CLI command finished with return code {}", returnCode);
+        System.exit(returnCode);
+    }
+
+    @Override
+    public void shutdown() throws Exception {
+        // nothing to do
     }
 
     /**

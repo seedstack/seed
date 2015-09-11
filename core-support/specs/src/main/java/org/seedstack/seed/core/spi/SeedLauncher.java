@@ -20,7 +20,15 @@ public interface SeedLauncher {
      * The method that launches the Seed application.
      *
      * @param args arguments of the Seed application.
-     * @return the return code.
+     * @throws Exception when something goes wrong.
      */
-    int launch(String[] args) throws Exception;
+    void launch(String[] args) throws Exception;
+
+
+    /**
+     * This method is called when the application is requested to shutdown.
+     *
+     * @throws Exception when something goes wrong.
+     */
+    void shutdown() throws Exception;
 }

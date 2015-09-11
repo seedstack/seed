@@ -22,22 +22,22 @@ import java.util.ServiceLoader;
 
 /**
  * <p>
- *  Main Seed Java application entry point. It searches classes implementing {@link SeedLauncher} through the
- *  {@link ServiceLoader} mechanism. If no class or more than one class is found, it throws an exception. If exactly one
- *  class is found, it delegates the Seed application startup to its {@link SeedLauncher#launch(String[])} method.
+ * Main Seed Java application entry point. It searches classes implementing {@link SeedLauncher} through the
+ * {@link ServiceLoader} mechanism. If no class or more than one class is found, it throws an exception. If exactly one
+ * class is found, it delegates the Seed application startup to its {@link SeedLauncher#launch(String[])} method.
  * </p>
  * <p>
- *  High-level exception handling and diagnostic is done directly in this class.
+ * High-level exception handling and diagnostic is done directly in this class.
  * </p>
- * 
+ *
  * @author adrien.lauer@mpsa.com
  */
 public class SeedMain {
     private static final Logger LOGGER = LoggerFactory.getLogger(SeedMain.class);
+    private static final int EXCEPTION_RETURN_CODE = -1;
 
     public static void main(String[] args) {
         List<org.seedstack.seed.core.spi.SeedLauncher> entryPointServices = Lists.newArrayList(ServiceLoader.load(SeedLauncher.class));
-        int returnCode = 0;
 
         if (entryPointServices.size() < 1) {
             throw SeedException.createNew(CoreErrorCode.MISSING_SEED_ENTRY_POINT);
@@ -45,29 +45,40 @@ public class SeedMain {
             throw SeedException.createNew(CoreErrorCode.MULTIPLE_SEED_ENTRY_POINTS);
         }
 
-        SeedLauncher seedLauncher = entryPointServices.get(0);
+        final SeedLauncher seedLauncher = entryPointServices.get(0);
+
+        Runtime.getRuntime().addShutdownHook(new Thread() {
+            @Override
+            public void run() {
+                try {
+                    seedLauncher.shutdown();
+                    LOGGER.info("Seed application stopped");
+                } catch (Exception e) {
+                    handleException(e);
+                    LOGGER.error("Seed application failed to shutdown properly");
+                }
+            }
+        });
 
         LOGGER.info("Seed application starting with launcher {}", seedLauncher.getClass().getCanonicalName());
 
         try {
-            returnCode = seedLauncher.launch(args);
-        } catch (SeedException e) {
-            handleException(e);
-            e.printStackTrace(System.err);
+            seedLauncher.launch(args);
         } catch (Exception e) {
             handleException(e);
-            SeedException.wrap(e, CoreErrorCode.UNEXPECTED_EXCEPTION).printStackTrace(System.err);
+            LOGGER.error("Seed application halted after exception");
+            System.exit(EXCEPTION_RETURN_CODE);
         }
-
-        // no java.lang.Error handling is done
-
-        LOGGER.info("Seed application stopped (return code {})", String.valueOf(returnCode));
-
-        System.exit(returnCode);
     }
 
     private static void handleException(Exception e) {
         LOGGER.error("An exception occurred, collecting diagnostic information");
         CorePlugin.getDiagnosticManager().dumpDiagnosticReport(e);
+
+        if (e instanceof SeedException) {
+            e.printStackTrace(System.err);
+        } else {
+            SeedException.wrap(e, CoreErrorCode.UNEXPECTED_EXCEPTION).printStackTrace(System.err);
+        }
     }
 }
