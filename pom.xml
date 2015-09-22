@@ -36,17 +36,10 @@
         <module>security-support</module>
         <module>web-support</module>
         <module>rest-support</module>
-        <module>validation-support</module>
         <module>transaction-support</module>
-        <module>persistence-support</module>
-        <module>cache-support</module>
         <module>cli-support</module>
-        <module>jms-support</module>
-        <module>mail-support</module>
         <module>metrics-support</module>
-        <module>scheduling-support</module>
         <module>shell-support</module>
-        <module>ws-support</module>
         <module>doc</module>
         <module>bom</module>
     </modules>
@@ -71,16 +64,13 @@
                         <includedLicenses>
                             <includedLicense>Apache 2</includedLicense>
                             <includedLicense>BSD</includedLicense>
-                            <includedLicense>CDDL 1.0</includedLicense>
                             <includedLicense>CDDL 1.1</includedLicense>
                             <includedLicense>EPL 1.0</includedLicense>
-                            <includedLicense>GPL2 w/ CPE</includedLicense>
                             <includedLicense>MIT</includedLicense>
                             <includedLicense>LGPL 2.1</includedLicense>
                             <includedLicense>LGPL 3.0</includedLicense>
-                            <includedLicense>MPL 1.1</includedLicense>
                             <includedLicense>MPL 2.0</includedLicense>
-                            <includedLicense>JSON</includedLicense>
+                            <includedLicense>The JSON License</includedLicense>
                             <includedLicense>Public Domain</includedLicense>
                             <includedLicense>WTFPL</includedLicense>
 
@@ -92,27 +82,20 @@
                             <licenseMerge>Apache 2|The Apache Software License, Version 2.0</licenseMerge>
                             <licenseMerge>Apache 2|Apache License 2.0</licenseMerge>
                             <licenseMerge>Apache 2|Apache 2.0</licenseMerge>
-                            <licenseMerge>Apache 2|Apache License, version 2.0</licenseMerge>
                             <licenseMerge>Apache 2|Apache 2.0 License</licenseMerge>
                             <licenseMerge>BSD|New BSD License</licenseMerge>
                             <licenseMerge>BSD|The New BSD License</licenseMerge>
                             <licenseMerge>BSD|The BSD License</licenseMerge>
-                            <licenseMerge>BSD|BSD License</licenseMerge>
-                            <licenseMerge>BSD|BSD 3-Clause</licenseMerge>
-                            <licenseMerge>CDDL 1.0|COMMON DEVELOPMENT AND DISTRIBUTION LICENSE (CDDL) Version 1.0</licenseMerge>
-                            <licenseMerge>CDDL 1.0|CDDL+GPL License</licenseMerge>
                             <licenseMerge>EPL 1.0|Eclipse Public License 1.0</licenseMerge>
                             <licenseMerge>EPL 1.0|Eclipse Public License v1.0</licenseMerge>
-                            <licenseMerge>EPL 1.0|Eclipse Public License, Version 1.0</licenseMerge>
-                            <licenseMerge>JSON|The JSON License</licenseMerge>
                             <licenseMerge>LGPL 2.1|GNU Lesser General Public License version 2.1 (LGPLv2.1)</licenseMerge>
-                            <licenseMerge>LGPL 2.1|GNU Lesser General Public License, Version 2.1</licenseMerge>
-                            <licenseMerge>LGPL 2.1|GNU LESSER GENERAL PUBLIC LICENSE</licenseMerge>
                             <licenseMerge>LGPL 3.0|GNU Lesser Public License</licenseMerge>
                             <licenseMerge>MIT|The MIT License</licenseMerge>
                             <licenseMerge>MIT|MIT License</licenseMerge>
+                            <licenseMerge>IGNORED_LICENSE|GPL2 w/ CPE</licenseMerge>
                             <licenseMerge>IGNORED_LICENSE|GNU General Public License version 2 (GPLv2)</licenseMerge>
                             <licenseMerge>IGNORED_LICENSE|UnboundID LDAP SDK Free Use License</licenseMerge>
+                            <licenseMerge>IGNORED_LICENSE|MPL 1.1</licenseMerge>
                         </licenseMerges>
                     </configuration>
                 </plugin>

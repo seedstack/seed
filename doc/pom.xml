@@ -45,16 +45,6 @@
                                     <artifactId>javax.servlet-api</artifactId>
                                     <version>3.0.1</version>
                                 </additionalDependency>
-                                <additionalDependency>
-                                    <groupId>javax.persistence</groupId>
-                                    <artifactId>persistence-api</artifactId>
-                                    <version>1.0.2</version>
-                                </additionalDependency>
-                                <additionalDependency>
-                                    <groupId>javax.jms</groupId>
-                                    <artifactId>jms</artifactId>
-                                    <version>1.1</version>
-                                </additionalDependency>
                             </additionalDependencies>
                         </configuration>
                     </execution>
@@ -92,36 +82,6 @@
         <dependency>
             <groupId>org.seedstack.seed</groupId>
             <artifactId>seed-integrationtest-support-web</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.seedstack.seed</groupId>
-            <artifactId>seed-jms-support-core</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.seedstack.seed</groupId>
-            <artifactId>seed-jms-support-specs</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.seedstack.seed</groupId>
-            <artifactId>seed-persistence-support-jpa</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.seedstack.seed</groupId>
-            <artifactId>seed-persistence-support-tinkerpop</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.seedstack.seed</groupId>
-            <artifactId>seed-persistence-support-elasticsearch</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.seedstack.seed</groupId>
-            <artifactId>seed-persistence-support-inmemory</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
@@ -181,31 +141,6 @@
         </dependency>
         <dependency>
             <groupId>org.seedstack.seed</groupId>
-            <artifactId>seed-ws-support-core</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.seedstack.seed</groupId>
-            <artifactId>seed-ws-support-jms</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.seedstack.seed</groupId>
-            <artifactId>seed-ws-support-web</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.seedstack.seed</groupId>
-            <artifactId>seed-cache-support</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.seedstack.seed</groupId>
-            <artifactId>seed-scheduling-support</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.seedstack.seed</groupId>
             <artifactId>seed-shell-support</artifactId>
             <version>${project.version}</version>
         </dependency>
@@ -217,21 +152,6 @@
         <dependency>
             <groupId>org.seedstack.seed</groupId>
             <artifactId>seed-unittest-support</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.seedstack.seed</groupId>
-            <artifactId>seed-validation-support</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.seedstack.seed</groupId>
-            <artifactId>seed-mail-support-core</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.seedstack.seed</groupId>
-            <artifactId>seed-mail-support-test</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
