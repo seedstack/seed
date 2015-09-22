@@ -6,11 +6,6 @@ language: java
 jdk:
   - oraclejdk8
 
-services:
-  - mongodb
-  - redis
-  - elasticsearch
-
 notifications:
   irc: "chat.freenode.net#seedstack-dev"
 
@@ -19,9 +14,6 @@ cache:
     - "$HOME/.m2/repository"
 
 install: /bin/true
-
-before_script:
-  - (mkdir target && cd target && curl -sSL https://raw.githubusercontent.com/moliware/travis-solr/master/travis-solr.sh | bash)
 
 script:
   - mvn -B -U -T 4 -Pjavadoc,all-tests,compatibility-check install jacoco:report
