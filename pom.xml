@@ -24,7 +24,7 @@
     <packaging>pom</packaging>
 
     <properties>
-        <compatibility-check.reference>2.0.0</compatibility-check.reference>
+        <compatibility.version>2.0.0</compatibility.version>
     </properties>
 
     <modules>
@@ -40,7 +40,6 @@
         <module>cli-support</module>
         <module>metrics-support</module>
         <module>shell-support</module>
-        <module>doc</module>
         <module>bom</module>
     </modules>
 
