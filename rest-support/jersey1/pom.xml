@@ -21,7 +21,7 @@
     <artifactId>seed-rest-support-jersey1</artifactId>
 
     <properties>
-        <compatibility-check.skip>true</compatibility-check.skip>
+        <compatibility.skip>true</compatibility.skip>
     </properties>
 
 	<dependencies>
