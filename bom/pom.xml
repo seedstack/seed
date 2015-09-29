@@ -25,122 +25,103 @@
         <dependencies>
             <dependency>
                 <groupId>org.seedstack.seed</groupId>
-                <artifactId>seed-core-support-specs</artifactId>
+                <artifactId>seed-cli</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.seedstack.seed</groupId>
-                <artifactId>seed-core-support-core</artifactId>
+                <artifactId>seed-core</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.seedstack.seed</groupId>
-                <artifactId>seed-el-support</artifactId>
+                <artifactId>seed-crypto</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.seedstack.seed</groupId>
-                <artifactId>seed-integrationtest-support-core</artifactId>
-                <version>${project.version}</version>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.seedstack.seed</groupId>
-                <artifactId>seed-integrationtest-support-web</artifactId>
-                <version>${project.version}</version>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.seedstack.seed</groupId>
-                <artifactId>seed-rest-support-core</artifactId>
+                <artifactId>seed-el</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.seedstack.seed</groupId>
-                <artifactId>seed-rest-support-jersey1</artifactId>
+                <artifactId>seed-metrics</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.seedstack.seed</groupId>
-                <artifactId>seed-rest-support-specs</artifactId>
+                <artifactId>seed-rest-core</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.seedstack.seed</groupId>
-                <artifactId>seed-crypto-support</artifactId>
+                <artifactId>seed-rest-jersey1</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.seedstack.seed</groupId>
-                <artifactId>seed-security-support-core</artifactId>
+                <artifactId>seed-rest-specs</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.seedstack.seed</groupId>
-                <artifactId>seed-security-support-ldap</artifactId>
+                <artifactId>seed-security-core</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.seedstack.seed</groupId>
-                <artifactId>seed-security-support-specs</artifactId>
+                <artifactId>seed-security-ldap</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.seedstack.seed</groupId>
-                <artifactId>seed-security-support-test</artifactId>
-                <version>${project.version}</version>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.seedstack.seed</groupId>
-                <artifactId>seed-transaction-support</artifactId>
+                <artifactId>seed-security-specs</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.seedstack.seed</groupId>
-                <artifactId>seed-unittest-support</artifactId>
+                <artifactId>seed-shell</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.seedstack.seed</groupId>
+                <artifactId>seed-specs</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.seedstack.seed</groupId>
+                <artifactId>seed-testing</artifactId>
                 <version>${project.version}</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>org.seedstack.seed</groupId>
-                <artifactId>seed-web-support-core</artifactId>
+                <artifactId>seed-transaction</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.seedstack.seed</groupId>
-                <artifactId>seed-web-support-security</artifactId>
+                <artifactId>seed-web-core</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.seedstack.seed</groupId>
-                <artifactId>seed-web-support-specs</artifactId>
+                <artifactId>seed-web-security</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.seedstack.seed</groupId>
-                <artifactId>seed-web-support-websocket</artifactId>
+                <artifactId>seed-web-specs</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.seedstack.seed</groupId>
-                <artifactId>seed-cli-support-core</artifactId>
+                <artifactId>seed-web-undertow</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.seedstack.seed</groupId>
-                <artifactId>seed-cli-support-test</artifactId>
-                <version>${project.version}</version>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.seedstack.seed</groupId>
-                <artifactId>seed-metrics-support</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.seedstack.seed</groupId>
-                <artifactId>seed-shell-support</artifactId>
+                <artifactId>seed-web-websocket</artifactId>
                 <version>${project.version}</version>
             </dependency>
         </dependencies>
