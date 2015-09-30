@@ -24,25 +24,19 @@ import org.slf4j.LoggerFactory;
 import javax.net.ssl.KeyManager;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
-import java.io.File;
 import java.security.KeyStore;
 import java.util.*;
 
 public class CryptoPlugin extends AbstractPlugin {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(CryptoPlugin.class);
 
     public static final String CRYPTO_PLUGIN_PREFIX = "org.seedstack.seed.crypto";
     public static final String MASTER_KEYSTORE_NAME = "master";
     public static final String MASTER_KEY_NAME = "seed";
     public static final String DEFAULT_KEY_NAME = "default";
     public static final String MASTER_KEYSTORE = "keystore." + MASTER_KEYSTORE_NAME + ".path";
-
-
-    public static final String GENERATED_PASSWORD = "changeit";
-    public static final String GENERATED_ALIAS = "undertow";
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(CryptoPlugin.class);
     public static final String SSL = "ssl";
-    public static final String GENERATE_KEYSTORE = "generate-keystore";
 
     private final Map<String, EncryptionService> encryptionServices = new HashMap<String, EncryptionService>();
     private final Map<String, KeyStore> keyStores = new HashMap<String, KeyStore>();
@@ -80,17 +74,17 @@ public class CryptoPlugin extends AbstractPlugin {
 
         // init SSL context (if a KeyStore is specified or if it should be generated)
         Configuration sslConfiguration = cryptoConfig.subset(SSL);
-        if (sslConfiguration.containsKey("keystore") || autoGenerateSSLKeyStore(sslConfiguration)) {
-            configureSSL(application, sslConfiguration);
+        if (sslConfiguration.containsKey("keystore")) {
+            configureSSL(sslConfiguration);
         }
 
         return InitState.INITIALIZED;
     }
 
-    private void configureSSL(Application application, Configuration sslConfiguration) {
+    private void configureSSL(Configuration sslConfiguration) {
         SsLLoader ssLLoader = new SsLLoader();
 
-        KeyManager[] keyManagers = configureKeyManagers(application, sslConfiguration);
+        KeyManager[] keyManagers = configureKeyManagers(sslConfiguration);
 
         TrustManager[] trustManagers = null;
         if (sslConfiguration.containsKey("truststore")) {
@@ -106,7 +100,7 @@ public class CryptoPlugin extends AbstractPlugin {
         sslContext = ssLLoader.getSSLContext(sslConfig.getProtocol(), keyManagers, trustManagers);
     }
 
-    private KeyManager[] configureKeyManagers(Application application, Configuration sslConfiguration) {
+    private KeyManager[] configureKeyManagers(Configuration sslConfiguration) {
         SsLLoader ssLLoader = new SsLLoader();
 
         KeyStore keyStore;
@@ -130,27 +124,12 @@ public class CryptoPlugin extends AbstractPlugin {
             if (password == null || "".equals(password)) {
                 throw new PluginException("Missing password for the alias \"" + alias + "\" in the KeyStore \"" + keyStoreName + "\"");
             }
-        } else if (autoGenerateSSLKeyStore(sslConfiguration)) {
-            File sslDir = application.getStorageLocation(SSL);
-            String keyStoreLocation = sslDir.getPath() + File.separator + "ssl.keystore";
-            File keyStoreFile = new File(keyStoreLocation);
-            if (keyStoreFile.canRead()) {
-                keyStore = new KeyStoreLoader().load("ssl", keyStoreLocation, GENERATED_PASSWORD, null, null);
-            } else {
-                keyStore = ssLLoader.generateKeyStore(keyStoreLocation, GENERATED_ALIAS, GENERATED_PASSWORD);
-            }
-            password = GENERATED_PASSWORD;
         } else {
             throw new PluginException("Missing configuration for the SSL KeyStore");
         }
 
         return ssLLoader.getKeyManagers(keyStore, password.toCharArray());
     }
-
-    private boolean autoGenerateSSLKeyStore(Configuration sslConfiguration) {
-        return sslConfiguration.getBoolean(GENERATE_KEYSTORE, false);
-    }
-
 
     private Map<String, KeyStoreConfig> configureKeyStores(Configuration cryptoConfig) {
         final Map<String, KeyStoreConfig> keyStoreConfigs = new HashMap<String, KeyStoreConfig>();

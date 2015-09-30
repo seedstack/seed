@@ -17,4 +17,9 @@ port=9001
 https-enabled=true
 
 [org.seedstack.seed.crypto.ssl]
-generate-keystore=true
+keystore=default
+
+[org.seedstack.seed.crypto.keystore.default]
+path=src/it/resources/ssl.keystore
+password=kspasswd
+alias.ssl.password=clientpasswd
