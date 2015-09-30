@@ -23,7 +23,6 @@ import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import javax.inject.Named;
-import javax.xml.bind.DatatypeConverter;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -38,11 +37,11 @@ public class CryptoIT {
     private static final Logger LOGGER = LoggerFactory.getLogger(CryptoIT.class);
 
     @Inject
-    @Named("key1")
+    @Named("client")
     private EncryptionService key1EncryptionService;
 
     @Inject
-    @Named("master")
+    @Named("seed")
     private EncryptionService masterEncryptionService;
 
     @Rule
@@ -55,7 +54,6 @@ public class CryptoIT {
      */
     @BeforeKernel
     public void beforeKernel() throws Exception {
-        LOGGER.info("run beforeKernel function");
         final Map<String, String> env = new HashMap<String, String>(System.getenv());
         env.put("KS_PASSWD", "azerty");
         env.put("KEY_PASSWD", "azerty");
@@ -66,28 +64,21 @@ public class CryptoIT {
             }
 
         };
-
     }
 
     @Test
-    public void testCustomAsymetricKey() throws Exception {
-        LOGGER.info("Test crypt with X509");
+    public void test() throws Exception {
         final String chaine = "essai crypting";
         byte[] encrypt = key1EncryptionService.encrypt(chaine.getBytes());
-        LOGGER.info("String crypt: {}", DatatypeConverter.printHexBinary(encrypt));
         byte[] decrypt = key1EncryptionService.decrypt(encrypt);
-        LOGGER.info("String decrypt: {}", new String(decrypt));
         Assertions.assertThat(decrypt).isEqualTo(chaine.getBytes());
     }
 
     @Test
     public void testWithMasterKey() throws Exception {
-        LOGGER.info("Test crypt with X509 internal key");
         final String chaine = "clientpasswd";
         byte[] encrypt = masterEncryptionService.encrypt(chaine.getBytes());
-        LOGGER.info("String crypt: {}", DatatypeConverter.printHexBinary(encrypt));
         byte[] decrypt = masterEncryptionService.decrypt(encrypt);
-        LOGGER.info("String decrypt: {}", new String(decrypt));
         Assertions.assertThat(decrypt).isEqualTo(chaine.getBytes());
     }
 

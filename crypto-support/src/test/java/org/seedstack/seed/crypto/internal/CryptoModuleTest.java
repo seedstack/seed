@@ -15,18 +15,17 @@
  */
 package org.seedstack.seed.crypto.internal;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import mockit.Mocked;
-import mockit.Verifications;
-
-import org.junit.Test;
-import org.seedstack.seed.crypto.api.EncryptionService;
-
 import com.google.inject.Binder;
 import com.google.inject.Key;
 import com.google.inject.name.Names;
+import mockit.Mocked;
+import mockit.Verifications;
+import org.junit.Test;
+import org.seedstack.seed.crypto.api.EncryptionService;
+
+import java.security.KeyStore;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Unit test for {@link CryptoModule}
@@ -40,16 +39,23 @@ public class CryptoModuleTest {
      * {@link Binder} to check if bind is ok.
      */
     @Test
-    public void testConfigure(@Mocked final EncryptionServiceImpl asymetricCryptingRSA, @Mocked final Binder binder) {
-        Map<String, EncryptionService> rsaServices = new HashMap<String, EncryptionService>();
-        final String key = "keyname";
-        rsaServices.put(key, asymetricCryptingRSA);
+    public void testConfigure(@Mocked final EncryptionServiceImpl asymetricCryptingRSA, @Mocked final KeyStore keyStore, @Mocked final Binder binder) {
 
-        CryptoModule module = new CryptoModule(rsaServices);
+        final Map<String, KeyStore> keyStores = new HashMap<String, KeyStore>();
+        keyStores.put("k1", keyStore);
+        final Map<String, EncryptionService> rsaServices = new HashMap<String, EncryptionService>();
+        rsaServices.put("k1", asymetricCryptingRSA);
+        rsaServices.put("k2", asymetricCryptingRSA);
+
+        CryptoModule module = new CryptoModule(rsaServices, keyStores);
         module.configure(binder);
         new Verifications() {
             {
-                binder.bind(Key.get(EncryptionService.class, Names.named(key))).toInstance(asymetricCryptingRSA);
+                binder.bind(Key.get(EncryptionService.class, Names.named("k1"))).toInstance(asymetricCryptingRSA);
+                times = 1;
+                binder.bind(Key.get(EncryptionService.class, Names.named("k2"))).toInstance(asymetricCryptingRSA);
+                times = 1;
+                binder.bind(Key.get(KeyStore.class, Names.named("k1"))).toInstance(keyStore);
                 times = 1;
             }
         };

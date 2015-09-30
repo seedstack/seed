@@ -8,23 +8,18 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 #
 
-## In a protected file
-[keystore]
-path=src/it/resources/internal/testkeystore.jck
-password=${env:KS_PASSWD}
+[org.seedstack.seed.core]
+application-id = test-app
 
-[truststore]
-path=src/it/resources/internal/testkeystore.jck
-password=${env:KS_PASSWD}
-type=JKS
+[org.seedstack.seed.server]
+host=0.0.0.0
+port=9001
+https-enabled=true
 
-[master-key]
-cert.file=src/it/resources/internal/seed.crt
-password=${env:KEY_PASSWD}
-alias=seed
+[org.seedstack.seed.crypto.ssl]
+keystore=default
 
-[ssl]
-keystore.path=
-keystore.password=
-key.alias=
-key.password=
+[org.seedstack.seed.crypto.keystore.default]
+path=src/it/resources/ssl.keystore
+password=kspasswd
+alias.ssl.password=clientpasswd

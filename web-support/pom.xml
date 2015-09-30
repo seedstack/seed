@@ -26,6 +26,7 @@
 		<module>core</module>
 		<module>security</module>
         <module>websocket</module>
+	<module>undertow</module>
     </modules>
 
     <dependencyManagement>
