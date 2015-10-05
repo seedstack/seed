@@ -9,8 +9,9 @@
     file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<modelVersion>4.0.0</modelVersion>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
 
     <parent>
         <groupId>org.seedstack.seed</groupId>
@@ -18,7 +19,7 @@
         <version>2.1.0-M1-SNAPSHOT</version>
     </parent>
 
-	<artifactId>seed-security-core</artifactId>
+    <artifactId>seed-security-core</artifactId>
 
     <properties>
         <compatibility.artifactId>seed-security-support-core</compatibility.artifactId>
@@ -40,11 +41,11 @@
             <artifactId>seed-el</artifactId>
             <version>${project.version}</version>
         </dependency>
-		<dependency>
-			<groupId>org.sonatype.sisu.inject</groupId>
-			<artifactId>guice-multibindings</artifactId>
+        <dependency>
+            <groupId>org.sonatype.sisu.inject</groupId>
+            <artifactId>guice-multibindings</artifactId>
             <version>${guice.version}</version>
-		</dependency>
+        </dependency>
         <dependency>
             <groupId>org.apache.shiro</groupId>
             <artifactId>shiro-core</artifactId>
@@ -80,16 +81,11 @@
                 </exclusion>
             </exclusions>
         </dependency>
-		<dependency>
-		  <groupId>org.jodah</groupId>
-		  <artifactId>typetools</artifactId>
-		  <version>0.3.0</version>
-		</dependency>   
- 		<dependency>
-			<groupId>org.kametic</groupId>
-			<artifactId>universalvisitor</artifactId>
-			<version>1.0.1</version>
-		</dependency>
+        <dependency>
+            <groupId>org.kametic</groupId>
+            <artifactId>universalvisitor</artifactId>
+            <version>1.0.1</version>
+        </dependency>
         <dependency>
             <groupId>org.seedstack.seed</groupId>
             <artifactId>seed-testing</artifactId>
@@ -109,11 +105,11 @@
             <version>${fest-reflect.version}</version>
             <scope>test</scope>
         </dependency>
-		<dependency>
-			<groupId>ch.qos.logback</groupId>
-			<artifactId>logback-classic</artifactId>
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
             <version>${logback.version}</version>
-			<scope>test</scope>
-		</dependency>
-	</dependencies>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
 </project>

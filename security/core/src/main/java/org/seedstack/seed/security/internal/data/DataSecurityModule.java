@@ -15,7 +15,7 @@ import com.google.inject.matcher.AbstractMatcher;
 import com.google.inject.matcher.Matcher;
 import com.google.inject.matcher.Matchers;
 import com.google.inject.multibindings.MapBinder;
-import org.jodah.typetools.TypeResolver;
+import net.jodah.typetools.TypeResolver;
 import org.seedstack.seed.security.api.data.DataSecurityService;
 import org.seedstack.seed.security.api.data.Secured;
 import org.seedstack.seed.security.spi.data.DataSecurityHandler;
