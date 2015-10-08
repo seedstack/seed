@@ -13,7 +13,8 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
 /**
- * Capture a generic type and resolve it. For example: 
+ * Capture a generic type and resolve it. For example:
+ * 
  * <pre>
  * <code>
  *   new TypeOf&lt;Repository&lt;AggregateRoot&lt;Long&gt;,Long&gt;&gt;() {}
@@ -22,26 +23,42 @@ import java.lang.reflect.Type;
  * 
  * @author thierry.bouvet@mpsa.com
  *
- * @param <T> Parameterized type to capture.
+ * @param <T>
+ *            Parameterized type to capture.
  */
 public abstract class TypeOf<T> {
 
 	private final Type type;
+	private final Class<? super T> rawType;
 
 	protected TypeOf() {
-	    Type superclass = getClass().getGenericSuperclass();
-	    if ( ! (superclass instanceof ParameterizedType) ) {
-	    	throw new SeedException(CoreErrorCode.MISSING_GENERIC_PARAMETER);
-	    }
-	    this.type = ((ParameterizedType) superclass).getActualTypeArguments()[0];
+		Type superclass = getClass().getGenericSuperclass();
+		if (!(superclass instanceof ParameterizedType)) {
+			throw new SeedException(CoreErrorCode.MISSING_GENERIC_PARAMETER);
+		}
+		this.type = ((ParameterizedType) superclass).getActualTypeArguments()[0];
+	    Class<?> clazz = type instanceof Class<?> ? (Class<?>)type : (Class<?>) ((ParameterizedType) type).getRawType();
+	    @SuppressWarnings("unchecked")
+		Class<? super T> clazz2 = (Class<? super T>) clazz;
+		this.rawType = clazz2;
+
 	}
 
 	/**
 	 * Returns the raw type with the generic types from this reference.
+	 * 
 	 * @return parameterized type
 	 */
 	public Type getType() {
 		return this.type;
+	}
+
+	/**
+	 * Returns the raw type from this reference.
+	 * @return the rawType
+	 */
+	public Class<? super T> getRawType() {
+		return rawType;
 	}
 
 }
