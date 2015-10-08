@@ -30,11 +30,17 @@ public class TypeOfTest {
 	 * Test method for {@link org.seedstack.seed.core.api.TypeOf#getType()}.
 	 */
 	@Test
-	public void testGetType() {
+	public void testResult() {
 		TypeOf<List<String>> typeOf = new TypeOf<List<String>>() {
 		};
 		Assertions.assertThat(typeOf.getType().toString()).isEqualTo("java.util.List<java.lang.String>");
-		
+		Assertions.assertThat(typeOf.getRawType()).isEqualTo(List.class);
+
+		TypeOf<Long> typeOf2 = new TypeOf<Long>() {
+		};
+		Assertions.assertThat(typeOf2.getType()).isEqualTo(Long.class);
+		Assertions.assertThat(typeOf2.getRawType()).isEqualTo(Long.class);
+
 	}
 
 	/**
