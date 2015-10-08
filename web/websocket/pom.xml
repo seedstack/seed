@@ -45,6 +45,13 @@
         </dependency>
 
         <dependency>
+            <groupId>org.seedstack</groupId>
+            <artifactId>arquillian-composite</artifactId>
+            <version>${seedstack.poms.version}</version>
+            <type>pom</type>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>org.glassfish</groupId>
             <artifactId>javax.json</artifactId>
             <version>1.0.4</version>

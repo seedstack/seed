@@ -53,6 +53,13 @@
         </dependency>
 
         <dependency>
+            <groupId>org.seedstack</groupId>
+            <artifactId>arquillian-composite</artifactId>
+            <version>${seedstack.poms.version}</version>
+            <type>pom</type>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>com.jayway.restassured</groupId>
             <artifactId>rest-assured</artifactId>
             <version>${rest-assured.version}</version>

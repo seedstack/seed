@@ -26,33 +26,15 @@
 
     <properties>
         <nuun-kernel.version>1.0.M5</nuun-kernel.version>
-        <jansi.version>1.11</jansi.version>
-        <slf4j.version>1.7.7</slf4j.version>
-        <logback.version>1.1.3</logback.version>
         <commons-configuration.version>1.9</commons-configuration.version>
         <commons-cli.version>1.2</commons-cli.version>
         <guice.version>3.1.3</guice.version>
-        <jackson.version>2.4.4</jackson.version>
-        <junit.version>4.12</junit.version>
-        <assertj.version>2.0.0</assertj.version>
         <juel.version>2.2.7</juel.version>
-        <javax-el.version>2.2.5</javax-el.version>
-        <fest-reflect.version>1.4.1</fest-reflect.version>
-        <jsonassert.version>1.2.3</jsonassert.version>
-        <jmockit.version>1.17</jmockit.version>
-        <rest-assured.version>2.5.0</rest-assured.version>
         <shiro.version>1.2.3</shiro.version>
-        <jta.version>1.1</jta.version>
-        <javax.servlet-api.version>3.0.1</javax.servlet-api.version>
-        <jsr311-api.version>1.1.1</jsr311-api.version>
-        <jersey.version>1.19</jersey.version>
         <undertow.version>1.2.11.Final</undertow.version>
-        <javax.websocket-api.version>1.0</javax.websocket-api.version>
-        <tomcat.version>7.0.57</tomcat.version>
-        <mockito.version>1.10.19</mockito.version>
         <jodd.version>3.5</jodd.version>
         <metrics.version>3.1.0</metrics.version>
-        <arquillian.version>1.1.5.Final</arquillian.version>
+        <jersey.version>1.19</jersey.version>
 
         <compatibility.version>2.0.0</compatibility.version>
     </properties>
