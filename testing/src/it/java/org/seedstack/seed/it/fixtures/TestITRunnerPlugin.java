@@ -7,27 +7,21 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-package org.seedstack.seed.cli.internal;
+package org.seedstack.seed.it.fixtures;
 
 import com.google.common.collect.Lists;
 import org.junit.rules.MethodRule;
 import org.junit.rules.TestRule;
 import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.TestClass;
-import org.seedstack.seed.cli.api.WithCommandLine;
 import org.seedstack.seed.it.spi.ITKernelMode;
 import org.seedstack.seed.it.spi.ITRunnerPlugin;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * This plugin enables to run SEED command line applications from integration tests. It disables the global SEED
- * kernel start to start its own kernel for each test method.
- *
- * @author adrien.lauer@mpsa.com
- */
-public class CommandLineITPlugin implements ITRunnerPlugin {
+public class TestITRunnerPlugin implements ITRunnerPlugin {
     @Override
     public List<Class<? extends TestRule>> provideClassRulesToApply(TestClass testClass) {
         return null;
@@ -38,31 +32,34 @@ public class CommandLineITPlugin implements ITRunnerPlugin {
         return null;
     }
 
-    @SuppressWarnings("unchecked")
     @Override
+    @SuppressWarnings("unchecked")
     public List<Class<? extends MethodRule>> provideMethodRulesToApply(TestClass testClass, Object target) {
-        if (checkForActivation(testClass)) {
-            return Lists.<Class<? extends MethodRule>>newArrayList(CommandLineITRule.class);
-        } else {
-            return null;
-        }
+        return checkForActivation(testClass) ? Lists.<Class<? extends MethodRule>>newArrayList(TestKernelRule.class) : null;
     }
 
     @Override
     public Map<String, String> provideDefaultConfiguration(TestClass testClass, FrameworkMethod frameworkMethod) {
-        return null;
+        Map<String, String> defaultConfiguration = new HashMap<String, String>();
+
+        defaultConfiguration.put("testKey", "testValue");
+
+        if (frameworkMethod != null) {
+            WithTestAnnotation annotation = frameworkMethod.getAnnotation(WithTestAnnotation.class);
+            if (annotation != null) {
+                defaultConfiguration.put(annotation.key(), annotation.value());
+            }
+        }
+
+        return defaultConfiguration;
     }
 
     @Override
     public ITKernelMode kernelMode(TestClass testClass) {
-        if (checkForActivation(testClass)) {
-            return ITKernelMode.NONE;
-        } else {
-            return ITKernelMode.ANY;
-        }
+        return checkForActivation(testClass) ? ITKernelMode.NONE : ITKernelMode.ANY;
     }
 
     private boolean checkForActivation(TestClass testClass) {
-        return !testClass.getAnnotatedMethods(WithCommandLine.class).isEmpty() || testClass.getJavaClass().getAnnotation(WithCommandLine.class) != null;
+        return !testClass.getAnnotatedMethods(WithTestAnnotation.class).isEmpty() || testClass.getJavaClass().getAnnotation(WithTestAnnotation.class) != null;
     }
 }

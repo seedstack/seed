@@ -9,14 +9,10 @@
  */
 package org.seedstack.seed.it;
 
-import com.google.inject.AbstractModule;
 import com.google.inject.Injector;
-import com.google.inject.Module;
 import com.google.inject.ProvisionException;
 import io.nuun.kernel.api.Kernel;
-import io.nuun.kernel.api.Plugin;
 import io.nuun.kernel.api.config.KernelConfiguration;
-import io.nuun.kernel.core.AbstractPlugin;
 import io.nuun.kernel.core.NuunCore;
 import org.junit.Before;
 import org.junit.rules.MethodRule;
@@ -37,10 +33,12 @@ import org.seedstack.seed.it.api.WithoutSpiPluginsLoader;
 import org.seedstack.seed.it.internal.ITPlugin;
 import org.seedstack.seed.it.spi.ITKernelMode;
 import org.seedstack.seed.it.spi.ITRunnerPlugin;
-import org.seedstack.seed.it.spi.PausableRunBefores;
+import org.seedstack.seed.it.spi.KernelRule;
+import org.seedstack.seed.it.spi.PausableStatement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.ServiceLoader;
@@ -49,8 +47,8 @@ import static io.nuun.kernel.core.NuunCore.createKernel;
 
 
 /**
- * This runner can be used to run JUnit tests with SEED integration. Tests
- * launched with this runner will benefit from SEED features (injection, aop
+ * This runner can be used to run JUnit tests with Seed integration. Tests
+ * launched with this runner will benefit from Seed features (injection, aop
  * interception, test extensions, ...).
  *
  * @author redouane.loulou@ext.mpsa.com
@@ -61,15 +59,12 @@ import static io.nuun.kernel.core.NuunCore.createKernel;
 public class SeedITRunner extends BlockJUnit4ClassRunner {
     private static final Logger LOGGER = LoggerFactory.getLogger(SeedITRunner.class);
 
-    private final boolean safeModeRequired;
-    private final Class<? extends Plugin>[] safeModePlugins;
-    private final Module[] safeModeModules;
     private final ServiceLoader<ITRunnerPlugin> plugins;
     private final Class<? extends Throwable> expectedClass;
 
     private ITKernelMode kernelMode = ITKernelMode.ANY;
+    private Map<String, String> defaultConfiguration;
     private Kernel kernel;
-    private Exception safeModeException;
 
     /**
      * Creates the runner for the corresponding test class.
@@ -80,54 +75,51 @@ public class SeedITRunner extends BlockJUnit4ClassRunner {
     @SuppressWarnings("unchecked")
     public SeedITRunner(Class<?> klass) throws InitializationError {
         super(klass);
-        this.safeModeRequired = false;
-        this.safeModePlugins = new Class[0];
-        this.safeModeModules = new Module[0];
-        this.plugins = ServiceLoader.load(ITRunnerPlugin.class, SeedReflectionUtils.findMostCompleteClassLoader(SeedITRunner.class));
-        this.expectedClass = findExpectedClass();
-    }
-
-    protected SeedITRunner(Class<?> klass, Class<? extends Plugin> safeModePlugins[], Module... safeModeModules) throws InitializationError {
-        super(klass);
-        this.safeModeRequired = true;
-        this.safeModePlugins = safeModePlugins.clone();
-        this.safeModeModules = safeModeModules.clone();
         this.plugins = ServiceLoader.load(ITRunnerPlugin.class, SeedReflectionUtils.findMostCompleteClassLoader(SeedITRunner.class));
         this.expectedClass = findExpectedClass();
     }
 
     protected void collectInitializationErrors(List<Throwable> errors) {
+        super.collectInitializationErrors(errors);
+
         validatePublicVoidNoArgMethods(BeforeKernel.class, true, errors);
         validatePublicVoidNoArgMethods(AfterKernel.class, true, errors);
     }
 
     @Override
     public void run(RunNotifier notifier) {
-        // Determine kernel mode to use and gather configuration
+        // Determine kernel mode to use
         for (ITRunnerPlugin plugin : plugins) {
-            Map<String, String> pluginDefaultConfiguration = plugin.provideDefaultConfiguration(getTestClass());
-            if (pluginDefaultConfiguration != null) {
-                for (Map.Entry<String, String> entry : pluginDefaultConfiguration.entrySet()) {
-                    System.setProperty(ITPlugin.DEFAULT_CONFIGURATION_PREFIX + entry.getKey(), entry.getValue());
-                }
+            ITKernelMode pluginKernelMode = plugin.kernelMode(getTestClass());
+            if (pluginKernelMode == null) {
+                pluginKernelMode = ITKernelMode.ANY;
             }
 
-            switch (plugin.kernelMode(getTestClass())) {
+            switch (pluginKernelMode) {
                 case NONE:
                     if (kernelMode == ITKernelMode.PER_TEST_CLASS || kernelMode == ITKernelMode.PER_TEST) {
-                        throw SeedException.createNew(ITErrorCode.TEST_PLUGINS_MISMATCH).put("requestedKernelMode", ITKernelMode.NONE).put("incompatibleKernelMode", kernelMode.toString()).put("testClass", getTestClass().getJavaClass().getCanonicalName());
+                        throw SeedException.createNew(ITErrorCode.TEST_PLUGINS_MISMATCH)
+                                .put("requestedKernelMode", ITKernelMode.NONE)
+                                .put("incompatibleKernelMode", kernelMode.toString())
+                                .put("testClass", getTestClass().getJavaClass().getCanonicalName());
                     }
                     kernelMode = ITKernelMode.NONE;
                     break;
                 case PER_TEST_CLASS:
                     if (kernelMode == ITKernelMode.NONE || kernelMode == ITKernelMode.PER_TEST) {
-                        throw SeedException.createNew(ITErrorCode.TEST_PLUGINS_MISMATCH).put("requestedKernelMode", ITKernelMode.PER_TEST_CLASS).put("incompatibleKernelMode", kernelMode.toString()).put("testClass", getTestClass().getJavaClass().getCanonicalName());
+                        throw SeedException.createNew(ITErrorCode.TEST_PLUGINS_MISMATCH)
+                                .put("requestedKernelMode", ITKernelMode.PER_TEST_CLASS)
+                                .put("incompatibleKernelMode", kernelMode.toString())
+                                .put("testClass", getTestClass().getJavaClass().getCanonicalName());
                     }
                     kernelMode = ITKernelMode.PER_TEST_CLASS;
                     break;
                 case PER_TEST:
                     if (kernelMode == ITKernelMode.NONE || kernelMode == ITKernelMode.PER_TEST_CLASS) {
-                        throw SeedException.createNew(ITErrorCode.TEST_PLUGINS_MISMATCH).put("requestedKernelMode", ITKernelMode.PER_TEST).put("incompatibleKernelMode", kernelMode.toString()).put("testClass", getTestClass().getJavaClass().getCanonicalName());
+                        throw SeedException.createNew(ITErrorCode.TEST_PLUGINS_MISMATCH)
+                                .put("requestedKernelMode", ITKernelMode.PER_TEST)
+                                .put("incompatibleKernelMode", kernelMode.toString())
+                                .put("testClass", getTestClass().getJavaClass().getCanonicalName());
                     }
                     kernelMode = ITKernelMode.PER_TEST;
                     break;
@@ -144,59 +136,18 @@ public class SeedITRunner extends BlockJUnit4ClassRunner {
         LOGGER.info("Kernel mode is {}", kernelMode);
 
         if (kernelMode == ITKernelMode.PER_TEST_CLASS) {
-            initKernel();
+            initKernel(gatherConfiguration(null));
         }
 
-        RunNotifier transformedNotifier = transformNotifier(notifier, safeModeException);
-
-        beforeClassTest(transformedNotifier, safeModeException);
-        if (safeModeException == null) {
-            super.run(transformedNotifier);
-        }
-        afterClassTest(transformedNotifier, safeModeException);
+        super.run(notifier);
 
         if (kernelMode == ITKernelMode.PER_TEST_CLASS) {
             stopKernel();
         }
-
-        if (safeModeException != null) {
-            processException(safeModeException);
-        }
     }
 
     /**
-     * Can be used by subclasses to alter the run notifier.
-     *
-     * @param notifier          the initial notifier
-     * @param eventualException exception if kernel failed to initialize normally. A safe mode kernel is still available.
-     * @return an adapted notifier
-     */
-    protected RunNotifier transformNotifier(RunNotifier notifier, Exception eventualException) {
-        return notifier;
-    }
-
-    /**
-     * afterClassTest
-     *
-     * @param notifier          RunNotifier
-     * @param eventualException exception if kernel failed to initialize normally. A safe mode kernel is still available.
-     */
-    protected void afterClassTest(RunNotifier notifier, Exception eventualException) {
-        // can be overridden by subclasses
-    }
-
-    /**
-     * beforeClassTest
-     *
-     * @param notifier          RunNotifier
-     * @param eventualException exception if kernel failed to initialize normally. A safe mode kernel is still available.
-     */
-    protected void beforeClassTest(RunNotifier notifier, Exception eventualException) {
-        // can be overridden by subclasses
-    }
-
-    /**
-     * @return the active kernel (may be a safe kernel if main kernel failed to start)
+     * @return the active kernel
      */
     protected Kernel getKernel() {
         return this.kernel;
@@ -206,11 +157,18 @@ public class SeedITRunner extends BlockJUnit4ClassRunner {
     protected List<TestRule> getTestRules(Object target) {
         List<TestRule> testRules = super.getTestRules(target);
         for (ITRunnerPlugin plugin : plugins) {
-            for (Class<? extends TestRule> testRuleClass : plugin.provideTestRulesToApply(getTestClass(), target)) {
-                try {
-                    testRules.add(instantiate(testRuleClass));
-                } catch (Exception e) {
-                    throw SeedException.wrap(e, ITErrorCode.FAILED_TO_INSTANTIATE_TEST_RULE).put("class", testRuleClass);
+            List<Class<? extends TestRule>> testRulesToApply = plugin.provideTestRulesToApply(getTestClass(), target);
+            if (testRulesToApply != null) {
+                for (Class<? extends TestRule> testRuleClass : testRulesToApply) {
+                    try {
+                        TestRule testRule = instantiate(testRuleClass);
+                        if (testRule instanceof KernelRule) {
+                            ((KernelRule) testRule).acceptKernelConfiguration(provideKernelConfiguration(defaultConfiguration));
+                        }
+                        testRules.add(testRule);
+                    } catch (Exception e) {
+                        throw SeedException.wrap(e, ITErrorCode.FAILED_TO_INSTANTIATE_TEST_RULE).put("class", testRuleClass.getCanonicalName());
+                    }
                 }
             }
         }
@@ -221,11 +179,18 @@ public class SeedITRunner extends BlockJUnit4ClassRunner {
     protected List<TestRule> classRules() {
         List<TestRule> testRules = super.classRules();
         for (ITRunnerPlugin plugin : plugins) {
-            for (Class<? extends TestRule> testRuleClass : plugin.provideClassRulesToApply(getTestClass())) {
-                try {
-                    testRules.add(instantiate(testRuleClass));
-                } catch (Exception e) {
-                    throw SeedException.wrap(e, ITErrorCode.FAILED_TO_INSTANTIATE_TEST_RULE).put("class", testRuleClass);
+            List<Class<? extends TestRule>> classRulesToApply = plugin.provideClassRulesToApply(getTestClass());
+            if (classRulesToApply != null) {
+                for (Class<? extends TestRule> testRuleClass : classRulesToApply) {
+                    try {
+                        TestRule testRule = instantiate(testRuleClass);
+                        if (testRule instanceof KernelRule) {
+                            ((KernelRule) testRule).acceptKernelConfiguration(provideKernelConfiguration(defaultConfiguration));
+                        }
+                        testRules.add(testRule);
+                    } catch (Exception e) {
+                        throw SeedException.wrap(e, ITErrorCode.FAILED_TO_INSTANTIATE_TEST_RULE).put("class", testRuleClass.getCanonicalName());
+                    }
                 }
             }
         }
@@ -236,11 +201,18 @@ public class SeedITRunner extends BlockJUnit4ClassRunner {
     protected List<MethodRule> rules(Object target) {
         List<MethodRule> methodRules = super.rules(target);
         for (ITRunnerPlugin plugin : plugins) {
-            for (Class<? extends MethodRule> methodRuleClass : plugin.provideMethodRulesToApply(getTestClass(), target)) {
-                try {
-                    methodRules.add(instantiate(methodRuleClass));
-                } catch (Exception e) {
-                    throw SeedException.wrap(e, ITErrorCode.FAILED_TO_INSTANTIATE_TEST_RULE).put("class", methodRuleClass);
+            List<Class<? extends MethodRule>> methodRulesToApply = plugin.provideMethodRulesToApply(getTestClass(), target);
+            if (methodRulesToApply != null) {
+                for (Class<? extends MethodRule> methodRuleClass : methodRulesToApply) {
+                    try {
+                        MethodRule methodRule = instantiate(methodRuleClass);
+                        if (methodRule instanceof KernelRule) {
+                            ((KernelRule) methodRule).acceptKernelConfiguration(provideKernelConfiguration(defaultConfiguration));
+                        }
+                        methodRules.add(methodRule);
+                    } catch (Exception e) {
+                        throw SeedException.wrap(e, ITErrorCode.FAILED_TO_INSTANTIATE_TEST_RULE).put("class", methodRuleClass.getCanonicalName());
+                    }
                 }
             }
         }
@@ -250,7 +222,7 @@ public class SeedITRunner extends BlockJUnit4ClassRunner {
     @Override
     protected Statement withBefores(FrameworkMethod method, Object target, Statement statement) {
         List<FrameworkMethod> befores = getTestClass().getAnnotatedMethods(Before.class);
-        return befores.isEmpty() ? statement : new PausableRunBefores(statement, befores, target);
+        return befores.isEmpty() ? statement : new PausableStatement(statement, befores, target);
     }
 
     @Override
@@ -260,7 +232,6 @@ public class SeedITRunner extends BlockJUnit4ClassRunner {
         try {
             test = instantiate(getTestClass().getJavaClass());
         } catch (Exception e) {
-            processException(e);
             test = super.createTest();
         }
 
@@ -269,8 +240,10 @@ public class SeedITRunner extends BlockJUnit4ClassRunner {
 
     @Override
     protected void runChild(FrameworkMethod method, RunNotifier notifier) {
+        defaultConfiguration = gatherConfiguration(method);
+
         if (kernelMode == ITKernelMode.PER_TEST) {
-            initKernel();
+            initKernel(gatherConfiguration(method));
         }
 
         super.runChild(method, notifier);
@@ -281,14 +254,14 @@ public class SeedITRunner extends BlockJUnit4ClassRunner {
     }
 
     private <T> T instantiate(Class<T> toInstantiate) throws IllegalAccessException, InstantiationException {
-        if (kernel != null) {
+        if (kernel != null && kernel.isStarted()) {
             return kernel.objectGraph().as(Injector.class).getInstance(toInstantiate);
         } else {
             return toInstantiate.newInstance();
         }
     }
 
-    private void initKernel() {
+    private void initKernel(Map<String, String> configuration) {
         List<FrameworkMethod> beforeKernelMethods = getTestClass().getAnnotatedMethods(BeforeKernel.class);
         for (FrameworkMethod beforeKernelMethod : beforeKernelMethods) {
             try {
@@ -298,72 +271,51 @@ public class SeedITRunner extends BlockJUnit4ClassRunner {
             }
         }
 
-        safeModeException = null;
+        Exception eventualException = null;
         try {
-            KernelConfiguration kernelConfiguration = NuunCore.newKernelConfiguration();
-            withoutSpiPluginsLoader(kernelConfiguration);
-            withPlugins(kernelConfiguration);
-            kernelConfiguration.param(ITPlugin.IT_CLASS_NAME, getTestClass().getJavaClass().getName());
-
-            Kernel normalKernel = createKernel(kernelConfiguration);
-            normalKernel.init();
-            normalKernel.start();
-            kernel = normalKernel;
+            kernel = createKernel(provideKernelConfiguration(configuration));
+            kernel.init();
+            kernel.start();
         } catch (Exception e) {
-            if (safeModeRequired) {
-                LOGGER.error("Failed to start kernel in normal mode, using safe mode to complete the testing process");
-                safeModeException = e;
-                try {
-                    KernelConfiguration safeModeKernelConfiguration = NuunCore.newKernelConfiguration();
-
-                    safeModeKernelConfiguration.withoutSpiPluginsLoader();
-                    safeModeKernelConfiguration.plugins(safeModePlugins);
-                    safeModeKernelConfiguration.plugins(new InternalPlugin(new InternalModule(safeModeModules)));
-                    safeModeKernelConfiguration.param(ITPlugin.IT_CLASS_NAME, getTestClass().getJavaClass().getName());
-
-                    Kernel safeKernel = createKernel(safeModeKernelConfiguration);
-                    safeKernel.init();
-                    safeKernel.start();
-                    kernel = safeKernel;
-                } catch (Exception e2) {
-                    e2.initCause(e);
-                    throw SeedException.wrap(e2, ITErrorCode.FAILED_TO_INITIALIZE_SAFE_KERNEL);
-                }
-            } else {
-                try {
-                    processException(e);
-                } catch (SeedException e2) {
-                    throw SeedException.wrap(e2, ITErrorCode.FAILED_TO_INITIALIZE_KERNEL);
-                }
-            }
+            eventualException = e;
+            kernel = null;
         }
 
-        if (kernel != null) {
-            kernel.objectGraph().as(Injector.class).injectMembers(this);
+        try {
+            processException(eventualException);
+        } catch (Exception e) {
+            throw SeedException.wrap(e, ITErrorCode.FAILED_TO_INITIALIZE_KERNEL);
         }
     }
 
     private void stopKernel() {
         try {
-            if (kernel != null) {
-                kernel.stop();
-            }
-        } catch (Exception e) {
-            try {
-                processException(e);
-            } catch (Exception e2) {
-                throw SeedException.wrap(e2, ITErrorCode.FAILED_TO_STOP_KERNEL);
-            }
-        } finally {
-            List<FrameworkMethod> afterKernelMethods = getTestClass().getAnnotatedMethods(AfterKernel.class);
-            for (FrameworkMethod afterKernelMethod : afterKernelMethods) {
+            if (kernel != null && kernel.isStarted()) {
+                Exception eventualException = null;
+
                 try {
-                    afterKernelMethod.invokeExplosively(null);
-                } catch (Throwable t) {
-                    throw SeedException.wrap(t, ITErrorCode.EXCEPTION_OCCURRED_AFTER_KERNEL);
+                    kernel.stop();
+                } catch (Exception e) {
+                    eventualException = e;
+                }
+
+                // Execute the AfterKernel methods before processing eventual exception
+                List<FrameworkMethod> afterKernelMethods = getTestClass().getAnnotatedMethods(AfterKernel.class);
+                for (FrameworkMethod afterKernelMethod : afterKernelMethods) {
+                    try {
+                        afterKernelMethod.invokeExplosively(null);
+                    } catch (Throwable t) {
+                        throw SeedException.wrap(t, ITErrorCode.EXCEPTION_OCCURRED_AFTER_KERNEL);
+                    }
+                }
+
+                try {
+                    processException(eventualException);
+                } catch (Exception e) {
+                    throw SeedException.wrap(e, ITErrorCode.FAILED_TO_STOP_KERNEL);
                 }
             }
-
+        } finally {
             kernel = null;
         }
     }
@@ -380,17 +332,48 @@ public class SeedITRunner extends BlockJUnit4ClassRunner {
             if (unwrappedThrowable instanceof SeedException) {
                 throw (SeedException) unwrappedThrowable;
             } else {
-                throw SeedException.wrap(unwrappedThrowable, ITErrorCode.UNEXPECTED_EXCEPTION_OCCURRED).put("occurredClass", unwrappedThrowable.getClass());
+                throw SeedException.wrap(unwrappedThrowable, ITErrorCode.UNEXPECTED_EXCEPTION_OCCURRED).put("occurredClass", unwrappedThrowable.getClass().getCanonicalName());
             }
         }
 
         if (expectedClass != null) {
             if (unwrappedThrowable == null) {
-                throw SeedException.createNew(ITErrorCode.EXPECTED_EXCEPTION_DID_NOT_OCCURRED).put("expectedClass", expectedClass);
+                throw SeedException.createNew(ITErrorCode.EXPECTED_EXCEPTION_DID_NOT_OCCURRED).put("expectedClass", expectedClass.getCanonicalName());
             } else if (!unwrappedThrowable.getClass().equals(expectedClass)) {
-                throw SeedException.createNew(ITErrorCode.ANOTHER_EXCEPTION_THAN_EXPECTED_OCCURRED).put("expectedClass", expectedClass).put("occurredClass", unwrappedThrowable.getClass());
+                throw SeedException.createNew(ITErrorCode.ANOTHER_EXCEPTION_THAN_EXPECTED_OCCURRED).put("expectedClass", expectedClass.getCanonicalName()).put("occurredClass", unwrappedThrowable.getClass().getCanonicalName());
             }
         }
+    }
+
+    private KernelConfiguration provideKernelConfiguration(Map<String, String> configuration) {
+        KernelConfiguration kernelConfiguration = NuunCore.newKernelConfiguration();
+
+        if (getTestClass().getJavaClass().getAnnotation(WithoutSpiPluginsLoader.class) != null) {
+            kernelConfiguration.withoutSpiPluginsLoader();
+        }
+
+        WithPlugins annotation = getTestClass().getJavaClass().getAnnotation(WithPlugins.class);
+        if (annotation != null) {
+            kernelConfiguration.plugins(annotation.value());
+        }
+
+        kernelConfiguration.param(ITPlugin.IT_CLASS_NAME, getTestClass().getJavaClass().getName());
+        for (Map.Entry<String, String> defaultConfigurationEntry : configuration.entrySet()) {
+            kernelConfiguration.param(ITPlugin.DEFAULT_CONFIGURATION_PREFIX + defaultConfigurationEntry.getKey(), defaultConfigurationEntry.getValue());
+        }
+
+        return kernelConfiguration;
+    }
+
+    private Map<String, String> gatherConfiguration(FrameworkMethod frameworkMethod) {
+        Map<String, String> configuration = new HashMap<String, String>();
+        for (ITRunnerPlugin plugin : plugins) {
+            Map<String, String> pluginConfiguration = plugin.provideDefaultConfiguration(getTestClass(), frameworkMethod);
+            if (pluginConfiguration != null) {
+                configuration.putAll(pluginConfiguration);
+            }
+        }
+        return configuration;
     }
 
     private Class<? extends Throwable> findExpectedClass() {
@@ -399,54 +382,6 @@ public class SeedITRunner extends BlockJUnit4ClassRunner {
             return annotation.value();
         } else {
             return null;
-        }
-    }
-
-    private void withPlugins(KernelConfiguration kernelConfiguration) {
-        WithPlugins annotation = getTestClass().getJavaClass().getAnnotation(WithPlugins.class);
-        if (annotation != null) {
-            kernelConfiguration.plugins(annotation.value());
-        }
-    }
-
-    private void withoutSpiPluginsLoader(KernelConfiguration kernelConfiguration) {
-        if (getTestClass().getJavaClass().getAnnotation(WithoutSpiPluginsLoader.class) != null) {
-            kernelConfiguration.withoutSpiPluginsLoader();
-        }
-    }
-
-    private static final class InternalModule extends AbstractModule {
-        private Module[] internalModules;
-
-        private InternalModule(Module[] modules) {
-            internalModules = modules.clone();
-        }
-
-        @Override
-        protected void configure() {
-            if (internalModules != null) {
-                for (Module m : internalModules) {
-                    install(m);
-                }
-            }
-        }
-    }
-
-    private static final class InternalPlugin extends AbstractPlugin {
-        private Module module;
-
-        private InternalPlugin(Module module) {
-            this.module = module;
-        }
-
-        @Override
-        public String name() {
-            return "fixture-internal-plugin";
-        }
-
-        @Override
-        public Object nativeUnitModule() {
-            return module;
         }
     }
 }

@@ -9,18 +9,17 @@
  */
 package org.seedstack.seed.security.internal;
 
-import java.util.List;
-import java.util.Map;
-
+import com.google.common.collect.Lists;
 import org.junit.rules.MethodRule;
 import org.junit.rules.TestRule;
+import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.TestClass;
 import org.seedstack.seed.it.spi.ITKernelMode;
 import org.seedstack.seed.it.spi.ITRunnerPlugin;
 import org.seedstack.seed.security.api.WithUser;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
+import java.util.List;
+import java.util.Map;
 
 /**
  * IT plugin for security. Handles the WithSecurity annotation and adds the rule to connect a user.
@@ -30,7 +29,7 @@ import com.google.common.collect.Maps;
 public class SecurityITPlugin implements ITRunnerPlugin {
     @Override
     public List<Class<? extends TestRule>> provideClassRulesToApply(TestClass testClass) {
-        return Lists.newArrayList();
+        return null;
     }
 
     @Override
@@ -38,18 +37,18 @@ public class SecurityITPlugin implements ITRunnerPlugin {
         if (!testClass.getAnnotatedMethods(WithUser.class).isEmpty() || testClass.getJavaClass().getAnnotation(WithUser.class) != null) {
             return Lists.<Class<? extends TestRule>> newArrayList(SecurityITRule.class);
         } else {
-            return Lists.newArrayList();
+            return null;
         }
     }
 
     @Override
     public List<Class<? extends MethodRule>> provideMethodRulesToApply(TestClass testClass, Object target) {
-        return Lists.newArrayList();
+        return null;
     }
 
     @Override
-    public Map<String, String> provideDefaultConfiguration(TestClass testClass) {
-        return Maps.newHashMap();
+    public Map<String, String> provideDefaultConfiguration(TestClass testClass, FrameworkMethod frameworkMethod) {
+        return null;
     }
 
     @Override

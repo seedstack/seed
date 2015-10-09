@@ -15,6 +15,7 @@ import com.google.inject.Injector;
 import com.google.inject.Key;
 import com.google.inject.name.Names;
 import io.nuun.kernel.api.Kernel;
+import io.nuun.kernel.api.config.KernelConfiguration;
 import io.nuun.kernel.core.NuunCore;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -102,7 +103,7 @@ public class SeedRunner implements SeedLauncher {
      * @throws Exception when the CLI command fails to complete.
      */
     public static int execute(String[] args) throws Exception {
-        Kernel kernel = startKernel(new CliContext(args));
+        Kernel kernel = startKernel(new CliContext(args), null);
 
         try {
             Injector injector = kernel.objectGraph().as(Injector.class);
@@ -140,7 +141,7 @@ public class SeedRunner implements SeedLauncher {
      * @throws Exception when the CLI command fails to complete.
      */
     public static int execute(String[] args, Callable<Integer> callable) throws Exception {
-        Kernel kernel = startKernel(new CliContext(args));
+        Kernel kernel = startKernel(new CliContext(args), null);
 
         try {
             kernel.objectGraph().as(Injector.class).injectMembers(callable);
@@ -150,8 +151,34 @@ public class SeedRunner implements SeedLauncher {
         }
     }
 
-    private static Kernel startKernel(CliContext args) {
-        Kernel kernel = NuunCore.createKernel(NuunCore.newKernelConfiguration().containerContext(args));
+    /**
+     * Method to execute a callable as a CLI application.
+     *
+     * @param args                the command line arguments.
+     * @param callable            the callable to execute
+     * @param kernelConfiguration a kernel configuration to use for the CLI application.
+     * @return the return code of the callable
+     * @throws Exception when the CLI command fails to complete.
+     */
+    public static int execute(String[] args, Callable<Integer> callable, KernelConfiguration kernelConfiguration) throws Exception {
+        Kernel kernel = startKernel(new CliContext(args), kernelConfiguration);
+
+        try {
+            kernel.objectGraph().as(Injector.class).injectMembers(callable);
+            return callable.call();
+        } finally {
+            stopKernel(kernel);
+        }
+    }
+
+    private static Kernel startKernel(CliContext args, KernelConfiguration kernelConfiguration) {
+        // Use the provided kernel configuration if any
+        if (kernelConfiguration == null) {
+            kernelConfiguration = NuunCore.newKernelConfiguration();
+        }
+        kernelConfiguration.containerContext(args);
+
+        Kernel kernel = NuunCore.createKernel(kernelConfiguration);
         kernel.init();
         kernel.start();
         return kernel;
