@@ -11,6 +11,7 @@ package org.seedstack.seed.cli.internal;
 
 import com.google.inject.Inject;
 import com.google.inject.Injector;
+import io.nuun.kernel.api.config.KernelConfiguration;
 import org.junit.rules.MethodRule;
 import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.Statement;
@@ -18,7 +19,8 @@ import org.seedstack.seed.cli.SeedRunner;
 import org.seedstack.seed.cli.api.CliErrorCode;
 import org.seedstack.seed.cli.api.WithCommandLine;
 import org.seedstack.seed.core.api.SeedException;
-import org.seedstack.seed.it.spi.PausableRunBefores;
+import org.seedstack.seed.it.spi.KernelRule;
+import org.seedstack.seed.it.spi.PausableStatement;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -26,7 +28,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author epo.jemba@ext.mpsa.com
  * @author adrien.lauer@mpsa.com
  */
-public class CommandLineITRule implements MethodRule {
+public class CommandLineITRule implements MethodRule, KernelRule {
+    private KernelConfiguration kernelConfiguration;
 
     @Override
     public Statement apply(final Statement statement, final FrameworkMethod frameworkMethod, final Object target) {
@@ -43,18 +46,23 @@ public class CommandLineITRule implements MethodRule {
                     String[] value = annotation.args();
                     int expectedExitCode = annotation.expectedExitCode();
 
-                    int returnCode = SeedRunner.execute(value, new CommandLineITCallable(target, statement, annotation.command(), annotation.args()));
+                    int returnCode = SeedRunner.execute(value, new CommandLineITCallable(target, statement, annotation.command(), annotation.args()), kernelConfiguration);
 
                     assertThat(returnCode).as("Exit code returned by SeedRunner").isEqualTo(expectedExitCode);
                 }
 
-                if (statement instanceof PausableRunBefores) {
-                    ((PausableRunBefores) statement).resume();
+                if (statement instanceof PausableStatement) {
+                    ((PausableStatement) statement).resume();
                 } else {
                     statement.evaluate();
                 }
             }
         };
+    }
+
+    @Override
+    public void acceptKernelConfiguration(KernelConfiguration kernelConfiguration) {
+        this.kernelConfiguration = kernelConfiguration;
     }
 
     private static final class CommandLineITCallable extends SeedRunner.SeedCallable {
@@ -74,9 +82,9 @@ public class CommandLineITRule implements MethodRule {
         public Integer call() throws Exception {
             injector.injectMembers(target);
 
-            if (statement instanceof PausableRunBefores) {
+            if (statement instanceof PausableStatement) {
                 try {
-                    ((PausableRunBefores) statement).evaluateAndPause();
+                    ((PausableStatement) statement).evaluateAndPause();
                 } catch (Throwable t) {
                     throw SeedException.wrap(t, CliErrorCode.EXCEPTION_OCCURRED_BEFORE_CLI_TEST);
                 }

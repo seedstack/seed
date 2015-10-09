@@ -31,7 +31,7 @@ class ITModule extends AbstractModule {
             bind(testClass);
         }
 
-        if (iTs != null && !iTs.isEmpty()) {
+        if (iTs != null) {
             for (Class<?> iT : iTs) {
                 bind(iT);
             }

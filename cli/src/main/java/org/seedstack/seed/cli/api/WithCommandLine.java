@@ -10,8 +10,11 @@
 package org.seedstack.seed.cli.api;
 
 import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
  * Apply this annotation on a test method or a test class to execute a Seed CLI command with the specified arguments.
@@ -22,7 +25,9 @@ import java.lang.annotation.RetentionPolicy;
  * @author adrien.lauer@mpsa.com
  */
 @Retention(RetentionPolicy.RUNTIME)
+@Target({ ElementType.TYPE, ElementType.METHOD })
 @Documented
+@Inherited
 public @interface WithCommandLine {
     /**
      * @return the name of the command to execute.

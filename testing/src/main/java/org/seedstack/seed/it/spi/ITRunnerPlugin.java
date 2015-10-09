@@ -11,6 +11,7 @@ package org.seedstack.seed.it.spi;
 
 import org.junit.rules.MethodRule;
 import org.junit.rules.TestRule;
+import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.TestClass;
 
 import java.util.List;
@@ -61,9 +62,10 @@ public interface ITRunnerPlugin {
      * The plugin can provide a default configuration for the started kernel.
      *
      * @param testClass the test class definition
+     * @param method    the test method if the kernel is created per test, null otherwise.
      * @return the default configuration map
      */
-    Map<String, String> provideDefaultConfiguration(TestClass testClass);
+    Map<String, String> provideDefaultConfiguration(TestClass testClass, FrameworkMethod method);
 
     /**
      * The plugin can choose a kernel mode for the test. If multiple plugins require incompatible modes, an exception

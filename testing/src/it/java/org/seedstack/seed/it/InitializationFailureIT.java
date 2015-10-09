@@ -10,8 +10,8 @@
 package org.seedstack.seed.it;
 
 import com.google.inject.CreationException;
-import org.seedstack.seed.it.api.Expect;
 import org.junit.Test;
+import org.seedstack.seed.it.api.Expect;
 
 import javax.inject.Inject;
 
@@ -23,7 +23,7 @@ public class InitializationFailureIT extends AbstractSeedIT {
     Object object;
 
     @Test
-    public void seed_it_runner_is_injecting_test_class_properly() {
+    public void injection_should_not_work() {
         assertThat(object).isNull();
     }
 }

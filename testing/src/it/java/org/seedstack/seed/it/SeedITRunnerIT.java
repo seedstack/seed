@@ -14,6 +14,7 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.seedstack.seed.core.api.Application;
 import org.seedstack.seed.it.api.AfterKernel;
 import org.seedstack.seed.it.api.BeforeKernel;
 
@@ -74,5 +75,10 @@ public class SeedITRunnerIT {
         assertThat(passedAfterClass).isFalse();
         assertThat(passedAfterKernel).isFalse();
         assertThat(injector).isNotNull();
+    }
+
+    @Test
+    public void seed_it_runner_is_correctly_passing_default_configuration() {
+        assertThat(injector.getInstance(Application.class).getConfiguration().getString("testKey")).isEqualTo("testValue");
     }
 }
