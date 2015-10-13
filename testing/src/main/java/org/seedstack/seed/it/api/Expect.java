@@ -18,7 +18,7 @@ import java.lang.annotation.Target;
 
 /**
  * This annotation can be used on integration tests to mark a Throwable class as being expected.
- * 
+ *
  * @author epo.jemba@ext.mpsa.com
  */
 @Target(ElementType.TYPE)
@@ -26,8 +26,20 @@ import java.lang.annotation.Target;
 @Documented
 @Inherited
 public @interface Expect {
+
+    enum TestingStep {
+        STARTUP,
+        INSTANTIATION,
+        SHUTDOWN
+    }
+
     /**
      * @return the expected class.
      */
     Class<? extends Throwable> value();
+
+    /**
+     * @return the testing step in which the exception is expected.
+     */
+    TestingStep step() default TestingStep.STARTUP;
 }

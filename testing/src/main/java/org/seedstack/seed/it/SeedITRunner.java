@@ -60,6 +60,7 @@ public class SeedITRunner extends BlockJUnit4ClassRunner {
     private static final Logger LOGGER = LoggerFactory.getLogger(SeedITRunner.class);
 
     private final ServiceLoader<ITRunnerPlugin> plugins;
+    private final Expect.TestingStep expectedTestingStep;
     private final Class<? extends Throwable> expectedClass;
 
     private ITKernelMode kernelMode = ITKernelMode.ANY;
@@ -76,7 +77,15 @@ public class SeedITRunner extends BlockJUnit4ClassRunner {
     public SeedITRunner(Class<?> klass) throws InitializationError {
         super(klass);
         this.plugins = ServiceLoader.load(ITRunnerPlugin.class, SeedReflectionUtils.findMostCompleteClassLoader(SeedITRunner.class));
-        this.expectedClass = findExpectedClass();
+
+        Expect annotation = getTestClass().getJavaClass().getAnnotation(Expect.class);
+        if (annotation != null) {
+            this.expectedClass = annotation.value();
+            this.expectedTestingStep = annotation.step();
+        } else {
+            this.expectedClass = null;
+            this.expectedTestingStep = null;
+        }
     }
 
     protected void collectInitializationErrors(List<Throwable> errors) {
@@ -227,11 +236,19 @@ public class SeedITRunner extends BlockJUnit4ClassRunner {
 
     @Override
     protected Object createTest() throws Exception {
-        Object test;
+        Exception eventualException = null;
+        Object test = null;
 
         try {
             test = instantiate(getTestClass().getJavaClass());
         } catch (Exception e) {
+            eventualException = e;
+        }
+
+        processException(eventualException, Expect.TestingStep.INSTANTIATION);
+
+        // we still want a non-injected test instance to verify that things have failed
+        if (test == null) {
             test = super.createTest();
         }
 
@@ -282,7 +299,7 @@ public class SeedITRunner extends BlockJUnit4ClassRunner {
         }
 
         try {
-            processException(eventualException);
+            processException(eventualException, Expect.TestingStep.STARTUP);
         } catch (Exception e) {
             throw SeedException.wrap(e, ITErrorCode.FAILED_TO_INITIALIZE_KERNEL);
         }
@@ -310,7 +327,7 @@ public class SeedITRunner extends BlockJUnit4ClassRunner {
                 }
 
                 try {
-                    processException(eventualException);
+                    processException(eventualException, Expect.TestingStep.SHUTDOWN);
                 } catch (Exception e) {
                     throw SeedException.wrap(e, ITErrorCode.FAILED_TO_STOP_KERNEL);
                 }
@@ -320,7 +337,7 @@ public class SeedITRunner extends BlockJUnit4ClassRunner {
         }
     }
 
-    private void processException(Exception e) {
+    private void processException(Exception e, Expect.TestingStep testingStep) {
         Throwable unwrappedThrowable = e;
 
         // Unwrap known Guice exceptions to access the real one
@@ -338,7 +355,9 @@ public class SeedITRunner extends BlockJUnit4ClassRunner {
 
         if (expectedClass != null) {
             if (unwrappedThrowable == null) {
-                throw SeedException.createNew(ITErrorCode.EXPECTED_EXCEPTION_DID_NOT_OCCURRED).put("expectedClass", expectedClass.getCanonicalName());
+                if (expectedTestingStep == testingStep) {
+                    throw SeedException.createNew(ITErrorCode.EXPECTED_EXCEPTION_DID_NOT_OCCURRED).put("expectedClass", expectedClass.getCanonicalName());
+                }
             } else if (!unwrappedThrowable.getClass().equals(expectedClass)) {
                 throw SeedException.createNew(ITErrorCode.ANOTHER_EXCEPTION_THAN_EXPECTED_OCCURRED).put("expectedClass", expectedClass.getCanonicalName()).put("occurredClass", unwrappedThrowable.getClass().getCanonicalName());
             }
@@ -374,14 +393,5 @@ public class SeedITRunner extends BlockJUnit4ClassRunner {
             }
         }
         return configuration;
-    }
-
-    private Class<? extends Throwable> findExpectedClass() {
-        Expect annotation = getTestClass().getJavaClass().getAnnotation(Expect.class);
-        if (annotation != null) {
-            return annotation.value();
-        } else {
-            return null;
-        }
     }
 }
