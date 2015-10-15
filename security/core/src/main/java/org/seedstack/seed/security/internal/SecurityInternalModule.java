@@ -46,7 +46,6 @@ class SecurityInternalModule extends PrivateModule {
     @SuppressWarnings({"unchecked", "rawtypes"})
     @Override
     public void configure() {
-        bind(SecurityITRule.class);
         bind(Configuration.class).annotatedWith(Names.named("seed-security-config")).toInstance(securityConfigurer.getSecurityConfiguration());
         bind(CacheManager.class).to(MemoryConstrainedCacheManager.class);
         try {
@@ -63,7 +62,6 @@ class SecurityInternalModule extends PrivateModule {
             principalCustomizers.addBinding().to(customizerClass);
         }
 
-        expose(SecurityITRule.class);
         expose(new TypeLiteral<Set<Realm>>() {});
         expose(new TypeLiteral<Set<PrincipalCustomizer>>() {});
         expose(SecuritySupport.class);

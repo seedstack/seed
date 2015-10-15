@@ -9,9 +9,6 @@
  */
 package org.seedstack.seed.security.internal;
 
-import javax.inject.Inject;
-import javax.inject.Named;
-
 import org.apache.shiro.authc.UsernamePasswordToken;
 import org.apache.shiro.mgt.SecurityManager;
 import org.apache.shiro.subject.Subject;
@@ -19,15 +16,18 @@ import org.apache.shiro.util.ThreadContext;
 import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
-
 import org.seedstack.seed.it.api.ITBind;
 import org.seedstack.seed.security.api.WithUser;
 
+import javax.inject.Inject;
+
 /**
- * MethodRule used to connect a user to seed security if annotation @ {@link org.seedstack.seed.security.api.WithUser} is present on method or on target class.
+ * MethodRule used to connect a user to seed security if annotation @ {@link org.seedstack.seed.security.api.WithUser}
+ * is present on method or on target class.
  *
  * @author yves.dautremay@mpsa.com
  */
+@ITBind
 public class SecurityITRule implements TestRule {
     /**
      * The securityManager to be used
