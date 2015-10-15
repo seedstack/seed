@@ -28,8 +28,6 @@ class CommandLineModule extends AbstractModule {
 
     @Override
     protected void configure() {
-        bind(CommandLineITRule.class);
-
         for (Map.Entry<String, Class<? extends CommandLineHandler>> cliHandlerEntry : cliHandlers.entrySet()) {
             bind(CommandLineHandler.class).annotatedWith(Names.named(cliHandlerEntry.getKey())).to(cliHandlerEntry.getValue());
         }

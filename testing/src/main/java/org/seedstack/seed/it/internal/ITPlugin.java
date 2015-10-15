@@ -17,8 +17,6 @@ import io.nuun.kernel.api.plugin.context.InitContext;
 import io.nuun.kernel.api.plugin.request.ClasspathScanRequest;
 import io.nuun.kernel.core.AbstractPlugin;
 import io.nuun.kernel.core.internal.context.InitContextInternal;
-import org.junit.rules.MethodRule;
-import org.junit.rules.TestRule;
 import org.kametic.specifications.Specification;
 import org.seedstack.seed.core.internal.application.ApplicationPlugin;
 import org.seedstack.seed.it.api.ITBind;
@@ -56,8 +54,6 @@ public class ITPlugin extends AbstractPlugin {
 
     @SuppressWarnings("unchecked")
     private final Specification<Class<?>> itBindingSpec = or(classAnnotatedWith(ITBind.class));
-    @SuppressWarnings("unchecked")
-    private final Specification<Class<?>> ruleSpec = or(classImplements(TestRule.class), classImplements(MethodRule.class));
 
     @Override
     public String name() {
@@ -129,7 +125,7 @@ public class ITPlugin extends AbstractPlugin {
 
     @Override
     public Collection<ClasspathScanRequest> classpathScanRequests() {
-        return classpathScanRequestBuilder().specification(itBindingSpec).specification(ruleSpec).build();
+        return classpathScanRequestBuilder().specification(itBindingSpec).build();
     }
 
     @Override

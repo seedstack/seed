@@ -19,6 +19,7 @@ import org.seedstack.seed.cli.SeedRunner;
 import org.seedstack.seed.cli.api.CliErrorCode;
 import org.seedstack.seed.cli.api.WithCommandLine;
 import org.seedstack.seed.core.api.SeedException;
+import org.seedstack.seed.it.api.ITBind;
 import org.seedstack.seed.it.spi.KernelRule;
 import org.seedstack.seed.it.spi.PausableStatement;
 
@@ -28,6 +29,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author epo.jemba@ext.mpsa.com
  * @author adrien.lauer@mpsa.com
  */
+@ITBind
 public class CommandLineITRule implements MethodRule, KernelRule {
     private KernelConfiguration kernelConfiguration;
 
