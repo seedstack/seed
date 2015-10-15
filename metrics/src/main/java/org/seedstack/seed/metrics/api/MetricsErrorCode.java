@@ -17,5 +17,7 @@ import org.seedstack.seed.core.api.ErrorCode;
 public enum MetricsErrorCode implements ErrorCode {
     ERROR_ACCESSING_METRIC_FIELD,
     INVALID_METRIC_TYPE,
-    ERROR_EVALUATING_METRIC
+    ERROR_EVALUATING_METRIC,
+    METRICS_REGISTRY_NOT_FOUND,
+    HEALTHCHECK_REGISTRY_NOT_FOUND
 }

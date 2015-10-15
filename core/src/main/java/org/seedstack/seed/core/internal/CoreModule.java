@@ -7,17 +7,23 @@
  */
 package org.seedstack.seed.core.internal;
 
-import com.google.inject.AbstractModule;
-import com.google.inject.Module;
-import com.google.inject.PrivateModule;
-import com.google.inject.matcher.Matchers;
-import com.google.inject.multibindings.MapBinder;
+import java.util.Collection;
+import java.util.Map;
+import java.util.Map.Entry;
+
 import org.seedstack.seed.core.api.DiagnosticManager;
+import org.seedstack.seed.core.spi.dependency.DependencyProvider;
+import org.seedstack.seed.core.spi.dependency.Maybe;
 import org.seedstack.seed.core.spi.diagnostic.DiagnosticInfoCollector;
 import org.seedstack.seed.core.utils.SeedCheckUtils;
 
-import java.util.Collection;
-import java.util.Map;
+import com.google.inject.AbstractModule;
+import com.google.inject.Module;
+import com.google.inject.PrivateModule;
+import com.google.inject.TypeLiteral;
+import com.google.inject.matcher.Matchers;
+import com.google.inject.multibindings.MapBinder;
+import com.google.inject.util.Types;
 
 /**
  * Guice module for SEED core functionality.
@@ -28,11 +34,13 @@ class CoreModule extends AbstractModule {
     private final Collection<Module> subModules;
     private final DiagnosticManager diagnosticManager;
     private final Map<String, DiagnosticInfoCollector> diagnosticInfoCollectors;
+    private final Map<Class<?>, Maybe<? extends DependencyProvider>> optionalDependencies;
 
-    CoreModule(Collection<Module> subModules, DiagnosticManager diagnosticManager, Map<String, DiagnosticInfoCollector> diagnosticInfoCollectors) {
+    CoreModule(Collection<Module> subModules, DiagnosticManager diagnosticManager, Map<String, DiagnosticInfoCollector> diagnosticInfoCollectors,Map<Class<?>, Maybe<? extends DependencyProvider>> optionalDependencies) {
         this.subModules = subModules;
         this.diagnosticManager = diagnosticManager;
         this.diagnosticInfoCollectors = diagnosticInfoCollectors;
+        this.optionalDependencies = optionalDependencies;
     }
 
     @Override
@@ -57,5 +65,12 @@ class CoreModule extends AbstractModule {
         for (Module subModule : subModules) {
             install(subModule);
         }
+        
+        // Bind optional objects
+        for (final Entry<Class<?>, Maybe<? extends DependencyProvider>> dependency : this.optionalDependencies.entrySet()) {
+        	@SuppressWarnings("unchecked")
+			TypeLiteral<Maybe<? extends DependencyProvider>> typeLiteral = (TypeLiteral<Maybe<? extends DependencyProvider>>)TypeLiteral.get(Types.newParameterizedType(Maybe.class, dependency.getKey()));
+			bind(typeLiteral).toInstance(dependency.getValue());
+		}
     }
 }

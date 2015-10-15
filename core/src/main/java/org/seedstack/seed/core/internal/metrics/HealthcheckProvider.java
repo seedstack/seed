@@ -1,0 +1,55 @@
+/**
+ * Copyright (c) 2013-2015, The SeedStack authors <http://seedstack.org>
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+package org.seedstack.seed.core.internal.metrics;
+
+import org.seedstack.seed.core.spi.dependency.DependencyProvider;
+import org.seedstack.seed.core.utils.DependencyClassProxy;
+
+import com.codahale.metrics.health.HealthCheck;
+import com.codahale.metrics.health.HealthCheckRegistry;
+
+/**
+ * Provider used to get a {@link HealthCheckRegistry} to register an internal {@link HealthCheck}.
+ * @author thierry.bouvet@mpsa.com
+ *
+ */
+public class HealthcheckProvider implements DependencyProvider{
+
+	private HealthCheckRegistry healthCheckRegistry;
+	
+	@Override
+	public String getClassToCheck() {
+		return "com.codahale.metrics.health.HealthCheckRegistry";
+	}
+
+	public HealthCheckRegistry getHealthCheckRegistry() {
+		if ( this.healthCheckRegistry == null) {
+			this.healthCheckRegistry = new HealthCheckRegistry();
+		}
+		return healthCheckRegistry;
+	}
+
+	/**
+	 * Register a new {@link HealthCheck}.
+	 * @param name healthcheck name to register.
+	 * @param healthCheck healthcheck to register.
+	 */
+	public void register(String name, HealthCheck healthCheck) {
+		getHealthCheckRegistry().register(name, healthCheck);
+	}
+
+	/**
+	 * Register a new {@link HealthCheck} from a proxy.
+	 * @param name healthcheck name to register.
+	 * @param methodReplacer proxy method replacer to override {@link HealthCheck} methods.
+	 */
+	public void register(String name, HealthCheckMethodReplacer methodReplacer) {
+		getHealthCheckRegistry().register(name, new DependencyClassProxy<HealthCheck>(HealthCheck.class,methodReplacer).getProxy());
+	}
+
+}
