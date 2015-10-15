@@ -24,7 +24,6 @@
 
     <modules>
         <module>core</module>
-        <module>ldap</module>
         <module>specs</module>
     </modules>
 </project>

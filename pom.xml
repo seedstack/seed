@@ -92,13 +92,10 @@
                             <licenseMerge>CDDL 1.1|Common Development and Distribution License</licenseMerge>
                             <licenseMerge>EPL 1.0|Eclipse Public License 1.0</licenseMerge>
                             <licenseMerge>EPL 1.0|Eclipse Public License v1.0</licenseMerge>
-                            <licenseMerge>LGPL 2.1|GNU Lesser General Public License version 2.1 (LGPLv2.1)</licenseMerge>
                             <licenseMerge>LGPL 3.0|GNU Lesser Public License</licenseMerge>
                             <licenseMerge>MIT|The MIT License</licenseMerge>
                             <licenseMerge>MIT|MIT License</licenseMerge>
                             <licenseMerge>IGNORED_LICENSE|GPL2 w/ CPE</licenseMerge>
-                            <licenseMerge>IGNORED_LICENSE|GNU General Public License version 2 (GPLv2)</licenseMerge>
-                            <licenseMerge>IGNORED_LICENSE|UnboundID LDAP SDK Free Use License</licenseMerge>
                             <licenseMerge>IGNORED_LICENSE|MPL 1.1</licenseMerge>
                             <licenseMerge>IGNORED_LICENSE|GNU General Public License, Version 2 with the Classpath Exception</licenseMerge>
                         </licenseMerges>
