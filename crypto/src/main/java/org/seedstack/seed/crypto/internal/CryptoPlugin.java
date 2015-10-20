@@ -9,6 +9,7 @@ package org.seedstack.seed.crypto.internal;
 
 import com.google.inject.Key;
 import io.nuun.kernel.api.Plugin;
+import com.google.common.collect.Lists;
 import io.nuun.kernel.api.plugin.InitState;
 import io.nuun.kernel.api.plugin.PluginException;
 import io.nuun.kernel.api.plugin.context.InitContext;
@@ -74,7 +75,7 @@ public class CryptoPlugin extends AbstractPlugin implements SSLProvider {
 
     @Override
     public InitState init(InitContext initContext) {
-        Plugin applicationPlugin = initContext.pluginsRequired().iterator().next();
+        Object applicationPlugin = initContext.pluginsRequired().iterator().next();
         if (!(applicationPlugin instanceof ApplicationPlugin)) {
             throw new PluginException("Missing ApplicationPlugin");
         }
@@ -196,9 +197,7 @@ public class CryptoPlugin extends AbstractPlugin implements SSLProvider {
     }
 
     @Override
-    public Collection<Class<? extends Plugin>> requiredPlugins() {
-        Collection<Class<? extends Plugin>> plugins = new ArrayList<Class<? extends Plugin>>();
-        plugins.add(ApplicationPlugin.class);
-        return plugins;
+    public Collection<Class<?>> requiredPlugins() {
+        return Lists.<Class<?>>newArrayList(ApplicationPlugin.class);
     }
 }

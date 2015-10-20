@@ -11,7 +11,7 @@ import com.google.inject.TypeLiteral;
 import com.google.inject.spi.TypeEncounter;
 import com.google.inject.spi.TypeListener;
 import org.seedstack.seed.Logging;
-import io.nuun.kernel.api.assertions.AssertUtils;
+import org.seedstack.seed.core.utils.SeedReflectionUtils;
 import org.slf4j.Logger;
 
 import java.lang.annotation.Annotation;
@@ -41,7 +41,7 @@ class LoggingTypeListener implements TypeListener {
 
     private boolean annotationPresent(Field field, Class<? extends Annotation> annoClass) {
         for (Annotation anno : field.getAnnotations()) {
-            if (AssertUtils.hasAnnotationDeep(anno.annotationType(), annoClass)) {
+            if (SeedReflectionUtils.hasAnnotationDeep(anno.annotationType(), annoClass)) {
                 return true;
             }
         }

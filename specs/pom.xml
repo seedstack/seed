@@ -27,7 +27,7 @@
         <dependency>
             <groupId>io.nuun</groupId>
             <artifactId>kernel-specs</artifactId>
-            <version>${nuun-kernel.version}</version>
+            <version>1.0.M6-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>

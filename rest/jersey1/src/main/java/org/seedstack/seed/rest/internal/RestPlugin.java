@@ -7,10 +7,10 @@
  */
 package org.seedstack.seed.rest.internal;
 
+import com.google.common.collect.Lists;
 import com.google.inject.AbstractModule;
 import com.google.inject.Injector;
 import com.sun.jersey.spi.container.ResourceFilterFactory;
-import io.nuun.kernel.api.Plugin;
 import io.nuun.kernel.api.plugin.InitState;
 import io.nuun.kernel.api.plugin.PluginException;
 import io.nuun.kernel.api.plugin.context.Context;
@@ -141,7 +141,7 @@ public class RestPlugin extends AbstractPlugin {
     private void collectPlugins(InitContext initContext) {
         restConfiguration = null;
         webPlugin = null;
-        for (Plugin plugin : initContext.pluginsRequired()) {
+        for (Object plugin : initContext.pluginsRequired()) {
             if (plugin instanceof ApplicationPlugin) {
                 restConfiguration = ((ApplicationPlugin) plugin).getApplication().getConfiguration().subset(RestPlugin.REST_PLUGIN_CONFIGURATION_PREFIX);
             } else if (plugin instanceof WebPlugin) {
@@ -228,11 +228,8 @@ public class RestPlugin extends AbstractPlugin {
     }
 
     @Override
-    public Collection<Class<? extends Plugin>> requiredPlugins() {
-        Collection<Class<? extends Plugin>> plugins = new ArrayList<Class<? extends Plugin>>();
-        plugins.add(ApplicationPlugin.class);
-        plugins.add(WebPlugin.class);
-        return plugins;
+    public Collection<Class<?>> requiredPlugins() {
+        return Lists.<Class<?>>newArrayList(ApplicationPlugin.class, WebPlugin.class);
     }
 
     public void registerRootResource(Variant variant, Class<? extends RootResource> rootResource) {

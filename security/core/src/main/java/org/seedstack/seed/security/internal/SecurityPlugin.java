@@ -7,7 +7,7 @@
  */
 package org.seedstack.seed.security.internal;
 
-import io.nuun.kernel.api.Plugin;
+import com.google.common.collect.Lists;
 import io.nuun.kernel.api.plugin.InitState;
 import io.nuun.kernel.api.plugin.context.InitContext;
 import io.nuun.kernel.api.plugin.request.BindingRequest;
@@ -65,7 +65,7 @@ public class SecurityPlugin extends AbstractPlugin {
     @Override
     @SuppressWarnings({"rawtypes", "unchecked"})
     public InitState init(InitContext initContext) {
-        for (Plugin plugin : initContext.pluginsRequired()) {
+        for (Object plugin : initContext.pluginsRequired()) {
             if (plugin instanceof ApplicationPlugin) {
                 securityConfiguration = ((ApplicationPlugin) plugin).getApplication().getConfiguration().subset(SECURITY_PREFIX);
             } else if (plugin instanceof ELPlugin) {
@@ -125,11 +125,8 @@ public class SecurityPlugin extends AbstractPlugin {
     }
 
     @Override
-    public Collection<Class<? extends Plugin>> requiredPlugins() {
-        Collection<Class<? extends Plugin>> plugins = new ArrayList<Class<? extends Plugin>>();
-        plugins.add(ApplicationPlugin.class);
-        plugins.add(ELPlugin.class);
-        return plugins;
+    public Collection<Class<?>> requiredPlugins() {
+        return Lists.<Class<?>>newArrayList(ApplicationPlugin.class, ELPlugin.class);
     }
 
     @Override

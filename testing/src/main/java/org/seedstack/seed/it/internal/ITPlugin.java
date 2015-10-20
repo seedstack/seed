@@ -7,6 +7,7 @@
  */
 package org.seedstack.seed.it.internal;
 
+import com.google.common.collect.Lists;
 import com.google.common.io.Files;
 import com.google.inject.Module;
 import io.nuun.kernel.api.Plugin;
@@ -15,7 +16,7 @@ import io.nuun.kernel.api.plugin.PluginException;
 import io.nuun.kernel.api.plugin.context.InitContext;
 import io.nuun.kernel.api.plugin.request.ClasspathScanRequest;
 import io.nuun.kernel.core.AbstractPlugin;
-import io.nuun.kernel.core.internal.context.InitContextInternal;
+import io.nuun.kernel.core.internal.InitContextInternal;
 import org.kametic.specifications.Specification;
 import org.seedstack.seed.SeedException;
 import org.seedstack.seed.core.internal.application.ApplicationPlugin;
@@ -30,12 +31,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Proxy;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * This plugin automatically enable integration tests to be managed by SEED.
@@ -161,10 +157,8 @@ public class ITPlugin extends AbstractPlugin {
     }
 
     @Override
-    public Collection<Class<? extends Plugin>> dependentPlugins() {
-        Collection<Class<? extends Plugin>> plugins = new ArrayList<Class<? extends Plugin>>();
-        plugins.add(ApplicationPlugin.class);
-        return plugins;
+    public Collection<Class<?>> dependentPlugins() {
+        return Lists.<Class<?>>newArrayList(ApplicationPlugin.class);
     }
 
     private void deleteRecursively(final File file) throws IOException {

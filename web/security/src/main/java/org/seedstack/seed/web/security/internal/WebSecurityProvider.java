@@ -48,7 +48,7 @@ public class WebSecurityProvider implements SecurityProvider {
     @Override
     public void init(InitContext initContext) {
         ApplicationPlugin applicationPlugin = null;
-        for (Plugin plugin : initContext.pluginsRequired()) {
+        for (Object plugin : initContext.pluginsRequired()) {
             if (plugin instanceof ApplicationPlugin) {
                 applicationPlugin = ((ApplicationPlugin) plugin);
             }

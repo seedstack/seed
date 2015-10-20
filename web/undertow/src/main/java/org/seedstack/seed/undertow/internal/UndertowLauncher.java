@@ -10,7 +10,6 @@ package org.seedstack.seed.undertow.internal;
 import io.nuun.kernel.api.Kernel;
 import io.nuun.kernel.api.Plugin;
 import io.nuun.kernel.core.NuunCore;
-import io.nuun.kernel.core.internal.KernelCore;
 import io.undertow.Undertow;
 import io.undertow.servlet.api.DeploymentManager;
 import io.undertow.servlet.spec.ServletContextImpl;
@@ -21,11 +20,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.servlet.ServletContext;
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author pierre.thirouin@ext.mpsa.com (Pierre Thirouin)
@@ -63,16 +60,8 @@ public class UndertowLauncher implements SeedLauncher {
 
     private UndertowPlugin getUndertowPlugin(Kernel kernel) {
         UndertowPlugin undertowPlugin = null;
-        Map<String, Plugin> pluginMap;
-        try {
-            Field field = KernelCore.class.getDeclaredField("plugins");
-            field.setAccessible(true);
-            //noinspection unchecked
-            pluginMap = (Map<String, Plugin>) field.get(kernel);
-        } catch (Exception e) {
-            throw SeedException.wrap(e, UndertowErrorCode.UNEXPECTED_EXCEPTION);
-        }
-        Plugin plugin = pluginMap.get("undertow-plugin");
+
+        Plugin plugin = kernel.plugins().get(UndertowPlugin.NAME);
         if (plugin instanceof UndertowPlugin) {
             undertowPlugin = (UndertowPlugin) plugin;
         }

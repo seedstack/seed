@@ -7,9 +7,9 @@
  */
 package org.seedstack.seed.web.internal;
 
+import com.google.common.collect.Lists;
 import com.google.inject.Module;
 import com.google.inject.servlet.ServletModule;
-import io.nuun.kernel.api.Plugin;
 import io.nuun.kernel.api.plugin.InitState;
 import io.nuun.kernel.api.plugin.context.InitContext;
 import io.nuun.kernel.api.plugin.request.ClasspathScanRequest;
@@ -76,7 +76,7 @@ public class WebPlugin extends AbstractPlugin {
 
         WebDiagnosticCollector webDiagnosticCollector = new WebDiagnosticCollector(servletContext);
         ApplicationPlugin applicationPlugin = null;
-        for (Plugin plugin : initContext.pluginsRequired()) {
+        for (Object plugin : initContext.pluginsRequired()) {
             if (plugin instanceof ApplicationPlugin) {
                 applicationPlugin = (ApplicationPlugin) plugin;
             } else if (plugin instanceof CorePlugin) {
@@ -190,11 +190,8 @@ public class WebPlugin extends AbstractPlugin {
     }
 
     @Override
-    public Collection<Class<? extends Plugin>> requiredPlugins() {
-        Collection<Class<? extends Plugin>> plugins = new ArrayList<Class<? extends Plugin>>();
-        plugins.add(CorePlugin.class);
-        plugins.add(ApplicationPlugin.class);
-        return plugins;
+    public Collection<Class<?>> requiredPlugins() {
+        return Lists.<Class<?>>newArrayList(CorePlugin.class, ApplicationPlugin.class);
     }
 
     @Override

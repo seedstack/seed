@@ -7,7 +7,7 @@
  */
 package org.seedstack.seed.undertow.internal;
 
-import io.nuun.kernel.api.Plugin;
+import com.google.common.collect.Lists;
 import io.nuun.kernel.api.plugin.InitState;
 import io.nuun.kernel.api.plugin.context.Context;
 import io.nuun.kernel.api.plugin.context.InitContext;
@@ -24,7 +24,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.net.ssl.SSLContext;
-import java.util.ArrayList;
 import java.util.Collection;
 
 /**
@@ -40,13 +39,14 @@ public class UndertowPlugin extends AbstractPlugin {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(UndertowPlugin.class);
     private static final String UNDERTOW_PLUGIN_PREFIX = "org.seedstack.seed.server";
+    public static final String NAME = "undertow-plugin";
     private DeploymentManager deploymentManager;
     private Undertow server;
     private ServerConfig serverConfig;
 
     @Override
     public String name() {
-        return "undertow-plugin";
+        return NAME;
     }
 
     @Override
@@ -54,7 +54,7 @@ public class UndertowPlugin extends AbstractPlugin {
         Configuration configuration = null;
         SSLConfiguration SSLConfiguration = null;
         SSLContext sslContext = null;
-        for (Plugin plugin : initContext.pluginsRequired()) {
+        for (Object plugin : initContext.pluginsRequired()) {
             if (plugin instanceof ApplicationPlugin) {
                 configuration = ((ApplicationPlugin) plugin).getApplication().getConfiguration();
             } else if (SSLProvider.class.isAssignableFrom(plugin.getClass())) {
@@ -105,11 +105,8 @@ public class UndertowPlugin extends AbstractPlugin {
     }
 
     @Override
-    public Collection<Class<? extends Plugin>> requiredPlugins() {
-        Collection<Class<? extends Plugin>> plugins = new ArrayList<Class<? extends Plugin>>();
-        plugins.add(ApplicationPlugin.class);
-        plugins.add(CryptoPlugin.class);
-        return plugins;
+    public Collection<Class<?>> requiredPlugins() {
+        return Lists.<Class<?>>newArrayList(ApplicationPlugin.class, CryptoPlugin.class);
     }
 
 }

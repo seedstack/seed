@@ -7,6 +7,7 @@
  */
 package org.seedstack.seed.core.internal.data;
 
+import com.google.common.collect.Lists;
 import org.seedstack.seed.DataManager;
 import org.seedstack.seed.SeedException;
 import org.seedstack.seed.DataExporter;
@@ -20,8 +21,13 @@ import io.nuun.kernel.api.plugin.request.ClasspathScanRequest;
 import io.nuun.kernel.core.AbstractPlugin;
 import org.apache.commons.configuration.Configuration;
 import org.kametic.specifications.Specification;
+import org.seedstack.seed.DataManager;
+import org.seedstack.seed.SeedException;
 import org.seedstack.seed.core.internal.CorePlugin;
 import org.seedstack.seed.core.internal.application.ApplicationPlugin;
+import org.seedstack.seed.DataExporter;
+import org.seedstack.seed.DataImporter;
+import org.seedstack.seed.DataSet;
 import org.seedstack.seed.core.utils.SeedReflectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,7 +37,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -168,10 +173,8 @@ public class DataPlugin extends AbstractPlugin {
     }
 
     @Override
-    public Collection<Class<? extends Plugin>> requiredPlugins() {
-        Collection<Class<? extends Plugin>> plugins = new ArrayList<Class<? extends Plugin>>();
-        plugins.add(ApplicationPlugin.class);
-        return plugins;
+    public Collection<Class<?>> requiredPlugins() {
+        return Lists.<Class<?>>newArrayList(ApplicationPlugin.class);
     }
 
     @Override

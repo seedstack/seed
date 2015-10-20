@@ -7,7 +7,6 @@
  */
 package org.seedstack.seed.security.internal;
 
-import io.nuun.kernel.api.Plugin;
 import io.nuun.kernel.api.plugin.context.InitContext;
 import org.apache.commons.configuration.Configuration;
 import org.junit.Before;
@@ -41,7 +40,7 @@ public class SecurityProviderTest {
 
     @Test
     public void verify_dependencies() {
-        Collection<Class<? extends Plugin>> plugins = underTest.requiredPlugins();
+        Collection<Class<?>> plugins = underTest.requiredPlugins();
         assertTrue(plugins.contains(ApplicationPlugin.class));
     }
 

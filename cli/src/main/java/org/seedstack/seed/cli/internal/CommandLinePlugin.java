@@ -7,7 +7,7 @@
  */
 package org.seedstack.seed.cli.internal;
 
-import io.nuun.kernel.api.Plugin;
+import com.google.common.collect.Lists;
 import io.nuun.kernel.api.plugin.InitState;
 import io.nuun.kernel.api.plugin.context.InitContext;
 import io.nuun.kernel.api.plugin.request.ClasspathScanRequest;
@@ -22,14 +22,11 @@ import org.seedstack.seed.core.internal.application.ApplicationPlugin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.seedstack.seed.core.utils.BaseClassSpecifications.ancestorImplements;
-import static org.seedstack.seed.core.utils.BaseClassSpecifications.classIsAbstract;
-import static org.seedstack.seed.core.utils.BaseClassSpecifications.classIsInterface;
+import static org.seedstack.seed.core.utils.BaseClassSpecifications.*;
 
 /**
  * This plugin enables to run {@link CommandLineHandler} through
@@ -59,10 +56,8 @@ public class CommandLinePlugin extends AbstractPlugin {
     }
 
     @Override
-    public Collection<Class<? extends Plugin>> requiredPlugins() {
-        Collection<Class<? extends Plugin>> plugins = new ArrayList<Class<? extends Plugin>>();
-        plugins.add(ApplicationPlugin.class);
-        return plugins;
+    public Collection<Class<?>> requiredPlugins() {
+        return Lists.<Class<?>>newArrayList(ApplicationPlugin.class);
     }
 
     @Override
