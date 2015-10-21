@@ -52,7 +52,6 @@
         <module>cli</module>
         <module>metrics</module>
         <module>shell</module>
-        <module>bom</module>
     </modules>
 
     <build>
