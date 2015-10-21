@@ -9,21 +9,12 @@ package org.seedstack.seed.undertow.internal;
 
 import com.google.common.collect.Lists;
 import io.nuun.kernel.api.plugin.InitState;
-import io.nuun.kernel.api.plugin.context.Context;
 import io.nuun.kernel.api.plugin.context.InitContext;
 import io.nuun.kernel.core.AbstractPlugin;
-import io.undertow.Undertow;
-import io.undertow.servlet.api.DeploymentManager;
 import org.apache.commons.configuration.Configuration;
-import org.seedstack.seed.SeedException;
-import org.seedstack.seed.core.internal.application.ApplicationPlugin;
-import org.seedstack.seed.crypto.internal.CryptoPlugin;
-import org.seedstack.seed.crypto.spi.SSLConfiguration;
+import org.seedstack.seed.core.spi.configuration.ConfigurationProvider;
 import org.seedstack.seed.crypto.spi.SSLProvider;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import javax.net.ssl.SSLContext;
 import java.util.Collection;
 
 /**
@@ -37,68 +28,23 @@ import java.util.Collection;
  */
 public class UndertowPlugin extends AbstractPlugin {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(UndertowPlugin.class);
-    private static final String UNDERTOW_PLUGIN_PREFIX = "org.seedstack.seed.server";
-    public static final String NAME = "undertow-plugin";
-    private DeploymentManager deploymentManager;
-    private Undertow server;
+    private static final String CONFIGURATION_PREFIX = "org.seedstack.seed.server";
+    public static final String NAME = "undertow";
     private ServerConfig serverConfig;
 
     @Override
     public String name() {
-        return NAME;
+        return "undertow";
     }
 
     @Override
     public InitState init(InitContext initContext) {
-        Configuration configuration = null;
-        SSLConfiguration SSLConfiguration = null;
-        SSLContext sslContext = null;
-        for (Object plugin : initContext.pluginsRequired()) {
-            if (plugin instanceof ApplicationPlugin) {
-                configuration = ((ApplicationPlugin) plugin).getApplication().getConfiguration();
-            } else if (SSLProvider.class.isAssignableFrom(plugin.getClass())) {
-                SSLProvider sslProvider = (SSLProvider) plugin;
-                SSLConfiguration = sslProvider.sslConfig();
-                sslContext = sslProvider.sslContext();
-            } else {
-                throw SeedException.createNew(UndertowErrorCode.UNEXPECTED_EXCEPTION);
-            }
-        }
-        if (configuration == null) {
-            throw SeedException.createNew(UndertowErrorCode.UNEXPECTED_EXCEPTION);
-        }
-
-        serverConfig = new ServerConfigFactory().create(configuration.subset(UNDERTOW_PLUGIN_PREFIX), SSLConfiguration, sslContext);
+        Configuration configuration = initContext.dependency(ConfigurationProvider.class).getConfiguration();
+        serverConfig = new ServerConfigFactory()
+                .create(configuration.subset(CONFIGURATION_PREFIX), initContext.dependency(SSLProvider.class));
 
         return InitState.INITIALIZED;
     }
-
-//    @Override
-//    public void start(Context context) {
-//        if (deploymentManager != null) {
-//            // Start the embedded server
-//            server = new ServerFactory().createServer(serverConfig, deploymentManager);
-//            server.start();
-//            LOGGER.info("Application started. Listen on " + serverConfig.getHost() + ":" + serverConfig.getPort());
-//        }
-//    }
-//
-//    @Override
-//    public void stop() {
-//        if (server != null) {
-//            server.stop();
-//        }
-//    }
-//
-//    /**
-//     * Sets the deployment manager responsible of the ServletContainer.
-//     *
-//     * @param deploymentManager the deployment manager
-//     */
-//    public void setDeploymentManager(DeploymentManager deploymentManager) {
-//        this.deploymentManager = deploymentManager;
-//    }
 
     public ServerConfig getServerConfig() {
         return serverConfig;
@@ -106,7 +52,7 @@ public class UndertowPlugin extends AbstractPlugin {
 
     @Override
     public Collection<Class<?>> requiredPlugins() {
-        return Lists.<Class<?>>newArrayList(ApplicationPlugin.class, CryptoPlugin.class);
+        return Lists.<Class<?>>newArrayList(ConfigurationProvider.class, SSLProvider.class);
     }
 
 }

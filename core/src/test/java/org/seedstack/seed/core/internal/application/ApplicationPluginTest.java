@@ -101,9 +101,7 @@ public class ApplicationPluginTest {
         InitContext initContext = mock(InitContext.class);
         Map<String, Collection<String>> resources = new HashMap<String, Collection<String>>();
 
-        when(initContext.pluginsRequired()).thenReturn(new ArrayList() {{
-            add(mock(CorePlugin.class));
-        }});
+        when(initContext.dependency(CorePlugin.class)).thenReturn(mock(CorePlugin.class));
 
         Map<Class<? extends Annotation>, Collection<Class<?>>> scannedClassesByAnnotationClass = new HashMap<Class<? extends Annotation>, Collection<Class<?>>>();
         scannedClassesByAnnotationClass.put(ConfigurationLookup.class, new ArrayList<Class<?>>());

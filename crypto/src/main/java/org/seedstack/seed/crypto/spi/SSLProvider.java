@@ -7,6 +7,8 @@
  */
 package org.seedstack.seed.crypto.spi;
 
+import io.nuun.kernel.api.annotations.Facet;
+
 import javax.net.ssl.SSLContext;
 
 /**
@@ -14,6 +16,7 @@ import javax.net.ssl.SSLContext;
  *
  * @author pierre.thirouin@ext.mpsa.com (Pierre Thirouin)
  */
+@Facet
 public interface SSLProvider {
 
     /**

@@ -11,8 +11,8 @@ import io.nuun.kernel.api.plugin.context.InitContext;
 import org.apache.commons.configuration.Configuration;
 import org.junit.Before;
 import org.junit.Test;
-import org.seedstack.seed.Application;
 import org.seedstack.seed.core.internal.application.ApplicationPlugin;
+import org.seedstack.seed.core.spi.configuration.ConfigurationProvider;
 import org.seedstack.seed.el.internal.ELPlugin;
 import org.seedstack.seed.security.Realm;
 import org.seedstack.seed.security.internal.realms.ConfigurationRealm;
@@ -29,8 +29,6 @@ import static org.mockito.Mockito.when;
 public class SecurityProviderTest {
 
     SecurityPlugin underTest;
-
-    SecurityProvider securityProvider;
     
     @Before
     public void before() {
@@ -41,7 +39,7 @@ public class SecurityProviderTest {
     @Test
     public void verify_dependencies() {
         Collection<Class<?>> plugins = underTest.requiredPlugins();
-        assertTrue(plugins.contains(ApplicationPlugin.class));
+        assertTrue(plugins.contains(ConfigurationProvider.class));
     }
 
     @Test
@@ -62,14 +60,10 @@ public class SecurityProviderTest {
         ApplicationPlugin appPlugin = mock(ApplicationPlugin.class);
         ELPlugin elPlugin = mock(ELPlugin.class);
         when(elPlugin.isDisabled()).thenReturn(false);
-        Application application = mock(Application.class);
         Configuration conf = mock(Configuration.class);
-        when(appPlugin.getApplication()).thenReturn(application);
-        when(application.getConfiguration()).thenReturn(conf);
-        Collection pluginsRequired = new ArrayList();
-        pluginsRequired.add(appPlugin);
-        pluginsRequired.add(elPlugin);
-        when(initContext.pluginsRequired()).thenReturn(pluginsRequired);
+        when(initContext.dependency(ConfigurationProvider.class)).thenReturn(appPlugin);
+        when(appPlugin.getConfiguration()).thenReturn(conf);
+        when(initContext.dependency(ELPlugin.class)).thenReturn(elPlugin);
 
         return initContext;
     }

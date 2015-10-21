@@ -16,12 +16,11 @@ import io.nuun.kernel.api.plugin.request.ClasspathScanRequest;
 import io.nuun.kernel.core.AbstractPlugin;
 import org.apache.commons.configuration.Configuration;
 import org.reflections.util.ClasspathHelper;
-import org.seedstack.seed.SeedException;
 import org.seedstack.seed.core.internal.CorePlugin;
-import org.seedstack.seed.core.internal.application.ApplicationPlugin;
 import org.seedstack.seed.web.WebFilter;
 import org.seedstack.seed.web.WebInitParam;
 import org.seedstack.seed.web.WebServlet;
+import org.seedstack.seed.core.spi.configuration.ConfigurationProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -75,20 +74,10 @@ public class WebPlugin extends AbstractPlugin {
         }
 
         WebDiagnosticCollector webDiagnosticCollector = new WebDiagnosticCollector(servletContext);
-        ApplicationPlugin applicationPlugin = null;
-        for (Object plugin : initContext.pluginsRequired()) {
-            if (plugin instanceof ApplicationPlugin) {
-                applicationPlugin = (ApplicationPlugin) plugin;
-            } else if (plugin instanceof CorePlugin) {
-                ((CorePlugin) plugin).registerDiagnosticCollector(WEB_PLUGIN_PREFIX, webDiagnosticCollector);
-            }
-        }
 
-        if (applicationPlugin == null) {
-            throw SeedException.createNew(WebErrorCode.PLUGIN_NOT_FOUND).put("plugin", "application");
-        }
+        initContext.dependency(CorePlugin.class).registerDiagnosticCollector(WEB_PLUGIN_PREFIX, webDiagnosticCollector);
 
-        Configuration webConfiguration = applicationPlugin.getApplication().getConfiguration().subset(WebPlugin.WEB_PLUGIN_PREFIX);
+        Configuration webConfiguration = initContext.dependency(ConfigurationProvider.class).getConfiguration().subset(WebPlugin.WEB_PLUGIN_PREFIX);
         Map<Class<? extends Annotation>, Collection<Class<?>>> scannedClassesByAnnotationClass = initContext.scannedClassesByAnnotationClass();
 
         Collection<Class<?>> list = scannedClassesByAnnotationClass.get(WebServlet.class);
@@ -191,7 +180,7 @@ public class WebPlugin extends AbstractPlugin {
 
     @Override
     public Collection<Class<?>> requiredPlugins() {
-        return Lists.<Class<?>>newArrayList(CorePlugin.class, ApplicationPlugin.class);
+        return Lists.<Class<?>>newArrayList(CorePlugin.class, ConfigurationProvider.class);
     }
 
     @Override

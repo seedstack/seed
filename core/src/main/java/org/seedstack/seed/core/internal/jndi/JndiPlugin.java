@@ -14,7 +14,7 @@ import io.nuun.kernel.api.plugin.context.InitContext;
 import io.nuun.kernel.core.AbstractPlugin;
 import org.apache.commons.configuration.Configuration;
 import org.seedstack.seed.core.internal.CorePlugin;
-import org.seedstack.seed.core.internal.application.ApplicationPlugin;
+import org.seedstack.seed.core.spi.configuration.ConfigurationProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,8 +46,7 @@ public class JndiPlugin extends AbstractPlugin {
 
     @Override
     public InitState init(InitContext initContext) {
-        ApplicationPlugin applicationPlugin = (ApplicationPlugin) initContext.pluginsRequired().iterator().next();
-        Configuration configuration = applicationPlugin.getApplication().getConfiguration().subset(CorePlugin.CORE_PLUGIN_PREFIX);
+        Configuration configuration = initContext.dependency(ConfigurationProvider.class).getConfiguration().subset(CorePlugin.CORE_PLUGIN_PREFIX);
 
         // Default JNDI context
         try {
@@ -89,7 +88,7 @@ public class JndiPlugin extends AbstractPlugin {
 
     @Override
     public Collection<Class<?>> requiredPlugins() {
-        return Lists.<Class<?>>newArrayList(ApplicationPlugin.class);
+        return Lists.<Class<?>>newArrayList(ConfigurationProvider.class);
     }
 
     @Override

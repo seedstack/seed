@@ -14,7 +14,6 @@
 package org.seedstack.seed.crypto.internal;
 
 import com.google.inject.Key;
-import io.nuun.kernel.api.Plugin;
 import mockit.Deencapsulation;
 import mockit.Mocked;
 import mockit.Verifications;
@@ -74,7 +73,7 @@ public class CryptoPluginTest {
     @Test
     public void testRequiredPlugins() {
         CryptoPlugin plugin = new CryptoPlugin();
-        Collection<Class<? extends Plugin>> list = plugin.requiredPlugins();
+        Collection<Class<?>> list = plugin.requiredPlugins();
         Assertions.assertThat(list.contains(ApplicationPlugin.class)).isTrue();
     }
 }

@@ -8,12 +8,6 @@
 package org.seedstack.seed.core.internal.data;
 
 import com.google.common.collect.Lists;
-import org.seedstack.seed.DataManager;
-import org.seedstack.seed.SeedException;
-import org.seedstack.seed.DataExporter;
-import org.seedstack.seed.DataImporter;
-import org.seedstack.seed.DataSet;
-import io.nuun.kernel.api.Plugin;
 import io.nuun.kernel.api.plugin.InitState;
 import io.nuun.kernel.api.plugin.context.Context;
 import io.nuun.kernel.api.plugin.context.InitContext;
@@ -21,13 +15,9 @@ import io.nuun.kernel.api.plugin.request.ClasspathScanRequest;
 import io.nuun.kernel.core.AbstractPlugin;
 import org.apache.commons.configuration.Configuration;
 import org.kametic.specifications.Specification;
-import org.seedstack.seed.DataManager;
-import org.seedstack.seed.SeedException;
+import org.seedstack.seed.*;
 import org.seedstack.seed.core.internal.CorePlugin;
-import org.seedstack.seed.core.internal.application.ApplicationPlugin;
-import org.seedstack.seed.DataExporter;
-import org.seedstack.seed.DataImporter;
-import org.seedstack.seed.DataSet;
+import org.seedstack.seed.core.spi.configuration.ConfigurationProvider;
 import org.seedstack.seed.core.utils.SeedReflectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -74,8 +64,8 @@ public class DataPlugin extends AbstractPlugin {
     @SuppressWarnings("unchecked")
     @Override
     public InitState init(InitContext initContext) {
-        ApplicationPlugin applicationPlugin = (ApplicationPlugin) initContext.pluginsRequired().iterator().next();
-        Configuration configuration = applicationPlugin.getApplication().getConfiguration().subset(CorePlugin.CORE_PLUGIN_PREFIX);
+        Configuration configuration = initContext.dependency(ConfigurationProvider.class)
+                .getConfiguration().subset(CorePlugin.CORE_PLUGIN_PREFIX);
 
         String dataInitializationMode = configuration.getString("data-initialization", "auto");
         if ("auto".equals(dataInitializationMode)) {
@@ -174,7 +164,7 @@ public class DataPlugin extends AbstractPlugin {
 
     @Override
     public Collection<Class<?>> requiredPlugins() {
-        return Lists.<Class<?>>newArrayList(ApplicationPlugin.class);
+        return Lists.<Class<?>>newArrayList(ConfigurationProvider.class);
     }
 
     @Override

@@ -17,6 +17,7 @@ import io.nuun.kernel.core.AbstractPlugin;
 import org.apache.commons.configuration.Configuration;
 import org.seedstack.seed.SeedException;
 import org.seedstack.seed.core.internal.application.ApplicationPlugin;
+import org.seedstack.seed.core.spi.configuration.ConfigurationProvider;
 import org.seedstack.seed.core.utils.SeedReflectionUtils;
 import org.seedstack.seed.el.internal.ELPlugin;
 import org.seedstack.seed.security.*;
@@ -65,13 +66,8 @@ public class SecurityPlugin extends AbstractPlugin {
     @Override
     @SuppressWarnings({"rawtypes", "unchecked"})
     public InitState init(InitContext initContext) {
-        for (Object plugin : initContext.pluginsRequired()) {
-            if (plugin instanceof ApplicationPlugin) {
-                securityConfiguration = ((ApplicationPlugin) plugin).getApplication().getConfiguration().subset(SECURITY_PREFIX);
-            } else if (plugin instanceof ELPlugin) {
-                elDisabled = ((ELPlugin) plugin).isDisabled();
-            }
-        }
+        securityConfiguration = initContext.dependency(ConfigurationProvider.class).getConfiguration().subset(SECURITY_PREFIX);
+        elDisabled = initContext.dependency(ELPlugin.class).isDisabled();
 
         scannedClasses = initContext.scannedSubTypesByAncestorClass();
         principalCustomizerClasses = (Collection) scannedClasses.get(PrincipalCustomizer.class);
@@ -126,7 +122,7 @@ public class SecurityPlugin extends AbstractPlugin {
 
     @Override
     public Collection<Class<?>> requiredPlugins() {
-        return Lists.<Class<?>>newArrayList(ApplicationPlugin.class, ELPlugin.class);
+        return Lists.<Class<?>>newArrayList(ApplicationPlugin.class, ConfigurationProvider.class, ELPlugin.class);
     }
 
     @Override

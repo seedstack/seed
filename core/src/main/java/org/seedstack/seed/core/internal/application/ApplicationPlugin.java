@@ -23,12 +23,12 @@ import org.seedstack.seed.Application;
 import org.seedstack.seed.SeedException;
 import org.seedstack.seed.core.internal.CorePlugin;
 import org.seedstack.seed.spi.configuration.ConfigurationLookup;
+import org.seedstack.seed.core.spi.configuration.ConfigurationProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.bridge.SLF4JBridgeHandler;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
@@ -41,7 +41,7 @@ import java.util.concurrent.ConcurrentHashMap;
  *
  * @author adrien.lauer@mpsa.com
  */
-public class ApplicationPlugin extends AbstractPlugin {
+public class ApplicationPlugin extends AbstractPlugin implements ConfigurationProvider {
     private static final Logger LOGGER = LoggerFactory.getLogger(ApplicationPlugin.class);
 
     public static final String CONFIGURATION_PACKAGE = "META-INF.configuration";
@@ -78,7 +78,7 @@ public class ApplicationPlugin extends AbstractPlugin {
         // Setup application diagnostic collector
         ApplicationDiagnosticCollector applicationDiagnosticCollector = new ApplicationDiagnosticCollector();
         applicationDiagnosticCollector.setBasePackages(pluginPackageRoot());
-        ((CorePlugin) initContext.pluginsRequired().iterator().next()).registerDiagnosticCollector("org.seedstack.seed.core.application", applicationDiagnosticCollector);
+        initContext.dependency(CorePlugin.class).registerDiagnosticCollector("org.seedstack.seed.core.application", applicationDiagnosticCollector);
 
         // Retrieve all configuration resources
         Set<String> allConfigurationResources = Sets.newHashSet();
@@ -256,5 +256,15 @@ public class ApplicationPlugin extends AbstractPlugin {
         } catch (Exception e) {
             throw SeedException.wrap(e, ApplicationErrorCode.UNABLE_TO_INSTANTIATE_CONFIGURATION_LOOKUP).put("className", strLookupClass.getCanonicalName());
         }
+    }
+
+    @Override
+    public Configuration getConfiguration() {
+        return application.getConfiguration();
+    }
+
+    @Override
+    public Configuration getConfiguration(Class<?> clazz) {
+        return application.getConfiguration(clazz);
     }
 }

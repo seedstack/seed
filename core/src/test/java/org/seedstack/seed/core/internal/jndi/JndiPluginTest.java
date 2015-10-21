@@ -13,14 +13,14 @@ import io.nuun.kernel.api.plugin.context.InitContext;
 import org.apache.commons.configuration.Configuration;
 import org.assertj.core.api.Assertions;
 import org.fest.reflect.core.Reflection;
+import org.fest.reflect.reference.TypeRef;
 import org.junit.Before;
 import org.junit.Test;
 import org.seedstack.seed.core.internal.CorePlugin;
 import org.seedstack.seed.core.internal.application.ApplicationPlugin;
+import org.seedstack.seed.core.spi.configuration.ConfigurationProvider;
 
 import javax.naming.Context;
-import java.util.Collection;
-import java.util.Iterator;
 import java.util.Map;
 
 import static org.mockito.Mockito.mock;
@@ -56,7 +56,7 @@ public class JndiPluginTest {
 
 	@Test
 	public void requiredPluginsTest() {
-		Assertions.assertThat(pluginUnderTest.requiredPlugins()).contains(ApplicationPlugin.class);
+		Assertions.assertThat(pluginUnderTest.requiredPlugins()).contains(ConfigurationProvider.class);
 	}
 
 	@Test
@@ -71,17 +71,8 @@ public class JndiPluginTest {
 		when(configuration.getStringArray("additional-jndi-contexts")).thenReturn(new String[]{nameTolookup});
 		when(configuration.getString("additional-jndi-context.test1")).thenReturn("/jndi-test1.properties");
 		ApplicationPlugin applicationPlugin = mock(ApplicationPlugin.class);
-		Application application = mock(Application.class);
-		when(applicationPlugin.getApplication()).thenReturn(application);
-		when(application.getConfiguration()).thenReturn(configuration);
-		Collection plugins = mock(Collection.class);
-		Iterator iterator = mock(Iterator.class);
-		when(initContext.pluginsRequired()).thenReturn(plugins);
-		when(initContext.pluginsRequired().iterator()).thenReturn(iterator);
-		when((ApplicationPlugin) initContext.pluginsRequired().iterator().next()).thenReturn(applicationPlugin);
-		Assertions.assertThat(initContext).isNotNull();
-		Assertions.assertThat(applicationPlugin).isNotNull();
-		Assertions.assertThat(configuration).isNotNull();
+		when(initContext.dependency(ConfigurationProvider.class)).thenReturn(applicationPlugin);
+        when(applicationPlugin.getConfiguration()).thenReturn(configuration);
 		return initContext;
 	}
 

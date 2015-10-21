@@ -12,7 +12,7 @@ import io.nuun.kernel.api.plugin.InitState;
 import io.nuun.kernel.api.plugin.context.InitContext;
 import io.nuun.kernel.core.AbstractPlugin;
 import org.apache.commons.configuration.Configuration;
-import org.seedstack.seed.core.internal.application.ApplicationPlugin;
+import org.seedstack.seed.core.spi.configuration.ConfigurationProvider;
 import org.seedstack.seed.core.utils.SeedConfigurationUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,8 +48,7 @@ public class WebCorsPlugin extends AbstractPlugin {
             return InitState.INITIALIZED;
         }
 
-        ApplicationPlugin applicationPlugin = (ApplicationPlugin) initContext.pluginsRequired().iterator().next();
-        Configuration webConfiguration = applicationPlugin.getApplication().getConfiguration().subset(WebPlugin.WEB_PLUGIN_PREFIX);
+        Configuration webConfiguration = initContext.dependency(ConfigurationProvider.class).getConfiguration().subset(WebPlugin.WEB_PLUGIN_PREFIX);
 
         boolean corsEnabled = webConfiguration.getBoolean("cors.enabled", false);
         Map<String, String> corsParameters = new HashMap<String, String>();
@@ -78,7 +77,7 @@ public class WebCorsPlugin extends AbstractPlugin {
 
     @Override
     public Collection<Class<?>> requiredPlugins() {
-        return Lists.<Class<?>>newArrayList(ApplicationPlugin.class);
+        return Lists.<Class<?>>newArrayList(ConfigurationProvider.class);
     }
 
     @Override

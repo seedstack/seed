@@ -18,7 +18,7 @@ import org.kametic.specifications.Specification;
 import org.seedstack.seed.cli.CliCommand;
 import org.seedstack.seed.cli.CommandLineHandler;
 import org.seedstack.seed.cli.spi.CliContext;
-import org.seedstack.seed.core.internal.application.ApplicationPlugin;
+import org.seedstack.seed.core.spi.configuration.ConfigurationProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -57,7 +57,7 @@ public class CommandLinePlugin extends AbstractPlugin {
 
     @Override
     public Collection<Class<?>> requiredPlugins() {
-        return Lists.<Class<?>>newArrayList(ApplicationPlugin.class);
+        return Lists.<Class<?>>newArrayList(ConfigurationProvider.class);
     }
 
     @Override
@@ -75,7 +75,7 @@ public class CommandLinePlugin extends AbstractPlugin {
             return InitState.INITIALIZED;
         }
 
-        Configuration cliConfiguration = ((ApplicationPlugin) initContext.pluginsRequired().iterator().next()).getApplication().getConfiguration().subset(CLI_PLUGIN_PREFIX);
+        Configuration cliConfiguration = initContext.dependency(ConfigurationProvider.class).getConfiguration().subset(CLI_PLUGIN_PREFIX);
         Collection<Class<?>> cliHandlerCandidates = initContext.scannedTypesBySpecification().get(cliHandlerSpec);
 
         for (Class<?> candidate : cliHandlerCandidates) {

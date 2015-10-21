@@ -25,13 +25,9 @@ import org.seedstack.seed.transaction.spi.TransactionHandlerTestImpl;
 import org.seedstack.seed.transaction.spi.TransactionManager;
 import org.seedstack.seed.transaction.spi.TransactionMetadataResolver;
 import org.seedstack.seed.transaction.spi.TransactionMetadataResolverTestImpl;
+import org.seedstack.seed.core.spi.configuration.ConfigurationProvider;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -163,14 +159,8 @@ public class TransactionPluginTest {
         implementsTransactionMetadataResolverClasses.add(TransactionMetadataResolverTestImpl.class);
         mapImplements.put(TransactionMetadataResolver.class, implementsTransactionMetadataResolverClasses);
         when(initContext.scannedSubTypesByParentClass()).thenReturn(mapImplements);
-        Collection plugins = mock(Collection.class);
-        Iterator iterator = mock(Iterator.class);
-        when(initContext.pluginsRequired()).thenReturn(plugins);
-        when(plugins.iterator()).thenReturn(iterator);
-        when((ApplicationPlugin) iterator.next()).thenReturn(applicationPlugin);
-        Assertions.assertThat(initContext).isNotNull();
-        Assertions.assertThat(applicationPlugin).isNotNull();
-        Assertions.assertThat(configuration).isNotNull();
+        when(initContext.dependency(ConfigurationProvider.class)).thenReturn(applicationPlugin);
+        when(applicationPlugin.getConfiguration()).thenReturn(configuration);
         return initContext;
     }
 

@@ -75,12 +75,7 @@ public class CryptoPlugin extends AbstractPlugin implements SSLProvider {
 
     @Override
     public InitState init(InitContext initContext) {
-        Object applicationPlugin = initContext.pluginsRequired().iterator().next();
-        if (!(applicationPlugin instanceof ApplicationPlugin)) {
-            throw new PluginException("Missing ApplicationPlugin");
-        }
-
-        Application application = ((ApplicationPlugin) applicationPlugin).getApplication();
+        Application application = initContext.dependency(ApplicationPlugin.class).getApplication();
         Configuration cryptoConfig = application.getConfiguration().subset(CONFIG_PREFIX);
 
         // Retrieve key store configurations
