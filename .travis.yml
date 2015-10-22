@@ -16,6 +16,6 @@ cache:
 install: /bin/true
 
 script:
-  - mvn -q -U -T 2 -Pjavadoc,compatibility,snapshots install jacoco:report
-  - mvn -q coveralls:report -DrepoToken=$COVERALLS_TOKEN
-  - if [ $TRAVIS_PULL_REQUEST = false ] && [ $TRAVIS_BRANCH = master ]; then mvn -q -DskipTests=true -Pjavadoc deploy; fi
+  - mvn -U -T 2 -Pjavadoc,compatibility,snapshots install jacoco:report
+  - mvn coveralls:report -DrepoToken=$COVERALLS_TOKEN
+  - if [ $TRAVIS_PULL_REQUEST = false ] && [ $TRAVIS_BRANCH = master ]; then mvn -DskipTests=true -Pjavadoc deploy; fi
