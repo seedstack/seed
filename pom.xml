@@ -112,6 +112,17 @@
         <tag>HEAD</tag>
     </scm>
 
+    <pluginRepositories>
+        <pluginRepository>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+            <id>bintray-jfrog-jfrog-jars</id>
+            <name>bintray-plugins</name>
+            <url>http://dl.bintray.com/jfrog/jfrog-jars</url>
+        </pluginRepository>
+    </pluginRepositories>
+
     <profiles>
         <profile>
             <id>snapshots</id>
@@ -120,8 +131,11 @@
                     <snapshots>
                         <enabled>true</enabled>
                     </snapshots>
-                    <id>ojo-snapshots</id>
-                    <name>ojo</name>
+                    <releases>
+                        <enabled>false</enabled>
+                    </releases>
+                    <id>ojo-libs-snapshot</id>
+                    <name>ojo-snapshots</name>
                     <url>https://oss.jfrog.org/artifactory/libs-snapshot</url>
                 </repository>
             </repositories>
@@ -130,8 +144,11 @@
                     <snapshots>
                         <enabled>true</enabled>
                     </snapshots>
-                    <id>ojo-plugin-snapshots</id>
-                    <name>ojo</name>
+                    <releases>
+                        <enabled>false</enabled>
+                    </releases>
+                    <id>ojo-libs-snapshot</id>
+                    <name>ojo-snapshots</name>
                     <url>https://oss.jfrog.org/artifactory/libs-snapshot</url>
                 </pluginRepository>
             </pluginRepositories>
