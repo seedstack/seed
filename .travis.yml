@@ -1,21 +1,19 @@
-# Use docker-based infrastructure
 sudo: false
 
 language: java
 
-jdk:
-  - oraclejdk8
+jdk: oraclejdk8
 
 notifications:
-  irc: "chat.freenode.net#seedstack-dev"
+  irc: chat.freenode.net#seedstack-dev
 
 cache:
-  directories:
-    - "$HOME/.m2/repository"
+  directories: $HOME/.m2/repository
 
-install: /bin/true
+install:
+  - rm ~/.m2/settings.xml
+  - if [ $TRAVIS_PULL_REQUEST = false ] && [ $TRAVIS_BRANCH = master ]; then GOAL=deploy; else GOAL=install; fi
 
-script:
-  - mvn -U -T 2 -Pjavadoc,compatibility,snapshots install jacoco:report
-  - mvn coveralls:report -DrepoToken=$COVERALLS_TOKEN
-  - if [ $TRAVIS_PULL_REQUEST = false ] && [ $TRAVIS_BRANCH = master ]; then mvn -DskipTests=true -Pjavadoc deploy; fi
+script: mvn -q -U -T 2 -Pcompatibility,snapshots,javadoc $GOAL jacoco:report
+
+after_success: mvn -q coveralls:report -DrepoToken=$COVERALLS_TOKEN
