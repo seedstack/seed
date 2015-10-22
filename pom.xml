@@ -125,6 +125,16 @@
                     <url>https://oss.jfrog.org/artifactory/libs-snapshot</url>
                 </repository>
             </repositories>
+            <pluginRepositories>
+                <pluginRepository>
+                    <snapshots>
+                        <enabled>true</enabled>
+                    </snapshots>
+                    <id>ojo-plugin-snapshots</id>
+                    <name>ojo</name>
+                    <url>https://oss.jfrog.org/artifactory/libs-snapshot</url>
+                </pluginRepository>
+            </pluginRepositories>
         </profile>
     </profiles>
 </project>
