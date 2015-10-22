@@ -36,7 +36,8 @@
         <metrics.version>3.1.0</metrics.version>
         <jersey.version>1.19</jersey.version>
 
-        <compatibility.version>2.0.0</compatibility.version>
+        <!-- TODO: packages are heavily refactored in 2.1.0, remove compatibility skip for 2.2.0 -->
+        <compatibility.skip>true</compatibility.skip>
     </properties>
 
     <modules>
@@ -100,21 +101,6 @@
                         </licenseMerges>
                     </configuration>
                 </plugin>
-                <plugin>
-                    <groupId>com.github.siom79.japicmp</groupId>
-                    <artifactId>japicmp-maven-plugin</artifactId>
-                    <configuration>
-                        <parameter>
-                            <excludes>
-                                <exclude>*.internal.*</exclude>
-                                <exclude>org.seedstack.seed.it.SeedITRunner</exclude>
-                                <exclude>org.seedstack.seed.it.api.ITErrorCode</exclude>
-                                <exclude>org.seedstack.seed.it.spi.ITRunnerPlugin</exclude>
-                                <exclude>org.seedstack.seed.it.spi.PausableRunBefores</exclude>
-                            </excludes>
-                        </parameter>
-                    </configuration>
-                </plugin>
             </plugins>
         </pluginManagement>
     </build>
@@ -128,21 +114,17 @@
 
     <profiles>
         <profile>
-            <id>staging</id>
+            <id>snapshots</id>
             <repositories>
                 <repository>
-                    <id>sonatype-nexus-staging</id>
-                    <name>Sonatype Nexus Staging</name>
-                    <url>https://oss.sonatype.org/content/groups/staging</url>
+                    <snapshots>
+                        <enabled>true</enabled>
+                    </snapshots>
+                    <id>ojo-snapshots</id>
+                    <name>ojo</name>
+                    <url>https://oss.jfrog.org/artifactory/libs-snapshot</url>
                 </repository>
             </repositories>
-            <pluginRepositories>
-                <pluginRepository>
-                    <id>sonatype-nexus-staging</id>
-                    <name>Sonatype Nexus Staging</name>
-                    <url>https://oss.sonatype.org/content/groups/staging</url>
-                </pluginRepository>
-            </pluginRepositories>
         </profile>
     </profiles>
 </project>
