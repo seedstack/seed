@@ -7,22 +7,33 @@
  */
 package org.seedstack.seed.core.internal;
 
-import com.google.inject.AbstractModule;
-import com.google.inject.Module;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+import java.lang.annotation.Annotation;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+
 import org.apache.commons.configuration.Configuration;
-import org.seedstack.seed.core.api.Install;
-import org.seedstack.seed.core.spi.diagnostic.DiagnosticInfoCollector;
-import io.nuun.kernel.api.plugin.context.InitContext;
 import org.assertj.core.api.Assertions;
 import org.fest.reflect.core.Reflection;
 import org.junit.Before;
 import org.junit.Test;
+import org.seedstack.seed.core.api.Install;
+import org.seedstack.seed.core.api.SeedException;
+import org.seedstack.seed.core.spi.dependency.DependencyProvider;
+import org.seedstack.seed.core.spi.dependency.Maybe;
+import org.seedstack.seed.core.spi.diagnostic.DiagnosticInfoCollector;
 
-import java.lang.annotation.Annotation;
-import java.util.*;
+import com.google.inject.AbstractModule;
+import com.google.inject.Module;
 
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import io.nuun.kernel.api.plugin.context.InitContext;
+import mockit.Expectations;
+import mockit.Mocked;
 
 /**
  * CorePlugin unit test
@@ -52,23 +63,25 @@ public class CorePluginTest {
 
     @Test
     public void initCorePluginTest() {
-        InitContext initContext = mockInitContextForCore(TestModule.class, null);
+        InitContext initContext = mockInitContextForCore(TestModule.class, null, null);
         pluginUnderTest.init(initContext);
         Object object = pluginUnderTest.nativeUnitModule();
         Assertions.assertThat(object).isNotNull();
         Assertions.assertThat(object).isInstanceOf(Module.class);
-        Set<Class<? extends Module>> seedModules = Reflection.field("seedModules").ofType(Set.class).in(pluginUnderTest).get();
+        @SuppressWarnings("unchecked")
+		Set<Class<? extends Module>> seedModules = Reflection.field("seedModules").ofType(Set.class).in(pluginUnderTest).get();
         Assertions.assertThat(seedModules).hasSize(1);
     }
 
     @Test
     public void initCorePluginTest2() {
-        InitContext initContext = mockInitContextForCore(Object.class, null);
+        InitContext initContext = mockInitContextForCore(Object.class, null,null);
         pluginUnderTest.init(initContext);
         Object object = pluginUnderTest.nativeUnitModule();
         Assertions.assertThat(object).isNotNull();
         Assertions.assertThat(object).isInstanceOf(Module.class);
-        Set<Class<? extends Module>> seedModules = Reflection.field("seedModules").ofType(Set.class).in(pluginUnderTest).get();
+        @SuppressWarnings("unchecked")
+		Set<Class<? extends Module>> seedModules = Reflection.field("seedModules").ofType(Set.class).in(pluginUnderTest).get();
         Assertions.assertThat(seedModules).hasSize(0);
     }
 
@@ -84,7 +97,7 @@ public class CorePluginTest {
 
     @Test
     public void classpathScanRequestsTest() {
-        Assertions.assertThat(pluginUnderTest.classpathScanRequests()).hasSize(2);
+        Assertions.assertThat(pluginUnderTest.classpathScanRequests()).hasSize(3);
     }
 
     @Test
@@ -92,7 +105,7 @@ public class CorePluginTest {
         Assertions.assertThat(pluginUnderTest.name()).isNotNull();
     }
 
-    public InitContext mockInitContextForCore(Class<?> moduleClass, Class<?> diagnosticClass) {
+    private InitContext mockInitContextForCore(Class<?> moduleClass, Class<?> diagnosticClass, Class<?> dependencyClass) {
         InitContext initContext = mock(InitContext.class);
 
         Map<Class<? extends Annotation>, Collection<Class<?>>> scannedClassesByAnnotationClass = new HashMap<Class<? extends Annotation>, Collection<Class<?>>>();
@@ -108,6 +121,11 @@ public class CorePluginTest {
             classs.add(diagnosticClass);
         }
         scannedSubTypesByParentClass.put(DiagnosticInfoCollector.class, classs2);
+        Collection<Class<?>> providerClasses = new ArrayList<Class<?>>();
+        if (dependencyClass != null) {
+        	providerClasses.add(dependencyClass);
+        }
+        scannedSubTypesByParentClass.put(DependencyProvider.class, providerClasses);
 
         when(initContext.scannedClassesByAnnotationClass()).thenReturn(scannedClassesByAnnotationClass);
         when(initContext.scannedSubTypesByParentClass()).thenReturn(scannedSubTypesByParentClass);
@@ -128,4 +146,41 @@ public class CorePluginTest {
         Assertions.assertThat(pluginPackageRoot).contains(CorePlugin.SEED_PACKAGE_ROOT);
         Assertions.assertThat(pluginPackageRoot).contains("some.other.pkg");
     }
+    
+    @Test
+    public void checkOptionalDependency(@Mocked final DependencyProvider myProvider){
+    	new Expectations() {
+    		{
+    			myProvider.getClassToCheck();
+    			result="java.lang.String";
+    		}
+    	};
+        InitContext initContext = mockInitContextForCore(Object.class, null,myProvider.getClass());
+        pluginUnderTest.init(initContext);
+        Maybe<?> maybe = pluginUnderTest.getDependency(myProvider.getClass());
+        Assertions.assertThat(maybe).isNotNull();
+        Assertions.assertThat(maybe.isPresent()).isTrue();
+    }
+    
+    @Test
+    public void checkOptionalDependencyNOK(@Mocked final DependencyProvider myProvider){
+    	new Expectations() {
+    		{
+    			myProvider.getClassToCheck();
+    			result="xxxxx";
+    		}
+    	};
+        InitContext initContext = mockInitContextForCore(Object.class, null,myProvider.getClass());
+        pluginUnderTest.init(initContext);
+        Maybe<?> maybe = pluginUnderTest.getDependency(myProvider.getClass());
+        Assertions.assertThat(maybe).isNotNull();
+        Assertions.assertThat(maybe.isPresent()).isFalse();
+    }
+    
+    @Test(expected=SeedException.class)
+    public void checkOptionalDependencyWithInstantiationError(){
+        InitContext initContext = mockInitContextForCore(Object.class, null,DependencyProvider.class);
+        pluginUnderTest.init(initContext);
+    }
+    
 }

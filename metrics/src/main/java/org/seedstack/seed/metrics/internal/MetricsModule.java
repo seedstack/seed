@@ -7,14 +7,16 @@
  */
 package org.seedstack.seed.metrics.internal;
 
+import java.util.Set;
+
+import org.seedstack.seed.metrics.api.HealthChecked;
+
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.health.HealthCheck;
 import com.codahale.metrics.health.HealthCheckRegistry;
 import com.google.inject.AbstractModule;
 import com.google.inject.matcher.Matchers;
 import com.google.inject.multibindings.MapBinder;
-
-import java.util.Set;
 
 class MetricsModule extends AbstractModule {
     private final MetricRegistry metricRegistry;
@@ -34,7 +36,11 @@ class MetricsModule extends AbstractModule {
 
         MapBinder<String, HealthCheck> multiBinder = MapBinder.newMapBinder(binder(), String.class, HealthCheck.class);
         for (Class<? extends HealthCheck> healthCheckClass : healthCheckClasses) {
-            multiBinder.addBinding(healthCheckClass.getCanonicalName()).to(healthCheckClass);
+        	if ( null == healthCheckClass.getAnnotation(HealthChecked.class) || healthCheckClass.getAnnotation(HealthChecked.class).name().isEmpty()) {
+                multiBinder.addBinding(healthCheckClass.getCanonicalName()).to(healthCheckClass);
+        	}else{
+        		multiBinder.addBinding(healthCheckClass.getAnnotation(HealthChecked.class).name()).to(healthCheckClass);
+        	}
         }
 
         bindListener(Matchers.any(), new MetricTypeListener(metricRegistry));

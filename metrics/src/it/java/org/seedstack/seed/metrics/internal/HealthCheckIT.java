@@ -7,14 +7,15 @@
  */
 package org.seedstack.seed.metrics.internal;
 
-import com.codahale.metrics.health.HealthCheckRegistry;
-import com.google.common.collect.Sets;
-import org.seedstack.seed.it.AbstractSeedIT;
-import org.junit.Test;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import javax.inject.Inject;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import org.junit.Test;
+import org.seedstack.seed.it.AbstractSeedIT;
+
+import com.codahale.metrics.health.HealthCheckRegistry;
+import com.google.common.collect.Sets;
 
 public class HealthCheckIT extends AbstractSeedIT {
     @Inject
@@ -24,7 +25,7 @@ public class HealthCheckIT extends AbstractSeedIT {
     public void health_checks_are_correctly_registered() throws Exception {
         assertThat(healthCheckRegistry.runHealthChecks().keySet()).isEqualTo(Sets.newHashSet(
                 "org.seedstack.seed.metrics.internal.FailingHealthCheck",
-                "org.seedstack.seed.metrics.internal.SuccessfulHealthCheck",
+                "SuccessfulHealthCheck",
                 "org.seedstack.seed.metrics.internal.InjectedHealthCheck"
         ));
     }

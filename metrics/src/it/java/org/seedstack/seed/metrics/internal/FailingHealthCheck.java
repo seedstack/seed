@@ -7,8 +7,11 @@
  */
 package org.seedstack.seed.metrics.internal;
 
+import org.seedstack.seed.metrics.api.HealthChecked;
+
 import com.codahale.metrics.health.HealthCheck;
 
+@HealthChecked
 public class FailingHealthCheck extends HealthCheck {
     @Override
     protected Result check() throws Exception {

@@ -7,8 +7,14 @@
  */
 package org.seedstack.seed.metrics.internal;
 
+import javax.inject.Named;
+
+import org.seedstack.seed.metrics.api.HealthChecked;
+
 import com.codahale.metrics.health.HealthCheck;
 
+@HealthChecked(name="SuccessfulHealthCheck")
+@Named(value="SuccessfulHealthCheck")
 public class SuccessfulHealthCheck extends HealthCheck {
     @Override
     protected Result check() throws Exception {
