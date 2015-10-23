@@ -97,7 +97,7 @@
         <dependency>
             <groupId>org.seedstack</groupId>
             <artifactId>arquillian-composite</artifactId>
-            <version>${seedstack.poms.version}</version>
+            <version>${poms.version}</version>
             <type>pom</type>
             <scope>test</scope>
         </dependency>
