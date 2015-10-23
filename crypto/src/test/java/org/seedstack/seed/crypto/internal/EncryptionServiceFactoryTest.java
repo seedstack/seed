@@ -13,14 +13,22 @@
  */
 package org.seedstack.seed.crypto.internal;
 
-import mockit.Mocked;
-import mockit.Verifications;
+import mockit.*;
+import org.apache.commons.configuration.Configuration;
+import org.assertj.core.api.Assertions;
 import org.junit.Test;
-import org.seedstack.seed.core.api.Application;
+import org.seedstack.seed.core.api.SeedException;
+import org.seedstack.seed.crypto.api.EncryptionService;
 
+import java.io.FileInputStream;
+import java.net.URL;
 import java.security.Key;
 import java.security.KeyStore;
 import java.security.PublicKey;
+import java.security.cert.Certificate;
+import java.security.cert.CertificateFactory;
+
+import static org.seedstack.seed.core.utils.ConfigurationUtils.buildKey;
 
 /**
  * Unit test for {@link EncryptionServiceFactory}.
@@ -29,19 +37,150 @@ import java.security.PublicKey;
  */
 public class EncryptionServiceFactoryTest {
 
-    @Test
-    public void testCreateEncryptionService(@Mocked final Application application, @Mocked final KeyStore keyStore,
-                                            @Mocked final Key key, @Mocked final PublicKey publicKey) throws Exception {
+    private static final String ALIAS = "key1";
+    public static final String CERT_FILE_KEY = buildKey("cert", ALIAS, "file");
+    public static final String CERT_RESOURCE_KEY = buildKey("cert", ALIAS, "resource");
+    private static final char[] PASSWORD = "password".toCharArray();
 
-        EncryptionServiceFactory factory = new EncryptionServiceFactory(application, keyStore);
-        final char[] password = "password".toCharArray();
-        factory.create("key1", password);
+    @Mocked
+    private Configuration configuration;
+    @Mocked
+    private KeyStore keyStore;
+    @Mocked
+    private Key key;
+    @Mocked
+    private Certificate certificate;
+    @Mocked
+    private PublicKey publicKey;
+
+    @Test
+    public void testCreateEncryptionService() throws Exception {
+        new Expectations() {
+            {
+                keyStore.getKey(ALIAS, PASSWORD);
+                result = key;
+                keyStore.getCertificate(ALIAS);
+                result = certificate;
+                certificate.getPublicKey();
+                result = publicKey;
+            }
+        };
+
+        EncryptionServiceFactory factory = new EncryptionServiceFactory(configuration, keyStore);
+        EncryptionService encryptionService = factory.create(ALIAS, PASSWORD);
+
+        Assertions.assertThat(encryptionService).isNotNull();
 
         new Verifications() {
             {
-                new EncryptionServiceImpl("key1", publicKey, key);
+                new EncryptionServiceImpl(ALIAS, publicKey, key);
             }
         };
+    }
+
+    @Test
+    public void testCreateForAliasWithoutCertificate() throws Exception {
+        new Expectations() {
+            {
+                keyStore.getKey(ALIAS, PASSWORD);
+                result = key;
+                keyStore.getCertificate(ALIAS);
+                result = null;
+            }
+        };
+
+        EncryptionServiceFactory factory = new EncryptionServiceFactory(configuration, keyStore);
+        EncryptionService encryptionService = factory.create(ALIAS, PASSWORD);
+
+        Assertions.assertThat(encryptionService).isNotNull();
+
+        new Verifications() {
+            {
+                new EncryptionServiceImpl(ALIAS, publicKey, key);
+            }
+        };
+    }
+
+    @Test
+    public void testCreateWithExternalCertificateFromFile(@Mocked final FileInputStream fileInputStream, @Mocked CertificateFactory certificateFactory) throws Exception {
+
+        new Expectations() {
+            {
+                keyStore.getKey(ALIAS, PASSWORD);
+                result = key;
+
+                certificate.getPublicKey();
+                result = publicKey;
+
+                configuration.containsKey(CERT_FILE_KEY);
+                result = true;
+                configuration.getString(CERT_FILE_KEY);
+                result = "path/to/cert";
+
+                new FileInputStream("path/to/cert");
+                result = fileInputStream;
+            }
+        };
+
+        EncryptionServiceFactory factory = new EncryptionServiceFactory(configuration, keyStore);
+        EncryptionService encryptionService = factory.create(ALIAS, PASSWORD);
+
+        Assertions.assertThat(encryptionService).isNotNull();
+
+        new Verifications() {
+            {
+                new EncryptionServiceImpl(ALIAS, publicKey, key);
+            }
+        };
+    }
+
+    @Test
+    public void testCreateWithExternalCertificateFromResource(@Mocked CertificateFactory certificateFactory, @Mocked final URL url) throws Exception {
+        new MockUp<ClassLoader> (){
+            @Mock
+            public URL getResource(String name) {
+                return url;
+            }
+        };
+
+        new Expectations() {
+            {
+                keyStore.getKey(ALIAS, PASSWORD);
+                result = key;
+
+                certificate.getPublicKey();
+                result = publicKey;
+
+                configuration.containsKey(CERT_RESOURCE_KEY);
+                result = true;
+            }
+        };
+
+        EncryptionServiceFactory factory = new EncryptionServiceFactory(configuration, keyStore);
+        EncryptionService encryptionService = factory.create(ALIAS, PASSWORD);
+
+        Assertions.assertThat(encryptionService).isNotNull();
+
+        new Verifications() {
+            {
+                new EncryptionServiceImpl(ALIAS, publicKey, key);
+            }
+        };
+    }
+
+    @Test(expected = SeedException.class)
+    public void testMissingCertificateFromResource() throws Exception {
+
+        new Expectations() {
+            {
+                configuration.containsKey(CERT_RESOURCE_KEY);
+                result = true;
+                configuration.getString(CERT_RESOURCE_KEY);
+                result = "path/to/cert";
+            }
+        };
+
+        new EncryptionServiceFactory(configuration, keyStore).create(ALIAS, PASSWORD);
     }
 
 }

@@ -5,20 +5,17 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-/*
- * Creation : 27 févr. 2015
- */
 package org.seedstack.seed.crypto.internal;
 
-import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
-import java.security.spec.InvalidKeySpecException;
+import org.seedstack.seed.core.api.SeedException;
+import org.seedstack.seed.crypto.api.Hash;
+import org.seedstack.seed.crypto.api.HashingService;
 
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
-
-import org.seedstack.seed.crypto.api.Hash;
-import org.seedstack.seed.crypto.api.HashingService;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+import java.security.spec.InvalidKeySpecException;
 
 class PBKDF2HashingService implements HashingService {
     private static final String PBKDF2_ALGORITHM = "PBKDF2WithHmacSHA1";
@@ -72,9 +69,9 @@ class PBKDF2HashingService implements HashingService {
             SecretKeyFactory skf = SecretKeyFactory.getInstance(PBKDF2_ALGORITHM);
             return skf.generateSecret(spec).getEncoded();
         } catch (NoSuchAlgorithmException e) {
-            throw new IllegalArgumentException(e);
+            throw SeedException.wrap(e, CryptoErrorCodes.UNEXPECTED_EXCEPTION);
         } catch (InvalidKeySpecException e) {
-            throw new IllegalArgumentException(e);
+            throw SeedException.wrap(e, CryptoErrorCodes.UNEXPECTED_EXCEPTION);
         }
     }
 

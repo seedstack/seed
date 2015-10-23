@@ -14,10 +14,12 @@
 package org.seedstack.seed.crypto.internal;
 
 import org.apache.commons.configuration.Configuration;
-import org.seedstack.seed.core.api.Application;
+import org.seedstack.seed.core.api.SeedException;
+import org.seedstack.seed.core.utils.ConfigurationUtils;
 import org.seedstack.seed.core.utils.SeedReflectionUtils;
 import org.seedstack.seed.crypto.api.EncryptionService;
 
+import javax.annotation.Nullable;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -27,15 +29,17 @@ import java.security.cert.Certificate;
 import java.security.cert.CertificateFactory;
 
 /**
- * Factory to create a new {@link EncryptionService} object. This factory checks the KeyStore state (connection) if a KeyStore is used.
+ * Factory to create a new {@link EncryptionService} object. This factory checks the KeyStore state (connection)
+ * if a KeyStore is used.
  *
  * @author thierry.bouvet@mpsa.com
  */
-public class EncryptionServiceFactory {
+class EncryptionServiceFactory {
 
-    private static final String CERT_CONFIG = CryptoPlugin.CRYPTO_PLUGIN_PREFIX + ".cert";
-    private static final String CERT_FILE = "file";
-    private static final String CERT_RESOURCE = "resource";
+    public static final String CERT = "cert";
+    public static final String CERT_FILE = "file";
+    public static final String CERT_RESOURCE = "resource";
+    public static final String DEFAULT_CERTIFICATE_TYPE = "X.509";
 
     private final Configuration configuration;
     private final KeyStore keyStore;
@@ -43,11 +47,14 @@ public class EncryptionServiceFactory {
     /**
      * Constructs an encryption service factory for a specific KeyStore.
      *
-     * @param application the application, used to find external certificate locations
-     * @param keyStore    the KeyStore which holds the key pairs
+     * @param configuration the crypto configuration
+     * @param keyStore      the KeyStore which holds the key pairs
      */
-    public EncryptionServiceFactory(Application application, KeyStore keyStore) {
-        this.configuration = application.getConfiguration();
+    EncryptionServiceFactory(Configuration configuration, KeyStore keyStore) {
+        this.configuration = configuration;
+        if (keyStore == null) {
+            throw SeedException.createNew(CryptoErrorCodes.NO_KEYSTORE_CONFIGURED);
+        }
         this.keyStore = keyStore;
     }
 
@@ -62,28 +69,25 @@ public class EncryptionServiceFactory {
      * @param password the password protecting the private key
      * @return encryption service
      */
-    public EncryptionService create(String alias, char[] password) {
+    EncryptionService create(String alias, char[] password) {
         PublicKey pk = getPublicKey(alias);
 
-        if (this.keyStore == null) {
-            throw new IllegalArgumentException("No keystore configured so decrypt is not possible.");
-        }
         Key key;
         try {
             key = this.keyStore.getKey(alias, password);
         } catch (UnrecoverableKeyException e) {
-            throw new IllegalArgumentException(e);
+            throw SeedException.wrap(e, CryptoErrorCodes.UNRECOVERABLE_KEY);
         } catch (KeyStoreException e) {
-            throw new IllegalArgumentException(e);
+            throw SeedException.wrap(e, CryptoErrorCodes.UNEXPECTED_EXCEPTION);
         } catch (NoSuchAlgorithmException e) {
-            throw new IllegalArgumentException(e);
+            throw SeedException.wrap(e, CryptoErrorCodes.ALGORITHM_CANNOT_BE_FOUND);
         }
 
         return new EncryptionServiceImpl(alias, pk, key);
     }
 
     private PublicKey getPublicKey(String alias) {
-        Certificate certificate = null;
+        Certificate certificate;
 
         // Look for an external certificate
         String certLocation = getCertificateLocation(alias);
@@ -94,7 +98,7 @@ public class EncryptionServiceFactory {
             try {
                 certificate = keyStore.getCertificate(alias);
             } catch (KeyStoreException e) {
-                e.printStackTrace();
+                throw SeedException.createNew(CryptoErrorCodes.NO_KEYSTORE_CONFIGURED);
             }
         }
 
@@ -113,7 +117,8 @@ public class EncryptionServiceFactory {
         if (certResource != null) {
             URL urlResource = SeedReflectionUtils.findMostCompleteClassLoader().getResource(certResource);
             if (urlResource == null) {
-                throw new RuntimeException("Certificate [" + alias + "] not found !");
+                throw SeedException.createNew(CryptoErrorCodes.CERTIFICATE_NOT_FOUND)
+                        .put("alias", alias).put("certResource", certResource);
             }
             certLocation = urlResource.getFile();
         } else {
@@ -130,25 +135,25 @@ public class EncryptionServiceFactory {
             try {
                 in = new FileInputStream(certLocation);
             } catch (FileNotFoundException e) {
-                throw new RuntimeException("Certificate [" + certLocation + "] not found !");
+                throw SeedException.wrap(e, CryptoErrorCodes.ENABLE_TO_READ_CERTIFICATE);
             }
             try {
-                CertificateFactory certificateFactory = CertificateFactory.getInstance("X.509");
-                certificate = certificateFactory.generateCertificate(in);
+                certificate = CertificateFactory.getInstance(DEFAULT_CERTIFICATE_TYPE).generateCertificate(in);
             } catch (Exception e) {
-                throw new RuntimeException("Certificate [" + certLocation + "] parsing error !");
+                throw SeedException.wrap(e, CryptoErrorCodes.ENABLE_TO_READ_CERTIFICATE);
             }
             try {
                 in.close();
             } catch (IOException e) {
-                throw new RuntimeException("Certificate [" + certLocation + "] not closed !");
+                throw SeedException.wrap(e, CryptoErrorCodes.ENABLE_TO_READ_CERTIFICATE);
             }
         }
         return certificate;
     }
 
+    @Nullable
     private String getCertificateLocation(String alias, String type) {
-        String locationKey = CERT_CONFIG + alias + type;
+        String locationKey = ConfigurationUtils.buildKey(CERT, alias, type);
 
         if (configuration.containsKey(locationKey)) {
             return configuration.getString(locationKey);

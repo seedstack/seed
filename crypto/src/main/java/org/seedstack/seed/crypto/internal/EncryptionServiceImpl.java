@@ -10,6 +10,7 @@
  */
 package org.seedstack.seed.crypto.internal;
 
+import org.seedstack.seed.core.api.SeedException;
 import org.seedstack.seed.crypto.api.EncryptionService;
 
 import javax.annotation.Nullable;
@@ -21,8 +22,8 @@ import javax.security.cert.X509Certificate;
 import java.security.*;
 
 /**
- * Asymmetric crypting. It's used to encrypt and decrypt a data. Encrypt uses a {@link X509Certificate}. Decrypt uses the private key stored in a
- * KeyStore.
+ * Asymmetric crypting. It's used to encrypt and decrypt a data. Encrypt uses a {@link X509Certificate}.
+ * Decrypt uses the private key stored in a KeyStore.
  *
  * @author thierry.bouvet@mpsa.com
  */
@@ -47,7 +48,7 @@ class EncryptionServiceImpl implements EncryptionService {
     @Override
     public byte[] encrypt(byte[] toCrypt) throws InvalidKeyException {
         if (this.publicKey == null) {
-            throw new IllegalArgumentException("No public key for the alias " + alias + " is defined so encrypt is impossible.");
+            throw SeedException.createNew(CryptoErrorCodes.MISSING_PUBLIC_KEY).put("alias", alias);
         }
         return crypt(toCrypt, publicKey, Cipher.ENCRYPT_MODE);
     }
@@ -55,13 +56,13 @@ class EncryptionServiceImpl implements EncryptionService {
     @Override
     public byte[] decrypt(byte[] toDecrypt) throws InvalidKeyException {
         if (this.privateKey == null) {
-            throw new IllegalArgumentException("No private key for the alias " + alias + " is defined so decrypt is impossible.");
+            throw SeedException.createNew(CryptoErrorCodes.MISSING_PRIVATE_KEY).put("alias", alias);
         }
         return crypt(toDecrypt, privateKey, Cipher.DECRYPT_MODE);
     }
 
     /**
-     * Encrypt or decrypt a byte[]
+     * Encrypts or decrypts a byte[].
      *
      * @param crypt byte[] to encrypt or decrypt
      * @param key   key to use
@@ -74,18 +75,18 @@ class EncryptionServiceImpl implements EncryptionService {
         try {
             rsaCipher = Cipher.getInstance("RSA/ECB/PKCS1PADDING");
         } catch (NoSuchAlgorithmException e) {
-            throw new IllegalArgumentException(e);
+            throw SeedException.wrap(e, CryptoErrorCodes.ENABLE_TO_GET_CIPHER);
         } catch (NoSuchPaddingException e) {
-            throw new IllegalArgumentException(e);
+            throw SeedException.wrap(e, CryptoErrorCodes.ENABLE_TO_GET_CIPHER);
         }
         rsaCipher.init(mode, key);
 
         try {
             return rsaCipher.doFinal(crypt);
         } catch (IllegalBlockSizeException e) {
-            throw new IllegalArgumentException(e);
+            throw SeedException.wrap(e, CryptoErrorCodes.UNEXPECTED_EXCEPTION);
         } catch (BadPaddingException e) {
-            throw new IllegalArgumentException(e);
+            throw SeedException.wrap(e, CryptoErrorCodes.UNEXPECTED_EXCEPTION);
         }
     }
 

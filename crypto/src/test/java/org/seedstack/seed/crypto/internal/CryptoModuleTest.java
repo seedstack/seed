@@ -37,13 +37,14 @@ public class CryptoModuleTest {
      * {@link Binder} to check if bind is ok.
      */
     @Test
-    public void testConfigure(@Mocked final EncryptionServiceImpl asymetricCryptingRSA, @Mocked final KeyStore keyStore, @Mocked final Binder binder) {
+    public void testConfigure(@Mocked final EncryptionServiceImpl asymetricCryptingRSA, @Mocked final KeyStore keyStore,
+                              @Mocked final Binder binder) {
 
         final Map<String, KeyStore> keyStores = new HashMap<String, KeyStore>();
         keyStores.put("k1", keyStore);
-        final Map<String, EncryptionService> rsaServices = new HashMap<String, EncryptionService>();
-        rsaServices.put("k1", asymetricCryptingRSA);
-        rsaServices.put("k2", asymetricCryptingRSA);
+        final Map<Key<EncryptionService>, EncryptionService> rsaServices = new HashMap<Key<EncryptionService>, EncryptionService>();
+        rsaServices.put(Key.get(EncryptionService.class, Names.named("k1")), asymetricCryptingRSA);
+        rsaServices.put(Key.get(EncryptionService.class, Names.named("k2")), asymetricCryptingRSA);
 
         CryptoModule module = new CryptoModule(rsaServices, keyStores);
         module.configure(binder);

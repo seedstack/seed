@@ -20,7 +20,7 @@ import java.security.UnrecoverableKeyException;
  *
  * @author pierre.thirouin@ext.mpsa.com (Pierre Thirouin)
  */
-class SsLLoader {
+class SSLLoader {
 
     /**
      * Gets the {@link javax.net.ssl.KeyManager}s from the ssl KeyStore.

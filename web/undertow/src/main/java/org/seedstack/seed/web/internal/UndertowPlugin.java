@@ -18,7 +18,8 @@ import org.apache.commons.configuration.Configuration;
 import org.seedstack.seed.core.api.SeedException;
 import org.seedstack.seed.core.internal.application.ApplicationPlugin;
 import org.seedstack.seed.crypto.internal.CryptoPlugin;
-import org.seedstack.seed.crypto.internal.SslConfig;
+import org.seedstack.seed.crypto.spi.SSLConfiguration;
+import org.seedstack.seed.crypto.spi.SSLProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,24 +52,24 @@ public class UndertowPlugin extends AbstractPlugin {
     @Override
     public InitState init(InitContext initContext) {
         Configuration configuration = null;
-        SslConfig sslConfig = null;
+        SSLConfiguration SSLConfiguration = null;
         SSLContext sslContext = null;
         for (Plugin plugin : initContext.pluginsRequired()) {
             if (plugin instanceof ApplicationPlugin) {
                 configuration = ((ApplicationPlugin) plugin).getApplication().getConfiguration();
-            } else if (plugin instanceof CryptoPlugin) {
-                CryptoPlugin cryptoPlugin = (CryptoPlugin) plugin;
-                sslConfig = cryptoPlugin.getSslConfig();
-                sslContext = cryptoPlugin.getSslContext();
+            } else if (SSLProvider.class.isAssignableFrom(plugin.getClass())) {
+                SSLProvider sslProvider = (SSLProvider) plugin;
+                SSLConfiguration = sslProvider.sslConfig();
+                sslContext = sslProvider.sslContext();
             } else {
-                    throw SeedException.createNew(UndertowErrorCode.UNEXPECTED_EXCEPTION);
+                throw SeedException.createNew(UndertowErrorCode.UNEXPECTED_EXCEPTION);
             }
         }
         if (configuration == null) {
             throw SeedException.createNew(UndertowErrorCode.UNEXPECTED_EXCEPTION);
         }
 
-        serverConfig = new ServerConfigFactory().create(configuration.subset(UNDERTOW_PLUGIN_PREFIX), sslConfig, sslContext);
+        serverConfig = new ServerConfigFactory().create(configuration.subset(UNDERTOW_PLUGIN_PREFIX), SSLConfiguration, sslContext);
 
         return InitState.INITIALIZED;
     }
