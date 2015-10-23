@@ -69,6 +69,10 @@ public class DataSecurityModule extends AbstractModule {
 
             @Override
             public boolean matches(Method candidate) {
+                if (candidate.isSynthetic()) {
+                    return false;
+                }
+
                 boolean toBeSecured = isPresent(methodsFromAncestors(candidate), Secured.class);
 
                 if (!toBeSecured) {
