@@ -8,17 +8,21 @@
 package org.seedstack.seed.it.internal;
 
 import com.google.inject.AbstractModule;
+import com.google.inject.Module;
 import org.seedstack.seed.it.internal.arquillian.InjectionEnricher;
 
 import java.util.Collection;
+import java.util.Set;
 
 class ITModule extends AbstractModule {
     private final Collection<Class<?>> iTs;
     private final Class<?> testClass;
+    private final Set<Module> itInstallModules;
 
-    ITModule(Class<?> testClass, Collection<Class<?>> iTs) {
+    ITModule(Class<?> testClass, Collection<Class<?>> iTs, Set<Module> itInstallModules) {
         this.iTs = iTs;
         this.testClass = testClass;
+        this.itInstallModules = itInstallModules;
     }
 
     @Override
@@ -27,6 +31,12 @@ class ITModule extends AbstractModule {
 
         if (testClass != null) {
             bind(testClass);
+        }
+
+        if (itInstallModules != null) {
+            for (Module itInstallModule : itInstallModules) {
+                install(itInstallModule);
+            }
         }
 
         if (iTs != null) {

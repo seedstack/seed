@@ -8,6 +8,7 @@
 package org.seedstack.seed.it.internal;
 
 import com.google.common.io.Files;
+import com.google.inject.Module;
 import io.nuun.kernel.api.Plugin;
 import io.nuun.kernel.api.plugin.InitState;
 import io.nuun.kernel.api.plugin.PluginException;
@@ -16,13 +17,17 @@ import io.nuun.kernel.api.plugin.request.ClasspathScanRequest;
 import io.nuun.kernel.core.AbstractPlugin;
 import io.nuun.kernel.core.internal.context.InitContextInternal;
 import org.kametic.specifications.Specification;
+import org.seedstack.seed.core.api.SeedException;
 import org.seedstack.seed.core.internal.application.ApplicationPlugin;
 import org.seedstack.seed.it.api.ITBind;
+import org.seedstack.seed.it.api.ITErrorCode;
+import org.seedstack.seed.it.api.ITInstall;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Proxy;
@@ -47,11 +52,14 @@ public class ITPlugin extends AbstractPlugin {
     private static final Logger LOGGER = LoggerFactory.getLogger(ITPlugin.class);
 
     private final Set<Class<?>> itBindClasses = new HashSet<Class<?>>();
+    private final Set<Class<? extends Module>> itInstallModules = new HashSet<Class<? extends Module>>();
     private File temporaryAppStorage;
     private Class<?> testClass;
 
     @SuppressWarnings("unchecked")
     private final Specification<Class<?>> itBindingSpec = or(classAnnotatedWith(ITBind.class));
+    @SuppressWarnings("unchecked")
+    private final Specification<Class<?>> itInstallSpec = or(classAnnotatedWith(ITInstall.class));
 
     @Override
     public String name() {
@@ -96,6 +104,16 @@ public class ITPlugin extends AbstractPlugin {
             itBindClasses.addAll(itBindClassCandidates);
         }
 
+        // For @ITInstall
+        Collection<Class<?>> itInstallClassCandidates = scannedTypesBySpecification.get(itInstallSpec);
+        if (itInstallClassCandidates != null) {
+            for (Class<?> itInstallClassCandidate : itInstallClassCandidates) {
+                if (Module.class.isAssignableFrom(itInstallClassCandidate)) {
+                    itInstallModules.add((Class<? extends Module>) itInstallClassCandidate);
+                }
+            }
+        }
+
         // For test class binding
         if (itClassName != null) {
             try {
@@ -123,12 +141,24 @@ public class ITPlugin extends AbstractPlugin {
 
     @Override
     public Collection<ClasspathScanRequest> classpathScanRequests() {
-        return classpathScanRequestBuilder().specification(itBindingSpec).build();
+        return classpathScanRequestBuilder().specification(itBindingSpec).specification(itInstallSpec).build();
     }
 
     @Override
     public Object nativeUnitModule() {
-        return new ITModule(testClass, itBindClasses);
+        Set<Module> itModules = new HashSet<Module>();
+
+        for (Class<? extends Module> klazz : itInstallModules) {
+            try {
+                Constructor<? extends Module> declaredConstructor = klazz.getDeclaredConstructor();
+                declaredConstructor.setAccessible(true);
+                itModules.add(declaredConstructor.newInstance());
+            } catch (Exception e) {
+                throw SeedException.wrap(e, ITErrorCode.UNABLE_TO_INSTANTIATE_IT_MODULE).put("module", klazz.getCanonicalName());
+            }
+        }
+
+        return new ITModule(testClass, itBindClasses, itModules);
     }
 
     @Override
@@ -143,7 +173,7 @@ public class ITPlugin extends AbstractPlugin {
             return;
         }
 
-        // TODO when building for Java 7 or later, use symlink detection, meanwhile let's hope the temporary IT directory doesn't contain any
+        // TODO when building for Java 7 or later, use symlink detection, meanwhile let's hope the temporary IT directory doesn't contain any symlink
 
         if (file.isDirectory()) {
             File[] files = file.listFiles();

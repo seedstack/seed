@@ -15,6 +15,8 @@ import org.junit.runner.RunWith;
 import org.seedstack.seed.core.api.Application;
 import org.seedstack.seed.it.api.AfterKernel;
 import org.seedstack.seed.it.api.BeforeKernel;
+import org.seedstack.seed.it.fixtures.ITBound;
+import org.seedstack.seed.it.fixtures.BoundThroughITInstalledModule;
 
 import javax.inject.Inject;
 
@@ -78,5 +80,15 @@ public class SeedITRunnerIT {
     @Test
     public void seed_it_runner_is_correctly_passing_default_configuration() {
         assertThat(injector.getInstance(Application.class).getConfiguration().getString("testKey")).isEqualTo("testValue");
+    }
+
+    @Test
+    public void it_bound_classes_are_bound() {
+        assertThat(injector.getInstance(ITBound.class)).isNotNull();
+    }
+
+    @Test
+    public void it_install_modules_are_installed() {
+        assertThat(injector.getInstance(BoundThroughITInstalledModule.class)).isNotNull();
     }
 }
