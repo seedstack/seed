@@ -48,10 +48,16 @@ public class CryptoPlugin extends AbstractPlugin implements SSLProvider {
     public static final String MASTER_KEYSTORE_PATH = ConfigurationUtils.buildKey("keystore", MASTER_KEYSTORE_NAME, "path");
     public static final String MASTER_KEY_NAME = "seed";
     public static final String KEYSTORES = "keystores";
+    public static final String PASSWORD = "password";
+    public static final String CERT = "cert";
+    public static final String CERT_FILE = "file";
+    public static final String CERT_RESOURCE = "resource";
+    public static final String QUALIFIER = "qualifier";
 
     private final Map<Key<EncryptionService>, EncryptionService> encryptionServices = new HashMap<Key<EncryptionService>, EncryptionService>();
     private final Map<String, KeyStore> keyStores = new HashMap<String, KeyStore>();
     private final Map<String, KeyStoreConfig> keyStoreConfigs = new HashMap<String, KeyStoreConfig>();
+    private final List<KeyPairConfig> keyPairConfigs = new ArrayList<KeyPairConfig>();
 
     private SSLConfiguration sslConfiguration;
     private SSLContext sslContext;
@@ -76,11 +82,23 @@ public class CryptoPlugin extends AbstractPlugin implements SSLProvider {
         Application application = ((ApplicationPlugin) applicationPlugin).getApplication();
         Configuration cryptoConfig = application.getConfiguration().subset(CONFIG_PREFIX);
 
-        // init encryption services and KeyStores
-        keyStoreConfigs.putAll(configureKeyStores(cryptoConfig));
-        keyStores.putAll(registerKeyStores(keyStoreConfigs));
-        encryptionServices.putAll(new EncryptionServiceBindingFactory().createBindings(cryptoConfig, keyStoreConfigs, keyStores));
+        // Retrieve key store configurations
+        this.keyStoreConfigs.putAll(getKeyStoreConfigs(cryptoConfig));
 
+        // Load key stores
+        KeyStoreLoader keyStoreLoader = new KeyStoreLoader();
+        for (Map.Entry<String, KeyStoreConfig> entry : keyStoreConfigs.entrySet()) {
+            keyStores.put(entry.getKey(), keyStoreLoader.load(entry.getValue()));
+        }
+
+        // Retrieve key pair configurations
+        KeyPairConfigFactory keyPairConfigFactory = new KeyPairConfigFactory(cryptoConfig);
+        for (Map.Entry<String, KeyStore> entry : keyStores.entrySet()) {
+            this.keyPairConfigs.addAll(keyPairConfigFactory.create(entry.getKey(), entry.getValue()));
+        }
+
+        // Prepare encryption service bindings
+        encryptionServices.putAll(new EncryptionServiceBindingFactory().createBindings(cryptoConfig, this.keyPairConfigs, keyStores));
         LOGGER.debug("Registered {} cryptographic key(s)", encryptionServices.size());
 
         // init SSL context (if a KeyStore is specified or if it should be generated)
@@ -144,10 +162,17 @@ public class CryptoPlugin extends AbstractPlugin implements SSLProvider {
         return sslLoader.getKeyManagers(keyStore, password.toCharArray());
     }
 
-    private Map<String, KeyStoreConfig> configureKeyStores(Configuration cryptoConfig) {
+    private Map<String, KeyStoreConfig> getKeyStoreConfigs(Configuration cryptoConfig) {
         final Map<String, KeyStoreConfig> keyStoreConfigs = new HashMap<String, KeyStoreConfig>();
         KeyStoreConfigFactory keyStoreConfigFactory = new KeyStoreConfigFactory(cryptoConfig);
 
+        for (String keyStoreName : getKeyStoreNames(cryptoConfig, keyStoreConfigFactory)) {
+            keyStoreConfigs.put(keyStoreName, keyStoreConfigFactory.create(keyStoreName));
+        }
+        return keyStoreConfigs;
+    }
+
+    private List<String> getKeyStoreNames(Configuration cryptoConfig, KeyStoreConfigFactory keyStoreConfigFactory) {
         String[] strings = cryptoConfig.getStringArray(KEYSTORES);
         List<String> keyStoreNames = new ArrayList<String>();
         keyStoreNames.addAll(Arrays.asList(strings));
@@ -157,21 +182,7 @@ public class CryptoPlugin extends AbstractPlugin implements SSLProvider {
         if (keyStoreConfigFactory.isKeyStoreConfigured(DEFAULT_KEY_NAME)) {
             keyStoreNames.add(DEFAULT_KEY_NAME);
         }
-
-        for (String keyStoreName : keyStoreNames) {
-            KeyStoreConfig keyStoreConfig = keyStoreConfigFactory.create(keyStoreName);
-            keyStoreConfigs.put(keyStoreName, keyStoreConfig);
-        }
-        return keyStoreConfigs;
-    }
-
-    private Map<String, KeyStore> registerKeyStores(Map<String, KeyStoreConfig> keyStoreConfigs) {
-        Map<String, KeyStore> keyStores = new HashMap<String, KeyStore>();
-        KeyStoreLoader keyStoreLoader = new KeyStoreLoader();
-        for (Map.Entry<String, KeyStoreConfig> entry : keyStoreConfigs.entrySet()) {
-            keyStores.put(entry.getKey(), keyStoreLoader.load(entry.getValue()));
-        }
-        return keyStores;
+        return keyStoreNames;
     }
 
     @Override

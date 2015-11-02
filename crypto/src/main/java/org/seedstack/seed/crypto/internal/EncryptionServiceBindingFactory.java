@@ -19,46 +19,53 @@ import javax.inject.Qualifier;
 import java.lang.annotation.Annotation;
 import java.security.KeyStore;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
-import static org.seedstack.seed.core.utils.ConfigurationUtils.buildKey;
-
 /**
+ * This class prepare the EncryptionService bindings for Guice based on the configuration.
+ *
  * @author pierre.thirouin@ext.mpsa.com (Pierre Thirouin)
  */
 class EncryptionServiceBindingFactory {
 
-    Map<Key<EncryptionService>, EncryptionService> createBindings(Configuration configuration, Map<String, KeyStoreConfig> keyStoreConfigurations, Map<String, KeyStore> keyStores) {
+    /**
+     * Creates the encryption service bindings.
+     *
+     * @param configuration         crypto configuration
+     * @param keyPairConfigurations the key pairs configurations
+     * @param keyStores             the key stores instances
+     * @return the map of Guice Key and EncryptionService instances.
+     */
+    Map<Key<EncryptionService>, EncryptionService> createBindings(Configuration configuration, List<KeyPairConfig> keyPairConfigurations, Map<String, KeyStore> keyStores) {
         Map<Key<EncryptionService>, EncryptionService> encryptionServices = new HashMap<Key<EncryptionService>, EncryptionService>();
+        Map<String, EncryptionServiceFactory> encryptionServiceFactories = new HashMap<String, EncryptionServiceFactory>();
 
-        if (keyStoreConfigurations != null) {
-            for (Map.Entry<String, KeyStoreConfig> entry : keyStoreConfigurations.entrySet()) {
-                String keyStoreName = entry.getKey();
+        if (keyPairConfigurations != null && keyStores != null) {
+            for (KeyPairConfig keyPairConfig : keyPairConfigurations) {
+                String keyStoreName = keyPairConfig.getKeyStoreName();
 
-                if (keyStores != null) {
-                    EncryptionServiceFactory serviceFactory = new EncryptionServiceFactory(configuration, keyStores.get(keyStoreName));
+                if (!encryptionServiceFactories.containsKey(keyStoreName)) {
+                    EncryptionServiceFactory factory = new EncryptionServiceFactory(configuration, keyStores.get(keyStoreName));
+                    encryptionServiceFactories.put(keyStoreName, factory);
+                }
+                EncryptionServiceFactory serviceFactory = encryptionServiceFactories.get(keyStoreName);
 
-                    for (Map.Entry<String, String> aliasPasswordEntry : entry.getValue().getAliasPasswords().entrySet()) {
-                        String alias = aliasPasswordEntry.getKey();
+                EncryptionService encryptionService;
+                if (keyPairConfig.getPassword() != null) {
+                    encryptionService = serviceFactory.create(keyPairConfig.getAlias(), keyPairConfig.getPassword().toCharArray());
+                } else {
+                    encryptionService = serviceFactory.create(keyPairConfig.getAlias());
+                }
 
-                        EncryptionService encryptionService = serviceFactory.create(alias, aliasPasswordEntry.getValue().toCharArray());
-
-                        String qualifier = getAliasQualifier(configuration, keyStoreName, alias);
-                        if (qualifier != null) {
-                            encryptionServices.put(createKeyFromQualifier(qualifier), encryptionService);
-                        } else {
-                            encryptionServices.put(Key.get(EncryptionService.class, Names.named(alias)), encryptionService);
-                        }
-                    }
+                if (keyPairConfig.getQualifier() != null) {
+                    encryptionServices.put(createKeyFromQualifier(keyPairConfig.getQualifier()), encryptionService);
+                } else {
+                    encryptionServices.put(Key.get(EncryptionService.class, Names.named(keyPairConfig.getAlias())), encryptionService);
                 }
             }
         }
         return encryptionServices;
-    }
-
-    private String getAliasQualifier(Configuration configuration, String keyStoreName, String alias) {
-        String configurationKey = buildKey(CryptoPlugin.KEYSTORE, keyStoreName, "alias", alias, "qualifier");
-        return configuration.getString(configurationKey);
     }
 
     private Key<EncryptionService> createKeyFromQualifier(String qualifier) {

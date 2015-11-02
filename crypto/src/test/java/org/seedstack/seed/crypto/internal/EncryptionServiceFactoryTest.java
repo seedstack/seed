@@ -22,9 +22,7 @@ import org.seedstack.seed.crypto.api.EncryptionService;
 
 import java.io.FileInputStream;
 import java.net.URL;
-import java.security.Key;
-import java.security.KeyStore;
-import java.security.PublicKey;
+import java.security.*;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateFactory;
 
@@ -66,6 +64,7 @@ public class EncryptionServiceFactoryTest {
             }
         };
 
+        KeyPairConfig keyPairConfig = new KeyPairConfig("keyStoreName", ALIAS, "password", null, null);
         EncryptionServiceFactory factory = new EncryptionServiceFactory(configuration, keyStore);
         EncryptionService encryptionService = factory.create(ALIAS, PASSWORD);
 
@@ -76,6 +75,38 @@ public class EncryptionServiceFactoryTest {
                 new EncryptionServiceImpl(ALIAS, publicKey, key);
             }
         };
+    }
+
+    @Test
+    public void testCreateForAliasWithoutPrivateKey() throws KeyStoreException {
+        new Expectations() {
+            {
+                keyStore.getCertificate(ALIAS);
+                result = null;
+            }
+        };
+
+        EncryptionServiceFactory factory = new EncryptionServiceFactory(configuration, keyStore);
+        EncryptionService encryptionService = factory.create(ALIAS);
+
+        Assertions.assertThat(encryptionService).isNotNull();
+
+        new Verifications() {
+            {
+                new EncryptionServiceImpl(ALIAS, publicKey, null);
+            }
+        };
+    }
+
+    @Test(expected = SeedException.class)
+    public void testCreateWithMissingAliasPassword() throws Exception {
+        new Expectations() {
+            {
+                keyStore.getKey(ALIAS, null);
+                result = new UnrecoverableKeyException();
+            }
+        };
+        new EncryptionServiceFactory(configuration, keyStore).create(ALIAS, null);
     }
 
     @Test

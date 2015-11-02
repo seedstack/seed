@@ -86,6 +86,21 @@ class EncryptionServiceFactory {
         return new EncryptionServiceImpl(alias, pk, key);
     }
 
+    /**
+     * Creates an encryption service for the certificate associated to the alias.
+     * No private key will be associated as no password is provided.
+     * <p>
+     * The certificate will be loaded from an external file if a location is specified
+     * in the configuration.
+     * </p>
+     *
+     * @param alias the alias corresponding to the key store entry
+     * @return encryption service
+     */
+    EncryptionService create(String alias) {
+        return new EncryptionServiceImpl(alias, getPublicKey(alias), null);
+    }
+
     private PublicKey getPublicKey(String alias) {
         Certificate certificate;
 
