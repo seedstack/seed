@@ -7,11 +7,6 @@
  */
 package org.seedstack.seed.cli;
 
-import org.seedstack.seed.cli.api.CliArgs;
-import org.seedstack.seed.cli.api.CliCommand;
-import org.seedstack.seed.cli.api.CliOption;
-import org.seedstack.seed.cli.api.CommandLineHandler;
-
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;

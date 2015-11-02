@@ -15,8 +15,8 @@ import java.util.Set;
 import org.apache.shiro.authz.AuthorizationInfo;
 import org.apache.shiro.authz.Permission;
 
-import org.seedstack.seed.security.api.Role;
-import org.seedstack.seed.security.api.Scope;
+import org.seedstack.seed.security.Role;
+import org.seedstack.seed.security.Scope;
 
 /**
  * AuthorizationInfo that keeps the Roles and Permissions from SEED api.
@@ -69,7 +69,7 @@ public class SeedAuthorizationInfo implements AuthorizationInfo {
     public void addRole(Role role) {
         apiRoles.add(role);
         roles.add(role.getName());
-        for (org.seedstack.seed.security.api.Permission permission : role.getPermissions()) {
+        for (org.seedstack.seed.security.Permission permission : role.getPermissions()) {
             if (!role.getScopes().isEmpty()) {
                 for (Scope scope : role.getScopes()) {
                     ScopePermission sp = new ScopePermission(permission.getPermission(), scope);

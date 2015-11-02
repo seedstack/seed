@@ -23,6 +23,6 @@
     </filter-mapping>
 
     <listener>
-        <listener-class>org.seedstack.seed.web.SeedServletContextListener</listener-class>
+        <listener-class>org.seedstack.seed.web.listener.SeedServletContextListener</listener-class>
     </listener>
 </web-fragment>

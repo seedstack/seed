@@ -7,9 +7,6 @@
  */
 package org.seedstack.seed.web;
 
-import org.seedstack.seed.web.api.WebFilter;
-import org.seedstack.seed.web.api.WebInitParam;
-
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;

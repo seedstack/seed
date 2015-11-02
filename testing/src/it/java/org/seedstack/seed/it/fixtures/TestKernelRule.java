@@ -14,7 +14,7 @@ import io.nuun.kernel.core.NuunCore;
 import org.junit.rules.MethodRule;
 import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.Statement;
-import org.seedstack.seed.it.api.ITBind;
+import org.seedstack.seed.it.ITBind;
 import org.seedstack.seed.it.spi.KernelRule;
 
 import javax.inject.Singleton;

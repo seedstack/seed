@@ -13,8 +13,8 @@ import org.fest.reflect.core.Reflection;
 import org.fest.reflect.reference.TypeRef;
 import org.junit.Before;
 import org.junit.Test;
-import org.seedstack.seed.security.api.Role;
-import org.seedstack.seed.security.api.Scope;
+import org.seedstack.seed.security.Role;
+import org.seedstack.seed.security.Scope;
 
 import java.util.Collection;
 import java.util.HashMap;

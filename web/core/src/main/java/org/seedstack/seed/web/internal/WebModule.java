@@ -9,8 +9,7 @@ package org.seedstack.seed.web.internal;
 
 import com.google.inject.name.Names;
 import com.google.inject.servlet.ServletModule;
-import org.seedstack.seed.web.api.WebResourceResolver;
-import org.seedstack.seed.web.spi.WebConcern;
+import org.seedstack.seed.web.WebResourceResolver;
 
 import javax.inject.Singleton;
 import java.util.List;

@@ -12,7 +12,7 @@ import mockit.Mocked;
 import org.apache.commons.configuration.Configuration;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
-import org.seedstack.seed.core.api.SeedException;
+import org.seedstack.seed.SeedException;
 
 /**
  * @author pierre.thirouin@ext.mpsa.com (Pierre Thirouin)

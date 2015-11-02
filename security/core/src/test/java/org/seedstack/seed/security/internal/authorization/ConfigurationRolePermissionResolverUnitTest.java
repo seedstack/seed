@@ -13,7 +13,7 @@ import org.fest.reflect.core.Reflection;
 import org.fest.reflect.reference.TypeRef;
 import org.junit.Before;
 import org.junit.Test;
-import org.seedstack.seed.security.api.Role;
+import org.seedstack.seed.security.Role;
 
 import java.util.HashSet;
 import java.util.Map;

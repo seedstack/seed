@@ -12,8 +12,8 @@ import com.google.common.collect.Lists;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.reflections.ReflectionUtils;
-import org.seedstack.seed.core.api.SeedException;
-import org.seedstack.seed.core.spi.dependency.Maybe;
+import org.seedstack.seed.SeedException;
+import org.seedstack.seed.spi.dependency.Maybe;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;

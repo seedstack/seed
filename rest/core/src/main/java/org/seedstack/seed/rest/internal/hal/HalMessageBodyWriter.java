@@ -9,7 +9,7 @@ package org.seedstack.seed.rest.internal.hal;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.seedstack.seed.rest.api.hal.HalRepresentation;
+import org.seedstack.seed.rest.hal.HalRepresentation;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;

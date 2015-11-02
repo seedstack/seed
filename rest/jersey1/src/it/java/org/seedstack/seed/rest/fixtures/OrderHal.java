@@ -7,7 +7,7 @@
  */
 package org.seedstack.seed.rest.fixtures;
 
-import org.seedstack.seed.rest.api.hal.HalRepresentation;
+import org.seedstack.seed.rest.hal.HalRepresentation;
 
 /**
  * @author pierre.thirouin@ext.mpsa.com (Pierre Thirouin)

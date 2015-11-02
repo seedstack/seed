@@ -9,8 +9,8 @@ package org.seedstack.seed.security.internal;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.matcher.Matchers;
-import org.seedstack.seed.security.api.annotations.RequiresPermissions;
-import org.seedstack.seed.security.api.annotations.RequiresRoles;
+import org.seedstack.seed.security.RequiresPermissions;
+import org.seedstack.seed.security.RequiresRoles;
 import org.seedstack.seed.security.internal.authorization.RequiresPermissionsInterceptor;
 import org.seedstack.seed.security.internal.authorization.RequiresRolesInterceptor;
 

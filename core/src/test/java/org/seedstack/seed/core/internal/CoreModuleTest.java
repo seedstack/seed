@@ -13,8 +13,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.junit.Test;
-import org.seedstack.seed.core.spi.dependency.DependencyProvider;
-import org.seedstack.seed.core.spi.dependency.Maybe;
+import org.seedstack.seed.spi.dependency.DependencyProvider;
+import org.seedstack.seed.spi.dependency.Maybe;
 
 import com.google.inject.Binder;
 import com.google.inject.Module;

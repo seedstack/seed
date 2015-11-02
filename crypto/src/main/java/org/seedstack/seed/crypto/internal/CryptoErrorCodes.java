@@ -7,7 +7,7 @@
  */
 package org.seedstack.seed.crypto.internal;
 
-import org.seedstack.seed.core.api.ErrorCode;
+import org.seedstack.seed.ErrorCode;
 
 /**
  * Cryptography error codes.

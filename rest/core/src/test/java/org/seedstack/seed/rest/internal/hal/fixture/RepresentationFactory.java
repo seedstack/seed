@@ -7,10 +7,10 @@
  */
 package org.seedstack.seed.rest.internal.hal.fixture;
 
-import org.seedstack.seed.rest.api.hal.HalBuilder;
-import org.seedstack.seed.rest.api.hal.HalDefaultRepresentation;
-import org.seedstack.seed.rest.api.hal.HalRepresentation;
-import org.seedstack.seed.rest.api.hal.Link;
+import org.seedstack.seed.rest.hal.HalBuilder;
+import org.seedstack.seed.rest.hal.HalDefaultRepresentation;
+import org.seedstack.seed.rest.hal.HalRepresentation;
+import org.seedstack.seed.rest.hal.Link;
 
 import javax.ws.rs.core.UriBuilder;
 import java.util.ArrayList;

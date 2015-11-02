@@ -10,7 +10,7 @@ package org.seedstack.seed.core.internal;
 import com.google.inject.TypeLiteral;
 import com.google.inject.spi.TypeEncounter;
 import com.google.inject.spi.TypeListener;
-import org.seedstack.seed.core.api.Logging;
+import org.seedstack.seed.Logging;
 import io.nuun.kernel.api.assertions.AssertUtils;
 import org.slf4j.Logger;
 

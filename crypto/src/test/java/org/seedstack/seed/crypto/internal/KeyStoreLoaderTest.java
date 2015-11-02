@@ -11,7 +11,7 @@ import mockit.Expectations;
 import mockit.Mocked;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
-import org.seedstack.seed.core.api.SeedException;
+import org.seedstack.seed.SeedException;
 import org.slf4j.LoggerFactory;
 
 import java.io.FileInputStream;

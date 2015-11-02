@@ -7,9 +7,9 @@
  */
 package org.seedstack.seed.security.internal.configure;
 
-import org.seedstack.seed.security.api.Realm;
-import org.seedstack.seed.security.api.RoleMapping;
-import org.seedstack.seed.security.api.RolePermissionResolver;
+import org.seedstack.seed.security.Realm;
+import org.seedstack.seed.security.RoleMapping;
+import org.seedstack.seed.security.RolePermissionResolver;
 
 /**
  * Represents a realm as read in the configuration

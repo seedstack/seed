@@ -11,9 +11,9 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.seedstack.seed.security.api.Role;
-import org.seedstack.seed.security.api.RoleMapping;
-import org.seedstack.seed.security.api.principals.PrincipalProvider;
+import org.seedstack.seed.security.Role;
+import org.seedstack.seed.security.RoleMapping;
+import org.seedstack.seed.security.principals.PrincipalProvider;
 
 /**
  * RoleMapping that returns Roles which names are the realm data;

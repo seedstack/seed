@@ -7,7 +7,7 @@
  */
 package org.seedstack.seed.rest.internal;
 
-import org.seedstack.seed.rest.api.Rel;
+import org.seedstack.seed.rest.Rel;
 
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;

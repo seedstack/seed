@@ -7,9 +7,6 @@
  */
 package org.seedstack.seed.cli;
 
-import org.seedstack.seed.cli.api.CliCommand;
-import org.seedstack.seed.cli.api.CommandLineHandler;
-
 /**
  * @author adrien.lauer@mpsa.com
  */

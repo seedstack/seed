@@ -8,7 +8,7 @@
 package org.seedstack.seed.metrics.internal;
 
 import com.codahale.metrics.annotation.Counted;
-import org.seedstack.seed.it.api.ITBind;
+import org.seedstack.seed.it.ITBind;
 
 @ITBind
 public class InstrumentedWithCounted {

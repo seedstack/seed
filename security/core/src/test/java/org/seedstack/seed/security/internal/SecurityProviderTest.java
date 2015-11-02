@@ -12,10 +12,10 @@ import io.nuun.kernel.api.plugin.context.InitContext;
 import org.apache.commons.configuration.Configuration;
 import org.junit.Before;
 import org.junit.Test;
-import org.seedstack.seed.core.api.Application;
+import org.seedstack.seed.Application;
 import org.seedstack.seed.core.internal.application.ApplicationPlugin;
 import org.seedstack.seed.el.internal.ELPlugin;
-import org.seedstack.seed.security.api.Realm;
+import org.seedstack.seed.security.Realm;
 import org.seedstack.seed.security.internal.realms.ConfigurationRealm;
 
 import java.util.ArrayList;

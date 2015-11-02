@@ -14,8 +14,8 @@ import java.util.Collection;
 import org.junit.Before;
 import org.junit.Test;
 
-import org.seedstack.seed.security.api.Permission;
-import org.seedstack.seed.security.api.Role;
+import org.seedstack.seed.security.Permission;
+import org.seedstack.seed.security.Role;
 
 public class EmptyRolePermissionResolverUnitTest {
 

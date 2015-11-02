@@ -19,7 +19,7 @@ import com.google.inject.name.Names;
 import mockit.Mocked;
 import mockit.Verifications;
 import org.junit.Test;
-import org.seedstack.seed.crypto.api.EncryptionService;
+import org.seedstack.seed.crypto.EncryptionService;
 
 import java.security.KeyStore;
 import java.util.HashMap;

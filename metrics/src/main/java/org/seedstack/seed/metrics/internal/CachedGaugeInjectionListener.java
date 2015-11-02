@@ -10,8 +10,7 @@ package org.seedstack.seed.metrics.internal;
 import com.codahale.metrics.CachedGauge;
 import com.codahale.metrics.MetricRegistry;
 import com.google.inject.spi.InjectionListener;
-import org.seedstack.seed.core.api.SeedException;
-import org.seedstack.seed.metrics.api.MetricsErrorCode;
+import org.seedstack.seed.SeedException;
 
 import java.lang.reflect.Method;
 import java.util.concurrent.TimeUnit;

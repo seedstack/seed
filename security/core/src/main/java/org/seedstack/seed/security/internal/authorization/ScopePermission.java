@@ -7,7 +7,7 @@
  */
 package org.seedstack.seed.security.internal.authorization;
 
-import org.seedstack.seed.security.api.Scope;
+import org.seedstack.seed.security.Scope;
 import org.apache.shiro.authz.Permission;
 import org.apache.shiro.authz.permission.WildcardPermission;
 

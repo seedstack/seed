@@ -9,7 +9,7 @@ package org.seedstack.seed.core.utils;
 
 import jodd.bean.BeanUtil;
 import org.apache.commons.configuration.Configuration;
-import org.seedstack.seed.core.api.SeedException;
+import org.seedstack.seed.SeedException;
 
 import java.util.Properties;
 

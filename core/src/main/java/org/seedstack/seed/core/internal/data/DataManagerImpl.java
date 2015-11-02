@@ -12,10 +12,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.google.common.collect.Lists;
 import com.google.inject.Injector;
-import org.seedstack.seed.core.api.DataManager;
-import org.seedstack.seed.core.api.SeedException;
-import org.seedstack.seed.core.spi.data.DataExporter;
-import org.seedstack.seed.core.spi.data.DataImporter;
+import org.seedstack.seed.DataManager;
+import org.seedstack.seed.SeedException;
+import org.seedstack.seed.spi.data.DataExporter;
+import org.seedstack.seed.spi.data.DataImporter;
 
 import javax.inject.Inject;
 import java.io.*;
@@ -23,7 +23,7 @@ import java.nio.charset.Charset;
 import java.util.*;
 
 /**
- * Implementation of the {@link org.seedstack.seed.core.api.DataManager}.
+ * Implementation of the {@link DataManager}.
  *
  * @author pierre.thirouin@ext.mpsa.com
  * @author adrien.lauer@mpsa.com

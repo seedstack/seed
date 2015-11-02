@@ -28,7 +28,7 @@ import com.google.inject.TypeLiteral;
 import com.google.inject.binder.AnnotatedBindingBuilder;
 import com.google.inject.binder.AnnotatedElementBuilder;
 import com.google.inject.binder.ScopedBindingBuilder;
-import org.seedstack.seed.security.api.Scope;
+import org.seedstack.seed.security.Scope;
 import org.seedstack.seed.security.internal.configure.RealmConfiguration;
 import org.seedstack.seed.security.internal.configure.SeedSecurityConfigurer;
 import org.seedstack.seed.security.internal.realms.ConfigurationRealm;
@@ -75,7 +75,7 @@ public class SecurityInternalModuleUnitTest {
         Injector i = mock(Injector.class);
         ShiroRealmAdapter adapter = new ShiroRealmAdapter();
         when(i.getInstance(ShiroRealmAdapter.class)).thenReturn(adapter);
-        Set<Class<? extends org.seedstack.seed.security.api.Realm>> realmClasses = new HashSet<Class<? extends org.seedstack.seed.security.api.Realm>>();
+        Set<Class<? extends org.seedstack.seed.security.Realm>> realmClasses = new HashSet<Class<? extends org.seedstack.seed.security.Realm>>();
         realmClasses.add(ConfigurationRealm.class);
 
         Whitebox.setInternalState(rp, "injector", i);

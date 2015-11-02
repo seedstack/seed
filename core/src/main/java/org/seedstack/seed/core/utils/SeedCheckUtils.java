@@ -9,8 +9,8 @@ package org.seedstack.seed.core.utils;
 
 import com.google.inject.ConfigurationException;
 import com.google.inject.Injector;
-import org.seedstack.seed.core.api.ErrorCode;
-import org.seedstack.seed.core.api.SeedException;
+import org.seedstack.seed.ErrorCode;
+import org.seedstack.seed.SeedException;
 import org.apache.commons.collections.iterators.ArrayIterator;
 import org.kametic.specifications.Specification;
 

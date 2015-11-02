@@ -9,7 +9,7 @@ package org.seedstack.seed.rest.internal;
 
 import com.damnhandy.uri.template.UriTemplate;
 import com.damnhandy.uri.template.UriTemplateBuilder;
-import org.seedstack.seed.rest.api.hal.Link;
+import org.seedstack.seed.rest.hal.Link;
 import org.seedstack.seed.rest.internal.jsonhome.HintScanner;
 import org.seedstack.seed.rest.internal.jsonhome.Hints;
 import org.seedstack.seed.rest.internal.jsonhome.Resource;

@@ -7,8 +7,8 @@
  */
 package org.seedstack.seed.transaction.spi;
 
-import org.seedstack.seed.transaction.api.Propagation;
-import org.seedstack.seed.transaction.api.Transactional;
+import org.seedstack.seed.transaction.Propagation;
+import org.seedstack.seed.transaction.Transactional;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
@@ -41,7 +41,7 @@ public class TransactionMetadata {
     /**
      * Get the propagation of the associated transaction.
      *
-     * @return the {@link org.seedstack.seed.transaction.api.Propagation} instance.
+     * @return the {@link Propagation} instance.
      */
     public Propagation getPropagation() {
         return propagation;
@@ -50,7 +50,7 @@ public class TransactionMetadata {
     /**
      * Set the propagation of the associated transaction.
      *
-     * @param propagation the {@link org.seedstack.seed.transaction.api.Propagation} instance.
+     * @param propagation the {@link Propagation} instance.
      */
     public void setPropagation(Propagation propagation) {
         this.propagation = propagation;
@@ -261,7 +261,7 @@ public class TransactionMetadata {
     }
 
     /**
-     * Merge this instance with metadata defined in a {@link org.seedstack.seed.transaction.api.Transactional} annotation,
+     * Merge this instance with metadata defined in a {@link Transactional} annotation,
      * which has precedence over this instance.
      *
      * @param other the annotation to merge from.

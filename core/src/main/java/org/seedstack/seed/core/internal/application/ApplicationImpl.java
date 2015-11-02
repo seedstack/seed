@@ -17,8 +17,8 @@ import com.google.inject.grapher.graphviz.PortIdFactory;
 import com.google.inject.grapher.graphviz.PortIdFactoryImpl;
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.MapConfiguration;
-import org.seedstack.seed.core.api.Application;
-import org.seedstack.seed.core.api.SeedException;
+import org.seedstack.seed.Application;
+import org.seedstack.seed.SeedException;
 
 import javax.inject.Inject;
 import java.io.File;

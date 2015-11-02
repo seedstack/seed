@@ -7,7 +7,7 @@
  */
 package org.seedstack.seed.core.internal.application;
 
-import org.seedstack.seed.core.spi.configuration.ConfigurationConverter;
+import org.seedstack.seed.spi.configuration.ConfigurationConverter;
 
 /**
  * This class is a container for built-in configuration converters.

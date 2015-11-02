@@ -7,8 +7,8 @@
  */
 package org.seedstack.seed.core.internal;
 
-import org.seedstack.seed.core.api.Install;
-import org.seedstack.seed.core.api.Logging;
+import org.seedstack.seed.Install;
+import org.seedstack.seed.Logging;
 import org.assertj.core.api.Assertions;
 import org.assertj.core.api.Fail;
 import org.fest.reflect.core.Reflection;

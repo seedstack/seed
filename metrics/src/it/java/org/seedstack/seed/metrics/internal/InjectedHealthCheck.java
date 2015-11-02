@@ -8,7 +8,7 @@
 package org.seedstack.seed.metrics.internal;
 
 import com.codahale.metrics.health.HealthCheck;
-import org.seedstack.seed.core.api.DiagnosticManager;
+import org.seedstack.seed.DiagnosticManager;
 
 import javax.inject.Inject;
 

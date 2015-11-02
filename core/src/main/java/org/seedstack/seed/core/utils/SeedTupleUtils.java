@@ -19,7 +19,7 @@ import org.javatuples.Sextet;
 import org.javatuples.Triplet;
 import org.javatuples.Tuple;
 import org.javatuples.Unit;
-import org.seedstack.seed.core.api.SeedException;
+import org.seedstack.seed.SeedException;
 
 import java.util.Collection;
 import java.util.List;

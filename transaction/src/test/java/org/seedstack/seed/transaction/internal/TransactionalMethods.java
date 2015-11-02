@@ -7,8 +7,8 @@
  */
 package org.seedstack.seed.transaction.internal;
 
-import org.seedstack.seed.transaction.api.Propagation;
-import org.seedstack.seed.transaction.api.Transactional;
+import org.seedstack.seed.transaction.Propagation;
+import org.seedstack.seed.transaction.Transactional;
 import org.aopalliance.intercept.MethodInvocation;
 
 public class TransactionalMethods {

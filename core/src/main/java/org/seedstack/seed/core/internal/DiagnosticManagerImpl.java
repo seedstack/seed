@@ -12,11 +12,11 @@ import com.google.inject.Injector;
 import com.google.inject.Key;
 import com.google.inject.TypeLiteral;
 import org.reflections.util.ClasspathHelper;
-import org.seedstack.seed.core.api.DiagnosticManager;
-import org.seedstack.seed.core.api.SeedException;
-import org.seedstack.seed.core.api.CoreErrorCode;
-import org.seedstack.seed.core.spi.diagnostic.DiagnosticInfoCollector;
-import org.seedstack.seed.core.spi.diagnostic.DiagnosticReporter;
+import org.seedstack.seed.DiagnosticManager;
+import org.seedstack.seed.SeedException;
+import org.seedstack.seed.CoreErrorCode;
+import org.seedstack.seed.spi.diagnostic.DiagnosticInfoCollector;
+import org.seedstack.seed.spi.diagnostic.DiagnosticReporter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

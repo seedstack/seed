@@ -12,7 +12,7 @@ import org.junit.rules.MethodRule;
 import org.junit.rules.TestRule;
 import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.TestClass;
-import org.seedstack.seed.cli.api.WithCommandLine;
+import org.seedstack.seed.cli.WithCommandLine;
 import org.seedstack.seed.it.spi.ITKernelMode;
 import org.seedstack.seed.it.spi.ITRunnerPlugin;
 

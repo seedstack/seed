@@ -9,7 +9,6 @@ package org.seedstack.seed.it;
 
 import com.google.inject.CreationException;
 import org.junit.Test;
-import org.seedstack.seed.it.api.Expect;
 
 import javax.inject.Inject;
 

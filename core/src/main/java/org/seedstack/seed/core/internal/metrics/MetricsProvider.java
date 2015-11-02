@@ -9,7 +9,7 @@ package org.seedstack.seed.core.internal.metrics;
 
 import javax.inject.Singleton;
 
-import org.seedstack.seed.core.spi.dependency.DependencyProvider;
+import org.seedstack.seed.spi.dependency.DependencyProvider;
 
 import com.codahale.metrics.Metric;
 import com.codahale.metrics.MetricRegistry;

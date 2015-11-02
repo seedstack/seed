@@ -8,9 +8,9 @@
 package org.seedstack.seed.shell.internal;
 
 import com.google.common.base.Strings;
-import org.seedstack.seed.core.api.CommandRegistry;
-import org.seedstack.seed.core.api.SeedException;
-import org.seedstack.seed.core.spi.command.Command;
+import org.seedstack.seed.CommandRegistry;
+import org.seedstack.seed.SeedException;
+import org.seedstack.seed.spi.command.Command;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.Option;
@@ -133,7 +133,7 @@ abstract class AbstractShell implements org.apache.sshd.server.Command, Runnable
 
         // Build CLI options
         Options options = new Options();
-        for (org.seedstack.seed.core.spi.command.Option option : commandRegistry.getOptionsInfo(commandScope, commandName)) {
+        for (org.seedstack.seed.spi.command.Option option : commandRegistry.getOptionsInfo(commandScope, commandName)) {
             options.addOption(option.name(), option.longName(), option.hasArgument(), option.description());
         }
 

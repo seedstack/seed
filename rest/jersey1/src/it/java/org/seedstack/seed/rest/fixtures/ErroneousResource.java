@@ -8,8 +8,8 @@
 package org.seedstack.seed.rest.fixtures;
 
 import com.sun.jersey.api.NotFoundException;
-import org.seedstack.seed.security.api.exceptions.AuthenticationException;
-import org.seedstack.seed.security.api.exceptions.AuthorizationException;
+import org.seedstack.seed.security.AuthenticationException;
+import org.seedstack.seed.security.AuthorizationException;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;

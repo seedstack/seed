@@ -8,7 +8,7 @@
 package org.seedstack.seed.security.internal.data;
 
 import com.google.inject.Injector;
-import org.seedstack.seed.core.api.SeedException;
+import org.seedstack.seed.SeedException;
 import org.seedstack.seed.security.spi.SecurityErrorCodes;
 import org.seedstack.seed.security.internal.securityexpr.SecurityExpressionInterpreter;
 import org.seedstack.seed.security.spi.data.DataObfuscationHandler;

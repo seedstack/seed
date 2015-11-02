@@ -20,9 +20,9 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.apache.commons.configuration.Configuration;
-import org.seedstack.seed.security.api.Permission;
-import org.seedstack.seed.security.api.Role;
-import org.seedstack.seed.security.api.RolePermissionResolver;
+import org.seedstack.seed.security.Permission;
+import org.seedstack.seed.security.Role;
+import org.seedstack.seed.security.RolePermissionResolver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

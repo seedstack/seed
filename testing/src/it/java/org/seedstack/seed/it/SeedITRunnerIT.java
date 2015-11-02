@@ -12,9 +12,7 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.seedstack.seed.core.api.Application;
-import org.seedstack.seed.it.api.AfterKernel;
-import org.seedstack.seed.it.api.BeforeKernel;
+import org.seedstack.seed.Application;
 import org.seedstack.seed.it.fixtures.ITBound;
 import org.seedstack.seed.it.fixtures.BoundThroughITInstalledModule;
 

@@ -7,7 +7,7 @@
  */
 package org.seedstack.seed.shell;
 
-import org.seedstack.seed.core.api.Configuration;
+import org.seedstack.seed.Configuration;
 import org.seedstack.seed.it.AbstractSeedIT;
 import net.schmizz.sshj.SSHClient;
 import net.schmizz.sshj.connection.channel.direct.Session;

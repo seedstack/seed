@@ -14,10 +14,10 @@
 package org.seedstack.seed.crypto.internal;
 
 import org.apache.commons.configuration.Configuration;
-import org.seedstack.seed.core.api.SeedException;
+import org.seedstack.seed.SeedException;
 import org.seedstack.seed.core.utils.ConfigurationUtils;
 import org.seedstack.seed.core.utils.SeedReflectionUtils;
-import org.seedstack.seed.crypto.api.EncryptionService;
+import org.seedstack.seed.crypto.EncryptionService;
 
 import javax.annotation.Nullable;
 import java.io.FileInputStream;

@@ -9,7 +9,7 @@ package org.seedstack.seed.it.fixtures;
 
 
 import com.google.inject.AbstractModule;
-import org.seedstack.seed.it.api.ITInstall;
+import org.seedstack.seed.it.ITInstall;
 
 @ITInstall
 public class TestModule extends AbstractModule {

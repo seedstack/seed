@@ -13,6 +13,7 @@ package org.seedstack.seed.cli.spi;
  * @author adrien.lauer@mpsa.com
  */
 public class CliContext {
+
     private final String[] args;
 
     public CliContext(String[] args) {

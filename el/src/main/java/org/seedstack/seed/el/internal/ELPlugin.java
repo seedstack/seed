@@ -13,7 +13,7 @@ import io.nuun.kernel.api.plugin.request.ClasspathScanRequest;
 import io.nuun.kernel.core.AbstractPlugin;
 import net.jodah.typetools.TypeResolver;
 import org.kametic.specifications.Specification;
-import org.seedstack.seed.core.api.SeedException;
+import org.seedstack.seed.SeedException;
 import org.seedstack.seed.core.utils.SeedReflectionUtils;
 import org.seedstack.seed.el.spi.ELHandler;
 import org.slf4j.Logger;

@@ -7,7 +7,7 @@
  */
 package org.seedstack.seed.crypto.internal;
 
-import org.seedstack.seed.core.api.SeedException;
+import org.seedstack.seed.SeedException;
 
 import javax.annotation.Nullable;
 import java.util.HashMap;

@@ -14,7 +14,7 @@ import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.TestClass;
 import org.seedstack.seed.it.spi.ITKernelMode;
 import org.seedstack.seed.it.spi.ITRunnerPlugin;
-import org.seedstack.seed.security.api.WithUser;
+import org.seedstack.seed.security.WithUser;
 
 import java.util.List;
 import java.util.Map;

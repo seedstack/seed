@@ -7,7 +7,7 @@
  */
 package org.seedstack.seed.el.internal;
 
-import org.seedstack.seed.core.api.ErrorCode;
+import org.seedstack.seed.ErrorCode;
 
 enum ELErrorCode implements ErrorCode {
     NO_METHOD_VALUE_AVAILABLE,

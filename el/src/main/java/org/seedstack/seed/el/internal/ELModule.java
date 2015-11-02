@@ -10,10 +10,8 @@ package org.seedstack.seed.el.internal;
 import com.google.common.collect.ImmutableMap;
 import com.google.inject.AbstractModule;
 import com.google.inject.TypeLiteral;
-import org.seedstack.seed.el.api.ELContextBuilder;
-import org.seedstack.seed.el.api.ELService;
-import org.seedstack.seed.el.spi.ELHandler;
-import org.seedstack.seed.el.api.ELService;
+import org.seedstack.seed.el.ELContextBuilder;
+import org.seedstack.seed.el.ELService;
 import org.seedstack.seed.el.spi.ELHandler;
 
 import java.lang.annotation.Annotation;

@@ -15,7 +15,7 @@ import org.fusesource.jansi.AnsiString;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.seedstack.seed.core.api.Configuration;
+import org.seedstack.seed.Configuration;
 import org.seedstack.seed.it.AbstractSeedIT;
 
 import java.io.BufferedReader;

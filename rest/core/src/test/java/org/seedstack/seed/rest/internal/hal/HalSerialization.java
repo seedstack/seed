@@ -7,10 +7,9 @@
  */
 package org.seedstack.seed.rest.internal.hal;
 
-import org.assertj.core.api.Assertions;
 import org.json.JSONException;
 import org.junit.Test;
-import org.seedstack.seed.rest.api.hal.HalRepresentation;
+import org.seedstack.seed.rest.hal.HalRepresentation;
 import org.seedstack.seed.rest.internal.hal.fixture.RepresentationFactory;
 import org.skyscreamer.jsonassert.JSONAssert;
 

@@ -11,10 +11,10 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.seedstack.seed.core.api.DiagnosticManager;
-import org.seedstack.seed.core.spi.dependency.DependencyProvider;
-import org.seedstack.seed.core.spi.dependency.Maybe;
-import org.seedstack.seed.core.spi.diagnostic.DiagnosticInfoCollector;
+import org.seedstack.seed.DiagnosticManager;
+import org.seedstack.seed.spi.dependency.DependencyProvider;
+import org.seedstack.seed.spi.dependency.Maybe;
+import org.seedstack.seed.spi.diagnostic.DiagnosticInfoCollector;
 import org.seedstack.seed.core.utils.SeedCheckUtils;
 
 import com.google.inject.AbstractModule;

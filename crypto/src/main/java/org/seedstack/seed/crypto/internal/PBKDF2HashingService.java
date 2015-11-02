@@ -7,9 +7,9 @@
  */
 package org.seedstack.seed.crypto.internal;
 
-import org.seedstack.seed.core.api.SeedException;
-import org.seedstack.seed.crypto.api.Hash;
-import org.seedstack.seed.crypto.api.HashingService;
+import org.seedstack.seed.SeedException;
+import org.seedstack.seed.crypto.Hash;
+import org.seedstack.seed.crypto.HashingService;
 
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;

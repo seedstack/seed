@@ -8,9 +8,6 @@
 package org.seedstack.seed.web;
 
 
-import org.seedstack.seed.web.api.WebInitParam;
-import org.seedstack.seed.web.api.WebServlet;
-
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;

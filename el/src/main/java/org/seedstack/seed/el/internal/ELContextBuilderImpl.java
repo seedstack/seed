@@ -8,7 +8,7 @@
 package org.seedstack.seed.el.internal;
 
 import org.seedstack.seed.core.utils.SeedCheckUtils;
-import org.seedstack.seed.el.api.ELContextBuilder;
+import org.seedstack.seed.el.ELContextBuilder;
 import de.odysseus.el.util.SimpleContext;
 import org.apache.commons.lang.StringUtils;
 

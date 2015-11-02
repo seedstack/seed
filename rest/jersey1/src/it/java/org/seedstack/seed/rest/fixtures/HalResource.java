@@ -7,9 +7,9 @@
  */
 package org.seedstack.seed.rest.fixtures;
 
-import org.seedstack.seed.rest.api.Rel;
-import org.seedstack.seed.rest.api.RelRegistry;
-import org.seedstack.seed.rest.api.hal.HalBuilder;
+import org.seedstack.seed.rest.Rel;
+import org.seedstack.seed.rest.RelRegistry;
+import org.seedstack.seed.rest.hal.HalBuilder;
 
 import javax.inject.Inject;
 import javax.ws.rs.GET;

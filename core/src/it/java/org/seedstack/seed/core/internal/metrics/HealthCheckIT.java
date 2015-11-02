@@ -17,7 +17,7 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.seedstack.seed.core.spi.dependency.Maybe;
+import org.seedstack.seed.spi.dependency.Maybe;
 import org.seedstack.seed.core.utils.DependencyClassProxy;
 
 import com.codahale.metrics.health.HealthCheck;

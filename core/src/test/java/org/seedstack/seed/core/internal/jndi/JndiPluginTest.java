@@ -8,7 +8,7 @@
 package org.seedstack.seed.core.internal.jndi;
 
 import org.fest.reflect.reference.TypeRef;
-import org.seedstack.seed.core.api.Application;
+import org.seedstack.seed.Application;
 import io.nuun.kernel.api.plugin.context.InitContext;
 import org.apache.commons.configuration.Configuration;
 import org.assertj.core.api.Assertions;

@@ -12,8 +12,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 
-import org.seedstack.seed.core.api.CoreErrorCode;
-import org.seedstack.seed.core.api.SeedException;
+import org.seedstack.seed.CoreErrorCode;
+import org.seedstack.seed.SeedException;
 
 /**
  * Proxy to implement interfaces. Override each method to proxy (method from the interface).<br>

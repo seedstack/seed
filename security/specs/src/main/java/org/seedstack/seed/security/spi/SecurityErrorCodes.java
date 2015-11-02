@@ -7,7 +7,7 @@
  */
 package org.seedstack.seed.security.spi;
 
-import org.seedstack.seed.core.api.ErrorCode;
+import org.seedstack.seed.ErrorCode;
 
 /**
  * @author epo.jemba@ext.mpsa.com

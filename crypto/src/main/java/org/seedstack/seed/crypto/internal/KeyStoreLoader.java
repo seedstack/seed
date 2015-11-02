@@ -7,7 +7,7 @@
  */
 package org.seedstack.seed.crypto.internal;
 
-import org.seedstack.seed.core.api.SeedException;
+import org.seedstack.seed.SeedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

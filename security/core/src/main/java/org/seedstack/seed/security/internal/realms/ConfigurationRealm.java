@@ -13,12 +13,8 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.apache.commons.configuration.Configuration;
-import org.seedstack.seed.security.api.*;
-import org.seedstack.seed.security.api.exceptions.AuthenticationException;
-import org.seedstack.seed.security.api.exceptions.IncorrectCredentialsException;
-import org.seedstack.seed.security.api.exceptions.UnknownAccountException;
-import org.seedstack.seed.security.api.exceptions.UnsupportedTokenException;
-import org.seedstack.seed.security.api.principals.PrincipalProvider;
+import org.seedstack.seed.security.*;
+import org.seedstack.seed.security.principals.PrincipalProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

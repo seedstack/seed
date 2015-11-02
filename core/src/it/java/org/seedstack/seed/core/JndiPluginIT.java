@@ -10,13 +10,13 @@ package org.seedstack.seed.core;
 import com.google.inject.AbstractModule;
 import com.google.inject.Injector;
 import com.google.inject.Module;
-import org.seedstack.seed.core.api.FromContext;
 import io.nuun.kernel.api.Kernel;
 import org.assertj.core.api.Assertions;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.seedstack.seed.FromContext;
 import org.seedstack.seed.core.fixtures.Service1;
 
 import javax.annotation.Resource;

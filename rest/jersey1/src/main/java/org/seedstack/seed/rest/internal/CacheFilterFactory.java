@@ -7,10 +7,10 @@
  */
 package org.seedstack.seed.rest.internal;
 
-import org.seedstack.seed.core.api.SeedException;
-import org.seedstack.seed.rest.api.CacheControl;
-import org.seedstack.seed.rest.api.CachePolicy;
-import org.seedstack.seed.rest.api.ResourceFiltering;
+import org.seedstack.seed.SeedException;
+import org.seedstack.seed.rest.CacheControl;
+import org.seedstack.seed.rest.CachePolicy;
+import org.seedstack.seed.rest.ResourceFiltering;
 import com.sun.jersey.api.model.AbstractMethod;
 import com.sun.jersey.spi.container.ContainerRequest;
 import com.sun.jersey.spi.container.ContainerRequestFilter;

@@ -7,8 +7,8 @@
  */
 package org.seedstack.seed.core.internal.application;
 
-import org.seedstack.seed.core.api.Configuration;
-import org.seedstack.seed.core.api.SeedException;
+import org.seedstack.seed.Configuration;
+import org.seedstack.seed.SeedException;
 import org.assertj.core.api.Assertions;
 import org.assertj.core.api.Fail;
 import org.junit.Test;

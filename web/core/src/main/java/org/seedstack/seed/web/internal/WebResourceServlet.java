@@ -11,12 +11,11 @@ import com.google.common.base.Optional;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
-import org.seedstack.seed.core.api.Application;
-import org.seedstack.seed.core.api.SeedException;
-import org.seedstack.seed.web.api.ResourceInfo;
-import org.seedstack.seed.web.api.ResourceRequest;
-import org.seedstack.seed.web.api.WebErrorCode;
-import org.seedstack.seed.web.api.WebResourceResolver;
+import org.seedstack.seed.Application;
+import org.seedstack.seed.SeedException;
+import org.seedstack.seed.web.ResourceInfo;
+import org.seedstack.seed.web.ResourceRequest;
+import org.seedstack.seed.web.WebResourceResolver;
 import org.apache.commons.configuration.Configuration;
 
 import javax.inject.Inject;

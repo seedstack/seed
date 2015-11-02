@@ -8,8 +8,8 @@
 package org.seedstack.seed.rest.internal.hal;
 
 import org.junit.Test;
-import org.seedstack.seed.rest.api.hal.HalDefaultRepresentation;
-import org.seedstack.seed.rest.api.hal.Link;
+import org.seedstack.seed.rest.hal.HalDefaultRepresentation;
+import org.seedstack.seed.rest.hal.Link;
 import org.seedstack.seed.rest.internal.hal.fixture.OrderRepresentation;
 import org.seedstack.seed.rest.internal.hal.fixture.OrdersRepresentation;
 import org.seedstack.seed.rest.internal.hal.fixture.RepresentationFactory;

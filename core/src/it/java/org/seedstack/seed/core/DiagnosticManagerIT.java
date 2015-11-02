@@ -14,9 +14,9 @@ import io.nuun.kernel.api.Kernel;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.seedstack.seed.core.api.DiagnosticManager;
-import org.seedstack.seed.core.api.ErrorCode;
-import org.seedstack.seed.core.api.SeedException;
+import org.seedstack.seed.DiagnosticManager;
+import org.seedstack.seed.ErrorCode;
+import org.seedstack.seed.SeedException;
 
 import javax.inject.Inject;
 import java.util.List;

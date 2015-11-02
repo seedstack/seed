@@ -7,12 +7,11 @@
  */
 package org.seedstack.seed.el.internal;
 
-import org.seedstack.seed.core.api.SeedException;
+import org.seedstack.seed.SeedException;
 import org.seedstack.seed.core.utils.SeedCheckUtils;
-import org.seedstack.seed.el.api.ELService;
+import org.seedstack.seed.el.ELService;
 import de.odysseus.el.util.SimpleContext;
 import org.apache.commons.lang.StringUtils;
-import org.seedstack.seed.el.api.ELService;
 
 import javax.el.*;
 

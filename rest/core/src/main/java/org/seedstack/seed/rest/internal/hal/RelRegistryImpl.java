@@ -7,8 +7,8 @@
  */
 package org.seedstack.seed.rest.internal.hal;
 
-import org.seedstack.seed.rest.api.RelRegistry;
-import org.seedstack.seed.rest.api.hal.Link;
+import org.seedstack.seed.rest.RelRegistry;
+import org.seedstack.seed.rest.hal.Link;
 
 import java.util.HashMap;
 import java.util.Map;

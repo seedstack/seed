@@ -12,10 +12,10 @@ package org.seedstack.seed.crypto.internal;
 
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.lang.text.StrLookup;
-import org.seedstack.seed.core.api.Application;
-import org.seedstack.seed.core.api.SeedException;
-import org.seedstack.seed.core.spi.configuration.ConfigurationLookup;
-import org.seedstack.seed.crypto.api.EncryptionService;
+import org.seedstack.seed.Application;
+import org.seedstack.seed.SeedException;
+import org.seedstack.seed.spi.configuration.ConfigurationLookup;
+import org.seedstack.seed.crypto.EncryptionService;
 
 import javax.xml.bind.DatatypeConverter;
 import java.security.InvalidKeyException;

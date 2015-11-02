@@ -17,8 +17,8 @@ import mockit.*;
 import org.apache.commons.configuration.Configuration;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
-import org.seedstack.seed.core.api.SeedException;
-import org.seedstack.seed.crypto.api.EncryptionService;
+import org.seedstack.seed.SeedException;
+import org.seedstack.seed.crypto.EncryptionService;
 
 import java.io.FileInputStream;
 import java.net.URL;

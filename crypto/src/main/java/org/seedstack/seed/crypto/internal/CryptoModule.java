@@ -13,8 +13,8 @@ package org.seedstack.seed.crypto.internal;
 import com.google.inject.AbstractModule;
 import com.google.inject.Key;
 import com.google.inject.name.Names;
-import org.seedstack.seed.crypto.api.EncryptionService;
-import org.seedstack.seed.crypto.api.HashingService;
+import org.seedstack.seed.crypto.EncryptionService;
+import org.seedstack.seed.crypto.HashingService;
 
 import java.security.KeyStore;
 import java.util.Map;

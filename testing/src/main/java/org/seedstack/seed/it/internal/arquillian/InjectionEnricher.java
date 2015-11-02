@@ -9,7 +9,6 @@ package org.seedstack.seed.it.internal.arquillian;
 
 import com.google.inject.Injector;
 import org.jboss.arquillian.test.spi.TestEnricher;
-import org.seedstack.seed.core.api.Logging;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

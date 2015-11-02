@@ -7,7 +7,7 @@
  */
 package org.seedstack.seed.core.utils;
 
-import org.seedstack.seed.core.api.ErrorCode;
+import org.seedstack.seed.ErrorCode;
 
 /**
  * @author adrien.lauer@mpsa.com

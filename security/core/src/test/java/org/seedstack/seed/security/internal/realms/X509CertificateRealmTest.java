@@ -9,12 +9,10 @@ package org.seedstack.seed.security.internal.realms;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.seedstack.seed.security.api.*;
-import org.seedstack.seed.security.api.exceptions.IncorrectCredentialsException;
-import org.seedstack.seed.security.api.exceptions.UnsupportedTokenException;
-import org.seedstack.seed.security.api.principals.PrincipalProvider;
-import org.seedstack.seed.security.api.principals.Principals;
-import org.seedstack.seed.security.api.principals.X509CertificatePrincipalProvider;
+import org.seedstack.seed.security.*;
+import org.seedstack.seed.security.principals.PrincipalProvider;
+import org.seedstack.seed.security.principals.Principals;
+import org.seedstack.seed.security.principals.X509CertificatePrincipalProvider;
 
 import javax.security.auth.x500.X500Principal;
 import java.security.cert.X509Certificate;

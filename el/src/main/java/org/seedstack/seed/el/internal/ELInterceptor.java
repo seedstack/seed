@@ -9,14 +9,12 @@ package org.seedstack.seed.el.internal;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.inject.Injector;
-import org.seedstack.seed.core.api.SeedException;
-import org.seedstack.seed.el.api.ELContextBuilder;
-import org.seedstack.seed.el.api.ELService;
+import org.seedstack.seed.SeedException;
+import org.seedstack.seed.el.ELContextBuilder;
+import org.seedstack.seed.el.ELService;
 import org.seedstack.seed.el.spi.ELHandler;
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
-import org.seedstack.seed.el.api.ELService;
-import org.seedstack.seed.el.spi.ELHandler;
 
 import javax.inject.Inject;
 import java.lang.annotation.Annotation;

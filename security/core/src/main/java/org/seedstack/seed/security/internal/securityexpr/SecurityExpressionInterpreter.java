@@ -7,9 +7,9 @@
  */
 package org.seedstack.seed.security.internal.securityexpr;
 
-import org.seedstack.seed.core.api.SeedException;
-import org.seedstack.seed.el.api.ELContextBuilder;
-import org.seedstack.seed.el.api.ELService;
+import org.seedstack.seed.SeedException;
+import org.seedstack.seed.el.ELContextBuilder;
+import org.seedstack.seed.el.ELService;
 import org.seedstack.seed.security.spi.SecurityErrorCodes;
 
 import javax.el.ELContext;

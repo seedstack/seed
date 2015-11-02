@@ -10,7 +10,7 @@ package org.seedstack.seed.rest;
 import com.google.common.collect.Lists;
 import com.google.inject.AbstractModule;
 import com.google.inject.TypeLiteral;
-import org.seedstack.seed.core.api.Install;
+import org.seedstack.seed.Install;
 import org.seedstack.seed.rest.fixtures.PersonRepresentation;
 import org.seedstack.seed.rest.fixtures.ProductRepresentation;
 

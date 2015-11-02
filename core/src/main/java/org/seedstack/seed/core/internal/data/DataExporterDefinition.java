@@ -7,10 +7,10 @@
  */
 package org.seedstack.seed.core.internal.data;
 
-import org.seedstack.seed.core.spi.data.DataExporter;
+import org.seedstack.seed.spi.data.DataExporter;
 
 /**
- * Holds the definition of a {@link org.seedstack.seed.core.spi.data.DataExporter}.
+ * Holds the definition of a {@link org.seedstack.seed.spi.data.DataExporter}.
  *
  * @param <T> the exported data type.
  * @author adrien.lauer@mpsa.com

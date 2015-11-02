@@ -8,10 +8,10 @@
 package org.seedstack.seed.core;
 
 import com.google.common.collect.Lists;
-import org.seedstack.seed.core.api.CoreErrorCode;
-import org.seedstack.seed.core.api.SeedException;
+import org.seedstack.seed.CoreErrorCode;
+import org.seedstack.seed.SeedException;
 import org.seedstack.seed.core.internal.CorePlugin;
-import org.seedstack.seed.core.spi.SeedLauncher;
+import org.seedstack.seed.spi.SeedLauncher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -62,7 +62,7 @@ public class SeedMain {
     }
 
     public static SeedLauncher getLauncher() {
-        List<org.seedstack.seed.core.spi.SeedLauncher> entryPointServices = Lists.newArrayList(ServiceLoader.load(SeedLauncher.class));
+        List<SeedLauncher> entryPointServices = Lists.newArrayList(ServiceLoader.load(SeedLauncher.class));
 
         if (entryPointServices.size() < 1) {
             throw SeedException.createNew(CoreErrorCode.MISSING_SEED_ENTRY_POINT);

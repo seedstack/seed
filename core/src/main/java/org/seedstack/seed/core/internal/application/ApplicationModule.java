@@ -9,7 +9,7 @@ package org.seedstack.seed.core.internal.application;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.matcher.Matchers;
-import org.seedstack.seed.core.api.Application;
+import org.seedstack.seed.Application;
 
 /**
  * Guice module that bind the {@link Application} interface and bind the configuration type listener.

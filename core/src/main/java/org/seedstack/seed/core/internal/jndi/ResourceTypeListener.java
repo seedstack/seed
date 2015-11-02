@@ -10,8 +10,8 @@ package org.seedstack.seed.core.internal.jndi;
 import com.google.inject.TypeLiteral;
 import com.google.inject.spi.TypeEncounter;
 import com.google.inject.spi.TypeListener;
-import org.seedstack.seed.core.api.FromContext;
-import org.seedstack.seed.core.api.SeedException;
+import org.seedstack.seed.FromContext;
+import org.seedstack.seed.SeedException;
 
 import javax.annotation.Resource;
 import javax.naming.Context;

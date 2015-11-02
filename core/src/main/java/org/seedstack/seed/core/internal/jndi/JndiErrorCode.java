@@ -7,7 +7,7 @@
  */
 package org.seedstack.seed.core.internal.jndi;
 
-import org.seedstack.seed.core.api.ErrorCode;
+import org.seedstack.seed.ErrorCode;
 
 /**
  * JNDI error codes.

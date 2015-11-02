@@ -11,7 +11,6 @@ import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.seedstack.seed.it.SeedITRunner;
-import org.seedstack.seed.rest.api.RelRegistry;
 
 import javax.inject.Inject;
 

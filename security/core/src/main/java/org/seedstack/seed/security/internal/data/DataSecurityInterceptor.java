@@ -10,8 +10,8 @@ package org.seedstack.seed.security.internal.data;
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
 import org.seedstack.seed.core.utils.SeedReflectionUtils;
-import org.seedstack.seed.security.api.data.DataSecurityService;
-import org.seedstack.seed.security.api.data.Secured;
+import org.seedstack.seed.security.data.DataSecurityService;
+import org.seedstack.seed.security.data.Secured;
 
 import javax.inject.Inject;
 import java.lang.annotation.Annotation;
