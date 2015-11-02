@@ -14,6 +14,7 @@ import mockit.Expectations;
 import mockit.Mocked;
 import mockit.Verifications;
 import org.junit.Test;
+import org.seedstack.seed.core.api.SeedException;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
@@ -22,7 +23,7 @@ import javax.crypto.NoSuchPaddingException;
 import java.security.*;
 
 /**
- * Unit test for {@link EncryptionServiceImpl}
+ * Unit test for {@link EncryptionServiceImpl}.
  *
  * @author thierry.bouvet@mpsa.com
  */
@@ -49,13 +50,12 @@ public class EncryptionServiceImplTest {
         };
     }
 
-
     /**
      * Test method for {@link EncryptionServiceImpl#encrypt(byte[])}. Test encrypt without any problem.
      *
      * @throws Exception if an error occurred
      */
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = SeedException.class)
     public void testEncryptWithoutPublicKey() throws Exception {
         EncryptionServiceImpl asymetricCrypting = new EncryptionServiceImpl("alias", null, null);
         final String toCrypt = "text to crypt";
@@ -67,7 +67,7 @@ public class EncryptionServiceImplTest {
      *
      * @throws Exception if an error occurred
      */
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = SeedException.class)
     public void testEncryptWithNoSuchAlgorithmException(@Mocked final PublicKey publicKey, @Mocked final Cipher cipher) throws Exception {
 
         new Expectations() {
@@ -87,7 +87,7 @@ public class EncryptionServiceImplTest {
      *
      * @throws Exception if an error occurred
      */
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = SeedException.class)
     public void testEncryptWithNoSuchPaddingException(@Mocked final PublicKey publicKey, @Mocked final Cipher cipher) throws Exception {
 
         new Expectations() {
@@ -106,7 +106,7 @@ public class EncryptionServiceImplTest {
      *
      * @throws Exception if an error occurred
      */
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = SeedException.class)
     public void testEncryptWithIllegalBlockSizeException(@Mocked final PublicKey publicKey,
                                                          @Mocked final Cipher cipher) throws Exception {
 
@@ -130,7 +130,7 @@ public class EncryptionServiceImplTest {
      *
      * @throws Exception if an error occurred
      */
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = SeedException.class)
     public void testEncryptWithBadPaddingException(@Mocked final PublicKey publicKey,
                                                    @Mocked final Cipher cipher) throws Exception {
 
@@ -172,11 +172,11 @@ public class EncryptionServiceImplTest {
     }
 
     /**
-     * Test method for {@link EncryptionServiceImpl#decrypt(byte[])}. Test witout keystore so it's not possible.
+     * Test method for {@link EncryptionServiceImpl#decrypt(byte[])}. Test without keystore so it's not possible.
      *
      * @throws Exception if an error occurred
      */
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = SeedException.class)
     public void testDecryptWithoutPrivateKey() throws Exception {
         final String toDecrypt = "ADEF0985C";
 
@@ -184,5 +184,4 @@ public class EncryptionServiceImplTest {
         asymetricCrypting.decrypt(toDecrypt.getBytes());
 
     }
-
 }

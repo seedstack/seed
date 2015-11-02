@@ -7,13 +7,18 @@
  */
 package org.seedstack.seed.crypto.internal;
 
+import org.seedstack.seed.core.api.SeedException;
+
+import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.Map;
 
 /**
+ * This class contains a key store configuration.
+ *
  * @author pierre.thirouin@ext.mpsa.com (Pierre Thirouin)
  */
-public class KeyStoreConfig {
+class KeyStoreConfig {
 
     private final String name;
     private final String path;
@@ -23,7 +28,18 @@ public class KeyStoreConfig {
 
     private final Map<String, String> aliasPasswords = new HashMap<String, String>();
 
-    public KeyStoreConfig(String name, String path, String password, String type, String provider) {
+    KeyStoreConfig(String name, String path, String password) {
+        this(name, path, password, null, null);
+    }
+
+    KeyStoreConfig(String name, String path, String password, @Nullable  String type, @Nullable String provider) {
+        if (name == null || "".equals(name) || path == null || "".equals(path) || password == null || "".equals(password)) {
+            throw SeedException.createNew(CryptoErrorCodes.KEYSTORE_CONFIGURATION_ERROR)
+                    .put("keyName", name)
+                    .put("path", path)
+                    .put("password", password);
+        }
+
         this.name = name;
         this.path = path;
         this.password = password;
@@ -31,31 +47,31 @@ public class KeyStoreConfig {
         this.provider = provider;
     }
 
-    public void addAliasPassword(String alias, String password) {
+    void addAliasPassword(String alias, String password) {
         aliasPasswords.put(alias, password);
     }
 
-    public String getName() {
+    String getName() {
         return name;
     }
 
-    public String getPath() {
+    String getPath() {
         return path;
     }
 
-    public String getPassword() {
+    String getPassword() {
         return password;
     }
 
-    public String getType() {
+    String getType() {
         return type;
     }
 
-    public String getProvider() {
+    String getProvider() {
         return provider;
     }
 
-    public Map<String, String> getAliasPasswords() {
+    Map<String, String> getAliasPasswords() {
         return aliasPasswords;
     }
 }

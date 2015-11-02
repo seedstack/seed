@@ -8,7 +8,7 @@
 package org.seedstack.seed.web.internal;
 
 import org.apache.commons.configuration.Configuration;
-import org.seedstack.seed.crypto.internal.SslConfig;
+import org.seedstack.seed.crypto.spi.SSLConfiguration;
 
 import javax.net.ssl.SSLContext;
 
@@ -17,7 +17,7 @@ import javax.net.ssl.SSLContext;
  */
 public class ServerConfigFactory {
 
-    public ServerConfig create(Configuration configuration, SslConfig sslConfig, SSLContext sslContext) {
+    public ServerConfig create(Configuration configuration, SSLConfiguration SSLConfiguration, SSLContext sslContext) {
         ServerConfig serverConfig = new ServerConfig();
         if (configuration.containsKey("host")) {
             serverConfig.setHost(configuration.getString("host"));
@@ -53,7 +53,7 @@ public class ServerConfigFactory {
             serverConfig.setDirectBuffers(configuration.getBoolean("direct-buffers"));
         }
 
-        serverConfig.setSslConfig(sslConfig);
+        serverConfig.setSSLConfiguration(SSLConfiguration);
         serverConfig.setSslContext(sslContext);
         return serverConfig;
     }

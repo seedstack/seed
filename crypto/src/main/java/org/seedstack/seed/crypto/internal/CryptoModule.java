@@ -22,11 +22,11 @@ import java.util.Map.Entry;
 
 class CryptoModule extends AbstractModule {
 
-    private final Map<String, EncryptionService> rsaServices;
+    private final Map<Key<EncryptionService>, EncryptionService> encryptionServices;
     private final Map<String, KeyStore> keyStores;
 
-    public CryptoModule(Map<String, EncryptionService> rsaServices, Map<String, KeyStore> keyStores) {
-        this.rsaServices = rsaServices;
+    public CryptoModule(Map<Key<EncryptionService>, EncryptionService> encryptionServices, Map<String, KeyStore> keyStores) {
+        this.encryptionServices = encryptionServices;
         this.keyStores = keyStores;
     }
 
@@ -36,8 +36,8 @@ class CryptoModule extends AbstractModule {
             bind(Key.get(KeyStore.class, Names.named(keyStoreEntry.getKey()))).toInstance(keyStoreEntry.getValue());
         }
 
-        for (Entry<String, EncryptionService> definition : this.rsaServices.entrySet()) {
-            bind(Key.get(EncryptionService.class, Names.named(definition.getKey()))).toInstance(definition.getValue());
+        for (Entry<Key<EncryptionService>, EncryptionService> entry : this.encryptionServices.entrySet()) {
+            bind(entry.getKey()).toInstance(entry.getValue());
         }
 
         bind(HashingService.class).to(PBKDF2HashingService.class);

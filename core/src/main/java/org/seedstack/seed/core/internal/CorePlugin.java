@@ -7,18 +7,13 @@
  */
 package org.seedstack.seed.core.internal;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Constructor;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.ServiceLoader;
-import java.util.Set;
-
+import com.google.inject.Module;
+import io.nuun.kernel.api.plugin.InitState;
+import io.nuun.kernel.api.plugin.PluginException;
+import io.nuun.kernel.api.plugin.context.InitContext;
+import io.nuun.kernel.api.plugin.request.ClasspathScanRequest;
+import io.nuun.kernel.core.AbstractPlugin;
+import io.nuun.kernel.core.internal.scanner.AbstractClasspathScanner;
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.lang.StringUtils;
 import org.reflections.vfs.Vfs;
@@ -37,14 +32,10 @@ import org.seedstack.seed.core.utils.SeedReflectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.inject.Module;
-
-import io.nuun.kernel.api.plugin.InitState;
-import io.nuun.kernel.api.plugin.PluginException;
-import io.nuun.kernel.api.plugin.context.InitContext;
-import io.nuun.kernel.api.plugin.request.ClasspathScanRequest;
-import io.nuun.kernel.core.AbstractPlugin;
-import io.nuun.kernel.core.internal.scanner.AbstractClasspathScanner;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Constructor;
+import java.net.URL;
+import java.util.*;
 
 /**
  * Core plugin that setup common SEED package roots and scans modules to install via the
@@ -235,24 +226,11 @@ public class CorePlugin extends AbstractPlugin {
 
         return null;
     }
-    
-	/**
-	 * Check if a class exists in the classpath
-	 * @param dependency class to look for.
-	 * @return true if class exists in the classpath
-	 */
-	private boolean isAvailable(String dependency) {
-		try {
-			Class.forName(dependency);
-			return true;
-		} catch (ClassNotFoundException e) {
-			return false;
-		}
-	}
 
 	/**
 	 * Return {@link Maybe} which contains the provider if dependency is present.
 	 * Always return a {@link Maybe} instance.
+     *
 	 * @param providerClass provider to use an optional dependency
 	 * @return {@link Maybe} which contains the provider if dependency is present
 	 */
@@ -262,7 +240,7 @@ public class CorePlugin extends AbstractPlugin {
 	    	Maybe<T> maybe = new Maybe<T>(null);
 			try {
 				T provider = providerClass.newInstance();
-				if (isAvailable(provider.getClassToCheck())) {
+				if (SeedReflectionUtils.forName(provider.getClassToCheck()).isPresent()) {
 		            LOGGER.debug("Found a new optional provider [{}} for [{}]",providerClass.getName(),provider.getClassToCheck());
 		            maybe = new Maybe<T>(provider);
 				}

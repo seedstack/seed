@@ -11,17 +11,22 @@ import org.apache.commons.configuration.Configuration;
 
 import java.util.Iterator;
 
+import static org.seedstack.seed.core.utils.ConfigurationUtils.buildKey;
+
 /**
+ * Constructs a key store factory.
+ *
  * @author pierre.thirouin@ext.mpsa.com (Pierre Thirouin)
  */
-public class KeyStoreConfigFactory {
+class KeyStoreConfigFactory {
 
-    private static final String KEYSTORE_PREFIX = "keystore";
-    private static final String PATH_PREFIX = "path";
+    private static final String KEYSTORE = "keystore";
+    private static final String PATH = "path";
     private static final String PASSWORD_PREFIX = "password";
     private static final String TYPE_PREFIX = "type";
     private static final String PROVIDER_PREFIX = "provider";
     private static final String ALIAS_PREFIX = "alias";
+
     private final Configuration cryptoConfiguration;
 
     /**
@@ -29,35 +34,35 @@ public class KeyStoreConfigFactory {
      *
      * @param cryptoConfiguration the crypto configuration (all the config under the crypto prefix)
      */
-    public KeyStoreConfigFactory(Configuration cryptoConfiguration) {
+    KeyStoreConfigFactory(Configuration cryptoConfiguration) {
         this.cryptoConfiguration = cryptoConfiguration;
     }
 
     /**
      * Indicates whether a KeyStore is configured.
      *
-     * @param name the KeyStore name
+     * @param keyStoreName the KeyStore name
      * @return true if the KeyStore is configured
      */
-    public boolean isKeyStoreConfigured(String name) {
-        return cryptoConfiguration.containsKey(KEYSTORE_PREFIX + "." + name + "." + PATH_PREFIX);
+    boolean isKeyStoreConfigured(String keyStoreName) {
+        return cryptoConfiguration.containsKey(buildKey(KEYSTORE, keyStoreName, PATH));
     }
 
     /**
      * Creates a KeyStoreConfig from the configuration.
      *
-     * @param ksName              the KeyStore name
+     * @param keyStoreName the KeyStore name
      * @return the KeyStore configuration
      */
-    public KeyStoreConfig create(String ksName) {
-        Configuration ksConfiguration = cryptoConfiguration.subset(KEYSTORE_PREFIX + "." + ksName);
+    KeyStoreConfig create(String keyStoreName) {
+        Configuration ksConfiguration = cryptoConfiguration.subset(buildKey(KEYSTORE, keyStoreName));
 
-        String path = ksConfiguration.getString(PATH_PREFIX);
+        String path = ksConfiguration.getString(PATH);
         String password = ksConfiguration.getString(PASSWORD_PREFIX);
         String type = ksConfiguration.getString(TYPE_PREFIX);
         String provider = ksConfiguration.getString(PROVIDER_PREFIX);
 
-        KeyStoreConfig keyStoreConfig = new KeyStoreConfig(ksName, path, password, type, provider);
+        KeyStoreConfig keyStoreConfig = new KeyStoreConfig(keyStoreName, path, password, type, provider);
         addAlias(keyStoreConfig, ksConfiguration);
         return keyStoreConfig;
     }

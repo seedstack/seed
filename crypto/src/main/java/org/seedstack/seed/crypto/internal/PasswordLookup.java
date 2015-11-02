@@ -13,6 +13,7 @@ package org.seedstack.seed.crypto.internal;
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.lang.text.StrLookup;
 import org.seedstack.seed.core.api.Application;
+import org.seedstack.seed.core.api.SeedException;
 import org.seedstack.seed.core.spi.configuration.ConfigurationLookup;
 import org.seedstack.seed.crypto.api.EncryptionService;
 
@@ -28,22 +29,23 @@ import static org.seedstack.seed.crypto.internal.CryptoPlugin.MASTER_KEY_NAME;
  *
  * @author thierry.bouvet@mpsa.com
  */
+// Should stay public to be scanned by the service loader
 @ConfigurationLookup("password")
 public class PasswordLookup extends StrLookup {
 
     private final EncryptionService encryptionService;
 
     public PasswordLookup(Application application) {
-        Configuration cryptoConfig = application.getConfiguration().subset(CryptoPlugin.CRYPTO_PLUGIN_PREFIX);
-        if (cryptoConfig.containsKey(CryptoPlugin.MASTER_KEYSTORE)) {
+        Configuration cryptoConfig = application.getConfiguration().subset(CryptoPlugin.CONFIG_PREFIX);
+        if (cryptoConfig.containsKey(CryptoPlugin.MASTER_KEYSTORE_PATH)) {
             KeyStoreConfig ksConfig = new KeyStoreConfigFactory(cryptoConfig).create(MASTER_KEYSTORE_NAME);
             KeyStore keyStore = new KeyStoreLoader().load(ksConfig);
             String pass = ksConfig.getAliasPasswords().get(MASTER_KEY_NAME);
             if (pass == null || pass.equals("")) {
-                throw new IllegalArgumentException("Missing master key password");
+                throw SeedException.createNew(CryptoErrorCodes.MISSING_MASTER_KEY_PASSWORD);
             }
             char[] password = pass.toCharArray();
-            encryptionService = new EncryptionServiceFactory(application, keyStore).create(MASTER_KEY_NAME, password);
+            encryptionService = new EncryptionServiceFactory(application.getConfiguration(), keyStore).create(MASTER_KEY_NAME, password);
         } else {
             encryptionService = null;
         }
@@ -52,12 +54,13 @@ public class PasswordLookup extends StrLookup {
     @Override
     public String lookup(String key) {
         if (encryptionService == null) {
-            throw new IllegalStateException("The \"password\" lookup can not be used since no master KeyStore is configured.");
+            throw SeedException.createNew(CryptoErrorCodes.MISSING_MASTER_KEYSTORE)
+                    .put("keyPassword", "${env:KEY_PASSWD}").put("password", "${env:KS_PASSWD}");
         }
         try {
             return new String(encryptionService.decrypt(DatatypeConverter.parseHexBinary(key)));
         } catch (InvalidKeyException e) {
-            throw new RuntimeException("Can not decrypt passwords !", e);
+            throw SeedException.wrap(e, CryptoErrorCodes.UNEXPECTED_EXCEPTION);
         }
     }
 

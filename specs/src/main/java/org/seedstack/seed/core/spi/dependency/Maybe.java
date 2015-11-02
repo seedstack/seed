@@ -28,7 +28,14 @@ public class Maybe<T> {
     public Maybe(T optionalValue) {
     	this.value = optionalValue;
     }
-    
+
+    public static <T> Maybe<T> empty() {
+        return new Maybe<T>(null);
+    }
+
+    public static <T> Maybe<T> of(T t) {
+        return new Maybe<T>(t);
+    }
     /**
      * Returns the value.
      * 
@@ -47,12 +54,6 @@ public class Maybe<T> {
         return this.value != null;
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
-    @SuppressWarnings({ "rawtypes", "unchecked" })
     @Override
     public boolean equals(Object obj) {
         if (obj == null || getClass() != obj.getClass()) {
@@ -61,20 +62,12 @@ public class Maybe<T> {
         if (obj == this) {
             return true;
         }
+        //noinspection unchecked
         Maybe<T> other = (Maybe) obj;
 
-        if (!isPresent()) {
-            return false;
-        }
-
-        return this.value.equals(other.value);
+        return (isPresent() == other.isPresent()) && (!isPresent() || this.value.equals(other.value));
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see java.lang.Object#hashCode()
-     */
     @Override
     public int hashCode() {
         if (!isPresent()) {
@@ -83,11 +76,6 @@ public class Maybe<T> {
         return this.value.hashCode();
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see java.lang.Object#toString()
-     */
     @Override
     public String toString() {
         if (!isPresent()) {

@@ -16,8 +16,8 @@ import org.assertj.core.api.Assertions;
 import org.junit.Rule;
 import org.junit.Test;
 import org.seedstack.seed.crypto.api.EncryptionService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.seedstack.seed.crypto.api.Hash;
+import org.seedstack.seed.crypto.api.HashingService;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -25,18 +25,27 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Integration test for a {@link EncryptionService}. A new asymmetric key (key1) is defined in a property file (certificate and private key in a
- * keystore).
+ * Integration test for a {@link EncryptionService}. A new asymmetric key (key1) is defined in a property file
+ * (certificate and private key in a keystore).
  *
  * @author thierry.bouvet@mpsa.com
  */
 public class CryptoIT {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(CryptoIT.class);
+    @Inject
+    private HashingService hashingService;
 
     @Inject
     @Named("client")
     private EncryptionService key1EncryptionService;
+
+    @Inject
+    @Named("ssl")
+    private EncryptionService sslEncryptionService;
+
+    @Inject
+    @Named("database")
+    private EncryptionService databaseEncryptionService;
 
     @Inject
     @Named("seed")
@@ -60,12 +69,11 @@ public class CryptoIT {
             public java.util.Map<String, String> getenv() {
                 return env;
             }
-
         };
     }
 
     @Test
-    public void test() throws Exception {
+    public void testEncryption() throws Exception {
         final String chaine = "essai crypting";
         byte[] encrypt = key1EncryptionService.encrypt(chaine.getBytes());
         byte[] decrypt = key1EncryptionService.decrypt(encrypt);
@@ -73,11 +81,23 @@ public class CryptoIT {
     }
 
     @Test
-    public void testWithMasterKey() throws Exception {
+    public void testEncryptionWithMasterKey() throws Exception {
         final String chaine = "clientpasswd";
         byte[] encrypt = masterEncryptionService.encrypt(chaine.getBytes());
         byte[] decrypt = masterEncryptionService.decrypt(encrypt);
         Assertions.assertThat(decrypt).isEqualTo(chaine.getBytes());
+    }
+
+    @Test
+    public void testEncryptionServiceInjectionWithCustomQualifier() {
+        Assertions.assertThat(sslEncryptionService).isNotNull();
+    }
+
+    @Test
+    public void test_hashing_service_injection() {
+        Assertions.assertThat(hashingService).isNotNull();
+        Hash hash = hashingService.createHash("string to hash");
+        Assertions.assertThat(hash).isNotNull();
     }
 
 }

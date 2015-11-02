@@ -13,17 +13,14 @@ import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.reflections.ReflectionUtils;
 import org.seedstack.seed.core.api.SeedException;
+import org.seedstack.seed.core.spi.dependency.Maybe;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Field;
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Class with various utility methods for reflection.
@@ -33,6 +30,7 @@ import java.util.Set;
  * @author pierre.thirouin@ext.mpsa.com
  */
 public final class SeedReflectionUtils {
+
     public static final String JAVA_LANG = "java.lang";
 
     private SeedReflectionUtils() {
@@ -543,6 +541,20 @@ public final class SeedReflectionUtils {
             field.set(target, value);
         } catch (Exception e) {
             throw SeedException.wrap(e, CoreUtilsErrorCode.SET_FIELD_VALUE_FAILED);
+        }
+    }
+
+    /**
+     * Checks if a class exists in the classpath.
+     *
+     * @param dependency class to look for
+     * @return a Maybe of the class or an empty maybe is the class is not present
+     */
+    public static Maybe<Class<?>> forName(String dependency) {
+        try {
+            return Maybe.<Class<?>>of(Class.forName(dependency));
+        } catch (ClassNotFoundException e) {
+            return Maybe.empty();
         }
     }
 }

@@ -8,7 +8,7 @@
 package org.seedstack.seed.web.internal;
 
 import org.seedstack.seed.core.api.SeedException;
-import org.seedstack.seed.crypto.internal.SslConfig;
+import org.seedstack.seed.crypto.spi.SSLConfiguration;
 
 import javax.net.ssl.SSLContext;
 
@@ -50,7 +50,7 @@ public class ServerConfig {
     private Integer workerThreads;
     private Boolean directBuffers;
 
-    private SslConfig sslConfig;
+    private SSLConfiguration SSLConfiguration;
 
     private SSLContext sslContext;
 
@@ -150,12 +150,12 @@ public class ServerConfig {
         this.directBuffers = directBuffers;
     }
 
-    public SslConfig getSslConfig() {
-        return sslConfig;
+    public SSLConfiguration getSSLConfiguration() {
+        return SSLConfiguration;
     }
 
-    public void setSslConfig(SslConfig sslConfig) {
-        this.sslConfig = sslConfig;
+    public void setSSLConfiguration(SSLConfiguration SSLConfiguration) {
+        this.SSLConfiguration = SSLConfiguration;
     }
 
     public SSLContext getSslContext() {
