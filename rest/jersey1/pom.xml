@@ -93,7 +93,7 @@
         </dependency>
 
         <dependency>
-            <groupId>org.seedstack</groupId>
+            <groupId>org.seedstack.poms</groupId>
             <artifactId>arquillian-composite</artifactId>
             <version>${poms.version}</version>
             <type>pom</type>
