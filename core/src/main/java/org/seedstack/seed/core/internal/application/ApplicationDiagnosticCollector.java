@@ -9,7 +9,7 @@ package org.seedstack.seed.core.internal.application;
 
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.ConfigurationConverter;
-import org.seedstack.seed.core.spi.diagnostic.DiagnosticInfoCollector;
+import org.seedstack.seed.spi.diagnostic.DiagnosticInfoCollector;
 
 import java.util.HashMap;
 import java.util.Map;

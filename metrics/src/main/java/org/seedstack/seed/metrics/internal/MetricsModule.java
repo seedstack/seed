@@ -9,7 +9,7 @@ package org.seedstack.seed.metrics.internal;
 
 import java.util.Set;
 
-import org.seedstack.seed.metrics.api.HealthChecked;
+import org.seedstack.seed.metrics.HealthChecked;
 
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.health.HealthCheck;

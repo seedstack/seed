@@ -22,11 +22,11 @@ import org.assertj.core.api.Assertions;
 import org.fest.reflect.core.Reflection;
 import org.junit.Before;
 import org.junit.Test;
-import org.seedstack.seed.core.api.Install;
-import org.seedstack.seed.core.api.SeedException;
-import org.seedstack.seed.core.spi.dependency.DependencyProvider;
-import org.seedstack.seed.core.spi.dependency.Maybe;
-import org.seedstack.seed.core.spi.diagnostic.DiagnosticInfoCollector;
+import org.seedstack.seed.Install;
+import org.seedstack.seed.SeedException;
+import org.seedstack.seed.spi.dependency.DependencyProvider;
+import org.seedstack.seed.spi.dependency.Maybe;
+import org.seedstack.seed.spi.diagnostic.DiagnosticInfoCollector;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Module;

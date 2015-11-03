@@ -7,7 +7,7 @@
  */
 package org.seedstack.seed.core.fixtures;
 
-import org.seedstack.seed.core.api.Logging;
+import org.seedstack.seed.Logging;
 
 public class DummyService2 implements Service2 {
 

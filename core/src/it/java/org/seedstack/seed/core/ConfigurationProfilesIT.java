@@ -13,7 +13,7 @@ import io.nuun.kernel.api.Kernel;
 import net.jcip.annotations.NotThreadSafe;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
-import org.seedstack.seed.core.api.Application;
+import org.seedstack.seed.Application;
 
 import javax.inject.Inject;
 

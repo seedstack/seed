@@ -7,8 +7,8 @@
  */
 package org.seedstack.seed.core.fixtures;
 
-import org.seedstack.seed.core.spi.data.DataImporter;
-import org.seedstack.seed.core.spi.data.DataSet;
+import org.seedstack.seed.spi.data.DataImporter;
+import org.seedstack.seed.spi.data.DataSet;
 
 import java.util.ArrayList;
 import java.util.List;

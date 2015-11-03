@@ -21,9 +21,9 @@ import org.apache.commons.configuration.Configuration;
 import org.junit.Before;
 import org.junit.Test;
 
-import org.seedstack.seed.security.api.Realm;
-import org.seedstack.seed.security.api.RoleMapping;
-import org.seedstack.seed.security.api.RolePermissionResolver;
+import org.seedstack.seed.security.Realm;
+import org.seedstack.seed.security.RoleMapping;
+import org.seedstack.seed.security.RolePermissionResolver;
 import org.seedstack.seed.security.internal.authorization.EmptyRolePermissionResolver;
 import org.seedstack.seed.security.internal.authorization.SameRoleMapping;
 import org.seedstack.seed.security.internal.realms.ConfigurationRealm;

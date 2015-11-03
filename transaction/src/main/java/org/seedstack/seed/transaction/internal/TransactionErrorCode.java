@@ -7,7 +7,7 @@
  */
 package org.seedstack.seed.transaction.internal;
 
-import org.seedstack.seed.core.api.ErrorCode;
+import org.seedstack.seed.ErrorCode;
 
 /**
  * 

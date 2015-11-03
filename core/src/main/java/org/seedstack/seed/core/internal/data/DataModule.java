@@ -9,7 +9,7 @@ package org.seedstack.seed.core.internal.data;
 
 import com.google.inject.PrivateModule;
 import com.google.inject.TypeLiteral;
-import org.seedstack.seed.core.api.DataManager;
+import org.seedstack.seed.DataManager;
 
 import java.util.Map;
 

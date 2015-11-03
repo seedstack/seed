@@ -7,7 +7,7 @@
  */
 package org.seedstack.seed.web;
 
-import org.seedstack.seed.web.internal.SeedClientEndpointConfigurator;
+import org.seedstack.seed.websocket.internal.SeedClientEndpointConfigurator;
 
 import javax.websocket.ClientEndpoint;
 import javax.websocket.OnMessage;

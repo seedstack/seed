@@ -21,16 +21,13 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
-import org.seedstack.seed.cli.api.CliArgs;
-import org.seedstack.seed.cli.api.CliErrorCode;
-import org.seedstack.seed.cli.api.CliOption;
-import org.seedstack.seed.cli.api.CommandLineHandler;
+import org.seedstack.seed.cli.internal.CliErrorCode;
 import org.seedstack.seed.cli.internal.CommandLinePlugin;
 import org.seedstack.seed.cli.spi.CliContext;
-import org.seedstack.seed.core.api.Application;
-import org.seedstack.seed.core.api.SeedException;
+import org.seedstack.seed.Application;
+import org.seedstack.seed.SeedException;
 import org.seedstack.seed.core.internal.CorePlugin;
-import org.seedstack.seed.core.spi.SeedLauncher;
+import org.seedstack.seed.spi.SeedLauncher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,7 +40,7 @@ import java.util.Map;
 import java.util.concurrent.Callable;
 
 /**
- * This class executes {@link org.seedstack.seed.cli.api.CommandLineHandler}s found in the classpath. It can be executed
+ * This class executes {@link CommandLineHandler}s found in the classpath. It can be executed
  * directly as a Java application (i.e. it has a main method) but should preferably be executed with
  * {@link org.seedstack.seed.core.SeedMain}.
  *

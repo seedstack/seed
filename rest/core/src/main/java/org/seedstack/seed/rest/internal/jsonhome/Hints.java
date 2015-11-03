@@ -7,7 +7,7 @@
  */
 package org.seedstack.seed.rest.internal.jsonhome;
 
-import org.seedstack.seed.core.api.SeedException;
+import org.seedstack.seed.SeedException;
 import org.seedstack.seed.rest.internal.RestErrorCode;
 
 import java.net.URI;

@@ -15,10 +15,10 @@ import org.apache.commons.configuration.Configuration;
 import org.assertj.core.api.Assertions;
 import org.junit.Before;
 import org.junit.Test;
-import org.seedstack.seed.core.api.Application;
+import org.seedstack.seed.Application;
 import org.seedstack.seed.core.internal.CorePlugin;
 import org.seedstack.seed.core.internal.SeedConfigLoader;
-import org.seedstack.seed.core.spi.configuration.ConfigurationLookup;
+import org.seedstack.seed.spi.configuration.ConfigurationLookup;
 
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;

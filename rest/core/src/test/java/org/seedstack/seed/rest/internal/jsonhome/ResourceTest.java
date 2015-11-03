@@ -10,7 +10,7 @@ package org.seedstack.seed.rest.internal.jsonhome;
 import org.assertj.core.api.Assertions;
 import org.junit.Before;
 import org.junit.Test;
-import org.seedstack.seed.core.api.SeedException;
+import org.seedstack.seed.SeedException;
 
 import java.util.HashMap;
 

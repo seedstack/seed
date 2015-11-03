@@ -29,10 +29,10 @@ import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.subject.PrincipalCollection;
 import org.apache.shiro.subject.SimplePrincipalCollection;
 
-import org.seedstack.seed.security.api.Realm;
-import org.seedstack.seed.security.api.Role;
-import org.seedstack.seed.security.api.PrincipalCustomizer;
-import org.seedstack.seed.security.api.principals.PrincipalProvider;
+import org.seedstack.seed.security.Realm;
+import org.seedstack.seed.security.Role;
+import org.seedstack.seed.security.PrincipalCustomizer;
+import org.seedstack.seed.security.principals.PrincipalProvider;
 import org.seedstack.seed.security.internal.authorization.SeedAuthorizationInfo;
 
 /**
@@ -106,20 +106,20 @@ public class ShiroRealmAdapter extends AuthorizingRealm {
 
 	@Override
 	protected AuthenticationInfo doGetAuthenticationInfo(final AuthenticationToken token) throws AuthenticationException {
-		org.seedstack.seed.security.api.AuthenticationToken seedToken = convertToken(token);
+		org.seedstack.seed.security.AuthenticationToken seedToken = convertToken(token);
 		if(seedToken == null){
 		    throw new UnsupportedTokenException("The token " + token.getClass() + " is not supported");
 		}
-		org.seedstack.seed.security.api.AuthenticationInfo apiAuthenticationInfo;
+		org.seedstack.seed.security.AuthenticationInfo apiAuthenticationInfo;
 		try {
 			apiAuthenticationInfo = realm.getAuthenticationInfo(seedToken);
-		} catch (org.seedstack.seed.security.api.exceptions.IncorrectCredentialsException e) {
+		} catch (org.seedstack.seed.security.IncorrectCredentialsException e) {
 			throw new IncorrectCredentialsException(e);
-		} catch (org.seedstack.seed.security.api.exceptions.UnknownAccountException e) {
+		} catch (org.seedstack.seed.security.UnknownAccountException e) {
 			throw new UnknownAccountException(e);
-		} catch (org.seedstack.seed.security.api.exceptions.UnsupportedTokenException e) {
+		} catch (org.seedstack.seed.security.UnsupportedTokenException e) {
 			throw new UnsupportedTokenException(e);
-		} catch (org.seedstack.seed.security.api.exceptions.AuthenticationException e) {
+		} catch (org.seedstack.seed.security.AuthenticationException e) {
 			throw new AuthenticationException(e);
 		}
 
@@ -162,14 +162,14 @@ public class ShiroRealmAdapter extends AuthorizingRealm {
 
     @Override
     public boolean supports(AuthenticationToken token) {
-        org.seedstack.seed.security.api.AuthenticationToken seedToken = convertToken(token);
+        org.seedstack.seed.security.AuthenticationToken seedToken = convertToken(token);
         return seedToken != null && realm.supportedToken().isAssignableFrom(seedToken.getClass());
     }
 	
-    private org.seedstack.seed.security.api.AuthenticationToken convertToken(AuthenticationToken token){
+    private org.seedstack.seed.security.AuthenticationToken convertToken(AuthenticationToken token){
         if (token instanceof UsernamePasswordToken) {
             UsernamePasswordToken shiroToken = (UsernamePasswordToken)token;
-            return new org.seedstack.seed.security.api.UsernamePasswordToken(shiroToken.getUsername(), shiroToken.getPassword());
+            return new org.seedstack.seed.security.UsernamePasswordToken(shiroToken.getUsername(), shiroToken.getPassword());
         }else if (token instanceof AuthenticationTokenWrapper) {
             AuthenticationTokenWrapper shiroToken = (AuthenticationTokenWrapper)token;
             return shiroToken.getSeedToken();

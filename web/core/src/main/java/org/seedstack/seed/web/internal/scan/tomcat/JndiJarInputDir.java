@@ -14,9 +14,9 @@ import java.util.jar.JarInputStream;
 import java.util.zip.ZipEntry;
 
 import org.reflections.vfs.Vfs;
-import org.seedstack.seed.core.api.SeedException;
+import org.seedstack.seed.SeedException;
 import org.seedstack.seed.core.internal.CorePlugin;
-import org.seedstack.seed.web.api.WebErrorCode;
+import org.seedstack.seed.web.internal.WebErrorCode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

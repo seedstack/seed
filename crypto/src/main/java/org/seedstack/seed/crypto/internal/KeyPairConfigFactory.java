@@ -8,7 +8,7 @@
 package org.seedstack.seed.crypto.internal;
 
 import org.apache.commons.configuration.Configuration;
-import org.seedstack.seed.core.api.SeedException;
+import org.seedstack.seed.SeedException;
 import org.seedstack.seed.core.utils.SeedReflectionUtils;
 
 import java.net.URL;

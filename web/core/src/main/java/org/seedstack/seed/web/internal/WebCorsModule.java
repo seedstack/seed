@@ -9,7 +9,6 @@ package org.seedstack.seed.web.internal;
 
 import com.google.inject.servlet.ServletModule;
 import com.thetransactioncompany.cors.CORSFilter;
-import org.seedstack.seed.web.spi.CorsConcern;
 
 import javax.inject.Singleton;
 import java.util.Map;

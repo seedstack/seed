@@ -17,14 +17,14 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.internal.util.reflection.Whitebox;
 
-import org.seedstack.seed.security.api.AuthenticationInfo;
-import org.seedstack.seed.security.api.AuthenticationToken;
-import org.seedstack.seed.security.api.UsernamePasswordToken;
-import org.seedstack.seed.security.api.exceptions.IncorrectCredentialsException;
-import org.seedstack.seed.security.api.exceptions.UnknownAccountException;
-import org.seedstack.seed.security.api.exceptions.UnsupportedTokenException;
-import org.seedstack.seed.security.api.principals.PrincipalProvider;
-import org.seedstack.seed.security.api.principals.Principals;
+import org.seedstack.seed.security.AuthenticationInfo;
+import org.seedstack.seed.security.AuthenticationToken;
+import org.seedstack.seed.security.UsernamePasswordToken;
+import org.seedstack.seed.security.IncorrectCredentialsException;
+import org.seedstack.seed.security.UnknownAccountException;
+import org.seedstack.seed.security.UnsupportedTokenException;
+import org.seedstack.seed.security.principals.PrincipalProvider;
+import org.seedstack.seed.security.principals.Principals;
 import org.seedstack.seed.security.internal.realms.ConfigurationRealm.ConfigurationUser;
 
 public class ConfigurationRealmUnitTest {

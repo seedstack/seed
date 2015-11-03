@@ -11,7 +11,7 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Key;
 import com.google.inject.name.Names;
 import com.google.inject.util.Providers;
-import org.seedstack.seed.core.api.Install;
+import org.seedstack.seed.Install;
 
 @Install
 class Module3 extends AbstractModule {

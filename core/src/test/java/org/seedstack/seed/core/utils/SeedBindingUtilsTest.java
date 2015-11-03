@@ -12,7 +12,7 @@ package org.seedstack.seed.core.utils;
 
 import com.google.inject.Key;
 import com.google.inject.TypeLiteral;
-import org.seedstack.seed.core.api.SeedException;
+import org.seedstack.seed.SeedException;
 import org.junit.Test;
 import org.seedstack.seed.core.utils.sample.*;
 

@@ -7,7 +7,7 @@
  */
 package org.seedstack.seed.cli;
 
-import org.seedstack.seed.it.api.ITBind;
+import org.seedstack.seed.it.ITBind;
 
 @ITBind
 public class Fixture {

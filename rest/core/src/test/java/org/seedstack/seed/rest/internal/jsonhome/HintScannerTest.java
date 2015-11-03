@@ -11,7 +11,7 @@ import io.nuun.kernel.api.annotations.Ignore;
 import org.assertj.core.api.Assertions;
 import org.junit.Before;
 import org.junit.Test;
-import org.seedstack.seed.rest.api.Rel;
+import org.seedstack.seed.rest.Rel;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;

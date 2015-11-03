@@ -19,9 +19,9 @@ import mockit.Mocked;
 import org.apache.commons.configuration.Configuration;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
-import org.seedstack.seed.core.api.Application;
-import org.seedstack.seed.core.api.SeedException;
-import org.seedstack.seed.crypto.api.EncryptionService;
+import org.seedstack.seed.Application;
+import org.seedstack.seed.SeedException;
+import org.seedstack.seed.crypto.EncryptionService;
 
 import javax.xml.bind.DatatypeConverter;
 import java.security.InvalidKeyException;

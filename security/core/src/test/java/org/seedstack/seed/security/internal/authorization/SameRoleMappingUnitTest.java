@@ -15,7 +15,7 @@ import java.util.Set;
 import org.junit.Before;
 import org.junit.Test;
 
-import org.seedstack.seed.security.api.Role;
+import org.seedstack.seed.security.Role;
 
 public class SameRoleMappingUnitTest {
 

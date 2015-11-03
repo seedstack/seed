@@ -1,1 +1,1 @@
-org.seedstack.seed.web.internal.security.WebSecurityProvider
+org.seedstack.seed.web.security.internal.WebSecurityProvider

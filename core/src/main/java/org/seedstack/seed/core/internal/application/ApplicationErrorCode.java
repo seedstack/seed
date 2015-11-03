@@ -7,7 +7,7 @@
  */
 package org.seedstack.seed.core.internal.application;
 
-import org.seedstack.seed.core.api.ErrorCode;
+import org.seedstack.seed.ErrorCode;
 
 /**
  * SEED application error codes.

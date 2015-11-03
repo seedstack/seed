@@ -7,7 +7,7 @@
  */
 package org.seedstack.seed.core.internal.jndi;
 
-import org.seedstack.seed.core.api.SeedException;
+import org.seedstack.seed.SeedException;
 import io.nuun.kernel.api.Plugin;
 import io.nuun.kernel.api.plugin.InitState;
 import io.nuun.kernel.api.plugin.context.InitContext;

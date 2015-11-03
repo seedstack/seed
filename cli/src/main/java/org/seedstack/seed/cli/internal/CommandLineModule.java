@@ -9,7 +9,7 @@ package org.seedstack.seed.cli.internal;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.name.Names;
-import org.seedstack.seed.cli.api.CommandLineHandler;
+import org.seedstack.seed.cli.CommandLineHandler;
 
 import java.util.Map;
 

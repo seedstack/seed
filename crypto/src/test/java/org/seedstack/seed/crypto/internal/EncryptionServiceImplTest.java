@@ -14,7 +14,7 @@ import mockit.Expectations;
 import mockit.Mocked;
 import mockit.Verifications;
 import org.junit.Test;
-import org.seedstack.seed.core.api.SeedException;
+import org.seedstack.seed.SeedException;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;

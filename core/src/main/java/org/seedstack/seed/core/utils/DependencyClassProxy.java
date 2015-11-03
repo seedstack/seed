@@ -10,8 +10,8 @@ package org.seedstack.seed.core.utils;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-import org.seedstack.seed.core.api.CoreErrorCode;
-import org.seedstack.seed.core.api.SeedException;
+import org.seedstack.seed.CoreErrorCode;
+import org.seedstack.seed.SeedException;
 
 import javassist.util.proxy.MethodFilter;
 import javassist.util.proxy.MethodHandler;

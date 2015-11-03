@@ -8,7 +8,7 @@
 package org.seedstack.seed.core.internal.application;
 
 import org.apache.commons.lang.text.StrLookup;
-import org.seedstack.seed.core.spi.configuration.ConfigurationLookup;
+import org.seedstack.seed.spi.configuration.ConfigurationLookup;
 
 /**
  * This class resolve environment interpolations.

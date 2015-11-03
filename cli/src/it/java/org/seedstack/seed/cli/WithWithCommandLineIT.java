@@ -10,7 +10,6 @@ package org.seedstack.seed.cli;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.seedstack.seed.cli.api.WithCommandLine;
 import org.seedstack.seed.it.AbstractSeedIT;
 
 import javax.inject.Inject;

@@ -7,7 +7,7 @@
  */
 package org.seedstack.seed.shell.internal;
 
-import org.seedstack.seed.core.api.ErrorCode;
+import org.seedstack.seed.ErrorCode;
 
 enum ShellErrorCode implements ErrorCode {
     MODE_SYNTAX_ERROR,

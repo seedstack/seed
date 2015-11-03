@@ -8,7 +8,7 @@
 package some.other.pkg;
 
 import com.google.inject.AbstractModule;
-import org.seedstack.seed.core.api.Install;
+import org.seedstack.seed.Install;
 
 @Install
 class ForeignModule extends AbstractModule {

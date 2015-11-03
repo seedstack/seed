@@ -9,8 +9,8 @@ package org.seedstack.seed.core.utils;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.matcher.Matcher;
-import org.seedstack.seed.core.api.Ignore;
-import org.seedstack.seed.core.api.Install;
+import org.seedstack.seed.Ignore;
+import org.seedstack.seed.Install;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.kametic.specifications.Specification;

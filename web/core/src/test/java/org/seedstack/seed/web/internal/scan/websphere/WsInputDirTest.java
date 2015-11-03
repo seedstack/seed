@@ -28,7 +28,7 @@ import mockit.Verifications;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.reflections.vfs.Vfs;
-import org.seedstack.seed.core.api.SeedException;
+import org.seedstack.seed.SeedException;
 
 public class WsInputDirTest {
 

@@ -8,7 +8,7 @@
 package org.seedstack.seed.rest.internal;
 
 import org.kametic.specifications.AbstractSpecification;
-import org.seedstack.seed.rest.api.Rel;
+import org.seedstack.seed.rest.Rel;
 
 import java.lang.reflect.Method;
 
@@ -19,7 +19,7 @@ import java.lang.reflect.Method;
  * </p>
  * <ol>
  *   <li>meta annotated by {@link javax.ws.rs.HttpMethod};</li>
- *   <li>annotated by {@link org.seedstack.seed.rest.api.Rel};</li>
+ *   <li>annotated by {@link Rel};</li>
  *   <li>If the annotated is not found on the method, the declaring class is checked.</li>
  * </ol>
  *

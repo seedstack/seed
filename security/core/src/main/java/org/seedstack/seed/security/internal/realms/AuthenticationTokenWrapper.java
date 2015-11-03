@@ -19,7 +19,7 @@ public class AuthenticationTokenWrapper implements AuthenticationToken {
 
     private static final long serialVersionUID = 3333761741487888393L;
 
-    private org.seedstack.seed.security.api.AuthenticationToken seedToken;
+    private org.seedstack.seed.security.AuthenticationToken seedToken;
 
     /**
      * Constructor with the Seed token
@@ -27,7 +27,7 @@ public class AuthenticationTokenWrapper implements AuthenticationToken {
      * @param seedToken
      *            the seed token to wrap
      */
-    public AuthenticationTokenWrapper(org.seedstack.seed.security.api.AuthenticationToken seedToken) {
+    public AuthenticationTokenWrapper(org.seedstack.seed.security.AuthenticationToken seedToken) {
         this.seedToken = seedToken;
     }
 
@@ -46,7 +46,7 @@ public class AuthenticationTokenWrapper implements AuthenticationToken {
      * 
      * @return the seed authentication token
      */
-    public org.seedstack.seed.security.api.AuthenticationToken getSeedToken() {
+    public org.seedstack.seed.security.AuthenticationToken getSeedToken() {
         return seedToken;
     }
 }

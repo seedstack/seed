@@ -11,7 +11,7 @@ import com.google.common.reflect.TypeToken;
 import com.google.inject.Key;
 import com.google.inject.TypeLiteral;
 import com.google.inject.util.Types;
-import org.seedstack.seed.core.api.SeedException;
+import org.seedstack.seed.SeedException;
 import javassist.Modifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

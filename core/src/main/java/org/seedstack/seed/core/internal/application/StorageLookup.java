@@ -8,8 +8,8 @@
 package org.seedstack.seed.core.internal.application;
 
 import org.apache.commons.lang.text.StrLookup;
-import org.seedstack.seed.core.api.Application;
-import org.seedstack.seed.core.spi.configuration.ConfigurationLookup;
+import org.seedstack.seed.Application;
+import org.seedstack.seed.spi.configuration.ConfigurationLookup;
 
 /**
  * This class creates a Seed local storage subdirectory and resolves to it.

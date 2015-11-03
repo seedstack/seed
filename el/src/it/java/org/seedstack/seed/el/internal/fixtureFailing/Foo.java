@@ -7,7 +7,7 @@
  */
 package org.seedstack.seed.el.internal.fixtureFailing;
 
-import org.seedstack.seed.it.api.ITBind;
+import org.seedstack.seed.it.ITBind;
 
 /**
  * @author pierre.thirouin@ext.mpsa.com

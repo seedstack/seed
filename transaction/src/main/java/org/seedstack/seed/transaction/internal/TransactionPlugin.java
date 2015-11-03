@@ -10,7 +10,7 @@ package org.seedstack.seed.transaction.internal;
 import com.google.inject.matcher.Matcher;
 import org.seedstack.seed.core.internal.application.ApplicationPlugin;
 import org.seedstack.seed.core.utils.SeedMatchers;
-import org.seedstack.seed.transaction.api.Transactional;
+import org.seedstack.seed.transaction.Transactional;
 import org.seedstack.seed.transaction.spi.TransactionHandler;
 import org.seedstack.seed.transaction.spi.TransactionManager;
 import org.seedstack.seed.transaction.spi.TransactionMetadataResolver;

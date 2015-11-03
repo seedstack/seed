@@ -17,11 +17,11 @@ import org.apache.commons.configuration.Configuration;
 import org.apache.shiro.cache.CacheManager;
 import org.apache.shiro.cache.MemoryConstrainedCacheManager;
 import org.apache.shiro.realm.Realm;
-import org.seedstack.seed.security.api.PrincipalCustomizer;
-import org.seedstack.seed.security.api.RoleMapping;
-import org.seedstack.seed.security.api.RolePermissionResolver;
-import org.seedstack.seed.security.api.Scope;
-import org.seedstack.seed.security.api.SecuritySupport;
+import org.seedstack.seed.security.PrincipalCustomizer;
+import org.seedstack.seed.security.RoleMapping;
+import org.seedstack.seed.security.RolePermissionResolver;
+import org.seedstack.seed.security.Scope;
+import org.seedstack.seed.security.SecuritySupport;
 import org.seedstack.seed.security.internal.configure.RealmConfiguration;
 import org.seedstack.seed.security.internal.configure.SeedSecurityConfigurer;
 import org.seedstack.seed.security.internal.realms.ShiroRealmAdapter;
@@ -67,14 +67,14 @@ class SecurityInternalModule extends PrivateModule {
 
     private void bindRealms() {
         Collection<RealmConfiguration> realms = securityConfigurer.getConfigurationRealms();
-        Set<Class<? extends org.seedstack.seed.security.api.Realm>> apiRealmClasses = new HashSet<Class<? extends org.seedstack.seed.security.api.Realm>>();
+        Set<Class<? extends org.seedstack.seed.security.Realm>> apiRealmClasses = new HashSet<Class<? extends org.seedstack.seed.security.Realm>>();
         for (RealmConfiguration realm : realms) {
             bind(realm.getRealmClass());
             apiRealmClasses.add(realm.getRealmClass());
             bind(RolePermissionResolver.class).annotatedWith(Names.named(realm.getName() + "-role-permission-resolver")).to(realm.getRolePermissionResolverClass());
             bind(RoleMapping.class).annotatedWith(Names.named(realm.getName() + "-role-mapping")).to(realm.getRoleMappingClass());
         }
-        bind(new TypeLiteral<Set<Class<? extends org.seedstack.seed.security.api.Realm>>>() {
+        bind(new TypeLiteral<Set<Class<? extends org.seedstack.seed.security.Realm>>>() {
         }).toInstance(apiRealmClasses);
         bind(new TypeLiteral<Set<Realm>>() {
         }).toProvider(RealmProvider.class).asEagerSingleton();
@@ -86,7 +86,7 @@ class SecurityInternalModule extends PrivateModule {
         private Injector injector;
 
         @Inject
-        private Set<Class<? extends org.seedstack.seed.security.api.Realm>> realmClasses;
+        private Set<Class<? extends org.seedstack.seed.security.Realm>> realmClasses;
 
         private Set<Realm> realms;
 
@@ -94,8 +94,8 @@ class SecurityInternalModule extends PrivateModule {
         public Set<Realm> get() {
             if (realms == null) {
                 realms = new HashSet<Realm>();
-                for (Class<? extends org.seedstack.seed.security.api.Realm> seedRealmClass : realmClasses) {
-                    org.seedstack.seed.security.api.Realm realmInstance = injector.getInstance(seedRealmClass);
+                for (Class<? extends org.seedstack.seed.security.Realm> seedRealmClass : realmClasses) {
+                    org.seedstack.seed.security.Realm realmInstance = injector.getInstance(seedRealmClass);
                     ShiroRealmAdapter realmAdapter = injector.getInstance(ShiroRealmAdapter.class);
                     realmAdapter.setRealm(realmInstance);
                     realms.add(realmAdapter);

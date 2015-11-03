@@ -21,7 +21,7 @@ import mockit.Verifications;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.seedstack.seed.core.internal.application.ApplicationPlugin;
-import org.seedstack.seed.crypto.api.EncryptionService;
+import org.seedstack.seed.crypto.EncryptionService;
 
 import java.security.KeyStore;
 import java.util.Collection;

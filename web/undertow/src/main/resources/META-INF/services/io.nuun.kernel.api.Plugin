@@ -8,4 +8,4 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 #
 
-org.seedstack.seed.web.internal.UndertowPlugin
+org.seedstack.seed.undertow.internal.UndertowPlugin

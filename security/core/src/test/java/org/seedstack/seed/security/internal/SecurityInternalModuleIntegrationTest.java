@@ -29,7 +29,7 @@ import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.Key;
 import com.google.inject.TypeLiteral;
-import org.seedstack.seed.security.api.Scope;
+import org.seedstack.seed.security.Scope;
 import org.seedstack.seed.security.internal.authorization.ConfigurationRoleMapping;
 import org.seedstack.seed.security.internal.authorization.ConfigurationRolePermissionResolver;
 import org.seedstack.seed.security.internal.configure.RealmConfiguration;

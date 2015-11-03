@@ -8,7 +8,7 @@
 package org.seedstack.seed.it;
 
 import org.junit.Test;
-import org.seedstack.seed.core.api.Configuration;
+import org.seedstack.seed.Configuration;
 import org.seedstack.seed.it.fixtures.TestKernelRule;
 import org.seedstack.seed.it.fixtures.WithTestAnnotation;
 

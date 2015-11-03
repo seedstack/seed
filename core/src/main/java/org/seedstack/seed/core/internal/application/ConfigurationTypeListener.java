@@ -17,7 +17,7 @@ import java.lang.reflect.Field;
 
 /**
  * Type listener for objects prepared for injection. Assigns injection policy
- * for each field annotated with {@link org.seedstack.seed.core.api.Configuration}.
+ * for each field annotated with {@link org.seedstack.seed.Configuration}.
  *
  * @author adrien.lauer@mpsa.com
  */
@@ -33,7 +33,7 @@ class ConfigurationTypeListener implements TypeListener {
     public <T> void hear(TypeLiteral<T> type, TypeEncounter<T> encounter) {
         for (Class<?> c = type.getRawType(); c != Object.class; c = c.getSuperclass()) {
             for (Field field : c.getDeclaredFields()) {
-                org.seedstack.seed.core.api.Configuration anno = field.getAnnotation(org.seedstack.seed.core.api.Configuration.class);
+                org.seedstack.seed.Configuration anno = field.getAnnotation(org.seedstack.seed.Configuration.class);
                 if (anno != null) {
                     encounter.register(new ConfigurationMembersInjector<T>(field, configuration, anno));
                 }

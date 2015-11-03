@@ -15,7 +15,7 @@ import org.assertj.core.api.Assertions;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.seedstack.seed.core.api.DataManager;
+import org.seedstack.seed.DataManager;
 import org.seedstack.seed.core.fixtures.TestDataImporter;
 import org.seedstack.seed.core.fixtures.TestDataImporter2;
 import org.seedstack.seed.core.fixtures.TestDataImporter3;

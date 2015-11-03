@@ -12,8 +12,8 @@ import org.apache.commons.configuration.AbstractConfiguration;
 import org.apache.commons.configuration.interpol.ConfigurationInterpolator;
 import org.apache.commons.lang.text.StrLookup;
 import org.apache.commons.lang.text.StrSubstitutor;
-import org.seedstack.seed.core.api.Application;
-import org.seedstack.seed.core.spi.configuration.ConfigurationLookup;
+import org.seedstack.seed.Application;
+import org.seedstack.seed.spi.configuration.ConfigurationLookup;
 
 import java.util.regex.Pattern;
 

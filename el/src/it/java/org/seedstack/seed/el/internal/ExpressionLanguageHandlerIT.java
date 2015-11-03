@@ -7,9 +7,7 @@
  */
 package org.seedstack.seed.el.internal;
 
-import org.seedstack.seed.core.api.SeedException;
-import org.seedstack.seed.el.internal.fixtureFailing.Foo;
-import org.seedstack.seed.el.internal.fixtures.SomeRepresentation;
+import org.seedstack.seed.SeedException;
 import org.seedstack.seed.el.internal.fixtureFailing.Foo;
 import org.seedstack.seed.el.internal.fixtures.SomeRepresentation;
 import org.seedstack.seed.it.SeedITRunner;

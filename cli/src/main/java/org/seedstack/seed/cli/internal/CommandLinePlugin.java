@@ -15,15 +15,14 @@ import io.nuun.kernel.core.AbstractPlugin;
 import org.apache.commons.cli.PosixParser;
 import org.apache.commons.configuration.Configuration;
 import org.kametic.specifications.Specification;
-import org.seedstack.seed.cli.api.CliCommand;
-import org.seedstack.seed.cli.api.CommandLineHandler;
+import org.seedstack.seed.cli.CliCommand;
+import org.seedstack.seed.cli.CommandLineHandler;
 import org.seedstack.seed.cli.spi.CliContext;
 import org.seedstack.seed.core.internal.application.ApplicationPlugin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -33,7 +32,7 @@ import static org.seedstack.seed.core.utils.BaseClassSpecifications.classIsAbstr
 import static org.seedstack.seed.core.utils.BaseClassSpecifications.classIsInterface;
 
 /**
- * This plugin enables to run {@link org.seedstack.seed.cli.api.CommandLineHandler} through
+ * This plugin enables to run {@link CommandLineHandler} through
  * {@link org.seedstack.seed.cli.SeedRunner}.
  *
  * @author epo.jemba@ext.mpsa.com

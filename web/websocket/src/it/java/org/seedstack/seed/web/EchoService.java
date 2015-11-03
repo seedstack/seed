@@ -7,7 +7,7 @@
  */
 package org.seedstack.seed.web;
 
-import org.seedstack.seed.it.api.ITBind;
+import org.seedstack.seed.it.ITBind;
 
 @ITBind
 public class EchoService {

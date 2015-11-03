@@ -8,10 +8,10 @@
 package org.seedstack.seed.shell.internal;
 
 import com.google.common.base.Strings;
-import org.seedstack.seed.core.api.Application;
-import org.seedstack.seed.core.api.SeedException;
-import org.seedstack.seed.core.spi.command.Command;
-import org.seedstack.seed.core.spi.command.PrettyCommand;
+import org.seedstack.seed.Application;
+import org.seedstack.seed.SeedException;
+import org.seedstack.seed.spi.command.Command;
+import org.seedstack.seed.spi.command.PrettyCommand;
 import jline.Terminal;
 import jline.UnsupportedTerminal;
 import jline.console.ConsoleReader;

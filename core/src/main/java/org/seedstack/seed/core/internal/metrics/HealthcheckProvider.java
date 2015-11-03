@@ -7,7 +7,7 @@
  */
 package org.seedstack.seed.core.internal.metrics;
 
-import org.seedstack.seed.core.spi.dependency.DependencyProvider;
+import org.seedstack.seed.spi.dependency.DependencyProvider;
 import org.seedstack.seed.core.utils.DependencyClassProxy;
 
 import com.codahale.metrics.health.HealthCheck;

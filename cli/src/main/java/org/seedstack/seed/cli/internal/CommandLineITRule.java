@@ -14,10 +14,9 @@ import org.junit.rules.MethodRule;
 import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.Statement;
 import org.seedstack.seed.cli.SeedRunner;
-import org.seedstack.seed.cli.api.CliErrorCode;
-import org.seedstack.seed.cli.api.WithCommandLine;
-import org.seedstack.seed.core.api.SeedException;
-import org.seedstack.seed.it.api.ITBind;
+import org.seedstack.seed.cli.WithCommandLine;
+import org.seedstack.seed.SeedException;
+import org.seedstack.seed.it.ITBind;
 import org.seedstack.seed.it.spi.KernelRule;
 import org.seedstack.seed.it.spi.PausableStatement;
 

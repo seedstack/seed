@@ -16,13 +16,12 @@ import io.nuun.kernel.api.plugin.request.ClasspathScanRequest;
 import io.nuun.kernel.core.AbstractPlugin;
 import org.apache.commons.configuration.Configuration;
 import org.reflections.util.ClasspathHelper;
-import org.seedstack.seed.core.api.SeedException;
+import org.seedstack.seed.SeedException;
 import org.seedstack.seed.core.internal.CorePlugin;
 import org.seedstack.seed.core.internal.application.ApplicationPlugin;
-import org.seedstack.seed.web.api.WebErrorCode;
-import org.seedstack.seed.web.api.WebFilter;
-import org.seedstack.seed.web.api.WebInitParam;
-import org.seedstack.seed.web.api.WebServlet;
+import org.seedstack.seed.web.WebFilter;
+import org.seedstack.seed.web.WebInitParam;
+import org.seedstack.seed.web.WebServlet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

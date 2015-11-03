@@ -7,7 +7,7 @@
  */
 package org.seedstack.seed.it.fixtures;
 
-import org.seedstack.seed.it.api.ITBind;
+import org.seedstack.seed.it.ITBind;
 
 @ITBind
 public class ITBound {

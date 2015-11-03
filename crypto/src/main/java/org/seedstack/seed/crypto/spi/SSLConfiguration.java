@@ -7,7 +7,7 @@
  */
 package org.seedstack.seed.crypto.spi;
 
-import org.seedstack.seed.core.api.SeedException;
+import org.seedstack.seed.SeedException;
 import org.seedstack.seed.crypto.internal.CryptoErrorCodes;
 
 /**

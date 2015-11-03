@@ -8,10 +8,10 @@
 package org.seedstack.seed.core.internal.application;
 
 import com.google.inject.MembersInjector;
-import org.seedstack.seed.core.api.ErrorCode;
-import org.seedstack.seed.core.api.SeedException;
-import org.seedstack.seed.core.spi.configuration.ConfigurationConverter;
-import org.seedstack.seed.core.spi.configuration.ConfigurationIdentityConverter;
+import org.seedstack.seed.ErrorCode;
+import org.seedstack.seed.SeedException;
+import org.seedstack.seed.spi.configuration.ConfigurationConverter;
+import org.seedstack.seed.spi.configuration.ConfigurationIdentityConverter;
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.lang.reflect.FieldUtils;
 import org.slf4j.Logger;
@@ -38,7 +38,7 @@ class ConfigurationMembersInjector<T> implements MembersInjector<T> {
 
     private final Configuration configuration;
 
-    private org.seedstack.seed.core.api.Configuration annotation;
+    private org.seedstack.seed.Configuration annotation;
 
     private static Map<Class<?>, Class<? extends ConfigurationConverter<?>>> converters = new HashMap<Class<?>, Class<? extends ConfigurationConverter<?>>>();
     static {
@@ -61,7 +61,7 @@ class ConfigurationMembersInjector<T> implements MembersInjector<T> {
         converters.put(String.class, ConfigurationIdentityConverter.class);
     }
 
-    ConfigurationMembersInjector(Field field, Configuration configuration, org.seedstack.seed.core.api.Configuration annotation) {
+    ConfigurationMembersInjector(Field field, Configuration configuration, org.seedstack.seed.Configuration annotation) {
         this.field = field;
         this.configuration = configuration;
         this.annotation = annotation;
@@ -89,7 +89,7 @@ class ConfigurationMembersInjector<T> implements MembersInjector<T> {
 
     private Enum<? extends ErrorCode> findEnum(){
         Class<? extends Enum<? extends ErrorCode>> errorCodeClass = annotation.errorCodeClass();
-        if (errorCodeClass.equals(org.seedstack.seed.core.api.Configuration.ConfigurationErrorCode.class)) {
+        if (errorCodeClass.equals(org.seedstack.seed.Configuration.ConfigurationErrorCode.class)) {
             errorCodeClass = ApplicationErrorCode.class;
         }
 

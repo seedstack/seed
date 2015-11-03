@@ -15,9 +15,6 @@ import mockit.MockUp;
 import org.assertj.core.api.Assertions;
 import org.junit.Rule;
 import org.junit.Test;
-import org.seedstack.seed.crypto.api.EncryptionService;
-import org.seedstack.seed.crypto.api.Hash;
-import org.seedstack.seed.crypto.api.HashingService;
 
 import javax.inject.Inject;
 import javax.inject.Named;

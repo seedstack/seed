@@ -7,7 +7,7 @@
  */
 package org.seedstack.seed.rest.internal.exceptionmapper;
 
-import org.seedstack.seed.security.api.exceptions.AuthorizationException;
+import org.seedstack.seed.security.AuthorizationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

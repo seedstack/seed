@@ -17,7 +17,7 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.seedstack.seed.core.api.Logging;
+import org.seedstack.seed.Logging;
 import org.seedstack.seed.core.fixtures.Service1;
 import org.seedstack.seed.core.fixtures.Service2;
 import org.seedstack.seed.core.fixtures.Service3;

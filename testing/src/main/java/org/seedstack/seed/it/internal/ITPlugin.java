@@ -17,11 +17,10 @@ import io.nuun.kernel.api.plugin.request.ClasspathScanRequest;
 import io.nuun.kernel.core.AbstractPlugin;
 import io.nuun.kernel.core.internal.context.InitContextInternal;
 import org.kametic.specifications.Specification;
-import org.seedstack.seed.core.api.SeedException;
+import org.seedstack.seed.SeedException;
 import org.seedstack.seed.core.internal.application.ApplicationPlugin;
-import org.seedstack.seed.it.api.ITBind;
-import org.seedstack.seed.it.api.ITErrorCode;
-import org.seedstack.seed.it.api.ITInstall;
+import org.seedstack.seed.it.ITBind;
+import org.seedstack.seed.it.ITInstall;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -9,7 +9,7 @@ package org.seedstack.seed.crypto.internal;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.seedstack.seed.crypto.api.Hash;
+import org.seedstack.seed.crypto.Hash;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

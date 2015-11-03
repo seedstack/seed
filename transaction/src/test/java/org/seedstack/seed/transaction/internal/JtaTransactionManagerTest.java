@@ -7,7 +7,7 @@
  */
 package org.seedstack.seed.transaction.internal;
 
-import org.seedstack.seed.core.api.SeedException;
+import org.seedstack.seed.SeedException;
 import org.seedstack.seed.transaction.spi.TransactionManager;
 import org.seedstack.seed.transaction.spi.TransactionMetadata;
 import org.junit.Test;

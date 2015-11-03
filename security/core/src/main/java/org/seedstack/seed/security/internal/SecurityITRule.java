@@ -14,13 +14,13 @@ import org.apache.shiro.util.ThreadContext;
 import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
-import org.seedstack.seed.it.api.ITBind;
-import org.seedstack.seed.security.api.WithUser;
+import org.seedstack.seed.it.ITBind;
+import org.seedstack.seed.security.WithUser;
 
 import javax.inject.Inject;
 
 /**
- * MethodRule used to connect a user to seed security if annotation @ {@link org.seedstack.seed.security.api.WithUser}
+ * MethodRule used to connect a user to seed security if annotation @ {@link WithUser}
  * is present on method or on target class.
  *
  * @author yves.dautremay@mpsa.com

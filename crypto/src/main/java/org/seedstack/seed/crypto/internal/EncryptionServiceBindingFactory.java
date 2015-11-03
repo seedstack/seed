@@ -10,10 +10,10 @@ package org.seedstack.seed.crypto.internal;
 import com.google.inject.Key;
 import com.google.inject.name.Names;
 import org.apache.commons.configuration.Configuration;
-import org.seedstack.seed.core.api.SeedException;
-import org.seedstack.seed.core.spi.dependency.Maybe;
+import org.seedstack.seed.SeedException;
+import org.seedstack.seed.spi.dependency.Maybe;
 import org.seedstack.seed.core.utils.SeedReflectionUtils;
-import org.seedstack.seed.crypto.api.EncryptionService;
+import org.seedstack.seed.crypto.EncryptionService;
 
 import javax.inject.Qualifier;
 import java.lang.annotation.Annotation;

@@ -13,6 +13,8 @@ import io.undertow.servlet.api.DeploymentManager;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.mockito.Mockito;
+import org.seedstack.seed.undertow.internal.ServerConfig;
+import org.seedstack.seed.undertow.internal.ServerFactory;
 
 /**
  * Tests the server factory which configure an Undertow server.

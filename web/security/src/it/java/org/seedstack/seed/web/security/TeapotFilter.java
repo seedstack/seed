@@ -13,8 +13,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.shiro.web.filter.PathMatchingFilter;
 
-import org.seedstack.seed.web.api.security.SecurityFilter;
-
 /**
  * Test filters that sends response with 418 code (I'm a teapot)
  * 

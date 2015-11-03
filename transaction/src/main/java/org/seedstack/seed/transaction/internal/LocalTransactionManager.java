@@ -7,8 +7,8 @@
  */
 package org.seedstack.seed.transaction.internal;
 
-import org.seedstack.seed.core.api.SeedException;
-import org.seedstack.seed.transaction.api.Propagation;
+import org.seedstack.seed.SeedException;
+import org.seedstack.seed.transaction.Propagation;
 import org.seedstack.seed.transaction.spi.TransactionHandler;
 import org.seedstack.seed.transaction.spi.TransactionMetadata;
 import org.aopalliance.intercept.MethodInvocation;

@@ -7,9 +7,9 @@
  */
 package org.seedstack.seed.shell.internal;
 
-import org.seedstack.seed.core.spi.command.Command;
-import org.seedstack.seed.shell.commands.JsonCommand;
-import org.seedstack.seed.shell.commands.StrCommand;
+import org.seedstack.seed.spi.command.Command;
+import org.seedstack.seed.shell.internal.commands.JsonCommand;
+import org.seedstack.seed.shell.internal.commands.StrCommand;
 
 enum OutputMode {
     JSON(new JsonCommand()),

@@ -8,7 +8,7 @@
 package org.seedstack.seed.security.internal.data;
 
 
-import org.seedstack.seed.security.api.data.Restriction;
+import org.seedstack.seed.security.data.Restriction;
 import org.seedstack.seed.security.spi.data.DataObfuscationHandler;
 import org.seedstack.seed.security.spi.data.DataSecurityHandler;
 

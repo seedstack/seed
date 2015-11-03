@@ -8,7 +8,7 @@
 package org.seedstack.seed.el.internal.fixtures;
 
 import com.google.inject.AbstractModule;
-import org.seedstack.seed.core.api.Install;
+import org.seedstack.seed.Install;
 import org.seedstack.seed.el.internal.ELBinder;
 import org.seedstack.seed.el.internal.fixtureFailing.AnnotationWithoutValue;
 

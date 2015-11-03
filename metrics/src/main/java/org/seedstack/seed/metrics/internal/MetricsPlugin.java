@@ -15,12 +15,11 @@ import java.util.Set;
 
 import javax.inject.Inject;
 
-import org.seedstack.seed.core.api.SeedException;
+import org.seedstack.seed.SeedException;
 import org.seedstack.seed.core.internal.CorePlugin;
 import org.seedstack.seed.core.internal.metrics.HealthcheckProvider;
 import org.seedstack.seed.core.internal.metrics.MetricsProvider;
-import org.seedstack.seed.core.spi.dependency.Maybe;
-import org.seedstack.seed.metrics.api.MetricsErrorCode;
+import org.seedstack.seed.spi.dependency.Maybe;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
