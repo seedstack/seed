@@ -16,19 +16,24 @@ import io.nuun.kernel.core.AbstractPlugin;
 import jodd.props.Props;
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.MapConfiguration;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.text.StrLookup;
 import org.javatuples.Pair;
 import org.seedstack.seed.Application;
 import org.seedstack.seed.SeedException;
 import org.seedstack.seed.core.internal.CorePlugin;
-import org.seedstack.seed.core.internal.SeedConfigLoader;
 import org.seedstack.seed.spi.configuration.ConfigurationLookup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.bridge.SLF4JBridgeHandler;
 
 import java.io.File;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -38,13 +43,17 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class ApplicationPlugin extends AbstractPlugin {
     private static final Logger LOGGER = LoggerFactory.getLogger(ApplicationPlugin.class);
-    private static final String CONFIGURATION_LOCATION = "META-INF/configuration/";
-    static final String PROPS_REGEX = ".*\\.props";
-    static final String PROPERTIES_REGEX = ".*\\.properties";
 
+    public static final String CONFIGURATION_PACKAGE = "META-INF.configuration";
+    public static final String CONFIGURATION_LOCATION = "META-INF/configuration/";
+    public static final String PROPS_REGEX = ".*\\.props";
+    public static final String PROPERTIES_REGEX = ".*\\.properties";
+    public static final String BASE_PACKAGES_KEY = "org.seedstack.seed.base-packages";
+
+    private final SeedConfigLoader seedConfigLoader = new SeedConfigLoader();
+    private final Configuration bootstrapConfiguration = seedConfigLoader.buildBootstrapConfig();
     private final Map<String, String> defaultConfiguration = new ConcurrentHashMap<String, String>();
     private Props props;
-
     private Application application;
 
     @Override
@@ -54,30 +63,38 @@ public class ApplicationPlugin extends AbstractPlugin {
 
     @Override
     public String pluginPackageRoot() {
-        return "META-INF.configuration";
+        String packageRoots = CONFIGURATION_PACKAGE;
+
+        String[] applicationPackageRoots = bootstrapConfiguration.getStringArray(BASE_PACKAGES_KEY);
+        if (applicationPackageRoots != null && applicationPackageRoots.length > 0) {
+            packageRoots += "," + StringUtils.join(applicationPackageRoots, ",");
+        }
+
+        return packageRoots;
     }
 
     @Override
     public InitState init(InitContext initContext) {
+        // Setup application diagnostic collector
         ApplicationDiagnosticCollector applicationDiagnosticCollector = new ApplicationDiagnosticCollector();
+        applicationDiagnosticCollector.setBasePackages(pluginPackageRoot());
         ((CorePlugin) initContext.pluginsRequired().iterator().next()).registerDiagnosticCollector("org.seedstack.seed.core.application", applicationDiagnosticCollector);
 
+        // Retrieve all configuration resources
         Set<String> allConfigurationResources = Sets.newHashSet();
-
         for (String propertiesResource : initContext.mapResourcesByRegex().get(PROPERTIES_REGEX)) {
             if (propertiesResource.startsWith(CONFIGURATION_LOCATION)) {
                 allConfigurationResources.add(propertiesResource);
             }
         }
-
         for (String propsResource : initContext.mapResourcesByRegex().get(PROPS_REGEX)) {
             if (propsResource.startsWith(CONFIGURATION_LOCATION)) {
                 allConfigurationResources.add(propsResource);
             }
         }
 
+        // Find configuration lookups
         Map<String, Class<? extends StrLookup>> configurationLookups = new HashMap<String, Class<? extends StrLookup>>();
-
         for (Class<?> candidate : initContext.scannedClassesByAnnotationClass().get(ConfigurationLookup.class)) {
             ConfigurationLookup configurationLookup = candidate.getAnnotation(ConfigurationLookup.class);
             if (StrLookup.class.isAssignableFrom(candidate) && configurationLookup != null && !configurationLookup.value().isEmpty()) {
@@ -86,10 +103,8 @@ public class ApplicationPlugin extends AbstractPlugin {
             }
         }
 
-        SeedConfigLoader seedConfigLoader = new SeedConfigLoader();
-
         // Build configuration
-        Pair<MapConfiguration, Props> confs = seedConfigLoader.buildConfiguration(allConfigurationResources, defaultConfiguration);
+        Pair<MapConfiguration, Props> confs = seedConfigLoader.buildConfig(allConfigurationResources, defaultConfiguration);
         MapConfiguration configuration = confs.getValue0();
         props = confs.getValue1();
 
@@ -121,7 +136,7 @@ public class ApplicationPlugin extends AbstractPlugin {
 
         String appVersion = coreConfiguration.getString("application-version");
         if (appVersion == null) {
-            appVersion = "0.0.0";
+            appVersion = "1.0.0";
         }
 
         LOGGER.info("Application info: '{}' / '{}' / '{}'", appId, appName, appVersion);
