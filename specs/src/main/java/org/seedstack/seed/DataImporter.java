@@ -5,7 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-package org.seedstack.seed.spi.data;
+package org.seedstack.seed;
 
 /**
  * Implement this interface to create a data set importer that will handle objects of a specific type. A data importer

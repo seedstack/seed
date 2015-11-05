@@ -7,10 +7,10 @@
  */
 package org.seedstack.seed.core.internal.data;
 
-import org.seedstack.seed.spi.data.DataImporter;
+import org.seedstack.seed.DataImporter;
 
 /**
- * Holds the definition of a {@link org.seedstack.seed.spi.data.DataImporter}.
+ * Holds the definition of a {@link DataImporter}.
  *
  * @param <T> the imported data type.
  * @author adrien.lauer@mpsa.com
