@@ -9,9 +9,9 @@ package org.seedstack.seed.core.internal.data;
 
 import org.seedstack.seed.DataManager;
 import org.seedstack.seed.SeedException;
-import org.seedstack.seed.spi.data.DataExporter;
-import org.seedstack.seed.spi.data.DataImporter;
-import org.seedstack.seed.spi.data.DataSet;
+import org.seedstack.seed.DataExporter;
+import org.seedstack.seed.DataImporter;
+import org.seedstack.seed.DataSet;
 import io.nuun.kernel.api.Plugin;
 import io.nuun.kernel.api.plugin.InitState;
 import io.nuun.kernel.api.plugin.context.Context;

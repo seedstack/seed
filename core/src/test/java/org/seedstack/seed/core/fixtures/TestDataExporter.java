@@ -8,8 +8,8 @@
 package org.seedstack.seed.core.fixtures;
 
 import com.google.common.collect.Lists;
-import org.seedstack.seed.spi.data.DataExporter;
-import org.seedstack.seed.spi.data.DataSet;
+import org.seedstack.seed.DataExporter;
+import org.seedstack.seed.DataSet;
 
 import java.util.Iterator;
 
