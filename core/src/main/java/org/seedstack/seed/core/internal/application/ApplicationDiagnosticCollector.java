@@ -20,6 +20,7 @@ import java.util.Map;
  * @author adrien.lauer@mpsa.com
  */
 class ApplicationDiagnosticCollector implements DiagnosticInfoCollector {
+    private String basePackages;
     private Configuration configuration;
     private String applicationId;
     private String applicationName;
@@ -80,5 +81,9 @@ class ApplicationDiagnosticCollector implements DiagnosticInfoCollector {
 
     public void setApplicationId(String applicationId) {
         this.applicationId = applicationId;
+    }
+
+    public void setBasePackages(String basePackages) {
+        this.basePackages = basePackages;
     }
 }

@@ -14,28 +14,35 @@ import io.nuun.kernel.api.plugin.context.InitContext;
 import io.nuun.kernel.api.plugin.request.ClasspathScanRequest;
 import io.nuun.kernel.core.AbstractPlugin;
 import io.nuun.kernel.core.internal.scanner.AbstractClasspathScanner;
-import org.apache.commons.configuration.Configuration;
-import org.apache.commons.lang.StringUtils;
 import org.reflections.vfs.Vfs;
 import org.seedstack.seed.CoreErrorCode;
 import org.seedstack.seed.DiagnosticManager;
 import org.seedstack.seed.Install;
 import org.seedstack.seed.SeedException;
-import org.seedstack.seed.core.internal.application.SeedConfigLoader;
 import org.seedstack.seed.core.internal.scan.ClasspathScanHandler;
 import org.seedstack.seed.core.internal.scan.FallbackUrlType;
+import org.seedstack.seed.core.utils.SeedReflectionUtils;
 import org.seedstack.seed.spi.dependency.DependencyProvider;
 import org.seedstack.seed.spi.dependency.Maybe;
 import org.seedstack.seed.spi.diagnostic.DiagnosticDomain;
 import org.seedstack.seed.spi.diagnostic.DiagnosticInfoCollector;
-import org.seedstack.seed.core.utils.SeedReflectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Proxy;
 import java.net.URL;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.ServiceLoader;
+import java.util.Set;
 
 /**
  * Core plugin that setup common SEED package roots and scans modules to install via the
@@ -44,7 +51,7 @@ import java.util.*;
  * @author adrien.lauer@mpsa.com
  */
 public class CorePlugin extends AbstractPlugin {
-    public static final String SEED_PACKAGE_ROOT = "org.seedstack";
+    public static final String SEEDSTACK_PACKAGE_ROOT = "org.seedstack";
     public static final String CORE_PLUGIN_PREFIX = "org.seedstack.seed.core";
     public static final String DETAILS_MESSAGE = "Details of the previous error below";
     private static final Logger LOGGER = LoggerFactory.getLogger(CorePlugin.class);
@@ -86,7 +93,6 @@ public class CorePlugin extends AbstractPlugin {
         });
     }
 
-    private final Configuration bootstrapConfiguration;
     private final Set<Class<? extends Module>> seedModules = new HashSet<Class<? extends Module>>();
     private final Map<String, DiagnosticInfoCollector> diagnosticInfoCollectors = new HashMap<String, DiagnosticInfoCollector>();
     private Map<Class<?>, Maybe<? extends DependencyProvider>> optionalDependencies = new HashMap<Class<?>, Maybe<? extends DependencyProvider>>();
@@ -98,13 +104,14 @@ public class CorePlugin extends AbstractPlugin {
         return DIAGNOSTIC_MANAGER;
     }
 
-    public CorePlugin() {
-        bootstrapConfiguration = new SeedConfigLoader().bootstrapConfig();
-    }
-
     @Override
     public String name() {
         return "seed-core-plugin";
+    }
+
+    @Override
+    public String pluginPackageRoot() {
+        return SEEDSTACK_PACKAGE_ROOT;
     }
 
     @SuppressWarnings("unchecked")
@@ -167,27 +174,6 @@ public class CorePlugin extends AbstractPlugin {
         return classpathScanRequestBuilder().subtypeOf(DiagnosticInfoCollector.class).annotationType(Install.class).subtypeOf(DependencyProvider.class).build();
     }
 
-    @Override
-    public String pluginPackageRoot() {
-        String packageRoots = SEED_PACKAGE_ROOT;
-        String[] applicationPackageRoots = bootstrapConfiguration.getStringArray("package-roots"); // expect package prefixes joined by a comma (",")
-        if (applicationPackageRoots == null || applicationPackageRoots.length == 0) {
-            LOGGER.info("No additional package roots specified. SEED will only scan " + packageRoots);
-        } else {
-            packageRoots += "," + StringUtils.join(applicationPackageRoots, ",");
-        }
-        return packageRoots;
-    }
-
-    /**
-     * Returns the configuration coming from the SEED bootstrap properties.
-     *
-     * @return bootstrap configuration
-     */
-    public Configuration getBootstrapConfiguration() {
-        return bootstrapConfiguration;
-    }
-
     /**
      * This method registers an existing {@link DiagnosticInfoCollector} instance.
      *
@@ -215,10 +201,35 @@ public class CorePlugin extends AbstractPlugin {
         return new CoreModule(subModules, DIAGNOSTIC_MANAGER, diagnosticInfoCollectors, this.optionalDependencies);
     }
 
+    /**
+     * Return {@link Maybe} which contains the provider if dependency is present.
+     * Always return a {@link Maybe} instance.
+     *
+     * @param providerClass provider to use an optional dependency
+     * @return {@link Maybe} which contains the provider if dependency is present
+     */
+    @SuppressWarnings("unchecked")
+    public <T extends DependencyProvider>  Maybe<T> getDependency(Class<T> providerClass) {
+        if (! optionalDependencies.containsKey(providerClass)) {
+            Maybe<T> maybe = new Maybe<T>(null);
+            try {
+                T provider = providerClass.newInstance();
+                if (SeedReflectionUtils.forName(provider.getClassToCheck()).isPresent()) {
+                    LOGGER.debug("Found a new optional provider [{}} for [{}]",providerClass.getName(),provider.getClassToCheck());
+                    maybe = new Maybe<T>(provider);
+                }
+            } catch (Exception e) {
+                throw SeedException.wrap(e, CoreErrorCode.UNABLE_TO_INSTANTIATE_CLASS).put("class", providerClass.getCanonicalName());
+            }
+            optionalDependencies.put(providerClass, maybe);
+        }
+        return (Maybe<T>)optionalDependencies.get(providerClass);
+    }
+
     @SuppressWarnings("unchecked")
     private Set<URL> extractScannedUrls(InitContext initContext) {
         try {
-            return new HashSet<URL>((Set<URL>) SeedReflectionUtils.invokeMethod(SeedReflectionUtils.getFieldValue(initContext, "classpathScanner"), "computeUrls"));
+            return new HashSet<URL>((Set<URL>) SeedReflectionUtils.invokeMethod(SeedReflectionUtils.getFieldValue(unproxify(initContext), "classpathScanner"), "computeUrls"));
         } catch (Exception e) {
             LOGGER.warn("Unable to collect scanned classpath");
             LOGGER.debug(DETAILS_MESSAGE, e);
@@ -227,29 +238,17 @@ public class CorePlugin extends AbstractPlugin {
         return null;
     }
 
-	/**
-	 * Return {@link Maybe} which contains the provider if dependency is present.
-	 * Always return a {@link Maybe} instance.
-     *
-	 * @param providerClass provider to use an optional dependency
-	 * @return {@link Maybe} which contains the provider if dependency is present
-	 */
-	@SuppressWarnings("unchecked")
-	public <T extends DependencyProvider>  Maybe<T> getDependency(Class<T> providerClass) {
-		if (! optionalDependencies.containsKey(providerClass)) {
-	    	Maybe<T> maybe = new Maybe<T>(null);
-			try {
-				T provider = providerClass.newInstance();
-				if (SeedReflectionUtils.forName(provider.getClassToCheck()).isPresent()) {
-		            LOGGER.debug("Found a new optional provider [{}} for [{}]",providerClass.getName(),provider.getClassToCheck());
-		            maybe = new Maybe<T>(provider);
-				}
-			} catch (Exception e) {
-                throw SeedException.wrap(e, CoreErrorCode.UNABLE_TO_INSTANTIATE_CLASS).put("class", providerClass.getCanonicalName());
-			}
-			optionalDependencies.put(providerClass, maybe);
-		}
-		return (Maybe<T>)optionalDependencies.get(providerClass);
-	}
-
+    // TODO remove this when not needed anymore (see at call site)
+    private InitContext unproxify(InitContext initContext) throws Exception {
+        InvocationHandler invocationHandler;
+        try {
+            invocationHandler = Proxy.getInvocationHandler(initContext);
+        } catch(IllegalArgumentException e) {
+            // not a proxy
+            return initContext;
+        }
+        Field field = invocationHandler.getClass().getDeclaredField("val$initContext");
+        field.setAccessible(true);
+        return (InitContext) field.get(invocationHandler);
+    }
 }

@@ -43,7 +43,7 @@ public class UndertowLauncher implements SeedLauncher {
         // Read the config from Seed bootstrap configuration
 
         DeploymentManagerFactory factory = new DeploymentManagerFactory();
-        manager = factory.createDeploymentManager(new SeedConfigLoader().bootstrapConfig());
+        manager = factory.createDeploymentManager(new SeedConfigLoader().buildBootstrapConfig());
         manager.deploy();
         ServletContextImpl servletContext = manager.getDeployment().getServletContext();
 

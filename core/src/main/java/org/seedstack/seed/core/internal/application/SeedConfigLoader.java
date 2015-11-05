@@ -23,7 +23,11 @@ import javax.annotation.Nullable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
-import java.util.*;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Utility class which allows to load the application and Seed properties.
@@ -31,16 +35,12 @@ import java.util.*;
  * @author pierre.thirouin@ext.mpsa.com (Pierre Thirouin)
  */
 public class SeedConfigLoader {
-
-    private static final String SEED_BOOTSTRAP_PROPS_PATH = "META-INF/seed-bootstrap.props";
-    private static final String SEED_BOOTSTRAP_PROPERTIES_PATH = "META-INF/seed-bootstrap.properties";
+    private static final String SEED_BOOTSTRAP_PROPS_PATH = "META-INF/configuration/seed.props";
+    private static final String SEED_BOOTSTRAP_PROPERTIES_PATH = "META-INF/configuration/seed.properties";
     private static final Logger LOGGER = LoggerFactory.getLogger(SeedConfigLoader.class);
 
-    // Please let the volatile modifier on bootstrapConfiguration
-    private static volatile Configuration bootstrapConfiguration;
-
     /**
-     * Gets the configuration needed to bootstrap a Seed application.
+     * Build the configuration needed to bootstrap a Seed application.
      * <p>
      * This configuration is loaded from the seed-bootstrap.properties files.
      * If multiple files are present the configuration is concatenated.
@@ -48,41 +48,21 @@ public class SeedConfigLoader {
      *
      * @return the bootstrap configuration
      */
-    public Configuration bootstrapConfig() {
-        if (bootstrapConfiguration == null) {
-            synchronized (SeedConfigLoader.class) {
-                if (bootstrapConfiguration == null) {
-                    bootstrapConfiguration = buildBootstrapConfiguration();
-                }
-            }
-        }
-        return bootstrapConfiguration;
-    }
-
-    private Configuration buildBootstrapConfiguration() {
+    public Configuration buildBootstrapConfig() {
         Set<String> resources = Sets.newHashSet(SEED_BOOTSTRAP_PROPS_PATH, SEED_BOOTSTRAP_PROPERTIES_PATH);
-        MapConfiguration globalConfiguration = buildApplicationConfig(resources, null).getValue0();
+        MapConfiguration globalConfiguration = buildConfig(resources, null).getValue0();
         globalConfiguration.getInterpolator().registerLookup("env", new EnvLookup());
         return new MapConfiguration(new ImmutableMap.Builder<String, Object>().putAll(globalConfiguration.getMap()).build());
     }
 
     /**
-     * Gets the application active profiles.
-     *
-     * @return the array of active profiles or null if none is active
-     */
-    public String[] applicationProfiles() {
-        return getStringArray(System.getProperty("org.seedstack.seed.profiles"));
-    }
-
-    /**
-     * Build the application configuration.
+     * Build a unique configuration from a set of resources (props or properties) and an optional default configuration.
      *
      * @param configurationResources the paths to the configuration resources
      * @param defaultConfiguration   the default configuration registered with the SPI
      * @return the final configuration
      */
-    public Pair<MapConfiguration, Props> buildApplicationConfig(Set<String> configurationResources, @Nullable Map<String, String> defaultConfiguration) {
+    public Pair<MapConfiguration, Props> buildConfig(Set<String> configurationResources, @Nullable Map<String, String> defaultConfiguration) {
         final Props props = buildProps();
         final Props propsOverride = buildProps();
 
@@ -124,6 +104,15 @@ public class SeedConfigLoader {
 
         // Build configuration
         return Pair.with(buildConfiguration(props, propsOverride, defaultConfiguration), props);
+    }
+
+    /**
+     * Gets the application active profiles.
+     *
+     * @return the array of active profiles or null if none is active
+     */
+    public String[] applicationProfiles() {
+        return getStringArray(System.getProperty("org.seedstack.seed.profiles"));
     }
 
     /**

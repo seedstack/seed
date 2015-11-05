@@ -7,17 +7,11 @@
  */
 package org.seedstack.seed.core.internal;
 
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
-import java.lang.annotation.Annotation;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
-
-import org.apache.commons.configuration.Configuration;
+import com.google.inject.AbstractModule;
+import com.google.inject.Module;
+import io.nuun.kernel.api.plugin.context.InitContext;
+import mockit.Expectations;
+import mockit.Mocked;
 import org.assertj.core.api.Assertions;
 import org.fest.reflect.core.Reflection;
 import org.junit.Before;
@@ -28,12 +22,15 @@ import org.seedstack.seed.spi.dependency.DependencyProvider;
 import org.seedstack.seed.spi.dependency.Maybe;
 import org.seedstack.seed.spi.diagnostic.DiagnosticInfoCollector;
 
-import com.google.inject.AbstractModule;
-import com.google.inject.Module;
+import java.lang.annotation.Annotation;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
-import io.nuun.kernel.api.plugin.context.InitContext;
-import mockit.Expectations;
-import mockit.Mocked;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * CorePlugin unit test
@@ -134,17 +131,9 @@ public class CorePluginTest {
     }
 
     @Test
-    public void load_seed_bootstrap_properties() {
-        Configuration bootstrapConfiguration = pluginUnderTest.getBootstrapConfiguration();
-        Assertions.assertThat(bootstrapConfiguration).isNotNull();
-        Assertions.assertThat(bootstrapConfiguration.getString("package-roots")).isNotEmpty();
-    }
-
-    @Test
     public void package_root_should_valid() {
         String pluginPackageRoot = pluginUnderTest.pluginPackageRoot();
-        Assertions.assertThat(pluginPackageRoot).contains(CorePlugin.SEED_PACKAGE_ROOT);
-        Assertions.assertThat(pluginPackageRoot).contains("some.other.pkg");
+        Assertions.assertThat(pluginPackageRoot).contains(CorePlugin.SEEDSTACK_PACKAGE_ROOT);
     }
     
     @Test

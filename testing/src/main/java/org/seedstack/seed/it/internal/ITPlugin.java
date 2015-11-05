@@ -191,7 +191,13 @@ public class ITPlugin extends AbstractPlugin {
 
     // TODO remove this when not needed anymore (see at call site)
     private InitContext unproxify(InitContext initContext) throws Exception {
-        InvocationHandler invocationHandler = Proxy.getInvocationHandler(initContext);
+        InvocationHandler invocationHandler;
+        try {
+            invocationHandler = Proxy.getInvocationHandler(initContext);
+        } catch(IllegalArgumentException e) {
+            // not a proxy
+            return initContext;
+        }
         Field field = invocationHandler.getClass().getDeclaredField("val$initContext");
         field.setAccessible(true);
         return (InitContext) field.get(invocationHandler);
