@@ -74,30 +74,34 @@ public class UndertowPlugin extends AbstractPlugin {
         return InitState.INITIALIZED;
     }
 
-    @Override
-    public void start(Context context) {
-        if (deploymentManager != null) {
-            // Start the embedded server
-            server = new ServerFactory().createServer(serverConfig, deploymentManager);
-            server.start();
-            LOGGER.info("Application started. Listen on " + serverConfig.getHost() + ":" + serverConfig.getPort());
-        }
-    }
+//    @Override
+//    public void start(Context context) {
+//        if (deploymentManager != null) {
+//            // Start the embedded server
+//            server = new ServerFactory().createServer(serverConfig, deploymentManager);
+//            server.start();
+//            LOGGER.info("Application started. Listen on " + serverConfig.getHost() + ":" + serverConfig.getPort());
+//        }
+//    }
+//
+//    @Override
+//    public void stop() {
+//        if (server != null) {
+//            server.stop();
+//        }
+//    }
+//
+//    /**
+//     * Sets the deployment manager responsible of the ServletContainer.
+//     *
+//     * @param deploymentManager the deployment manager
+//     */
+//    public void setDeploymentManager(DeploymentManager deploymentManager) {
+//        this.deploymentManager = deploymentManager;
+//    }
 
-    @Override
-    public void stop() {
-        if (server != null) {
-            server.stop();
-        }
-    }
-
-    /**
-     * Sets the deployment manager responsible of the ServletContainer.
-     *
-     * @param deploymentManager the deployment manager
-     */
-    public void setDeploymentManager(DeploymentManager deploymentManager) {
-        this.deploymentManager = deploymentManager;
+    public ServerConfig getServerConfig() {
+        return serverConfig;
     }
 
     @Override

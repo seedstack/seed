@@ -11,6 +11,7 @@ import io.nuun.kernel.api.Kernel;
 import io.nuun.kernel.api.Plugin;
 import io.nuun.kernel.core.NuunCore;
 import io.nuun.kernel.core.internal.KernelCore;
+import io.undertow.Undertow;
 import io.undertow.servlet.api.DeploymentManager;
 import io.undertow.servlet.spec.ServletContextImpl;
 import org.seedstack.seed.SeedException;
@@ -30,18 +31,15 @@ import java.util.Map;
  * @author pierre.thirouin@ext.mpsa.com (Pierre Thirouin)
  */
 public class UndertowLauncher implements SeedLauncher {
-
     private static final Logger LOGGER = LoggerFactory.getLogger(UndertowLauncher.class);
 
-    private static DeploymentManager manager;
+    private DeploymentManager manager;
     private Kernel kernel;
+    private Undertow undertow;
 
     @Override
     public void launch(String[] args) throws Exception {
-        LOGGER.info("Starting Seed Web application");
-
         // Read the config from Seed bootstrap configuration
-
         DeploymentManagerFactory factory = new DeploymentManagerFactory();
         manager = factory.createDeploymentManager(new SeedConfigLoader().buildBootstrapConfig());
         manager.deploy();
@@ -50,10 +48,12 @@ public class UndertowLauncher implements SeedLauncher {
         try {
             kernel = createKernel(servletContext);
             kernel.init();
-            getUndertowPlugin(kernel)
-                    .setDeploymentManager(manager);
             kernel.start();
 
+            ServerConfig serverConfig = getUndertowPlugin(kernel).getServerConfig();
+            undertow = new ServerFactory().createServer(serverConfig, manager);
+            undertow.start();
+            LOGGER.info("Listening on " + serverConfig.getHost() + ":" + serverConfig.getPort());
         } catch (SeedException e) {
             throw e;
         } catch (Exception e) {
@@ -100,8 +100,18 @@ public class UndertowLauncher implements SeedLauncher {
 
     @Override
     public void shutdown() throws Exception {
-        kernel.stop();
-        manager.undeploy(); // should done at last for diagnostic purpose
+        if (kernel != null && kernel.isStarted()) {
+            kernel.stop();
+        }
+
+        if (undertow != null) {
+            undertow.stop();
+        }
+
+        if (manager != null) {
+            // should done at last for diagnostic purpose
+            manager.undeploy();
+        }
     }
 
 }

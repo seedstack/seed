@@ -10,8 +10,11 @@ package org.seedstack.seed.web;
 import com.jayway.restassured.RestAssured;
 import com.jayway.restassured.response.Response;
 import org.assertj.core.api.Assertions;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.seedstack.seed.core.SeedMain;
+import org.seedstack.seed.spi.SeedLauncher;
 
 /**
  * Tests an undertow server exposing a simple hello world servlet.
@@ -19,10 +22,21 @@ import org.seedstack.seed.core.SeedMain;
  * @author pierre.thirouin@ext.mpsa.com (Pierre Thirouin)
  */
 public class UndertowIT {
+    private SeedLauncher launcher;
+
+    @Before
+    public void before() throws Exception {
+        launcher = SeedMain.getLauncher();
+        launcher.launch(new String[]{});
+    }
+
+    @After
+    public void after() throws Exception {
+        launcher.shutdown();
+    }
 
     @Test
     public void test_run_seed_app_with_SSL() throws InterruptedException {
-        SeedMain.main(null);
         RestAssured.useRelaxedHTTPSValidation();
         Response response = RestAssured.expect().statusCode(200).when().get("https://localhost:9001/hello");
         Assertions.assertThat(response.asString()).isEqualTo("Hello World! value1");
