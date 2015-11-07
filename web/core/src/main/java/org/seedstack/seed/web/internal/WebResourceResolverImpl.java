@@ -7,14 +7,14 @@
  */
 package org.seedstack.seed.web.internal;
 
-import com.google.inject.Injector;
+import com.google.inject.assistedinject.Assisted;
+import org.apache.commons.configuration.Configuration;
 import org.seedstack.seed.Application;
 import org.seedstack.seed.SeedException;
 import org.seedstack.seed.core.utils.SeedReflectionUtils;
 import org.seedstack.seed.web.ResourceInfo;
 import org.seedstack.seed.web.ResourceRequest;
 import org.seedstack.seed.web.WebResourceResolver;
-import org.apache.commons.configuration.Configuration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,18 +49,16 @@ class WebResourceResolverImpl implements WebResourceResolver {
 
     private final boolean onTheFlyGzipping;
 
-    private final Injector injector;
-
     private final ClassLoader classLoader;
 
-    private ServletContext context;
+    private final ServletContext servletContext;
 
-    private String resourcePath;
+    private final String resourcePath;
 
     @Inject
-    WebResourceResolverImpl(final Application application, final Injector injector, @Named("SeedWebResourcesPath") final String resourcePath) {
+    WebResourceResolverImpl(final Application application, @Named("SeedWebResourcesPath") final String resourcePath, @Assisted ServletContext servletContext) {
         Configuration configuration = application.getConfiguration();
-        this.injector = injector;
+        this.servletContext = servletContext;
         this.resourcePath = resourcePath;
         this.classpathLocation = "META-INF/resources" + resourcePath;
         this.classLoader = SeedReflectionUtils.findMostCompleteClassLoader(WebResourceResolverImpl.class);
@@ -73,10 +71,6 @@ class WebResourceResolverImpl implements WebResourceResolver {
 
     @Override
     public ResourceInfo resolveResourceInfo(ResourceRequest resourceRequest) {
-        if (context == null) {
-            context = injector.getInstance(ServletContext.class);
-        }
-
         String normalizedPath;
 
         if (resourceRequest.getPath() == null) {
@@ -103,23 +97,23 @@ class WebResourceResolverImpl implements WebResourceResolver {
         // search in docroot first (and META-INF/resources if servlet version is >= 3.0)
         try {
             if (resourceRequest.isAcceptGzip() && serveGzippedResources) {
-                resourceUrl = this.context.getResource(docrootLocation + matcher.replaceAll(MINIFIED_GZIPPED_EXT_PATTERN));
+                resourceUrl = this.servletContext.getResource(docrootLocation + matcher.replaceAll(MINIFIED_GZIPPED_EXT_PATTERN));
                 if (serveMinifiedResources && resourceUrl != null) {
                     return new ResourceInfo(resourceUrl, true, contentType);
                 }
 
-                resourceUrl = this.context.getResource(docrootLocation + matcher.replaceAll(GZIPPED_EXT_PATTERN));
+                resourceUrl = this.servletContext.getResource(docrootLocation + matcher.replaceAll(GZIPPED_EXT_PATTERN));
                 if (resourceUrl != null) {
                     return new ResourceInfo(resourceUrl, true, contentType);
                 }
             }
 
-            resourceUrl = this.context.getResource(docrootLocation + matcher.replaceAll(MINIFIED_EXT_PATTERN));
+            resourceUrl = this.servletContext.getResource(docrootLocation + matcher.replaceAll(MINIFIED_EXT_PATTERN));
             if (serveMinifiedResources && resourceUrl != null) {
                 return new ResourceInfo(resourceUrl, false, contentType);
             }
 
-            resourceUrl = this.context.getResource(docrootLocation + normalizedPath);
+            resourceUrl = this.servletContext.getResource(docrootLocation + normalizedPath);
             if (resourceUrl != null) {
                 return new ResourceInfo(resourceUrl, false, contentType);
             }
@@ -155,11 +149,7 @@ class WebResourceResolverImpl implements WebResourceResolver {
 
     @Override
     public URI resolveURI(String path) {
-        if (context == null) {
-            context = injector.getInstance(ServletContext.class);
-        }
-
-        String contextPath = this.context.getContextPath();
+        String contextPath = this.servletContext.getContextPath();
 
         // Context path with a value of / is invalid per spec but may still be provided by server
         if ("/".equals(contextPath)) {
@@ -192,7 +182,7 @@ class WebResourceResolverImpl implements WebResourceResolver {
 
     @Override
     public boolean isCompressible(ResourceInfo resourceInfo) {
-        return  serveGzippedResources &&
+        return serveGzippedResources &&
                 onTheFlyGzipping &&
                 !resourceInfo.isGzipped() &&
                 (resourceInfo.getContentType().startsWith("text/") || "application/json".equals(resourceInfo.getContentType()));

@@ -11,14 +11,16 @@ import com.google.common.base.Optional;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
+import org.apache.commons.configuration.Configuration;
 import org.seedstack.seed.Application;
 import org.seedstack.seed.SeedException;
 import org.seedstack.seed.web.ResourceInfo;
 import org.seedstack.seed.web.ResourceRequest;
 import org.seedstack.seed.web.WebResourceResolver;
-import org.apache.commons.configuration.Configuration;
+import org.seedstack.seed.web.WebResourceResolverFactory;
 
 import javax.inject.Inject;
+import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -51,15 +53,16 @@ class WebResourceServlet extends HttpServlet {
 
     private final LoadingCache<ResourceRequest, Optional<ResourceInfo>> resourceInfoCache;
     private final long servletInitTime;
-    private final WebResourceResolver webResourceResolver;
+    private final WebResourceResolverFactory webResourceResolverFactory;
+    private WebResourceResolver webResourceResolver;
 
     @Inject
-    WebResourceServlet(final Application application, final WebResourceResolver webResourceResolver) {
+    WebResourceServlet(final Application application, final WebResourceResolverFactory webResourceResolverFactory) {
         Configuration configuration = application.getConfiguration();
 
         this.servletInitTime = System.currentTimeMillis();
 
-        this.webResourceResolver = webResourceResolver;
+        this.webResourceResolverFactory = webResourceResolverFactory;
 
         int cacheSize = configuration.getInt(WebPlugin.WEB_PLUGIN_PREFIX + ".resources.cache.max-size", DEFAULT_CACHE_SIZE);
         this.resourceInfoCache = CacheBuilder.newBuilder().maximumSize(cacheSize).concurrencyLevel(configuration.getInt(WebPlugin.WEB_PLUGIN_PREFIX + ".resources.cache.concurrency", DEFAULT_CACHE_CONCURRENCY)).initialCapacity(configuration.getInt(WebPlugin.WEB_PLUGIN_PREFIX + ".resources.cache.initial-size", cacheSize / 4)).build(new CacheLoader<ResourceRequest, Optional<ResourceInfo>>() {
@@ -73,6 +76,11 @@ class WebResourceServlet extends HttpServlet {
                 }
             }
         });
+    }
+
+    @Override
+    public void init(ServletConfig config) throws ServletException {
+        this.webResourceResolver = webResourceResolverFactory.createWebResourceResolver(config.getServletContext());
     }
 
     private ResourceData prepareResourceData(ResourceInfo resourceInfo, boolean acceptGzip) throws IOException {
