@@ -7,9 +7,11 @@
  */
 package org.seedstack.seed.web.internal;
 
+import com.google.inject.assistedinject.FactoryModuleBuilder;
 import com.google.inject.name.Names;
 import com.google.inject.servlet.ServletModule;
 import org.seedstack.seed.web.WebResourceResolver;
+import org.seedstack.seed.web.WebResourceResolverFactory;
 
 import javax.inject.Singleton;
 import java.util.List;
@@ -48,7 +50,10 @@ class WebModule extends ServletModule {
 
         // Static resources
         if (resourcesEnabled) {
-            bind(WebResourceResolver.class).to(WebResourceResolverImpl.class);
+            install(new FactoryModuleBuilder()
+                    .implement(WebResourceResolver.class, WebResourceResolverImpl.class)
+                    .build(WebResourceResolverFactory.class)
+            );
             bind(String.class).annotatedWith(Names.named("SeedWebResourcesPath")).toInstance(this.resourcesPrefix);
             bind(WebResourceServlet.class).in(Singleton.class);
             serve(resourcesPrefix + "/*").with(WebResourceServlet.class);
