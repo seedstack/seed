@@ -36,7 +36,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.zip.GZIPOutputStream;
 
 /**
- * This web resource servlet provides automatic static resource serving from the classpath and the docroot with some
+ * This web resource filter provides automatic static resource serving from the classpath and the docroot with some
  * benefits over the container default resource serving:
  * <p>
  * <ul>
@@ -52,6 +52,8 @@ class WebResourceFilter implements Filter {
     private static final int DEFAULT_CACHE_SIZE = 8192;
     private static final int DEFAULT_CACHE_CONCURRENCY = 32;
     private static final int DEFAULT_BUFFER_SIZE = 65536;
+    private static final String HEADER_IFMODSINCE = "If-Modified-Since";
+    private static final String HEADER_LASTMOD = "Last-Modified";
 
     private final LoadingCache<ResourceRequest, Optional<ResourceInfo>> resourceInfoCache;
     private final long servletInitTime;
@@ -62,7 +64,8 @@ class WebResourceFilter implements Filter {
     WebResourceFilter(final Application application, final WebResourceResolverFactory webResourceResolverFactory) {
         Configuration configuration = application.getConfiguration();
 
-        this.servletInitTime = System.currentTimeMillis();
+        // round the time to nearest second for proper comparison with If-Modified-Since header
+        this.servletInitTime = System.currentTimeMillis() / 1000L * 1000L;
 
         this.webResourceResolverFactory = webResourceResolverFactory;
 
@@ -110,16 +113,25 @@ class WebResourceFilter implements Filter {
             if (resourceInfo == null) {
                 filterChain.doFilter(servletRequest, servletResponse);
             } else {
-                // Prepare response
-                httpServletResponse.setContentType(resourceInfo.getContentType());
-                ResourceData resourceData = prepareResourceData(resourceInfo, acceptGzip);
-                if (resourceData.gzipped) {
-                    httpServletResponse.addHeader("Content-Encoding", "gzip");
-                }
-                httpServletResponse.addHeader("Content-Length", Integer.toString(resourceData.data.length));
+                long ifModifiedSince = ((HttpServletRequest) servletRequest).getDateHeader(HEADER_IFMODSINCE);
+                if (ifModifiedSince < servletInitTime) {
+                    // Set last modified header
+                    httpServletResponse.setDateHeader(HEADER_LASTMOD, servletInitTime);
 
-                // Write data
-                httpServletResponse.getOutputStream().write(resourceData.data);
+                    // Prepare response
+                    httpServletResponse.setContentType(resourceInfo.getContentType());
+                    ResourceData resourceData = prepareResourceData(resourceInfo, acceptGzip);
+                    if (resourceData.gzipped) {
+                        httpServletResponse.addHeader("Content-Encoding", "gzip");
+                    }
+                    httpServletResponse.addHeader("Content-Length", Integer.toString(resourceData.data.length));
+
+                    // Write data
+                    httpServletResponse.getOutputStream().write(resourceData.data);
+                } else {
+                    // Send that resource was not modified
+                    httpServletResponse.setStatus(HttpServletResponse.SC_NOT_MODIFIED);
+                }
             }
         }
     }
@@ -128,12 +140,6 @@ class WebResourceFilter implements Filter {
     public void destroy() {
         // nothing to do here
     }
-
-
-//    @Override
-//    public final long getLastModified(HttpServletRequest req) {
-//        return this.servletInitTime;
-//    }
 
     private ResourceData prepareResourceData(ResourceInfo resourceInfo, boolean acceptGzip) throws IOException {
         boolean gzippedOnTheFly = false;
