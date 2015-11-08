@@ -69,7 +69,7 @@ public class RestIT extends AbstractSeedWebIT {
         assertThat(response1).isEqualTo("<h1>Hello World!</h1>");
 
         String response2 = expect().statusCode(200).given()
-                .header("Accept", "application/json-home")
+                .header("Accept", "application/json")
                 .get(baseURL.toString()).asString();
 
         assertThat(response2).contains("{\"resources\":");
