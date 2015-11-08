@@ -21,6 +21,7 @@ import org.skyscreamer.jsonassert.JSONAssert;
 import java.net.URL;
 
 import static com.jayway.restassured.RestAssured.expect;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class RestIT extends AbstractSeedWebIT {
 
@@ -45,7 +46,7 @@ public class RestIT extends AbstractSeedWebIT {
         //assert response code
         String response = expect().statusCode(201).given().
                 header("Accept", "application/json").header("Content-Type", "application/json").
-                body(obj.toString()).post(baseURL.toString() + "rest/products/").asString();
+                body(obj.toString()).post(baseURL.toString() + "products/").asString();
 
         // assert body
         JSONAssert.assertEquals(obj, new JSONObject(response), false);
@@ -54,7 +55,23 @@ public class RestIT extends AbstractSeedWebIT {
     @RunAsClient
     @Test
     public void wadl_is_disabled_by_default() {
-        expect().statusCode(404).given().get(baseURL.toString() + "rest/application.wadl");
-        expect().statusCode(204).given().options(baseURL.toString() + "rest/products/");
+        expect().statusCode(404).given().get(baseURL.toString() + "application.wadl");
+        expect().statusCode(204).given().options(baseURL.toString() + "products/");
+    }
+
+    @RunAsClient
+    @Test
+    public void root_subresources_are_working() {
+        String response1 = expect().statusCode(200).given()
+                .header("Accept", "text/html")
+                .get(baseURL.toString()).asString();
+
+        assertThat(response1).isEqualTo("<h1>Hello World!</h1>");
+
+        String response2 = expect().statusCode(200).given()
+                .header("Accept", "application/json-home")
+                .get(baseURL.toString()).asString();
+
+        assertThat(response2).contains("{\"resources\":");
     }
 }

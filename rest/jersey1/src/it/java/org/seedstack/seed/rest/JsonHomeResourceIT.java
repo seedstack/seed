@@ -18,6 +18,7 @@ import org.junit.Test;
 import org.seedstack.seed.it.AbstractSeedWebIT;
 import org.skyscreamer.jsonassert.JSONAssert;
 
+import javax.ws.rs.core.HttpHeaders;
 import java.net.URL;
 
 import static com.jayway.restassured.RestAssured.expect;
@@ -38,10 +39,10 @@ public class JsonHomeResourceIT extends AbstractSeedWebIT {
     @RunAsClient
     @Test
     public void expose_json_home() throws JSONException {
-        Response response = expect().statusCode(200).given().header("Content-Type", "application/json-home")
-                .get(baseURL.toString() + "rest/");
+        Response response = expect().statusCode(200).given().header(HttpHeaders.ACCEPT, "application/json")
+                .get(baseURL.toString());
 
-        String expectedBody = "{\"resources\":{\"http://example.org/rel/order\":{\"href-template\":\"/rest/orders/{id}\",\"hints\":{\"allow\":[\"GET\"],\"formats\":{\"application/hal+json\":\"\"}},\"href-vars\":{\"id\":\"id\"}},\"http://example.org/rel/order2\":{\"href-template\":\"/rest/orders/v2/{id}\",\"hints\":{\"allow\":[\"GET\"],\"formats\":{\"application/hal+json\":\"\"}},\"href-vars\":{\"id\":\"id\"}}}}";
+        String expectedBody = "{\"resources\":{\"http://example.org/rel/order\":{\"href-template\":\"/orders/{id}\",\"hints\":{\"allow\":[\"GET\"],\"formats\":{\"application/hal+json\":\"\"}},\"href-vars\":{\"id\":\"id\"}},\"http://example.org/rel/order2\":{\"href-template\":\"/orders/v2/{id}\",\"hints\":{\"allow\":[\"GET\"],\"formats\":{\"application/hal+json\":\"\"}},\"href-vars\":{\"id\":\"id\"}}}}";
 
         JSONAssert.assertEquals(expectedBody, response.asString(), false);
     }

@@ -48,17 +48,6 @@ class WebModule extends ServletModule {
             filter("/*").through(ExceptionDiagnosticFilter.class);
         }
 
-        // Static resources
-        if (resourcesEnabled) {
-            install(new FactoryModuleBuilder()
-                    .implement(WebResourceResolver.class, WebResourceResolverImpl.class)
-                    .build(WebResourceResolverFactory.class)
-            );
-            bind(String.class).annotatedWith(Names.named("SeedWebResourcesPath")).toInstance(this.resourcesPrefix);
-            bind(WebResourceServlet.class).in(Singleton.class);
-            serve(resourcesPrefix + "/*").with(WebResourceServlet.class);
-        }
-
         // User filters
         for (ConfiguredFilter configuredFilter : filters) {
             bind(configuredFilter.getClazz()).in(Singleton.class);
@@ -75,9 +64,21 @@ class WebModule extends ServletModule {
             }
         }
 
-        // Additional web modules (with lower dispatching priority)
+        // Additional web modules
         for (ServletModule additionalModule : additionalModules) {
             install(additionalModule);
+        }
+
+        // Static resources serving
+        if (resourcesEnabled) {
+            bind(String.class).annotatedWith(Names.named("SeedWebResourcesPath")).toInstance(this.resourcesPrefix);
+            install(new FactoryModuleBuilder()
+                    .implement(WebResourceResolver.class, WebResourceResolverImpl.class)
+                    .build(WebResourceResolverFactory.class)
+            );
+
+            bind(WebResourceFilter.class).in(Singleton.class);
+            filter("/*").through(WebResourceFilter.class);
         }
     }
 }
