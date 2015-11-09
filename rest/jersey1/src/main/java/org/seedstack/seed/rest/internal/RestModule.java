@@ -8,12 +8,15 @@
 package org.seedstack.seed.rest.internal;
 
 import com.google.inject.Scopes;
+import com.google.inject.multibindings.MapBinder;
 import com.google.inject.multibindings.Multibinder;
 import com.google.inject.name.Names;
 import com.google.inject.servlet.ServletModule;
 import com.sun.jersey.spi.container.ResourceFilterFactory;
 import org.seedstack.seed.rest.internal.jsonhome.JsonHome;
+import org.seedstack.seed.rest.spi.RootResource;
 
+import javax.ws.rs.core.Variant;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -27,9 +30,11 @@ class RestModule extends ServletModule {
     private final Collection<Class<?>> resourceClasses;
     private final Collection<Class<?>> providerClasses;
     private final JsonHome jsonHome;
+    private final Map<Variant, Class<? extends RootResource>> rootResourceClasses;
 
-    RestModule(Collection<Class<?>> resourceClasses, Collection<Class<?>> providerClasses, Map<String, String> jerseyParameters,
+    RestModule(Map<Variant, Class<? extends RootResource>> rootResourceClasses, Collection<Class<?>> resourceClasses, Collection<Class<?>> providerClasses, Map<String, String> jerseyParameters,
                Set<Class<? extends ResourceFilterFactory>> resourceFilterFactories, String restPath, String jspPath, JsonHome jsonHome) {
+        this.rootResourceClasses = rootResourceClasses;
         this.resourceFilterFactories = resourceFilterFactories;
         this.restPath = restPath;
         this.jspPath = jspPath;
@@ -41,6 +46,11 @@ class RestModule extends ServletModule {
 
     @Override
     protected void configureServlets() {
+        MapBinder<Variant, RootResource> multiBinder = MapBinder.newMapBinder(binder(), Variant.class, RootResource.class);
+        for (Map.Entry<Variant, Class<? extends RootResource>> rootResourceClassEntry : rootResourceClasses.entrySet()) {
+            multiBinder.addBinding(rootResourceClassEntry.getKey()).to(rootResourceClassEntry.getValue());
+        }
+
         bind(String.class).annotatedWith(Names.named("SeedRestPath")).toInstance(this.restPath);
         bind(String.class).annotatedWith(Names.named("SeedJspPath")).toInstance(this.jspPath);
 
@@ -66,6 +76,7 @@ class RestModule extends ServletModule {
             resourceFilterFactoryMultibinder.addBinding().to(resourceFilterFactory);
         }
 
+        bind(RootResourceDispatcher.class);
         for (Class<?> resourceClass : resourceClasses) {
             bind(resourceClass);
         }

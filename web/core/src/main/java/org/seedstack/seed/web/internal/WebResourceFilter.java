@@ -20,9 +20,12 @@ import org.seedstack.seed.web.WebResourceResolver;
 import org.seedstack.seed.web.WebResourceResolverFactory;
 
 import javax.inject.Inject;
-import javax.servlet.ServletConfig;
+import javax.servlet.Filter;
+import javax.servlet.FilterChain;
+import javax.servlet.FilterConfig;
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.ByteArrayOutputStream;
@@ -33,7 +36,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.zip.GZIPOutputStream;
 
 /**
- * This web resource servlet provides automatic static resource serving from the classpath and the docroot with some
+ * This web resource filter provides automatic static resource serving from the classpath and the docroot with some
  * benefits over the container default resource serving:
  * <p>
  * <ul>
@@ -45,11 +48,12 @@ import java.util.zip.GZIPOutputStream;
  *
  * @author adrien.lauer@mpsa.com
  */
-class WebResourceServlet extends HttpServlet {
-    private static final long serialVersionUID = 8596896504265605922L;
+class WebResourceFilter implements Filter {
     private static final int DEFAULT_CACHE_SIZE = 8192;
     private static final int DEFAULT_CACHE_CONCURRENCY = 32;
     private static final int DEFAULT_BUFFER_SIZE = 65536;
+    private static final String HEADER_IFMODSINCE = "If-Modified-Since";
+    private static final String HEADER_LASTMOD = "Last-Modified";
 
     private final LoadingCache<ResourceRequest, Optional<ResourceInfo>> resourceInfoCache;
     private final long servletInitTime;
@@ -57,10 +61,11 @@ class WebResourceServlet extends HttpServlet {
     private WebResourceResolver webResourceResolver;
 
     @Inject
-    WebResourceServlet(final Application application, final WebResourceResolverFactory webResourceResolverFactory) {
+    WebResourceFilter(final Application application, final WebResourceResolverFactory webResourceResolverFactory) {
         Configuration configuration = application.getConfiguration();
 
-        this.servletInitTime = System.currentTimeMillis();
+        // round the time to nearest second for proper comparison with If-Modified-Since header
+        this.servletInitTime = System.currentTimeMillis() / 1000L * 1000L;
 
         this.webResourceResolverFactory = webResourceResolverFactory;
 
@@ -79,8 +84,61 @@ class WebResourceServlet extends HttpServlet {
     }
 
     @Override
-    public void init(ServletConfig config) throws ServletException {
+    public void init(FilterConfig config) throws ServletException {
         this.webResourceResolver = webResourceResolverFactory.createWebResourceResolver(config.getServletContext());
+    }
+
+    @Override
+    public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
+        HttpServletRequest httpServletRequest = (HttpServletRequest) servletRequest;
+        HttpServletResponse httpServletResponse = (HttpServletResponse) servletResponse;
+        String path = httpServletRequest.getRequestURI().substring(httpServletRequest.getContextPath().length());
+        String acceptEncodingHeader = httpServletRequest.getHeader("Accept-Encoding");
+        boolean acceptGzip = acceptEncodingHeader != null && acceptEncodingHeader.contains("gzip");
+
+        if (path.isEmpty() || path.endsWith("/")) {
+            filterChain.doFilter(servletRequest, servletResponse);
+        } else {
+            // Find resource
+            ResourceInfo resourceInfo = null;
+            try {
+                Optional<ResourceInfo> cached = resourceInfoCache.get(new ResourceRequest(path, acceptGzip));
+                if (cached.isPresent()) {
+                    resourceInfo = cached.get();
+                }
+            } catch (ExecutionException e) {
+                throw SeedException.wrap(e, WebErrorCode.UNABLE_TO_DETERMINE_RESOURCE_INFO).put("path", path);
+            }
+
+            if (resourceInfo == null) {
+                filterChain.doFilter(servletRequest, servletResponse);
+            } else {
+                long ifModifiedSince = ((HttpServletRequest) servletRequest).getDateHeader(HEADER_IFMODSINCE);
+                if (ifModifiedSince < servletInitTime) {
+                    // Set last modified header
+                    httpServletResponse.setDateHeader(HEADER_LASTMOD, servletInitTime);
+
+                    // Prepare response
+                    httpServletResponse.setContentType(resourceInfo.getContentType());
+                    ResourceData resourceData = prepareResourceData(resourceInfo, acceptGzip);
+                    if (resourceData.gzipped) {
+                        httpServletResponse.addHeader("Content-Encoding", "gzip");
+                    }
+                    httpServletResponse.addHeader("Content-Length", Integer.toString(resourceData.data.length));
+
+                    // Write data
+                    httpServletResponse.getOutputStream().write(resourceData.data);
+                } else {
+                    // Send that resource was not modified
+                    httpServletResponse.setStatus(HttpServletResponse.SC_NOT_MODIFIED);
+                }
+            }
+        }
+    }
+
+    @Override
+    public void destroy() {
+        // nothing to do here
     }
 
     private ResourceData prepareResourceData(ResourceInfo resourceInfo, boolean acceptGzip) throws IOException {
@@ -113,45 +171,6 @@ class WebResourceServlet extends HttpServlet {
         }
 
         return new ResourceData(baos.toByteArray(), resourceInfo.isGzipped() || gzippedOnTheFly);
-    }
-
-    @Override
-    public final void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        String acceptEncodingHeader = request.getHeader("Accept-Encoding");
-        boolean acceptGzip = acceptEncodingHeader != null && acceptEncodingHeader.contains("gzip");
-
-        // Find resource
-        ResourceInfo resourceInfo = null;
-        try {
-            Optional<ResourceInfo> cached = resourceInfoCache.get(new ResourceRequest(request.getPathInfo(), acceptGzip));
-            if (cached.isPresent()) {
-                resourceInfo = cached.get();
-            }
-        } catch (ExecutionException e) {
-            throw SeedException.wrap(e, WebErrorCode.UNABLE_TO_DETERMINE_RESOURCE_INFO).put("path", request.getPathInfo());
-        }
-
-        // Return 404 when resource is not found anywhere
-        if (resourceInfo == null) {
-            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-            return;
-        }
-
-        // Prepare response
-        response.setContentType(resourceInfo.getContentType());
-        ResourceData resourceData = prepareResourceData(resourceInfo, acceptGzip);
-        if (resourceData.gzipped) {
-            response.addHeader("Content-Encoding", "gzip");
-        }
-        response.addHeader("Content-Length", Integer.toString(resourceData.data.length));
-
-        // Write data
-        response.getOutputStream().write(resourceData.data);
-    }
-
-    @Override
-    public final long getLastModified(HttpServletRequest req) {
-        return this.servletInitTime;
     }
 
     private static class ResourceData {

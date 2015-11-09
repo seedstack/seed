@@ -29,15 +29,25 @@ import org.seedstack.seed.rest.internal.exceptionmapper.InternalErrorExceptionMa
 import org.seedstack.seed.rest.internal.exceptionmapper.WebApplicationExceptionMapper;
 import org.seedstack.seed.rest.internal.hal.RelRegistryImpl;
 import org.seedstack.seed.rest.internal.jsonhome.JsonHome;
+import org.seedstack.seed.rest.internal.jsonhome.JsonHomeRootResource;
 import org.seedstack.seed.rest.internal.jsonhome.Resource;
+import org.seedstack.seed.rest.spi.RootResource;
 import org.seedstack.seed.web.internal.WebPlugin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import javax.servlet.ServletContext;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Variant;
 import java.lang.annotation.Annotation;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
 
 /**
  * This plugin enables JAX-RS usage in SEED applications. The JAX-RS implementation is Jersey.
@@ -55,8 +65,11 @@ public class RestPlugin extends AbstractPlugin {
     private WebPlugin webPlugin;
     private Configuration restConfiguration;
 
+    private final Map<Variant, Class<? extends RootResource>> rootResourceClasses = new HashMap<Variant, Class<? extends RootResource>>();
     private RelRegistry relRegistry;
     private JsonHome jsonHome;
+    private String restPath;
+    private String jspPath;
 
     private ServletContext servletContext;
 
@@ -73,11 +86,14 @@ public class RestPlugin extends AbstractPlugin {
         Map<Specification, Collection<Class<?>>> scannedClassesBySpecification = initContext.scannedTypesBySpecification();
         Collection<Class<?>> resourceClasses = scannedClassesBySpecification.get(resourcesSpecification);
 
-        String restPath = restConfiguration.getString("path", "/rest");
-        String jspPath = restConfiguration.getString("jsp-path", "/WEB-INF/jsp");
+        restPath = restConfiguration.getString("path", "");
+        jspPath = restConfiguration.getString("jsp-path", "/WEB-INF/jsp");
 
         // Scan resource for HAL and JSON-HOME
         scanResources(restPath, restConfiguration, resourceClasses);
+
+        // Register JSON-HOME as root resource
+        registerRootResource(new Variant(new MediaType("application", "json"), null, null), JsonHomeRootResource.class);
 
         // Skip the rest of the init phase if we are not in a servlet context
         if (servletContext == null) {
@@ -91,6 +107,7 @@ public class RestPlugin extends AbstractPlugin {
 
         webPlugin.registerAdditionalModule(
                 new RestModule(
+                        rootResourceClasses,
                         resourceClasses,
                         scannedClassesBySpecification.get(providersSpecification),
                         jerseyParameters,
@@ -216,5 +233,17 @@ public class RestPlugin extends AbstractPlugin {
         plugins.add(ApplicationPlugin.class);
         plugins.add(WebPlugin.class);
         return plugins;
+    }
+
+    public void registerRootResource(Variant variant, Class<? extends RootResource> rootResource) {
+        rootResourceClasses.put(variant, rootResource);
+    }
+
+    public String getRestPath() {
+        return restPath;
+    }
+
+    public String getJspPath() {
+        return jspPath;
     }
 }

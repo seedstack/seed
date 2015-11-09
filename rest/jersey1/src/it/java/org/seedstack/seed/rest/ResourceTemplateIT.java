@@ -31,10 +31,10 @@ public class ResourceTemplateIT extends AbstractSeedWebIT {
     @RunAsClient
     @Test
     public void template_resources_are_working() {
-        expect().statusCode(200).given().header("Accept", "application/json").get(baseURL + "rest/lists/persons");
-        expect().statusCode(200).given().header("Accept", "application/json").get(baseURL + "rest/lists/persons/0");
+        expect().statusCode(200).given().header("Accept", "application/json").get(baseURL + "lists/persons");
+        expect().statusCode(200).given().header("Accept", "application/json").get(baseURL + "lists/persons/0");
 
-        expect().statusCode(200).given().header("Accept", "application/json").get(baseURL + "rest/lists/products");
-        expect().statusCode(200).given().header("Accept", "application/json").get(baseURL + "rest/lists/products/0");
+        expect().statusCode(200).given().header("Accept", "application/json").get(baseURL + "lists/products");
+        expect().statusCode(200).given().header("Accept", "application/json").get(baseURL + "lists/products/0");
     }
 }
