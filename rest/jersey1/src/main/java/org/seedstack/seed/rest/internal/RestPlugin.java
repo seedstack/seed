@@ -68,6 +68,8 @@ public class RestPlugin extends AbstractPlugin {
     private final Map<Variant, Class<? extends RootResource>> rootResourceClasses = new HashMap<Variant, Class<? extends RootResource>>();
     private RelRegistry relRegistry;
     private JsonHome jsonHome;
+    private String restPath;
+    private String jspPath;
 
     private ServletContext servletContext;
 
@@ -84,8 +86,8 @@ public class RestPlugin extends AbstractPlugin {
         Map<Specification, Collection<Class<?>>> scannedClassesBySpecification = initContext.scannedTypesBySpecification();
         Collection<Class<?>> resourceClasses = scannedClassesBySpecification.get(resourcesSpecification);
 
-        String restPath = restConfiguration.getString("path", "");
-        String jspPath = restConfiguration.getString("jsp-path", "/WEB-INF/jsp");
+        restPath = restConfiguration.getString("path", "");
+        jspPath = restConfiguration.getString("jsp-path", "/WEB-INF/jsp");
 
         // Scan resource for HAL and JSON-HOME
         scanResources(restPath, restConfiguration, resourceClasses);
@@ -235,5 +237,13 @@ public class RestPlugin extends AbstractPlugin {
 
     public void registerRootResource(Variant variant, Class<? extends RootResource> rootResource) {
         rootResourceClasses.put(variant, rootResource);
+    }
+
+    public String getRestPath() {
+        return restPath;
+    }
+
+    public String getJspPath() {
+        return jspPath;
     }
 }
