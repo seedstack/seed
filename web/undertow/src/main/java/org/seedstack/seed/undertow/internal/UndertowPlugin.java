@@ -18,11 +18,7 @@ import org.seedstack.seed.crypto.spi.SSLProvider;
 import java.util.Collection;
 
 /**
- * The Undertow plugin is responsible to start and stop the Undertow HTTP server.
- * <p>
- * It requires that a {@link io.undertow.servlet.api.DeploymentManager} being passed
- * using the setDeploymentManager() method. Otherwise the server won't be started.
- * </p>
+ * The Undertow plugin is responsible to retrieve the undertow configuration.
  *
  * @author pierre.thirouin@ext.mpsa.com (Pierre Thirouin)
  */
@@ -39,10 +35,9 @@ public class UndertowPlugin extends AbstractPlugin {
 
     @Override
     public InitState init(InitContext initContext) {
-        Configuration configuration = initContext.dependency(ConfigurationProvider.class).getConfiguration();
-        serverConfig = new ServerConfigFactory()
-                .create(configuration.subset(CONFIGURATION_PREFIX), initContext.dependency(SSLProvider.class));
-
+        Configuration serverConfig = initContext.dependency(ConfigurationProvider.class)
+                .getConfiguration().subset(CONFIGURATION_PREFIX);
+        this.serverConfig = new ServerConfigFactory().create(serverConfig, initContext.dependency(SSLProvider.class));
         return InitState.INITIALIZED;
     }
 
