@@ -8,7 +8,6 @@
 package org.seedstack.seed;
 
 import java.io.File;
-import java.io.IOException;
 
 /**
  * This class specifies an interface to the application global object which consists of:
@@ -70,7 +69,7 @@ public interface Application {
     /**
      * Return the application global configuration.
      *
-     * @return the configuration object.
+     * @return the configuration
      */
     org.apache.commons.configuration.Configuration getConfiguration();
 

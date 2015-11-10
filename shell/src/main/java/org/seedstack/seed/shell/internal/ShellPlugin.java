@@ -7,7 +7,7 @@
  */
 package org.seedstack.seed.shell.internal;
 
-import io.nuun.kernel.api.Plugin;
+import com.google.common.collect.Lists;
 import io.nuun.kernel.api.plugin.InitState;
 import io.nuun.kernel.api.plugin.PluginException;
 import io.nuun.kernel.api.plugin.context.Context;
@@ -29,6 +29,7 @@ import org.apache.sshd.server.CommandFactory;
 import org.apache.sshd.server.UserAuth;
 import org.apache.sshd.server.keyprovider.SimpleGeneratorHostKeyProvider;
 import org.apache.sshd.server.session.ServerSession;
+import org.seedstack.seed.Application;
 import org.seedstack.seed.core.internal.application.ApplicationPlugin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -68,8 +69,8 @@ public class ShellPlugin extends AbstractPlugin {
 
     @Override
     public InitState init(InitContext initContext) {
-        ApplicationPlugin applicationPlugin = (ApplicationPlugin) initContext.pluginsRequired().iterator().next();
-        org.apache.commons.configuration.Configuration shellConfiguration = applicationPlugin.getApplication().getConfiguration().subset(ShellPlugin.SHELL_PLUGIN_CONFIGURATION_PREFIX);
+        Application application = initContext.dependency(ApplicationPlugin.class).getApplication();
+        org.apache.commons.configuration.Configuration shellConfiguration = application.getConfiguration().subset(ShellPlugin.SHELL_PLUGIN_CONFIGURATION_PREFIX);
 
         // No need to go further if shell is not enabled
         if (!shellConfiguration.getBoolean("enabled", false)) {
@@ -83,7 +84,7 @@ public class ShellPlugin extends AbstractPlugin {
 
         String keyType = shellConfiguration.getString("key.type", "generated");
         if ("generated".equals(keyType)) {
-            File storage = applicationPlugin.getApplication().getStorageLocation("shell");
+            File storage = application.getStorageLocation("shell");
             sshServer.setKeyPairProvider(new SimpleGeneratorHostKeyProvider(new File(storage, "generate-key.ser").getAbsolutePath()));
         } else if ("file".equals(keyType)) {
             sshServer.setKeyPairProvider(new FileKeyPairProvider(new String[]{shellConfiguration.getString("key.location")}));
@@ -145,10 +146,8 @@ public class ShellPlugin extends AbstractPlugin {
     }
 
     @Override
-    public Collection<Class<? extends Plugin>> requiredPlugins() {
-        Collection<Class<? extends Plugin>> plugins = new ArrayList<Class<? extends Plugin>>();
-        plugins.add(ApplicationPlugin.class);
-        return plugins;
+    public Collection<Class<?>> requiredPlugins() {
+        return Lists.<Class<?>>newArrayList(ApplicationPlugin.class);
     }
 
     private final class ShiroAuthFactory implements NamedFactory<UserAuth> {

@@ -7,14 +7,8 @@
  */
 package org.seedstack.seed.transaction.internal;
 
+import com.google.common.collect.Lists;
 import com.google.inject.matcher.Matcher;
-import org.seedstack.seed.core.internal.application.ApplicationPlugin;
-import org.seedstack.seed.core.utils.SeedMatchers;
-import org.seedstack.seed.transaction.Transactional;
-import org.seedstack.seed.transaction.spi.TransactionHandler;
-import org.seedstack.seed.transaction.spi.TransactionManager;
-import org.seedstack.seed.transaction.spi.TransactionMetadataResolver;
-import io.nuun.kernel.api.Plugin;
 import io.nuun.kernel.api.plugin.InitState;
 import io.nuun.kernel.api.plugin.PluginException;
 import io.nuun.kernel.api.plugin.context.InitContext;
@@ -22,18 +16,22 @@ import io.nuun.kernel.api.plugin.request.ClasspathScanRequest;
 import io.nuun.kernel.core.AbstractPlugin;
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.lang.StringUtils;
+import org.seedstack.seed.core.spi.configuration.ConfigurationProvider;
+import org.seedstack.seed.core.utils.SeedMatchers;
+import org.seedstack.seed.transaction.Transactional;
+import org.seedstack.seed.transaction.spi.TransactionHandler;
+import org.seedstack.seed.transaction.spi.TransactionManager;
+import org.seedstack.seed.transaction.spi.TransactionMetadataResolver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Method;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
 /**
  * This plugin manages transactional matters in SEED code:
- *
  * <ul>
  * <li>detects transaction-enabled methods and add the corresponding interceptor around them,</li>
  * <li>holds a registry of all transaction handlers,</li>
@@ -61,8 +59,7 @@ public class TransactionPlugin extends AbstractPlugin {
     @Override
     @SuppressWarnings("unchecked")
     public InitState init(InitContext initContext) {
-        ApplicationPlugin applicationPlugin = (ApplicationPlugin) initContext.pluginsRequired().iterator().next();
-        Configuration transactionConfiguration = applicationPlugin.getApplication().getConfiguration().subset(TransactionPlugin.TRANSACTION_PLUGIN_CONFIGURATION_PREFIX);
+        Configuration transactionConfiguration = initContext.dependency(ConfigurationProvider.class).getConfiguration().subset(TransactionPlugin.TRANSACTION_PLUGIN_CONFIGURATION_PREFIX);
 
         String transactionManagerClassname = transactionConfiguration.getString("manager");
         if (transactionManagerClassname != null && !transactionManagerClassname.isEmpty()) {
@@ -105,10 +102,8 @@ public class TransactionPlugin extends AbstractPlugin {
     }
 
     @Override
-    public Collection<Class<? extends Plugin>> requiredPlugins() {
-        Collection<Class<? extends Plugin>> plugins = new ArrayList<Class<? extends Plugin>>();
-        plugins.add(ApplicationPlugin.class);
-        return plugins;
+    public Collection<Class<?>> requiredPlugins() {
+        return Lists.<Class<?>>newArrayList(ConfigurationProvider.class);
     }
 
     @Override

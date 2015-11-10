@@ -7,6 +7,7 @@
  */
 package org.seedstack.seed.it.internal;
 
+import com.google.common.collect.Lists;
 import com.google.common.io.Files;
 import com.google.inject.Module;
 import io.nuun.kernel.api.Plugin;
@@ -15,7 +16,6 @@ import io.nuun.kernel.api.plugin.PluginException;
 import io.nuun.kernel.api.plugin.context.InitContext;
 import io.nuun.kernel.api.plugin.request.ClasspathScanRequest;
 import io.nuun.kernel.core.AbstractPlugin;
-import io.nuun.kernel.core.internal.context.InitContextInternal;
 import org.kametic.specifications.Specification;
 import org.seedstack.seed.SeedException;
 import org.seedstack.seed.core.internal.application.ApplicationPlugin;
@@ -30,12 +30,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Proxy;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * This plugin automatically enable integration tests to be managed by SEED.
@@ -69,7 +64,7 @@ public class ITPlugin extends AbstractPlugin {
     @SuppressWarnings({"rawtypes", "unchecked"})
     public InitState init(InitContext initContext) {
         String itClassName = initContext.kernelParam(IT_CLASS_NAME);
-        Map<String, String> defaultConfiguration = ((ApplicationPlugin) initContext.dependentPlugins().iterator().next()).getDefaultConfiguration();
+        Map<String, String> defaultConfiguration = initContext.dependency(ApplicationPlugin.class).getDefaultConfiguration();
 
         // Automatically define a unique identifier for this test (can be overridden by explicit identifier in the configuration)
         defaultConfiguration.put("org.seedstack.seed.core.application-id", UUID.randomUUID().toString());
@@ -80,16 +75,7 @@ public class ITPlugin extends AbstractPlugin {
         defaultConfiguration.put("org.seedstack.seed.core.storage", temporaryAppStorage.getAbsolutePath());
 
         // Process default configuration
-        // TODO replace introspection by proper API when implemented: https://github.com/nuun-io/kernel/issues/46
-        Map<String, String> kernelParams;
-        try {
-            Field kernelParamsField = InitContextInternal.class.getDeclaredField("kernelParams");
-            kernelParamsField.setAccessible(true);
-            kernelParams = (Map<String, String>) kernelParamsField.get(unproxify(initContext));
-        } catch (Exception e) {
-            throw new PluginException("Unable to access kernel params", e);
-        }
-        for (Map.Entry<String, String> kernelParam : kernelParams.entrySet()) {
+        for (Map.Entry<String, String> kernelParam : initContext.kernelParams().entrySet()) {
             if (kernelParam.getKey().startsWith(DEFAULT_CONFIGURATION_PREFIX)) {
                 defaultConfiguration.put(kernelParam.getKey().substring(DEFAULT_CONFIGURATION_PREFIX.length()), kernelParam.getValue());
             }
@@ -161,10 +147,8 @@ public class ITPlugin extends AbstractPlugin {
     }
 
     @Override
-    public Collection<Class<? extends Plugin>> dependentPlugins() {
-        Collection<Class<? extends Plugin>> plugins = new ArrayList<Class<? extends Plugin>>();
-        plugins.add(ApplicationPlugin.class);
-        return plugins;
+    public Collection<Class<?>> dependentPlugins() {
+        return Lists.<Class<?>>newArrayList(ApplicationPlugin.class);
     }
 
     private void deleteRecursively(final File file) throws IOException {

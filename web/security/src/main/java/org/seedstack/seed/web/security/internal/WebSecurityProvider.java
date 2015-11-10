@@ -9,16 +9,13 @@ package org.seedstack.seed.web.security.internal;
 
 import com.google.inject.Module;
 import com.google.inject.util.Modules;
-import io.nuun.kernel.api.Plugin;
 import io.nuun.kernel.api.plugin.PluginException;
 import io.nuun.kernel.api.plugin.context.InitContext;
 import io.nuun.kernel.api.plugin.request.ClasspathScanRequestBuilder;
 import jodd.props.Props;
 import org.apache.shiro.guice.web.ShiroWebModule;
-import org.seedstack.seed.SeedException;
 import org.seedstack.seed.core.internal.application.ApplicationPlugin;
 import org.seedstack.seed.security.internal.SecurityProvider;
-import org.seedstack.seed.web.internal.WebErrorCode;
 import org.seedstack.seed.web.security.SecurityFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,16 +44,7 @@ public class WebSecurityProvider implements SecurityProvider {
     @SuppressWarnings("unchecked")
     @Override
     public void init(InitContext initContext) {
-        ApplicationPlugin applicationPlugin = null;
-        for (Plugin plugin : initContext.pluginsRequired()) {
-            if (plugin instanceof ApplicationPlugin) {
-                applicationPlugin = ((ApplicationPlugin) plugin);
-            }
-        }
-
-        if (applicationPlugin == null) {
-            throw SeedException.createNew(WebErrorCode.PLUGIN_NOT_FOUND).put("plugin", "application");
-        }
+        ApplicationPlugin applicationPlugin = initContext.dependency(ApplicationPlugin.class);
 
         props = applicationPlugin.getProps();
         applicationId = applicationPlugin.getApplication().getId();

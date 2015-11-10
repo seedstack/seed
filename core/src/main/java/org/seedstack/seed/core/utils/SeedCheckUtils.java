@@ -9,13 +9,11 @@ package org.seedstack.seed.core.utils;
 
 import com.google.inject.ConfigurationException;
 import com.google.inject.Injector;
+import org.kametic.specifications.Specification;
 import org.seedstack.seed.ErrorCode;
 import org.seedstack.seed.SeedException;
-import org.apache.commons.collections.iterators.ArrayIterator;
-import org.kametic.specifications.Specification;
 
 import javax.inject.Inject;
-import java.util.Iterator;
 
 /**
  * Class with various check utilities.
@@ -106,13 +104,9 @@ public final class SeedCheckUtils {
             seedException = SeedException.createNew(errorCode);
         }
 
-        Iterator<String> it = new ArrayIterator(properties);
-        while (it.hasNext()) {
-            String key = it.next();
-            String value = "";
-            if (it.hasNext()) {
-                value = it.next();
-            }
+        for (int i = 0; i < properties.length; i = i + 2) {
+            String key = properties[i];
+            String value = properties[i+1];
             seedException.put(key, value);
         }
 

@@ -7,21 +7,20 @@
  */
 package org.seedstack.seed.web.internal;
 
+import com.google.common.collect.Lists;
 import com.google.inject.Module;
 import com.google.inject.servlet.ServletModule;
-import io.nuun.kernel.api.Plugin;
 import io.nuun.kernel.api.plugin.InitState;
 import io.nuun.kernel.api.plugin.context.InitContext;
 import io.nuun.kernel.api.plugin.request.ClasspathScanRequest;
 import io.nuun.kernel.core.AbstractPlugin;
 import org.apache.commons.configuration.Configuration;
 import org.reflections.util.ClasspathHelper;
-import org.seedstack.seed.SeedException;
 import org.seedstack.seed.core.internal.CorePlugin;
-import org.seedstack.seed.core.internal.application.ApplicationPlugin;
 import org.seedstack.seed.web.WebFilter;
 import org.seedstack.seed.web.WebInitParam;
 import org.seedstack.seed.web.WebServlet;
+import org.seedstack.seed.core.spi.configuration.ConfigurationProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -75,20 +74,10 @@ public class WebPlugin extends AbstractPlugin {
         }
 
         WebDiagnosticCollector webDiagnosticCollector = new WebDiagnosticCollector(servletContext);
-        ApplicationPlugin applicationPlugin = null;
-        for (Plugin plugin : initContext.pluginsRequired()) {
-            if (plugin instanceof ApplicationPlugin) {
-                applicationPlugin = (ApplicationPlugin) plugin;
-            } else if (plugin instanceof CorePlugin) {
-                ((CorePlugin) plugin).registerDiagnosticCollector(WEB_PLUGIN_PREFIX, webDiagnosticCollector);
-            }
-        }
 
-        if (applicationPlugin == null) {
-            throw SeedException.createNew(WebErrorCode.PLUGIN_NOT_FOUND).put("plugin", "application");
-        }
+        initContext.dependency(CorePlugin.class).registerDiagnosticCollector(WEB_PLUGIN_PREFIX, webDiagnosticCollector);
 
-        Configuration webConfiguration = applicationPlugin.getApplication().getConfiguration().subset(WebPlugin.WEB_PLUGIN_PREFIX);
+        Configuration webConfiguration = initContext.dependency(ConfigurationProvider.class).getConfiguration().subset(WebPlugin.WEB_PLUGIN_PREFIX);
         Map<Class<? extends Annotation>, Collection<Class<?>>> scannedClassesByAnnotationClass = initContext.scannedClassesByAnnotationClass();
 
         Collection<Class<?>> list = scannedClassesByAnnotationClass.get(WebServlet.class);
@@ -190,11 +179,8 @@ public class WebPlugin extends AbstractPlugin {
     }
 
     @Override
-    public Collection<Class<? extends Plugin>> requiredPlugins() {
-        Collection<Class<? extends Plugin>> plugins = new ArrayList<Class<? extends Plugin>>();
-        plugins.add(CorePlugin.class);
-        plugins.add(ApplicationPlugin.class);
-        return plugins;
+    public Collection<Class<?>> requiredPlugins() {
+        return Lists.<Class<?>>newArrayList(CorePlugin.class, ConfigurationProvider.class);
     }
 
     @Override
