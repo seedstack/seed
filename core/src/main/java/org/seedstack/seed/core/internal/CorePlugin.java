@@ -14,6 +14,7 @@ import io.nuun.kernel.api.plugin.context.InitContext;
 import io.nuun.kernel.api.plugin.request.ClasspathScanRequest;
 import io.nuun.kernel.core.AbstractPlugin;
 import io.nuun.kernel.core.internal.scanner.AbstractClasspathScanner;
+import org.reflections.Reflections;
 import org.reflections.vfs.Vfs;
 import org.seedstack.seed.CoreErrorCode;
 import org.seedstack.seed.DiagnosticManager;
@@ -61,6 +62,9 @@ public class CorePlugin extends AbstractPlugin {
     private static final FallbackUrlType FALLBACK_URL_TYPE = new FallbackUrlType();
 
     static {
+        // Disable Reflections logs
+        Reflections.log = null;
+
         // Load Nuun and Reflections classes to force initialization of Vfs url types
         try {
             Class.forName(Vfs.class.getCanonicalName());
