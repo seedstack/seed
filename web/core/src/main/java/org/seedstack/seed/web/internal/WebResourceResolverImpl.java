@@ -33,13 +33,12 @@ class WebResourceResolverImpl implements WebResourceResolver {
     private static final Logger LOGGER = LoggerFactory.getLogger(WebResourceResolverImpl.class);
     private static final Pattern EXTENSION_PATTERN = Pattern.compile("\\.(\\w+)$", Pattern.CASE_INSENSITIVE);
     private static final Pattern CONSECUTIVE_SLASHES_PATTERN = Pattern.compile("(/)\\1+");
+    private static final String CLASSPATH_LOCATION = "META-INF/resources";
     private static final String MINIFIED_GZIPPED_EXT_PATTERN = ".min.$1.gz";
     private static final String GZIPPED_EXT_PATTERN = ".$1.gz";
     private static final String MINIFIED_EXT_PATTERN = ".min.$1";
 
     private final MimetypesFileTypeMap mimetypesFileTypeMap;
-
-    private final String classpathLocation;
 
     private final String docrootLocation;
 
@@ -60,7 +59,6 @@ class WebResourceResolverImpl implements WebResourceResolver {
         Configuration configuration = application.getConfiguration();
         this.servletContext = servletContext;
         this.resourcePath = resourcePath;
-        this.classpathLocation = "META-INF/resources" + resourcePath;
         this.classLoader = SeedReflectionUtils.findMostCompleteClassLoader(WebResourceResolverImpl.class);
         this.docrootLocation = resourcePath;
         this.mimetypesFileTypeMap = new MimetypesFileTypeMap();
@@ -123,23 +121,23 @@ class WebResourceResolverImpl implements WebResourceResolver {
 
         // search in classpath last
         if (resourceRequest.isAcceptGzip() && serveGzippedResources) {
-            resourceUrl = classLoader.getResource(classpathLocation + matcher.replaceAll(MINIFIED_GZIPPED_EXT_PATTERN));
+            resourceUrl = classLoader.getResource(CLASSPATH_LOCATION + matcher.replaceAll(MINIFIED_GZIPPED_EXT_PATTERN));
             if (serveMinifiedResources && resourceUrl != null) {
                 return new ResourceInfo(resourceUrl, true, contentType);
             }
 
-            resourceUrl = classLoader.getResource(classpathLocation + matcher.replaceAll(GZIPPED_EXT_PATTERN));
+            resourceUrl = classLoader.getResource(CLASSPATH_LOCATION + matcher.replaceAll(GZIPPED_EXT_PATTERN));
             if (resourceUrl != null) {
                 return new ResourceInfo(resourceUrl, true, contentType);
             }
         }
 
-        resourceUrl = classLoader.getResource(classpathLocation + matcher.replaceAll(MINIFIED_EXT_PATTERN));
+        resourceUrl = classLoader.getResource(CLASSPATH_LOCATION + matcher.replaceAll(MINIFIED_EXT_PATTERN));
         if (serveMinifiedResources && resourceUrl != null) {
             return new ResourceInfo(resourceUrl, false, contentType);
         }
 
-        resourceUrl = classLoader.getResource(classpathLocation + normalizedPath);
+        resourceUrl = classLoader.getResource(CLASSPATH_LOCATION + normalizedPath);
         if (resourceUrl != null) {
             return new ResourceInfo(resourceUrl, false, contentType);
         }
@@ -156,7 +154,7 @@ class WebResourceResolverImpl implements WebResourceResolver {
             contextPath = "";
         }
 
-        if (path.startsWith(classpathLocation)) {
+        if (path.startsWith(CLASSPATH_LOCATION)) {
             try {
                 StringBuilder sb = new StringBuilder();
 
@@ -168,7 +166,7 @@ class WebResourceResolverImpl implements WebResourceResolver {
                     sb.append(resourcePath);
                 }
 
-                sb.append(path.substring(classpathLocation.length()));
+                sb.append(path.substring(CLASSPATH_LOCATION.length()));
 
                 return new URI(null, sb.toString(), null);
             } catch (URISyntaxException e) {
