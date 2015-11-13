@@ -8,7 +8,6 @@
 package org.seedstack.seed.web.internal;
 
 import com.google.inject.assistedinject.FactoryModuleBuilder;
-import com.google.inject.name.Names;
 import com.google.inject.servlet.ServletModule;
 import org.seedstack.seed.web.WebResourceResolver;
 import org.seedstack.seed.web.WebResourceResolverFactory;
@@ -21,7 +20,6 @@ import java.util.Set;
 class WebModule extends ServletModule {
     private final List<ConfiguredServlet> servlets;
     private final List<ConfiguredFilter> filters;
-    private final String resourcesPrefix;
     private final boolean resourcesEnabled;
     private final Set<ServletModule> additionalModules;
     private final boolean requestDiagnosticEnabled;
@@ -30,13 +28,11 @@ class WebModule extends ServletModule {
               List<ConfiguredServlet> servlets,
               List<ConfiguredFilter> filters,
               boolean resourcesEnabled,
-              String resourcesPrefix,
               Set<ServletModule> additionalModules) {
         this.requestDiagnosticEnabled = requestDiagnosticEnabled;
         this.servlets = servlets;
         this.filters = filters;
         this.resourcesEnabled = resourcesEnabled;
-        this.resourcesPrefix = resourcesPrefix;
         this.additionalModules = additionalModules;
     }
 
@@ -71,7 +67,6 @@ class WebModule extends ServletModule {
 
         // Static resources serving
         if (resourcesEnabled) {
-            bind(String.class).annotatedWith(Names.named("SeedWebResourcesPath")).toInstance(this.resourcesPrefix);
             install(new FactoryModuleBuilder()
                     .implement(WebResourceResolver.class, WebResourceResolverImpl.class)
                     .build(WebResourceResolverFactory.class)
