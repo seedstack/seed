@@ -17,10 +17,10 @@ import io.nuun.kernel.core.AbstractPlugin;
 import org.apache.commons.configuration.Configuration;
 import org.reflections.util.ClasspathHelper;
 import org.seedstack.seed.core.internal.CorePlugin;
+import org.seedstack.seed.core.spi.configuration.ConfigurationProvider;
 import org.seedstack.seed.web.WebFilter;
 import org.seedstack.seed.web.WebInitParam;
 import org.seedstack.seed.web.WebServlet;
-import org.seedstack.seed.core.spi.configuration.ConfigurationProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -128,10 +128,8 @@ public class WebPlugin extends AbstractPlugin {
         }
 
         boolean resourcesEnabled = webConfiguration.getBoolean("resources.enabled", true);
-        String resourcesPrefix = null;
         if (resourcesEnabled) {
-            resourcesPrefix = webConfiguration.getString("resources.path", "");
-            LOGGER.info("Static resources served on {}", resourcesPrefix);
+            LOGGER.info("Static resources served on /");
         }
 
         boolean requestDiagnosticEnabled = webConfiguration.getBoolean("request-diagnostic.enabled", false);
@@ -144,7 +142,6 @@ public class WebPlugin extends AbstractPlugin {
                 servlets,
                 filters,
                 resourcesEnabled,
-                resourcesPrefix,
                 additionalModules
         );
 

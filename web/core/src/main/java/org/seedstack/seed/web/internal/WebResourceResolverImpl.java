@@ -20,7 +20,6 @@ import org.slf4j.LoggerFactory;
 
 import javax.activation.MimetypesFileTypeMap;
 import javax.inject.Inject;
-import javax.inject.Named;
 import javax.servlet.ServletContext;
 import java.net.MalformedURLException;
 import java.net.URI;
@@ -40,8 +39,6 @@ class WebResourceResolverImpl implements WebResourceResolver {
 
     private final MimetypesFileTypeMap mimetypesFileTypeMap;
 
-    private final String docrootLocation;
-
     private final boolean serveMinifiedResources;
 
     private final boolean serveGzippedResources;
@@ -52,15 +49,11 @@ class WebResourceResolverImpl implements WebResourceResolver {
 
     private final ServletContext servletContext;
 
-    private final String resourcePath;
-
     @Inject
-    WebResourceResolverImpl(final Application application, @Named("SeedWebResourcesPath") final String resourcePath, @Assisted ServletContext servletContext) {
+    WebResourceResolverImpl(final Application application, @Assisted ServletContext servletContext) {
         Configuration configuration = application.getConfiguration();
         this.servletContext = servletContext;
-        this.resourcePath = resourcePath;
         this.classLoader = SeedReflectionUtils.findMostCompleteClassLoader(WebResourceResolverImpl.class);
-        this.docrootLocation = resourcePath;
         this.mimetypesFileTypeMap = new MimetypesFileTypeMap();
         this.serveMinifiedResources = configuration.getBoolean(WebPlugin.WEB_PLUGIN_PREFIX + ".resources.minification-support", true);
         this.serveGzippedResources = configuration.getBoolean(WebPlugin.WEB_PLUGIN_PREFIX + ".resources.gzip-support", true);
@@ -95,23 +88,23 @@ class WebResourceResolverImpl implements WebResourceResolver {
         // search in docroot first (and META-INF/resources if servlet version is >= 3.0)
         try {
             if (resourceRequest.isAcceptGzip() && serveGzippedResources) {
-                resourceUrl = this.servletContext.getResource(docrootLocation + matcher.replaceAll(MINIFIED_GZIPPED_EXT_PATTERN));
+                resourceUrl = this.servletContext.getResource(matcher.replaceAll(MINIFIED_GZIPPED_EXT_PATTERN));
                 if (serveMinifiedResources && resourceUrl != null) {
                     return new ResourceInfo(resourceUrl, true, contentType);
                 }
 
-                resourceUrl = this.servletContext.getResource(docrootLocation + matcher.replaceAll(GZIPPED_EXT_PATTERN));
+                resourceUrl = this.servletContext.getResource(matcher.replaceAll(GZIPPED_EXT_PATTERN));
                 if (resourceUrl != null) {
                     return new ResourceInfo(resourceUrl, true, contentType);
                 }
             }
 
-            resourceUrl = this.servletContext.getResource(docrootLocation + matcher.replaceAll(MINIFIED_EXT_PATTERN));
+            resourceUrl = this.servletContext.getResource(matcher.replaceAll(MINIFIED_EXT_PATTERN));
             if (serveMinifiedResources && resourceUrl != null) {
                 return new ResourceInfo(resourceUrl, false, contentType);
             }
 
-            resourceUrl = this.servletContext.getResource(docrootLocation + normalizedPath);
+            resourceUrl = this.servletContext.getResource(normalizedPath);
             if (resourceUrl != null) {
                 return new ResourceInfo(resourceUrl, false, contentType);
             }
@@ -160,10 +153,6 @@ class WebResourceResolverImpl implements WebResourceResolver {
 
                 if (!contextPath.isEmpty()) {
                     sb.append(contextPath);
-                }
-
-                if (!resourcePath.isEmpty()) {
-                    sb.append(resourcePath);
                 }
 
                 sb.append(path.substring(CLASSPATH_LOCATION.length()));
