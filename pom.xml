@@ -139,5 +139,21 @@
                 </repository>
             </repositories>
         </profile>
+        <profile>
+            <id>bintray</id>
+            <repositories>
+                <repository>
+                    <snapshots>
+                        <enabled>false</enabled>
+                    </snapshots>
+                    <releases>
+                        <enabled>true</enabled>
+                    </releases>
+                    <id>bintray-seedstack-jars</id>
+                    <name>bintray</name>
+                    <url>http://dl.bintray.com/seedstack/jars</url>
+                </repository>
+            </repositories>
+        </profile>
     </profiles>
 </project>

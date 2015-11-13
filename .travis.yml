@@ -14,6 +14,6 @@ install:
   - rm ~/.m2/settings.xml
   - if [ $TRAVIS_PULL_REQUEST = false ] && [ $TRAVIS_BRANCH = master ]; then GOAL=deploy; else GOAL=install; fi
 
-script: mvn -q -U -T 2 -Pbuild-number,compatibility,snapshots,javadoc $GOAL jacoco:report
+script: mvn -q -U -T 2 -Pbuild-number,compatibility,bintray,snapshots,javadoc $GOAL jacoco:report
 
 after_success: mvn -q coveralls:report -DrepoToken=$COVERALLS_TOKEN
