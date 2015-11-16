@@ -7,7 +7,5 @@
  */
 /**
  * Provides classes for extending the EL support.
- *
- * @author Pierre Thirouin
  */
 package org.seedstack.seed.el.spi;

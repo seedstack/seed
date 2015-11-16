@@ -8,7 +8,5 @@
 
 /**
  * Contains classes for providing a command line API.
- *
- * @author Pierre Thirouin
  */
 package org.seedstack.seed.cli;

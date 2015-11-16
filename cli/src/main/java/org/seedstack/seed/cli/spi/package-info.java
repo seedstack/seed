@@ -8,7 +8,5 @@
 
 /**
  * Provides classes for extending the command line support.
- *
- * @author Pierre Thirouin
  */
 package org.seedstack.seed.cli.spi;

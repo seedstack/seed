@@ -7,7 +7,5 @@
  */
 /**
  * Contains commands defined by the core support.
- *
- * @author Pierre Thirouin
  */
 package org.seedstack.seed.core.internal.command;

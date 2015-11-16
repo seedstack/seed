@@ -7,7 +7,5 @@
  */
 /**
  * Provides classes for adding more capabilities to integration tests.
- *
- * @author Pierre Thirouin
  */
 package org.seedstack.seed.it.spi;

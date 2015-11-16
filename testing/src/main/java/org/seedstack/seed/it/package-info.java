@@ -7,7 +7,5 @@
  */
 /**
  * Provides classes for integration testing.
- *
- * @author Pierre Thirouin
  */
 package org.seedstack.seed.it;

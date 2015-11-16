@@ -7,7 +7,5 @@
  */
 /**
  * Provides classes for extending the transaction support.
- *
- * @author Pierre Thirouin
  */
 package org.seedstack.seed.transaction.spi;

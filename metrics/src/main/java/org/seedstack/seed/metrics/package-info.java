@@ -8,7 +8,5 @@
 
 /**
  * Provides class to monitor an application.
- *
- * @author pierre.thirouin@ext.mpsa.com (Pierre Thirouin)
  */
 package org.seedstack.seed.metrics;

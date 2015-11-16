@@ -7,7 +7,5 @@
  */
 /**
  * Provides classes for securing servlets.
- *
- * @author Pierre Thirouin
  */
 package org.seedstack.seed.web.security;

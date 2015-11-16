@@ -7,7 +7,5 @@
  */
 /**
  * Provides classes for applying security on data.
- *
- * @author Pierre Thirouin
  */
 package org.seedstack.seed.security.data;

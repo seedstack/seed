@@ -8,8 +8,6 @@
 
 /**
  * Provides classes for constructing HAL representations.
- *
- * @author Pierre Thirouin
  * @see <a href="https://tools.ietf.org/html/draft-kelly-json-hal-07">https://tools.ietf.org/html/draft-kelly-json-hal-07</a>
  */
 package org.seedstack.seed.rest.hal;

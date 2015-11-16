@@ -7,7 +7,5 @@
  */
 /**
  * Provides various utility classes used in Seed.
- *
- * @author Pierre Thirouin
  */
 package org.seedstack.seed.core.utils;

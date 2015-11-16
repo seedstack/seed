@@ -8,7 +8,5 @@
 
 /**
  * Provides classes for building REST API.
- *
- * @author Pierre Thirouin
  */
 package org.seedstack.seed.rest;

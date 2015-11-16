@@ -8,7 +8,5 @@
 
 /**
  * Provides classes for using expression language.
- *
- * @author Pierre Thirouin
  */
 package org.seedstack.seed.el;

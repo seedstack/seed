@@ -7,7 +7,5 @@
  */
 /**
  * Provides classes for securing an application.
- *
- * @author Pierre Thirouin
  */
 package org.seedstack.seed.security;

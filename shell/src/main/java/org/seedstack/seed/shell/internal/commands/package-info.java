@@ -7,7 +7,5 @@
  */
 /**
  * Provides commands for the Shell.
- *
- * @author Pierre Thirouin
  */
 package org.seedstack.seed.shell.internal.commands;

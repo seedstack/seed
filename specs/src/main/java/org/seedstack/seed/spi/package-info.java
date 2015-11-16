@@ -7,7 +7,5 @@
  */
 /**
  * Provides classes allowing to extends the Seed framework.
- *
- * @author pierre.thirouin@ext.mpsa.com (Pierre Thirouin)
  */
 package org.seedstack.seed.spi;

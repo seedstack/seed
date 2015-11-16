@@ -7,7 +7,5 @@
  */
 /**
  * Provides classes to expose immutable SSL configuration. This is meant for external modules e.g. embedded servers.
- *
- * @author pierre.thirouin@ext.mpsa.com (Pierre Thirouin)
  */
 package org.seedstack.seed.crypto.spi;

@@ -8,7 +8,5 @@
 
 /**
  * Provides listeners for Servlet 2.5.
- *
- * @author pierre.thirouin@ext.mpsa.com (Pierre Thirouin)
  */
 package org.seedstack.seed.web.listener;

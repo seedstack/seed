@@ -7,7 +7,5 @@
  */
 /**
  * Contains objects to use optional dependencies.
- * @author thierry.bouvet@mpsa.com
- *
  */
 package org.seedstack.seed.spi.dependency;

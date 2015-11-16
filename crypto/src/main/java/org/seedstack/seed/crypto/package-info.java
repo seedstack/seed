@@ -8,7 +8,5 @@
 
 /**
  * Contains cryptographic service classes. It provides secure hashing and private key encryption.
- *
- * @author Pierre Thirouin
  */
 package org.seedstack.seed.crypto;

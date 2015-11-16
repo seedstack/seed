@@ -7,7 +7,5 @@
  */
 /**
  * Provides classes for managing transactions.
- *
- * @author Pierre Thirouin
  */
 package org.seedstack.seed.transaction;

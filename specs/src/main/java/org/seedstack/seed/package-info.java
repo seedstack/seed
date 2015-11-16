@@ -7,7 +7,5 @@
  */
 /**
  * Provides Seed main APIs.
- *
- * @author pierre.thirouin@ext.mpsa.com (Pierre Thirouin)
  */
 package org.seedstack.seed;
