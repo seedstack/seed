@@ -102,15 +102,14 @@ public class KeyPairConfigFactoryTest {
 
     @Test
     public void test_key_pair_config_create_with_external_certificate(final @Mocked URL url) throws Exception {
-        new MockUp<ClassLoader> () {
+        new MockUp<ClassLoader>() {
             @mockit.Mock
             public URL getResource(String name) {
                 try {
                     return new URL(CERT_RESOURCE);
                 } catch (MalformedURLException e) {
-                    e.printStackTrace();
+                    throw new IllegalStateException(e);
                 }
-                return null;
             }
         };
 
