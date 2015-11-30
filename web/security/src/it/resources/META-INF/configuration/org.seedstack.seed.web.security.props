@@ -30,4 +30,6 @@ padawan = academy:learn
 /jediAcademy.html = authcBasic, perms[academy:learn]
 /logout = logout
 /teapot = teapot
+/xsrf-protected-without-session = xsrf
+/xsrf-protected-with-session = authcBasic, xsrf
 /** = authcBasic

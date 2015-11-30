@@ -13,7 +13,6 @@ import org.apache.shiro.subject.Subject;
 import org.apache.shiro.web.filter.authc.AuthenticatingFilter;
 import org.seedstack.seed.security.X509CertificateToken;
 import org.seedstack.seed.security.internal.realms.AuthenticationTokenWrapper;
-import org.seedstack.seed.web.security.SecurityFilter;
 
 import javax.servlet.Filter;
 import javax.servlet.ServletRequest;
@@ -24,11 +23,10 @@ import java.security.cert.X509Certificate;
 
 /**
  * A security filter that extracts the certificate from the request for later use
- * 
+ *
  * @author yves.dautremay@mpsa.com
  */
-@SecurityFilter("cert")
-public class X509CertificateFilter extends AuthenticatingFilter implements Filter {
+class X509CertificateFilter extends AuthenticatingFilter implements Filter {
 
     private static final String OPTIONAL = "optional";
 
