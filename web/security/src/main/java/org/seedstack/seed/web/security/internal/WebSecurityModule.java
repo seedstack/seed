@@ -18,11 +18,13 @@ import org.apache.shiro.util.StringUtils;
 import org.apache.shiro.web.filter.PathMatchingFilter;
 import org.seedstack.seed.security.spi.SecurityConcern;
 import org.seedstack.seed.web.security.SecurityFilter;
+import org.seedstack.seed.web.security.spi.AntiXsrfService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.servlet.Filter;
 import javax.servlet.ServletContext;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -30,7 +32,7 @@ import java.util.Map;
 
 /**
  * Guice module to initialize a Shiro environment for the Web entry point.
- * 
+ *
  * @author yves.dautremay@mpsa.com
  */
 @SecurityConcern
@@ -40,6 +42,7 @@ class WebSecurityModule extends ShiroWebModule {
     private static final Map<String, Key<? extends Filter>> DEFAULT_FILTERS = new HashMap<String, Key<? extends Filter>>();
 
     static {
+        // Shiro filters
         DEFAULT_FILTERS.put("anon", ANON);
         DEFAULT_FILTERS.put("authc", AUTHC);
         DEFAULT_FILTERS.put("authcBasic", AUTHC_BASIC);
@@ -51,7 +54,12 @@ class WebSecurityModule extends ShiroWebModule {
         DEFAULT_FILTERS.put("roles", ROLES);
         DEFAULT_FILTERS.put("ssl", SSL);
         DEFAULT_FILTERS.put("user", USER);
+
+        // Seed filters
+        DEFAULT_FILTERS.put("xsrf", Key.get(AntiXsrfFilter.class));
+        DEFAULT_FILTERS.put("cert", Key.get(X509CertificateFilter.class));
     }
+
     private final String applicationName;
     private final Props props;
     private final Collection<Class<? extends Filter>> customFilters;
@@ -65,20 +73,40 @@ class WebSecurityModule extends ShiroWebModule {
 
     @Override
     protected void configureShiroWeb() {
+        // Register all filter chains
         PropsEntries propsEntries = props.entries().activeProfiles().section(PROPERTIES_PREFIX);
         Iterator<PropsEntry> entries = propsEntries.iterator();
+        int entryCount = 0;
         while (entries.hasNext()) {
-            LOGGER.info("Binding urls to filters...");
             PropsEntry entry = entries.next();
             String url = org.apache.commons.lang.StringUtils.removeStart(entry.getKey(), PROPERTIES_PREFIX + ".");
             String[] filters = StringUtils.split(entry.getValue(), StringUtils.DEFAULT_DELIMITER_CHAR, '[', ']', true, true);
+
+            LOGGER.trace("Binding {} to security filter chain {}", url, Arrays.toString(filters));
             addFilterChain(url, getFilterKeys(filters));
+            entryCount++;
         }
-        if (applicationName != null) {
-            bindConstant().annotatedWith(Names.named("shiro.applicationName")).to(applicationName);
+        LOGGER.debug("{} URL(s) bound to security filters", entryCount);
+
+        // Bind Seed filters
+        bind(AntiXsrfFilter.class);
+        bind(X509CertificateFilter.class);
+
+        // Bind custom filters not extending PathMatchingFilter as Shiro doesn't do it
+        for (Class<? extends Filter> customFilter : customFilters) {
+            if (!PathMatchingFilter.class.isAssignableFrom(customFilter)) {
+                bind(customFilter);
+            }
         }
+
+        // Additional web security bindings
+        bind(AntiXsrfService.class).to(StatelessAntiXsrfService.class);
+        bindConstant().annotatedWith(Names.named("shiro.applicationName")).to(applicationName);
+
+        // Exposed binding
+        expose(AntiXsrfService.class);
     }
-    
+
     @SuppressWarnings("unchecked")
     private Key<? extends Filter>[] getFilterKeys(String[] filters) {
         Key<? extends Filter>[] keys = new Key[filters.length];
@@ -114,7 +142,7 @@ class WebSecurityModule extends ShiroWebModule {
         }
         return currentKey;
     }
-    
+
     /**
      * This method is copied from the same method in Shiro in class DefaultFilterChainManager.
      */
@@ -153,7 +181,7 @@ class WebSecurityModule extends ShiroWebModule {
                 //So we ignore the stripped value.
             }
         }
-        
+
         return new String[]{name, config};
 
     }

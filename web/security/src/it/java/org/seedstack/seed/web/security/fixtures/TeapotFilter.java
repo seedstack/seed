@@ -5,13 +5,14 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-package org.seedstack.seed.web.security;
+package org.seedstack.seed.web.security.fixtures;
 
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.shiro.web.filter.PathMatchingFilter;
+import org.seedstack.seed.web.security.SecurityFilter;
 
 /**
  * Test filters that sends response with 418 code (I'm a teapot)
