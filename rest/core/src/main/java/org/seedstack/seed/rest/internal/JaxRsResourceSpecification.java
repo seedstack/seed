@@ -14,7 +14,6 @@ import javax.ws.rs.Path;
 
 import static org.seedstack.seed.core.utils.BaseClassSpecifications.classAnnotatedWith;
 import static org.seedstack.seed.core.utils.BaseClassSpecifications.classIsAbstract;
-import static org.seedstack.seed.core.utils.BaseClassSpecifications.classMethodsAnnotatedWith;
 
 /**
  * Matches non abstract classes annotated by {@link javax.ws.rs.Path} or containing methods annotated by {@code Path}.
@@ -37,7 +36,6 @@ public class JaxRsResourceSpecification extends AbstractSpecification<Class<?>> 
 
     @Override
     public boolean isSatisfiedBy(Class<?> candidate) {
-        return classAnnotatedWith(Path.class).or(classMethodsAnnotatedWith(Path.class))
-                .and(BaseClassSpecifications.not(classIsAbstract())).isSatisfiedBy(candidate);
+        return classAnnotatedWith(Path.class).and(BaseClassSpecifications.not(classIsAbstract())).isSatisfiedBy(candidate);
     }
 }

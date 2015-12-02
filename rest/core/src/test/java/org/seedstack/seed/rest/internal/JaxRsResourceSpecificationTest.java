@@ -24,44 +24,61 @@ public class JaxRsResourceSpecificationTest {
 
     @Test
     public void valid_resource_specification() {
+        Assertions.assertThat(underTest.isSatisfiedBy(AbstractResource.class)).isFalse();
+
         Assertions.assertThat(underTest.isSatisfiedBy(ValidResource1.class)).isTrue();
         Assertions.assertThat(underTest.isSatisfiedBy(ValidResource2.class)).isTrue();
         Assertions.assertThat(underTest.isSatisfiedBy(ValidResource3.class)).isTrue();
-        Assertions.assertThat(underTest.isSatisfiedBy(ValidResource4.class)).isTrue();
 
         Assertions.assertThat(underTest.isSatisfiedBy(InvalidResource1.class)).isFalse();
         Assertions.assertThat(underTest.isSatisfiedBy(InvalidResource2.class)).isFalse();
         Assertions.assertThat(underTest.isSatisfiedBy(InvalidResource3.class)).isFalse();
+        Assertions.assertThat(underTest.isSatisfiedBy(InvalidResource4.class)).isFalse();
     }
 
     @Path("/JaxValidResource1")
-    static class ValidResource1 {}
-
-
-    static class ValidResource2 {
-
-        @Path("/JaxValidResource2")
-        public Response post() {return null;}
+    static class ValidResource1 {
     }
 
-    static interface InterfaceResource {
+    static abstract class AbstractResource {
+        @Path("/JaxValidResource2")
+        public Response post() {
+            return null;
+        }
+    }
+
+    @Path("/prefix")
+    static class ValidResource2 extends AbstractResource {
+    }
+
+    interface InterfaceResource {
 
         @Path("/JaxInterfaceResource")
         Response post();
     }
 
-    static class ValidResource3 extends ValidResource2 {} // method annotations are inherited
-    static class ValidResource4 implements InterfaceResource {
+    @Path("/prefix")
+    static class ValidResource3 implements InterfaceResource {
         @Override
         public Response post() {
             return null;
         }
     }
 
-    static class InvalidResource1 {}
+    static class InvalidResource1 {
+    }
 
     @Path("/crud")
-    static abstract class InvalidResource2 {}
+    static abstract class InvalidResource2 {
+    }
 
-    static class InvalidResource3 extends ValidResource1 {} // class annotations are not inherited
+    static class InvalidResource3 extends ValidResource1 {
+    } // class annotations are not inherited
+
+    static class InvalidResource4 { //
+        @Path("/JaxInvalidResource4")
+        public Response post() {
+            return null;
+        }
+    }
 }

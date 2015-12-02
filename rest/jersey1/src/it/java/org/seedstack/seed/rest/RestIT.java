@@ -74,4 +74,12 @@ public class RestIT extends AbstractSeedWebIT {
 
         assertThat(response2).contains("{\"resources\":");
     }
+
+    @RunAsClient
+    @Test
+    public void subresources_locators_are_working() {
+        String result = expect().statusCode(200).when().get(baseURL.toString() + "locator/sub/1").asString();
+        assertThat(result).isEqualTo("sub:1");
+    }
+
 }
