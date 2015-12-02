@@ -31,7 +31,7 @@ public class ChatClientEndpoint1 {
         try {
             session.getBasicRemote().sendText(TEXT);
         } catch (IOException ioe) {
-            ioe.printStackTrace();
+            throw new IllegalStateException(ioe);
         }
     }
 

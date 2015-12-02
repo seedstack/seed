@@ -46,7 +46,7 @@ public class KeyPairConfigFactory {
                 keyPairConfigs.add(keyPairConfig);
             }
         } catch (KeyStoreException e) {
-            e.printStackTrace();
+            throw SeedException.wrap(e, CryptoErrorCodes.UNEXPECTED_EXCEPTION);
         }
         return keyPairConfigs;
     }
