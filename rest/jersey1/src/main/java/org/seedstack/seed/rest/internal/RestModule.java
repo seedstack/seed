@@ -76,9 +76,16 @@ class RestModule extends ServletModule {
             resourceFilterFactoryMultibinder.addBinding().to(resourceFilterFactory);
         }
 
-        bind(RootResourceDispatcher.class);
+        // bind root resource if necessary
+        if (!rootResourceClasses.isEmpty()) {
+            bind(RootResourceDispatcher.class);
+        }
+
+        // bind other resources
         for (Class<?> resourceClass : resourceClasses) {
-            bind(resourceClass);
+            if (!RootResourceDispatcher.class.isAssignableFrom(resourceClass)) {
+                bind(resourceClass);
+            }
         }
 
         for (Class<?> providerClass : providerClasses) {

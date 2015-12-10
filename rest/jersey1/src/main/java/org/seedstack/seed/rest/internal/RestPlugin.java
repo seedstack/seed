@@ -41,7 +41,6 @@ import javax.servlet.ServletContext;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Variant;
 import java.lang.annotation.Annotation;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -93,7 +92,9 @@ public class RestPlugin extends AbstractPlugin {
         scanResources(restPath, restConfiguration, resourceClasses);
 
         // Register JSON-HOME as root resource
-        registerRootResource(new Variant(new MediaType("application", "json"), null, null), JsonHomeRootResource.class);
+        if (!restConfiguration.getBoolean("disable-json-home", false)) {
+            registerRootResource(new Variant(new MediaType("application", "json"), null, null), JsonHomeRootResource.class);
+        }
 
         // Skip the rest of the init phase if we are not in a servlet context
         if (servletContext == null) {
