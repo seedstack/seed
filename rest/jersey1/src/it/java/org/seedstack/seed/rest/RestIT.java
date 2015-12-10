@@ -30,7 +30,7 @@ public class RestIT extends AbstractSeedWebIT {
 
     @Deployment
     public static WebArchive createDeployment() {
-        return ShrinkWrap.create(WebArchive.class).setWebXML("WEB-INF/web.xml");
+        return ShrinkWrap.create(WebArchive.class).addAsWebResource("index.html", "index.html").setWebXML("WEB-INF/web.xml");
     }
 
     @RunAsClient
@@ -61,12 +61,12 @@ public class RestIT extends AbstractSeedWebIT {
 
     @RunAsClient
     @Test
-    public void root_subresources_are_working() {
+    public void root_resources_are_served() {
         String response1 = expect().statusCode(200).given()
-                .header("Accept", "text/html")
+                .header("Accept", "text/plain")
                 .get(baseURL.toString()).asString();
 
-        assertThat(response1).isEqualTo("<h1>Hello World!</h1>");
+        assertThat(response1).contains("Hello World!");
 
         String response2 = expect().statusCode(200).given()
                 .header("Accept", "application/json")
@@ -74,6 +74,17 @@ public class RestIT extends AbstractSeedWebIT {
 
         assertThat(response2).contains("{\"resources\":");
     }
+
+    @RunAsClient
+    @Test
+    public void root_resources_let_through_when_not_matching() {
+        String response = expect().statusCode(200).given()
+                .header("Accept", "text/html")
+                .get(baseURL.toString()).asString();
+
+        assertThat(response).contains("<h1>Index!</h1>");
+    }
+
 
     @RunAsClient
     @Test

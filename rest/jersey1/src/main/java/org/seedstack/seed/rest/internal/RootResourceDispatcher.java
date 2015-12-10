@@ -32,7 +32,7 @@ public class RootResourceDispatcher {
 
         Variant v = request.selectVariant(variants);
         if (v == null) {
-            return Response.notAcceptable(variants).build();
+            return Response.status(Response.Status.NOT_FOUND).build();
         } else {
             return rootResources.get(v).buildResponse(httpServletRequest, uriInfo);
         }

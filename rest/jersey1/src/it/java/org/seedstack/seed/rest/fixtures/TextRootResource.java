@@ -14,9 +14,9 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
-public class HTMLRootSubResource implements RootResource {
+public class TextRootResource implements RootResource {
     @Override
     public Response buildResponse(HttpServletRequest httpServletRequest, UriInfo uriInfo) {
-        return Response.ok("<h1>Hello World!</h1>").type(MediaType.TEXT_HTML_TYPE).build();
+        return Response.ok("Hello World!").type(MediaType.TEXT_PLAIN_TYPE).build();
     }
 }
