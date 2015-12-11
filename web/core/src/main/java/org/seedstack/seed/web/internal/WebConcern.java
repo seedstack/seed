@@ -20,8 +20,8 @@ import java.lang.annotation.RetentionPolicy;
  * @author adrien.lauer@mpsa.com
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Concern(name="seed-web-concern", priority= Concern.Priority.NORMAL)
-public @interface WebConcern {
+@Concern(name = "seed-web-concern", priority = Concern.Priority.NORMAL)
+@interface WebConcern {
 
 }
 

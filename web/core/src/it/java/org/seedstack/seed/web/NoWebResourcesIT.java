@@ -25,7 +25,7 @@ import static org.hamcrest.Matchers.not;
 public class NoWebResourcesIT extends AbstractSeedWebIT {
     @Deployment
     public static WebArchive createDeployment() {
-        return ShrinkWrap.create(WebArchive.class).addAsResource("configuration/org.seedstack.seed.web.no-resources.properties", "META-INF/configuration/org.seedstack.seed.web.no-resources.properties").setWebXML("WEB-INF/web.xml");
+        return ShrinkWrap.create(WebArchive.class).addAsResource("configuration/org.seedstack.seed.web.no-resources.properties", "META-INF/configuration/org.seedstack.seed.web.no-resources.properties");
     }
 
     @Test

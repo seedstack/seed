@@ -23,7 +23,7 @@ import static org.hamcrest.Matchers.containsString;
 public class WebResourcesPrecedenceIT extends AbstractSeedWebIT {
     @Deployment
     public static WebArchive createDeployment() {
-        return ShrinkWrap.create(WebArchive.class).addAsWebResource("resources/precedence-test.js", "resources/precedence-test.js").setWebXML("WEB-INF/web.xml");
+        return ShrinkWrap.create(WebArchive.class).addAsWebResource("resources/precedence-test.js", "resources/precedence-test.js");
     }
 
     @Test

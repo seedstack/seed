@@ -27,7 +27,7 @@ public class WebDiagnosticsIT extends AbstractSeedWebIT {
 
     @Deployment
     public static WebArchive createDeployment() {
-        return ShrinkWrap.create(WebArchive.class).setWebXML("WEB-INF/web.xml");
+        return ShrinkWrap.create(WebArchive.class);
     }
 
     @Test

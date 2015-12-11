@@ -22,7 +22,7 @@ import static com.jayway.restassured.RestAssured.given;
 public class CorsIT extends AbstractSeedWebIT {
     @Deployment
     public static WebArchive createDeployment() {
-        return ShrinkWrap.create(WebArchive.class).addAsResource("configuration/org.seedstack.seed.web.cors.properties", "META-INF/configuration/org.seedstack.seed.web.cors.properties").setWebXML("WEB-INF/web.xml");
+        return ShrinkWrap.create(WebArchive.class).addAsResource("configuration/org.seedstack.seed.web.cors.properties", "META-INF/configuration/org.seedstack.seed.web.cors.properties");
     }
 
     @Test

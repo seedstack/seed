@@ -27,7 +27,7 @@ public class WithoutRootResourceIT extends AbstractSeedWebIT {
 
     @Deployment
     public static WebArchive createDeployment() {
-        return ShrinkWrap.create(WebArchive.class).addAsResource("without-root-resource.props", "META-INF/configuration/without-root-resource.props").addAsWebResource("index.html", "index.html").setWebXML("WEB-INF/web.xml");
+        return ShrinkWrap.create(WebArchive.class).addAsResource("without-root-resource.props", "META-INF/configuration/without-root-resource.props").addAsWebResource("index.html", "index.html");
     }
 
     @RunAsClient
