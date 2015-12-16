@@ -23,7 +23,12 @@ import static com.jayway.restassured.RestAssured.given;
 public class SecurityWebIT extends AbstractSeedWebIT {
     @Deployment
     public static WebArchive createDeployment() {
-        return ShrinkWrap.create(WebArchive.class).addAsWebResource("jediCouncil.html").addAsWebResource("jediAcademy.html").addAsResource("META-INF/resources/resources/image.jpg", "META-INF/resources/resources/image.jpg").addAsResource("META-INF/configuration/org.seedstack.seed.web.security.props").setWebXML("WEB-INF/web.xml");
+        return ShrinkWrap.create(WebArchive.class)
+                .addAsWebResource("jediCouncil.html")
+                .addAsWebResource("jediAcademy.html")
+                .addAsResource("META-INF/resources/resources/image.jpg", "META-INF/resources/resources/image.jpg")
+                .addAsResource("web-security.props", "META-INF/configuration/web-security.props")
+                .setWebXML("WEB-INF/web.xml");
     }
 
     @Test

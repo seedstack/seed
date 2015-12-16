@@ -5,7 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-package org.seedstack.seed.security.internal.configure;
+package org.seedstack.seed.security.internal;
 
 import static org.junit.Assert.assertEquals;
 
@@ -14,6 +14,7 @@ import org.junit.Test;
 import org.seedstack.seed.security.Realm;
 import org.seedstack.seed.security.RoleMapping;
 import org.seedstack.seed.security.RolePermissionResolver;
+import org.seedstack.seed.security.internal.RealmConfiguration;
 import org.seedstack.seed.security.internal.authorization.EmptyRolePermissionResolver;
 import org.seedstack.seed.security.internal.authorization.ConfigurationRoleMapping;
 import org.seedstack.seed.security.internal.realms.ConfigurationRealm;

@@ -29,10 +29,7 @@ import com.google.inject.binder.AnnotatedBindingBuilder;
 import com.google.inject.binder.AnnotatedElementBuilder;
 import com.google.inject.binder.ScopedBindingBuilder;
 import org.seedstack.seed.security.Scope;
-import org.seedstack.seed.security.internal.configure.RealmConfiguration;
-import org.seedstack.seed.security.internal.configure.SeedSecurityConfigurer;
 import org.seedstack.seed.security.internal.realms.ConfigurationRealm;
-import org.seedstack.seed.security.internal.realms.ShiroRealmAdapter;
 
 public class SecurityInternalModuleUnitTest {
 
@@ -40,7 +37,7 @@ public class SecurityInternalModuleUnitTest {
 
     private PrivateBinder binder;
 
-    private SeedSecurityConfigurer securityConfigurer;
+    private SecurityConfigurer securityConfigurer;
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @Before
@@ -55,7 +52,7 @@ public class SecurityInternalModuleUnitTest {
         when(ab.toProvider(any(Class.class))).thenReturn(sb);
         when(binder.bind(any(TypeLiteral.class))).thenReturn(ab);
         when(binder.skipSources(any(Class.class), any(Class.class))).thenReturn(binder);
-        securityConfigurer = mock(SeedSecurityConfigurer.class);
+        securityConfigurer = mock(SecurityConfigurer.class);
         underTest = new SecurityInternalModule(securityConfigurer, new HashMap<String, Class<? extends Scope>>());
         Whitebox.setInternalState(underTest, "binder", binder);
     }

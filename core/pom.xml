@@ -19,10 +19,6 @@
 
     <artifactId>seed-core</artifactId>
 
-    <properties>
-        <compatibility.artifactId>seed-core-support-core</compatibility.artifactId>
-    </properties>
-
     <dependencies>
         <dependency>
             <groupId>org.seedstack.seed</groupId>

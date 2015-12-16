@@ -31,7 +31,11 @@ public class XsrfIT extends AbstractSeedWebIT {
 
     @Deployment
     public static WebArchive createDeployment() {
-        return ShrinkWrap.create(WebArchive.class).addAsResource("META-INF/configuration/org.seedstack.seed.web.security.props").setWebXML("WEB-INF/web.xml");
+        return ShrinkWrap
+                .create(WebArchive.class)
+                .addAsResource("web-security.props", "META-INF/configuration/web-security.props")
+                .addAsResource("xsrf.props", "META-INF/configuration/xsrf.props")
+                .setWebXML("WEB-INF/web.xml");
     }
 
     @Test

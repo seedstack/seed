@@ -5,7 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-package org.seedstack.seed.security.internal.configure;
+package org.seedstack.seed.security.internal;
 
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.lang.ArrayUtils;
@@ -25,13 +25,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 
-/**
- * Reads the configuration to configure whole security.
- *
- * @author yves.dautremay@mpsa.com
- */
-public class SeedSecurityConfigurer {
-
+class SecurityConfigurer {
     private static final String REALMS_KEY = "realms";
     private static final String ROLE_MAPPING_KEY = ".role-mapping";
     private static final String ROLE_PERMISSION_RESOLVER_KEY = ".role-permission-resolver";
@@ -44,20 +38,13 @@ public class SeedSecurityConfigurer {
     private static final Class<? extends RolePermissionResolver> DEFAULT_ROLE_PERMISSION_RESOLVER = EmptyRolePermissionResolver.class;
     private static final Class<? extends RolePermissionResolver> CONFIGURATION_ROLE_PERMISSION_RESOLVER = ConfigurationRolePermissionResolver.class;
 
-    private Configuration configuration;
+    private final Configuration configuration;
+    private final Map<Class<?>, Collection<Class<?>>> securityClasses;
+    private final Collection<Class<? extends PrincipalCustomizer<?>>> principalCustomizerClasses;
     private Collection<RealmConfiguration> configurationRealms;
-    private Map<Class<?>, Collection<Class<?>>> securityClasses;
-    private Collection<Class<? extends PrincipalCustomizer<?>>> principalCustomizerClasses;
 
-    /**
-     * Constructor
-     *
-     * @param configuration              the configuration to use
-     * @param securityClasses            the calsses found in the plugin
-     * @param principalCustomizerClasses the classes of all principal customizers.
-     */
-    public SeedSecurityConfigurer(Configuration configuration, Map<Class<?>, Collection<Class<?>>> securityClasses,
-                                  Collection<Class<? extends PrincipalCustomizer<?>>> principalCustomizerClasses) {
+    SecurityConfigurer(Configuration configuration, Map<Class<?>, Collection<Class<?>>> securityClasses,
+                       Collection<Class<? extends PrincipalCustomizer<?>>> principalCustomizerClasses) {
         this.configuration = configuration;
         this.securityClasses = securityClasses;
         this.principalCustomizerClasses = principalCustomizerClasses;
@@ -66,34 +53,21 @@ public class SeedSecurityConfigurer {
         }
     }
 
-    /**
-     * @return the collection of principal customizers.
-     */
-    public Collection<Class<? extends PrincipalCustomizer<?>>> getPrincipalCustomizers() {
+    Collection<Class<? extends PrincipalCustomizer<?>>> getPrincipalCustomizers() {
         if (principalCustomizerClasses != null) {
             return principalCustomizerClasses;
         }
         return Collections.emptyList();
     }
 
-    /**
-     * Return the realms represented by their configuration
-     *
-     * @return RealmConfiguration collection
-     */
-    public Collection<RealmConfiguration> getConfigurationRealms() {
+    Collection<RealmConfiguration> getConfigurationRealms() {
         if (configurationRealms == null) {
             buildRealms();
         }
         return Collections.unmodifiableCollection(configurationRealms);
     }
 
-    /**
-     * Getter on the security configuration
-     *
-     * @return the configuration concerning the security
-     */
-    public Configuration getSecurityConfiguration() {
+    Configuration getSecurityConfiguration() {
         return this.configuration;
     }
 

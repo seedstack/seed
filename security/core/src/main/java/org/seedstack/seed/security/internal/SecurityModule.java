@@ -18,7 +18,6 @@ import com.google.inject.spi.PrivateElements;
 import org.apache.shiro.mgt.SecurityManager;
 import org.seedstack.seed.SeedException;
 import org.seedstack.seed.security.Scope;
-import org.seedstack.seed.security.internal.configure.SeedSecurityConfigurer;
 import org.seedstack.seed.security.internal.data.DataSecurityModule;
 import org.seedstack.seed.security.internal.securityexpr.SecurityExpressionModule;
 import org.seedstack.seed.security.spi.SecurityConcern;
@@ -31,16 +30,17 @@ import java.util.Map;
 
 @SecurityConcern
 class SecurityModule extends AbstractModule {
+    public static final long DEFAULT_GLOBAL_SESSION_TIMEOUT = 15 * 60 * 1000;
     private static final Key<org.apache.shiro.mgt.SecurityManager> SECURITY_MANAGER_KEY = Key.get(SecurityManager.class);
 
     private final Map<String, Class<? extends Scope>> scopeClasses;
-    private final SeedSecurityConfigurer securityConfigurer;
+    private final SecurityConfigurer securityConfigurer;
     private final boolean elDisabled;
     private final Collection<Class<? extends DataSecurityHandler<?>>> dataSecurityHandlers;
     private final Collection<SecurityProvider> securityProviders;
 
 
-    SecurityModule(SeedSecurityConfigurer securityConfigurer, Map<String, Class<? extends Scope>> scopeClasses, Collection<Class<? extends DataSecurityHandler<?>>> dataSecurityHandlers, boolean elDisabled, Collection<SecurityProvider> securityProviders) {
+    SecurityModule(SecurityConfigurer securityConfigurer, Map<String, Class<? extends Scope>> scopeClasses, Collection<Class<? extends DataSecurityHandler<?>>> dataSecurityHandlers, boolean elDisabled, Collection<SecurityProvider> securityProviders) {
         this.securityConfigurer = securityConfigurer;
         this.scopeClasses = scopeClasses;
         this.dataSecurityHandlers = dataSecurityHandlers;
@@ -58,17 +58,16 @@ class SecurityModule extends AbstractModule {
             install(new DataSecurityModule(dataSecurityHandlers));
         }
 
-        Module installedMainModule = null;
+        Module mainModuleToInstall = null;
         for (SecurityProvider securityProvider : securityProviders) {
             Module mainSecurityModule = securityProvider.provideMainSecurityModule();
             if (mainSecurityModule != null) {
-                if (installedMainModule == null) {
-                    installedMainModule = mainSecurityModule;
-                    install(mainSecurityModule);
+                if (mainModuleToInstall == null) {
+                    mainModuleToInstall = mainSecurityModule;
                 } else {
                     throw SeedException
                             .createNew(SecurityErrorCodes.MULTIPLE_MAIN_SECURITY_MODULES)
-                            .put("first", installedMainModule.getClass().getCanonicalName())
+                            .put("first", mainModuleToInstall.getClass().getCanonicalName())
                             .put("second", mainSecurityModule.getClass().getCanonicalName());
                 }
             }
@@ -79,9 +78,11 @@ class SecurityModule extends AbstractModule {
             }
         }
 
-        if (installedMainModule == null) {
-            install(new DefaultShiroModule());
+        if (mainModuleToInstall == null) {
+            mainModuleToInstall = new DefaultSecurityModule(new SecurityGuiceConfigurer(securityConfigurer.getSecurityConfiguration()));
         }
+
+        install(mainModuleToInstall);
     }
 
     private Module removeSecurityManager(Module module) {

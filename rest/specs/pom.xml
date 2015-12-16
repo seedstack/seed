@@ -18,10 +18,6 @@
 
     <artifactId>seed-rest-specs</artifactId>
 
-    <properties>
-        <compatibility.artifactId>seed-rest-support-specs</compatibility.artifactId>
-    </properties>
-
     <dependencies>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>

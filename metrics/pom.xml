@@ -19,10 +19,6 @@
 
     <artifactId>seed-metrics</artifactId>
 
-    <properties>
-        <compatibility.artifactId>seed-metrics-support</compatibility.artifactId>
-    </properties>
-
     <dependencies>
         <dependency>
             <groupId>org.seedstack.seed</groupId>

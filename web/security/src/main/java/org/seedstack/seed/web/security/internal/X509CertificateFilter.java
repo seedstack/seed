@@ -14,7 +14,6 @@ import org.apache.shiro.web.filter.authc.AuthenticatingFilter;
 import org.seedstack.seed.security.X509CertificateToken;
 import org.seedstack.seed.security.internal.realms.AuthenticationTokenWrapper;
 
-import javax.servlet.Filter;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletResponse;
@@ -26,7 +25,7 @@ import java.security.cert.X509Certificate;
  *
  * @author yves.dautremay@mpsa.com
  */
-class X509CertificateFilter extends AuthenticatingFilter implements Filter {
+class X509CertificateFilter extends AuthenticatingFilter {
 
     private static final String OPTIONAL = "optional";
 

@@ -19,10 +19,6 @@
 
     <artifactId>seed-shell</artifactId>
 
-    <properties>
-        <compatibility.artifactId>seed-shell-support</compatibility.artifactId>
-    </properties>
-
     <dependencies>
         <dependency>
             <groupId>org.seedstack.seed</groupId>

@@ -20,8 +20,11 @@ import org.seedstack.seed.core.internal.application.ApplicationPlugin;
 import org.seedstack.seed.core.spi.configuration.ConfigurationProvider;
 import org.seedstack.seed.core.utils.SeedReflectionUtils;
 import org.seedstack.seed.el.internal.ELPlugin;
-import org.seedstack.seed.security.*;
-import org.seedstack.seed.security.internal.configure.SeedSecurityConfigurer;
+import org.seedstack.seed.security.PrincipalCustomizer;
+import org.seedstack.seed.security.Realm;
+import org.seedstack.seed.security.RoleMapping;
+import org.seedstack.seed.security.RolePermissionResolver;
+import org.seedstack.seed.security.Scope;
 import org.seedstack.seed.security.spi.SecurityErrorCodes;
 import org.seedstack.seed.security.spi.SecurityScope;
 import org.seedstack.seed.security.spi.data.DataObfuscationHandler;
@@ -29,7 +32,11 @@ import org.seedstack.seed.security.spi.data.DataSecurityHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.ServiceLoader;
 
 /**
  * This plugin provides core security infrastructure, based on Apache Shiro
@@ -128,7 +135,7 @@ public class SecurityPlugin extends AbstractPlugin {
     @Override
     public Object nativeUnitModule() {
         return new SecurityModule(
-                new SeedSecurityConfigurer(securityConfiguration, scannedClasses, principalCustomizerClasses),
+                new SecurityConfigurer(securityConfiguration, scannedClasses, principalCustomizerClasses),
                 scopeClasses,
                 dataSecurityHandlers,
                 elDisabled,

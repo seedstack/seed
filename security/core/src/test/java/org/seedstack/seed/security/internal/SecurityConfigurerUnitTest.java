@@ -5,22 +5,11 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-package org.seedstack.seed.security.internal.configure;
-
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+package org.seedstack.seed.security.internal;
 
 import org.apache.commons.configuration.Configuration;
 import org.junit.Before;
 import org.junit.Test;
-
 import org.seedstack.seed.security.Realm;
 import org.seedstack.seed.security.RoleMapping;
 import org.seedstack.seed.security.RolePermissionResolver;
@@ -28,9 +17,19 @@ import org.seedstack.seed.security.internal.authorization.EmptyRolePermissionRes
 import org.seedstack.seed.security.internal.authorization.SameRoleMapping;
 import org.seedstack.seed.security.internal.realms.ConfigurationRealm;
 
-public class SeedSecurityConfigurerUnitTest {
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
-    SeedSecurityConfigurer underTest;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+public class SecurityConfigurerUnitTest {
+
+    SecurityConfigurer underTest;
 
     Configuration configuration;
 
@@ -44,13 +43,13 @@ public class SeedSecurityConfigurerUnitTest {
         Collection<Class<?>> classes = new ArrayList<Class<?>>();
         classes.add(Realm.class);
         securityClasses.put(Realm.class, classes);
-        underTest = new SeedSecurityConfigurer(configuration, securityClasses, null);
+        underTest = new SecurityConfigurer(configuration, securityClasses, null);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void constructor_should_throw_IllegalArgumentException_if_no_realm_class_provided() {
         securityClasses = new HashMap<Class<?>, Collection<Class<?>>>();
-        underTest = new SeedSecurityConfigurer(configuration, securityClasses, null);
+        underTest = new SecurityConfigurer(configuration, securityClasses, null);
     }
 
     @Test
