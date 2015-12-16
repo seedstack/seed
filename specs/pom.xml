@@ -19,10 +19,6 @@
 
     <artifactId>seed-specs</artifactId>
 
-    <properties>
-        <compatibility.artifactId>seed-core-support-specs</compatibility.artifactId>
-    </properties>
-
     <dependencies>
         <dependency>
             <groupId>io.nuun</groupId>

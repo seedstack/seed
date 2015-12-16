@@ -19,10 +19,6 @@
 
     <artifactId>seed-security-core</artifactId>
 
-    <properties>
-        <compatibility.artifactId>seed-security-support-core</compatibility.artifactId>
-    </properties>
-
     <dependencies>
         <dependency>
             <groupId>org.seedstack.seed</groupId>

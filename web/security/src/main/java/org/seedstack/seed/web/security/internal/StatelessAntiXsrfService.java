@@ -7,10 +7,12 @@
  */
 package org.seedstack.seed.web.security.internal;
 
-import org.seedstack.seed.Configuration;
+import org.apache.commons.configuration.Configuration;
 import org.seedstack.seed.SeedException;
 import org.seedstack.seed.web.security.spi.AntiXsrfService;
 
+import javax.inject.Inject;
+import javax.inject.Named;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -18,25 +20,20 @@ import javax.servlet.http.HttpSession;
 import java.security.SecureRandom;
 
 class StatelessAntiXsrfService implements AntiXsrfService {
-    static final String CONFIG_PREFIX = "org.seedstack.seed.security.xsrf";
-
-    final static char[] CHARSET = new char[]{'a', 'b', 'c', 'd', 'e',
+    private final static char[] CHARSET = new char[]{'a', 'b', 'c', 'd', 'e',
             'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r',
             's', 't', 'u', 'v', 'w', 'x', 'y', 'z', '0', '1', '2', '3', '4',
             '5', '6', '7', '8', '9'};
 
-    @Configuration(value = CONFIG_PREFIX + ".cookie-name", defaultValue = "XSRF-TOKEN")
-    private String cookieName;
-    @Configuration(value = CONFIG_PREFIX + ".header-name", defaultValue = "X-XSRF-TOKEN")
-    private String headerName;
-    @Configuration(value = CONFIG_PREFIX + ".token-length", defaultValue = "20")
-    private int tokenLength;
-    @Configuration(value = CONFIG_PREFIX + ".token-algorithm", defaultValue = "SHA1PRNG")
-    private String tokenAlgorithm;
+    @Inject
+    @Named("seed-security-config")
+    private Configuration configuration;
 
     @Override
     public void applyXsrfProtection(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
-        HttpSession session = httpServletRequest.getSession(false);
+        final String cookieName = configuration.getString("xsrf.cookie-name", "XSRF-TOKEN");
+        final String headerName = configuration.getString("xsrf.header-name", "X-XSRF-TOKEN");
+        final HttpSession session = httpServletRequest.getSession(false);
 
         // Only apply XSRF protection when there is a session
         if (session != null) {
@@ -50,7 +47,7 @@ class StatelessAntiXsrfService implements AntiXsrfService {
             }
             // Else, check if the request and cookie tokens match
             else {
-                String cookieToken = extractCookieToken(httpServletRequest);
+                String cookieToken = extractCookieToken(cookieName, httpServletRequest);
                 String requestToken = httpServletRequest.getHeader(headerName);
 
                 if (requestToken == null) {
@@ -81,7 +78,7 @@ class StatelessAntiXsrfService implements AntiXsrfService {
 
         // Delete an eventual existing token if no session
         if (session == null) {
-            Cookie cookie = new Cookie(cookieName, "deleteMe");
+            Cookie cookie = new Cookie(configuration.getString("xsrf.cookie-name", "XSRF-TOKEN"), "deleteMe");
             cookie.setHttpOnly(false);
             cookie.setPath("/");
             cookie.setMaxAge(0);
@@ -89,7 +86,7 @@ class StatelessAntiXsrfService implements AntiXsrfService {
         }
     }
 
-    private String extractCookieToken(HttpServletRequest httpServletRequest) {
+    private String extractCookieToken(String cookieName, HttpServletRequest httpServletRequest) {
         for (Cookie cookie : httpServletRequest.getCookies()) {
             if (cookieName.equals(cookie.getName())) {
                 return cookie.getValue();
@@ -100,6 +97,9 @@ class StatelessAntiXsrfService implements AntiXsrfService {
     }
 
     private String generateToken() {
+        final String tokenAlgorithm = configuration.getString("xsrf.token-algorithm", "SHA1PRNG");
+        final int tokenLength = configuration.getInt("xsrf.token-length", 32);
+
         try {
             SecureRandom secureRandom = SecureRandom.getInstance(tokenAlgorithm);
             StringBuilder sb = new StringBuilder();

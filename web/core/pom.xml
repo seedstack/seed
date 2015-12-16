@@ -19,10 +19,6 @@
 
     <artifactId>seed-web-core</artifactId>
 
-    <properties>
-        <compatibility.artifactId>seed-web-support-core</compatibility.artifactId>
-    </properties>
-
     <dependencies>
         <dependency>
             <groupId>org.seedstack.seed</groupId>

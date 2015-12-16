@@ -11,8 +11,6 @@ import com.google.inject.Module;
 import io.nuun.kernel.api.plugin.context.InitContext;
 import io.nuun.kernel.api.plugin.request.ClasspathScanRequestBuilder;
 
-import java.util.Collection;
-
 /**
  * A plugin to augment security in any entry point while original security
  * plugin is loaded by kernel.

@@ -20,10 +20,6 @@
 
     <artifactId>seed-el</artifactId>
 
-    <properties>
-        <compatibility.artifactId>seed-el-support</compatibility.artifactId>
-    </properties>
-
     <dependencies>
         <dependency>
             <groupId>org.seedstack.seed</groupId>

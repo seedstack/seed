@@ -19,10 +19,6 @@
 
     <artifactId>seed-web-undertow</artifactId>
 
-    <properties>
-        <compatibility.skip>true</compatibility.skip>
-    </properties>
-
     <dependencies>
         <dependency>
             <groupId>org.seedstack.seed</groupId>

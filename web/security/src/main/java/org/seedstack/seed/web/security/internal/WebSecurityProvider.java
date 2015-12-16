@@ -13,9 +13,12 @@ import io.nuun.kernel.api.plugin.PluginException;
 import io.nuun.kernel.api.plugin.context.InitContext;
 import io.nuun.kernel.api.plugin.request.ClasspathScanRequestBuilder;
 import jodd.props.Props;
+import org.apache.commons.configuration.Configuration;
 import org.apache.shiro.guice.web.ShiroWebModule;
 import org.seedstack.seed.core.internal.application.ApplicationPlugin;
+import org.seedstack.seed.security.internal.SecurityPlugin;
 import org.seedstack.seed.security.internal.SecurityProvider;
+import org.seedstack.seed.security.internal.SecurityGuiceConfigurer;
 import org.seedstack.seed.web.security.SecurityFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,6 +44,8 @@ public class WebSecurityProvider implements SecurityProvider {
 
     private Props props;
 
+    private Configuration securityConfiguration;
+
     @SuppressWarnings("unchecked")
     @Override
     public void init(InitContext initContext) {
@@ -48,6 +53,7 @@ public class WebSecurityProvider implements SecurityProvider {
 
         props = applicationPlugin.getProps();
         applicationId = applicationPlugin.getApplication().getId();
+        securityConfiguration = applicationPlugin.getConfiguration().subset(SecurityPlugin.SECURITY_PREFIX);
         for (Class<?> filterClass : initContext.scannedClassesByAnnotationClass().get(SecurityFilter.class)) {
             if (Filter.class.isAssignableFrom(filterClass)) {
                 scannedFilters.add((Class<? extends Filter>) filterClass);
@@ -73,7 +79,7 @@ public class WebSecurityProvider implements SecurityProvider {
     public Module provideMainSecurityModule() {
         if (servletContext != null) {
             return Modules.combine(
-                    new WebSecurityModule(servletContext, props, scannedFilters, applicationId),
+                    new WebSecurityModule(servletContext, props, scannedFilters, applicationId, new SecurityGuiceConfigurer(securityConfiguration)),
                     ShiroWebModule.guiceFilterModule()
             );
         } else {

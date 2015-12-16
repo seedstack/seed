@@ -7,6 +7,25 @@
  */
 package org.seedstack.seed.security.internal;
 
+import org.apache.commons.lang.ArrayUtils;
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.authz.AuthorizationInfo;
+import org.apache.shiro.realm.Realm;
+import org.apache.shiro.session.Session;
+import org.apache.shiro.subject.PrincipalCollection;
+import org.apache.shiro.subject.Subject;
+import org.seedstack.seed.security.AuthorizationException;
+import org.seedstack.seed.security.Role;
+import org.seedstack.seed.security.Scope;
+import org.seedstack.seed.security.SecuritySupport;
+import org.seedstack.seed.security.SimpleScope;
+import org.seedstack.seed.security.internal.authorization.ScopePermission;
+import org.seedstack.seed.security.internal.authorization.SeedAuthorizationInfo;
+import org.seedstack.seed.security.principals.PrincipalProvider;
+import org.seedstack.seed.security.principals.Principals;
+import org.seedstack.seed.security.principals.SimplePrincipalProvider;
+
+import javax.inject.Inject;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -15,29 +34,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.inject.Inject;
-
-import org.apache.commons.lang.ArrayUtils;
-import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.authz.AuthorizationInfo;
-import org.apache.shiro.realm.Realm;
-import org.apache.shiro.session.Session;
-import org.apache.shiro.subject.PrincipalCollection;
-import org.apache.shiro.subject.Subject;
-import org.seedstack.seed.security.*;
-import org.seedstack.seed.security.principals.PrincipalProvider;
-import org.seedstack.seed.security.principals.Principals;
-import org.seedstack.seed.security.principals.SimplePrincipalProvider;
-import org.seedstack.seed.security.internal.authorization.ScopePermission;
-import org.seedstack.seed.security.internal.authorization.SeedAuthorizationInfo;
-import org.seedstack.seed.security.internal.realms.ShiroRealmAdapter;
-
-/**
- * Implementation of SecuritySupport for Shiro
- * 
- * @author yves.dautremay@mpsa.com
- */
-public class ShiroSecuritySupport implements SecuritySupport {
+class ShiroSecuritySupport implements SecuritySupport {
 
     @Inject
     private Set<Realm> realms;

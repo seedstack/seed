@@ -19,10 +19,6 @@
 
     <artifactId>seed-rest-core</artifactId>
 
-    <properties>
-        <compatibility.artifactId>seed-rest-support-core</compatibility.artifactId>
-    </properties>
-
     <dependencies>
         <dependency>
             <groupId>org.seedstack.seed</groupId>

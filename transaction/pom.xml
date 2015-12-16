@@ -20,10 +20,6 @@
     <artifactId>seed-transaction</artifactId>
     <packaging>jar</packaging>
 
-    <properties>
-        <compatibility.artifactId>seed-transaction-support</compatibility.artifactId>
-    </properties>
-
     <dependencies>
         <dependency>
             <groupId>org.seedstack.seed</groupId>

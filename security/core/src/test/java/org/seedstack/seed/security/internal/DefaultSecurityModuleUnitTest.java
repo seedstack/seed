@@ -7,28 +7,29 @@
  */
 package org.seedstack.seed.security.internal;
 
+import com.google.inject.PrivateBinder;
+import com.google.inject.binder.AnnotatedBindingBuilder;
+import com.google.inject.binder.AnnotatedElementBuilder;
+import org.junit.Test;
+import org.mockito.internal.util.reflection.Whitebox;
+
+import java.lang.annotation.Annotation;
+
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import java.lang.annotation.Annotation;
+public class DefaultSecurityModuleUnitTest {
 
-import org.junit.Test;
-import org.mockito.internal.util.reflection.Whitebox;
-
-import com.google.inject.PrivateBinder;
-import com.google.inject.binder.AnnotatedBindingBuilder;
-import com.google.inject.binder.AnnotatedElementBuilder;
-
-public class DefaultShiroModuleUnitTest {
-
-    private DefaultShiroModule underTest;
+    private DefaultSecurityModule underTest;
     
     @SuppressWarnings({ "rawtypes", "unchecked" })
 	@Test
     public void testShiroModule(){
-    	underTest = new DefaultShiroModule();
-    	PrivateBinder b = mock(PrivateBinder.class);
+        SecurityGuiceConfigurer securityGuiceConfigurer = mock(SecurityGuiceConfigurer.class);
+    	underTest = new DefaultSecurityModule(securityGuiceConfigurer);
+
+        PrivateBinder b = mock(PrivateBinder.class);
     	AnnotatedBindingBuilder ab = mock(AnnotatedBindingBuilder.class);
     	when(b.bind(any(Class.class))).thenReturn(ab);
     	when(ab.annotatedWith(any(Annotation.class))).thenReturn(ab);

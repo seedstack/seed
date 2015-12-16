@@ -19,10 +19,6 @@
 
     <artifactId>seed-cli</artifactId>
 
-    <properties>
-        <compatibility.artifactId>seed-cli-support-core</compatibility.artifactId>
-    </properties>
-
     <dependencies>
         <dependency>
             <groupId>org.seedstack.seed</groupId>

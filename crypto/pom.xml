@@ -20,10 +20,6 @@
 
     <artifactId>seed-crypto</artifactId>
 
-    <properties>
-        <compatibility.artifactId>seed-crypto-support</compatibility.artifactId>
-    </properties>
-
     <dependencies>
         <dependency>
             <groupId>org.seedstack.seed</groupId>

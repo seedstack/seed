@@ -26,7 +26,7 @@ import javax.inject.Inject;
  * @author yves.dautremay@mpsa.com
  */
 @ITBind
-public class SecurityITRule implements TestRule {
+class SecurityITRule implements TestRule {
     /**
      * The securityManager to be used
      */

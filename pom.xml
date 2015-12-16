@@ -35,8 +35,7 @@
         <metrics.version>3.1.0</metrics.version>
         <jersey.version>1.19</jersey.version>
 
-        <!-- TODO: packages are heavily refactored in 2.1.0, remove compatibility skip for 2.2.0 -->
-        <compatibility.skip>true</compatibility.skip>
+        <compatibility.version>2.1.0</compatibility.version>
     </properties>
 
     <modules>

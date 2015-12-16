@@ -16,6 +16,7 @@ import org.apache.shiro.config.ConfigurationException;
 import org.apache.shiro.guice.web.ShiroWebModule;
 import org.apache.shiro.util.StringUtils;
 import org.apache.shiro.web.filter.PathMatchingFilter;
+import org.seedstack.seed.security.internal.SecurityGuiceConfigurer;
 import org.seedstack.seed.security.spi.SecurityConcern;
 import org.seedstack.seed.web.security.SecurityFilter;
 import org.seedstack.seed.web.security.spi.AntiXsrfService;
@@ -63,12 +64,14 @@ class WebSecurityModule extends ShiroWebModule {
     private final String applicationName;
     private final Props props;
     private final Collection<Class<? extends Filter>> customFilters;
+    private final SecurityGuiceConfigurer securityGuiceConfigurer;
 
-    WebSecurityModule(ServletContext servletContext, Props props, Collection<Class<? extends Filter>> customFilters, String applicationName) {
+    WebSecurityModule(ServletContext servletContext, Props props, Collection<Class<? extends Filter>> customFilters, String applicationName, SecurityGuiceConfigurer securityGuiceConfigurer) {
         super(servletContext);
         this.props = props;
         this.customFilters = customFilters;
         this.applicationName = applicationName;
+        this.securityGuiceConfigurer = securityGuiceConfigurer;
     }
 
     @Override
@@ -102,6 +105,9 @@ class WebSecurityModule extends ShiroWebModule {
         // Additional web security bindings
         bind(AntiXsrfService.class).to(StatelessAntiXsrfService.class);
         bindConstant().annotatedWith(Names.named("shiro.applicationName")).to(applicationName);
+
+        // Shiro global configuration
+        securityGuiceConfigurer.configure(binder());
 
         // Exposed binding
         expose(AntiXsrfService.class);

@@ -19,10 +19,6 @@
 
     <artifactId>seed-web-websocket</artifactId>
 
-    <properties>
-        <compatibility.artifactId>seed-web-support-websocket</compatibility.artifactId>
-    </properties>
-
     <dependencies>
         <dependency>
             <groupId>org.seedstack.seed</groupId>
