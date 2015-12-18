@@ -41,12 +41,7 @@ import javax.servlet.ServletContext;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Variant;
 import java.lang.annotation.Annotation;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
+import java.util.*;
 
 /**
  * This plugin enables JAX-RS usage in SEED applications. The JAX-RS implementation is Jersey.
