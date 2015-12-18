@@ -1,0 +1,106 @@
+/**
+ * Copyright (c) 2013-2015, The SeedStack authors <http://seedstack.org>
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+package org.seedstack.seed.rest.internal;
+
+import com.google.common.collect.Lists;
+import io.nuun.kernel.api.plugin.InitState;
+import io.nuun.kernel.api.plugin.context.InitContext;
+import io.nuun.kernel.api.plugin.request.ClasspathScanRequest;
+import mockit.Deencapsulation;
+import mockit.Expectations;
+import mockit.Mocked;
+import mockit.Verifications;
+import mockit.integration.junit4.JMockit;
+import org.javatuples.Pair;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.kametic.specifications.Specification;
+import org.seedstack.seed.Ignore;
+
+import javax.ws.rs.Path;
+import javax.ws.rs.ext.Provider;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.seedstack.seed.rest.internal.RestPlugin.providersSpecification;
+import static org.seedstack.seed.rest.internal.RestPlugin.resourcesSpecification;
+
+/**
+ * @author pierre.thirouin@ext.mpsa.com (Pierre Thirouin)
+ */
+@RunWith(JMockit.class)
+public class RestPluginTest {
+
+    private RestPlugin underTest = new RestPlugin();
+    @Mocked
+    private InitContext initContext;
+
+    @Test
+    public void testName() throws Exception {
+        assertThat(underTest.name()).isEqualTo("seed-rest");
+    }
+
+    @Test
+    public void testRequestScanForJaxRsClasses() throws Exception {
+        assertScanSpecification(providersSpecification);
+        assertScanSpecification(RestPlugin.resourcesSpecification);
+    }
+
+    private void assertScanSpecification(Specification<Class<?>> specification) {
+        boolean scanSpecification = false;
+        for (ClasspathScanRequest classpathScanRequest : underTest.classpathScanRequests()) {
+            if (classpathScanRequest.specification == specification) {
+                scanSpecification = true;
+                break;
+            }
+        }
+        assertThat(scanSpecification).isTrue();
+    }
+
+    @Test
+    public void testInitIsInitialized() throws Exception {
+        InitState init = underTest.init(initContext);
+        assertThat(init).isEqualTo(InitState.INITIALIZED);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void testInitGetJaxRsClasses() throws Exception {
+        givenSpecifications(
+                new Pair(resourcesSpecification, MyResource.class),
+                new Pair(providersSpecification, MyProvider.class)
+        );
+
+        underTest.init(initContext);
+
+        Collection<Class<?>> actualResources = Deencapsulation.getField(underTest, "resources");
+        assertThat(actualResources).containsOnly(MyResource.class);
+        Collection<Class<?>> actualProviders = Deencapsulation.getField(underTest, "providers");
+        assertThat(actualProviders).containsOnly(MyProvider.class);
+    }
+
+    @Ignore @Path("/")
+    private static class MyResource {
+    }
+    @Ignore @Provider
+    private static class MyProvider {
+    }
+
+    private void givenSpecifications(Pair<Specification<Class<?>>, Class<?>>... specEntries) {
+        final Map<Specification, Collection<Class<?>>> specsMap = new HashMap<Specification, Collection<Class<?>>>();
+        for (Pair<Specification<Class<?>>, Class<?>> specEntry : specEntries) {
+            specsMap.put(specEntry.getValue0(), Lists.<Class<?>>newArrayList(specEntry.getValue1()));
+        }
+        new Expectations() {{
+            initContext.scannedTypesBySpecification();
+            result = specsMap;
+        }};
+    }
+}

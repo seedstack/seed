@@ -44,9 +44,9 @@ public class RestIT extends AbstractSeedWebIT {
         obj.put("price", 200.0);
 
         //assert response code
-        String response = expect().statusCode(201).given().
-                header("Accept", "application/json").header("Content-Type", "application/json").
-                body(obj.toString()).post(baseURL.toString() + "products/").asString();
+        String response = expect().statusCode(201).given()
+                .header("Accept", "application/json").header("Content-Type", "application/json")
+                .body(obj.toString()).post(baseURL.toString() + "products/").asString();
 
         // assert body
         JSONAssert.assertEquals(obj, new JSONObject(response), false);

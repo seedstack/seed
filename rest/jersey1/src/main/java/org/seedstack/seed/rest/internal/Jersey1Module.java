@@ -22,7 +22,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-class RestModule extends ServletModule {
+class Jersey1Module extends ServletModule {
     private final String restPath;
     private final String jspPath;
     private final Map<String, String> jerseyParameters;
@@ -32,8 +32,8 @@ class RestModule extends ServletModule {
     private final JsonHome jsonHome;
     private final Map<Variant, Class<? extends RootResource>> rootResourceClasses;
 
-    RestModule(Map<Variant, Class<? extends RootResource>> rootResourceClasses, Collection<Class<?>> resourceClasses, Collection<Class<?>> providerClasses, Map<String, String> jerseyParameters,
-               Set<Class<? extends ResourceFilterFactory>> resourceFilterFactories, String restPath, String jspPath, JsonHome jsonHome) {
+    Jersey1Module(Map<Variant, Class<? extends RootResource>> rootResourceClasses, Collection<Class<?>> resourceClasses, Collection<Class<?>> providerClasses, Map<String, String> jerseyParameters,
+                  Set<Class<? extends ResourceFilterFactory>> resourceFilterFactories, String restPath, String jspPath, JsonHome jsonHome) {
         this.rootResourceClasses = rootResourceClasses;
         this.resourceFilterFactories = resourceFilterFactories;
         this.restPath = restPath;
