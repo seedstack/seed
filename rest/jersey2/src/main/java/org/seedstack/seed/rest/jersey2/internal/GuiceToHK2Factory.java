@@ -39,6 +39,5 @@ class GuiceToHK2Factory implements Factory {
 
     @Override
     public void dispose(Object instance) {
-
     }
 }

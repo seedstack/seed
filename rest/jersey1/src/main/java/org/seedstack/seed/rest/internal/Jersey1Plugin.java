@@ -12,7 +12,6 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Injector;
 import com.sun.jersey.spi.container.ResourceFilterFactory;
 import io.nuun.kernel.api.plugin.InitState;
-import io.nuun.kernel.api.plugin.PluginException;
 import io.nuun.kernel.api.plugin.context.Context;
 import io.nuun.kernel.api.plugin.context.InitContext;
 import io.nuun.kernel.api.plugin.request.ClasspathScanRequest;
@@ -48,36 +47,46 @@ import java.util.*;
  *
  * @author adrien.lauer@mpsa.com
  */
-public class RestPlugin extends AbstractPlugin {
+public class Jersey1Plugin extends AbstractPlugin {
 
     private static final String REST_PLUGIN_CONFIGURATION_PREFIX = "org.seedstack.seed.rest";
-    private static final Logger LOGGER = LoggerFactory.getLogger(RestPlugin.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(Jersey1Plugin.class);
 
+    private final Map<Variant, Class<? extends RootResource>> rootResourceClasses = new HashMap<Variant, Class<? extends RootResource>>();
     private final Specification<Class<?>> resourcesSpecification = new JaxRsResourceSpecification();
     private final Specification<Class<?>> providersSpecification = new JaxRsProviderSpecification();
 
     private WebPlugin webPlugin;
     private Configuration restConfiguration;
-
-    private final Map<Variant, Class<? extends RootResource>> rootResourceClasses = new HashMap<Variant, Class<? extends RootResource>>();
     private RelRegistry relRegistry;
     private JsonHome jsonHome;
     private String restPath;
     private String jspPath;
-
     private ServletContext servletContext;
+
+    @Inject
+    private Injector injector;
 
     @Override
     public String name() {
-        return "seed-rest-plugin";
+        return "seed-jersey1";
+    }
+
+    @Override
+    public Collection<ClasspathScanRequest> classpathScanRequests() {
+        return classpathScanRequestBuilder()
+                .annotationType(ResourceFiltering.class)
+                .specification(providersSpecification)
+                .specification(resourcesSpecification)
+                .build();
     }
 
     @Override
     public InitState init(InitContext initContext) {
-        // Initialize required and dependent plugins
         collectPlugins(initContext);
 
         Map<Specification, Collection<Class<?>>> scannedClassesBySpecification = initContext.scannedTypesBySpecification();
+        Collection<Class<?>> providerClasses = scannedClassesBySpecification.get(providersSpecification);
         Collection<Class<?>> resourceClasses = scannedClassesBySpecification.get(resourcesSpecification);
 
         restPath = restConfiguration.getString("path", "");
@@ -105,7 +114,7 @@ public class RestPlugin extends AbstractPlugin {
                 new RestModule(
                         rootResourceClasses,
                         resourceClasses,
-                        scannedClassesBySpecification.get(providersSpecification),
+                        providerClasses,
                         jerseyParameters,
                         resourceFilterFactories,
                         restPath, jspPath, jsonHome)
@@ -114,8 +123,10 @@ public class RestPlugin extends AbstractPlugin {
         return InitState.INITIALIZED;
     }
 
-    @Inject
-    private Injector injector;
+    private void collectPlugins(InitContext initContext) {
+        restConfiguration = initContext.dependency(ConfigurationProvider.class).getConfiguration().subset(Jersey1Plugin.REST_PLUGIN_CONFIGURATION_PREFIX);
+        webPlugin = initContext.dependency(WebPlugin.class);
+    }
 
     @Override
     public void start(Context context) {
@@ -131,19 +142,6 @@ public class RestPlugin extends AbstractPlugin {
                 injector.injectMembers(InternalErrorExceptionMapper.class);
                 seedContainer.registerClass(InternalErrorExceptionMapper.class);
             }
-        }
-    }
-
-    private void collectPlugins(InitContext initContext) {
-        restConfiguration = initContext.dependency(ConfigurationProvider.class).getConfiguration().subset(RestPlugin.REST_PLUGIN_CONFIGURATION_PREFIX);
-        webPlugin = initContext.dependency(WebPlugin.class);
-
-        if (restConfiguration == null) {
-            throw new PluginException("Unable to find SEED application plugin");
-        }
-
-        if (webPlugin == null) {
-            throw new PluginException("Unable to find SEED Web plugin");
         }
     }
 
@@ -204,16 +202,6 @@ public class RestPlugin extends AbstractPlugin {
         if (containerContext != null && ServletContext.class.isAssignableFrom(containerContext.getClass())) {
             this.servletContext = (ServletContext) containerContext;
         }
-    }
-
-    @Override
-    @SuppressWarnings("unchecked")
-    public Collection<ClasspathScanRequest> classpathScanRequests() {
-        return classpathScanRequestBuilder()
-                .annotationType(ResourceFiltering.class)
-                .specification(providersSpecification)
-                .specification(resourcesSpecification)
-                .build();
     }
 
     @Override

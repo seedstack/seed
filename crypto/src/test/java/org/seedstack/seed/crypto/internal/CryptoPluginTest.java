@@ -34,42 +34,27 @@ import java.util.Map;
  */
 public class CryptoPluginTest {
 
-
-
-    /**
-     * Test method for {@link org.seedstack.seed.crypto.internal.CryptoPlugin#name()}.
-     */
     @Test
     public void testName() {
         Assertions.assertThat(new CryptoPlugin().name()).isEqualTo("seed-crypto-plugin");
     }
 
-    /**
-     * Test method for {@link org.seedstack.seed.crypto.internal.CryptoPlugin#nativeUnitModule()}.
-     */
     @Test
     public void testNativeUnitModule(@SuppressWarnings("unused") @Mocked final CryptoModule module) {
-
         final Map<Key<EncryptionService>, EncryptionService> encryptionServices = new HashMap<Key<EncryptionService>, EncryptionService>();
         final Map<String, KeyStore> keyStores = new HashMap<String, KeyStore>();
+        final CryptoPlugin underTest = new CryptoPlugin();
+        Deencapsulation.setField(underTest, "encryptionServices", encryptionServices);
+        Deencapsulation.setField(underTest, "keyStores", keyStores);
 
-        final CryptoPlugin plugin = new CryptoPlugin();
+        underTest.nativeUnitModule();
 
-        Deencapsulation.setField(plugin, "encryptionServices", encryptionServices);
-        Deencapsulation.setField(plugin, "keyStores", keyStores);
-
-        plugin.nativeUnitModule();
-        new Verifications() {
-            {
-                new CryptoModule(encryptionServices, keyStores);
-                times = 1;
-            }
-        };
+        new Verifications() {{
+            new CryptoModule(encryptionServices, keyStores);
+            times = 1;
+        }};
     }
 
-    /**
-     * Test method for {@link org.seedstack.seed.crypto.internal.CryptoPlugin#requiredPlugins()}.
-     */
     @Test
     public void testRequiredPlugins() {
         CryptoPlugin plugin = new CryptoPlugin();
