@@ -12,6 +12,7 @@ import io.nuun.kernel.api.plugin.InitState;
 import io.nuun.kernel.api.plugin.context.InitContext;
 import io.nuun.kernel.core.AbstractPlugin;
 import org.seedstack.seed.core.spi.configuration.ConfigurationProvider;
+import org.seedstack.seed.rest.internal.Jersey1Plugin;
 import org.seedstack.seed.rest.internal.RestPlugin;
 
 import javax.ws.rs.core.MediaType;
@@ -30,7 +31,7 @@ public class RestTestPlugin extends AbstractPlugin {
         ConfigurationProvider configurationProvider = initContext.dependency(ConfigurationProvider.class);
 
         if (!configurationProvider.getConfiguration().getBoolean("disable-text-home", false)) {
-            restPlugin.registerRootResource(new Variant(MediaType.TEXT_PLAIN_TYPE, null, null), TextRootResource.class);
+            restPlugin.addRootResourceVariant(new Variant(MediaType.TEXT_PLAIN_TYPE, null, null), TextRootResource.class);
         }
 
         return InitState.INITIALIZED;

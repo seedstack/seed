@@ -57,7 +57,7 @@ public class ITPlugin extends AbstractPlugin {
 
     @Override
     public String name() {
-        return "seed-it-plugin";
+        return "it";
     }
 
     @Override

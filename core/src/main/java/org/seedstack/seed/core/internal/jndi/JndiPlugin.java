@@ -41,7 +41,7 @@ public class JndiPlugin extends AbstractPlugin {
 
     @Override
     public String name() {
-        return "seed-core-jndi-plugin";
+        return "jndi";
     }
 
     @Override

@@ -37,7 +37,7 @@ public class ELPlugin extends AbstractPlugin {
 
     @Override
     public String name() {
-        return "seed-el-support";
+        return "el";
     }
 
     @Override

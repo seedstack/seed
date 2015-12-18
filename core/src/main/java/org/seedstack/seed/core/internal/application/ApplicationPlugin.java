@@ -58,7 +58,7 @@ public class ApplicationPlugin extends AbstractPlugin implements ConfigurationPr
 
     @Override
     public String name() {
-        return "seed-core-application-plugin";
+        return "application";
     }
 
     @Override

@@ -13,12 +13,14 @@ import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
+import javax.ws.rs.ext.Provider;
 
 /**
  * Default {@link AuthenticationException} exception mapper which returns an HTTP status 401 (unauthorized).
  *
  * @author pierre.thirouin@ext.mpsa.com (Pierre Thirouin)
  */
+@Provider
 public class AuthenticationExceptionMapper implements ExceptionMapper<AuthenticationException> {
 
     private static final Logger logger = LoggerFactory.getLogger(AuthenticationExceptionMapper.class);

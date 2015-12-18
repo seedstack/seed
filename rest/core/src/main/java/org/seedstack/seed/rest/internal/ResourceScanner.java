@@ -15,7 +15,11 @@ import org.seedstack.seed.rest.internal.jsonhome.Hints;
 import org.seedstack.seed.rest.internal.jsonhome.Resource;
 
 import java.lang.reflect.Method;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Scans the JAX-RS resources for building JSON-HOME resources and HAL links.
@@ -31,21 +35,15 @@ public class ResourceScanner {
     private final Map<String, Resource> jsonHomeResources = new HashMap<String, Resource>();
     private final Map<String, Link> halLinks = new HashMap<String, Link>();
 
-    private final String baseRel;
-    private final String baseParam;
-    private final String restPath;
+    private final RestConfiguration restConfiguration;
 
     /**
      * Constructor.
      *
-     * @param restPath  the base SEED path
-     * @param baseRel   the base URI for the relation types
-     * @param baseParam the base URI for the href parameters
+     * @param restConfiguration the REST configuration object.
      */
-    public ResourceScanner(String restPath, final String baseRel, final String baseParam) {
-        this.restPath = restPath;
-        this.baseRel = baseRel;
-        this.baseParam = baseParam;
+    public ResourceScanner(RestConfiguration restConfiguration) {
+        this.restConfiguration = restConfiguration;
     }
 
     /**
@@ -106,12 +104,12 @@ public class ResourceScanner {
         for (Map.Entry<String, List<Method>> entry : resourceByRel.entrySet()) {
             // Extends the rel with baseRel
             String rel = entry.getKey();
-            String absoluteRel = UriBuilder.uri(baseRel, rel);
+            String absoluteRel = UriBuilder.uri(restConfiguration.getBaseRel(), rel);
 
             Resource resource = null;
             List<Method> methods = entry.getValue();
             for (Method method : methods) {
-                Resource currentResource = buildJsonHomeResource(baseParam, absoluteRel, method);
+                Resource currentResource = buildJsonHomeResource(restConfiguration.getBaseParam(), absoluteRel, method);
                 if (resource == null) {
                     resource = currentResource;
                 } else {
@@ -138,7 +136,7 @@ public class ResourceScanner {
             Hints hints = new HintScanner().findHint(method);
 
             // Add the Seed REST path
-            path = UriBuilder.uri(this.restPath, path);
+            path = UriBuilder.uri(restConfiguration.getRestPath(), path);
 
             if (isTemplated(path)) {
                 Map<String, String> pathParams = RESTReflect.findPathParams(baseParam, method);
@@ -177,7 +175,7 @@ public class ResourceScanner {
             }
 
             // Add the Seed Rest path
-            String finalPath = UriBuilder.uri(this.restPath, uriTemplateBuilder.build().getTemplate());
+            String finalPath = UriBuilder.uri(restConfiguration.getRestPath(), uriTemplateBuilder.build().getTemplate());
 
             halLinks.put(entry.getKey(), new Link(finalPath));
         }
