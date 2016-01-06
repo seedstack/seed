@@ -9,14 +9,22 @@ package org.seedstack.seed.rest.internal;
 
 import com.google.common.collect.Lists;
 import io.nuun.kernel.api.annotations.Ignore;
+import mockit.Expectations;
+import mockit.Mocked;
+import mockit.integration.junit4.JMockit;
 import org.assertj.core.api.Assertions;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.seedstack.seed.rest.Rel;
 import org.seedstack.seed.rest.hal.Link;
 import org.seedstack.seed.rest.internal.jsonhome.Resource;
 
-import javax.ws.rs.*;
+import javax.ws.rs.GET;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 import java.util.Map;
 
@@ -24,6 +32,7 @@ import java.util.Map;
  * @author pierre.thirouin@ext.mpsa.com (Pierre Thirouin)
  */
 @Ignore // Tells nuun to not scan the test class
+@RunWith(JMockit.class)
 public class ResourceParserTest {
 
     private static final String REST_PATH = "/rest/";
@@ -32,6 +41,8 @@ public class ResourceParserTest {
 
     private Map<String, Resource> resourceMap;
     private Map<String, Link> links;
+    @Mocked
+    private RestConfiguration restConfiguration;
 
     @Ignore
     @Rel(value = "widget", home = true)
@@ -39,15 +50,30 @@ public class ResourceParserTest {
     private static class MyLinkTemplateResource {
 
         @GET
-        public Response get(@PathParam("widgetName") String widgetId, @QueryParam("lang") String lang) { return null; }
+        public Response get(@PathParam("widgetName") String widgetId, @QueryParam("lang") String lang) {
+            return null;
+        }
 
         @PUT
-        public Response put(@PathParam("widgetName") String widgetId) { return null; }
+        public Response put(@PathParam("widgetName") String widgetId) {
+            return null;
+        }
     }
 
     @Before
     public void before() {
-        ResourceScanner resourceScanner = new ResourceScanner(REST_PATH, BASE_REL, BASE_PARAM);
+        new Expectations() {
+            {
+                restConfiguration.getRestPath();
+                result = REST_PATH;
+                restConfiguration.getBaseRel();
+                result = BASE_REL;
+                restConfiguration.getBaseParam();
+                result = BASE_PARAM;
+            }
+        };
+
+        ResourceScanner resourceScanner = new ResourceScanner(restConfiguration);
         resourceScanner.scan(Lists.<Class<?>>newArrayList(MyLinkTemplateResource.class));
         resourceMap = resourceScanner.jsonHomeResources();
         links = resourceScanner.halLinks();

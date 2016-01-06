@@ -7,6 +7,7 @@
  */
 package org.seedstack.seed.rest;
 
+import org.assertj.core.api.Assertions;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.test.api.ArquillianResource;
@@ -18,6 +19,7 @@ import org.junit.Test;
 import org.seedstack.seed.it.AbstractSeedWebIT;
 import org.skyscreamer.jsonassert.JSONAssert;
 
+import javax.inject.Inject;
 import java.net.URL;
 
 import static com.jayway.restassured.RestAssured.expect;
@@ -27,6 +29,9 @@ public class RestIT extends AbstractSeedWebIT {
 
     @ArquillianResource
     URL baseURL;
+
+    @Inject
+    private RelRegistry relRegistry;
 
     @Deployment
     public static WebArchive createDeployment() {
@@ -91,6 +96,12 @@ public class RestIT extends AbstractSeedWebIT {
     public void subresources_locators_are_working() {
         String result = expect().statusCode(200).when().get(baseURL.toString() + "locator/sub/1").asString();
         assertThat(result).isEqualTo("sub:1");
+    }
+
+    @RunAsClient
+    @Test
+    public void rel_registry_is_injectable() {
+        Assertions.assertThat(relRegistry).isNotNull();
     }
 
 }

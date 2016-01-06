@@ -9,15 +9,17 @@ package org.seedstack.seed.rest.internal;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Scopes;
+import com.google.inject.name.Names;
 
 import java.util.Collection;
 
 class RestModule extends AbstractModule {
-
     private final Collection<Class<?>> resources;
     private final Collection<Class<?>> providers;
+    private final RestConfiguration restConfiguration;
 
-    public RestModule(Collection<Class<?>> resources, Collection<Class<?>> providers) {
+    RestModule(RestConfiguration restConfiguration, Collection<Class<?>> resources, Collection<Class<?>> providers) {
+        this.restConfiguration = restConfiguration;
         this.resources = resources;
         this.providers = providers;
     }
@@ -29,8 +31,13 @@ class RestModule extends AbstractModule {
     }
 
     private void bindResources() {
+        bind(String.class).annotatedWith(Names.named("SeedRestPath")).toInstance(restConfiguration.getRestPath());
+        bind(String.class).annotatedWith(Names.named("SeedJspPath")).toInstance(restConfiguration.getJspPath());
+
         for (Class<?> resource : resources) {
-            bind(resource);
+            if (!RootResourceDispatcher.class.isAssignableFrom(resource)) {
+                bind(resource);
+            }
         }
     }
 
