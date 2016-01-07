@@ -53,7 +53,7 @@ public class DataPlugin extends AbstractPlugin {
 
     @Override
     public String name() {
-        return "seed-data-plugin";
+        return "data";
     }
 
     @Override

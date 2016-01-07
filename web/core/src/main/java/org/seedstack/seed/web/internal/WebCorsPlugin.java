@@ -38,7 +38,7 @@ public class WebCorsPlugin extends AbstractPlugin {
 
     @Override
     public String name() {
-        return "seed-web-cors-plugin";
+        return "cors";
     }
 
     @Override

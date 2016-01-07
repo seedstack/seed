@@ -62,7 +62,7 @@ public class WebPlugin extends AbstractPlugin {
 
     @Override
     public String name() {
-        return "seed-web-plugin";
+        return "web";
     }
 
     @SuppressWarnings("unchecked")

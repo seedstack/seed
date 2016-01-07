@@ -53,7 +53,7 @@ public class TransactionPlugin extends AbstractPlugin {
 
     @Override
     public String name() {
-        return "seed-transaction-plugin";
+        return "transaction";
     }
 
     @Override

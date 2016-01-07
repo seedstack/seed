@@ -45,7 +45,7 @@ public class WebSocketPlugin extends AbstractPlugin {
 
     @Override
     public String name() {
-        return "seed-websocket-plugin";
+        return "websocket";
     }
 
     @Override

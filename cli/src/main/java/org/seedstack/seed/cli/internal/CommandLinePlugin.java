@@ -26,7 +26,9 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.seedstack.seed.core.utils.BaseClassSpecifications.*;
+import static org.seedstack.seed.core.utils.BaseClassSpecifications.ancestorImplements;
+import static org.seedstack.seed.core.utils.BaseClassSpecifications.classIsAbstract;
+import static org.seedstack.seed.core.utils.BaseClassSpecifications.classIsInterface;
 
 /**
  * This plugin enables to run {@link CommandLineHandler} through
@@ -47,7 +49,7 @@ public class CommandLinePlugin extends AbstractPlugin {
 
     @Override
     public String name() {
-        return "seed-cli-plugin";
+        return "cli";
     }
 
     @Override

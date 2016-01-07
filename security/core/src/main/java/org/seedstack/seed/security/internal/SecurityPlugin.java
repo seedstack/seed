@@ -67,7 +67,7 @@ public class SecurityPlugin extends AbstractPlugin {
 
     @Override
     public String name() {
-        return "seed-security-plugin";
+        return "security";
     }
 
     @Override

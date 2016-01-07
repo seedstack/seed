@@ -47,7 +47,7 @@ public class MetricsPlugin extends AbstractPlugin {
 
     @Override
     public String name() {
-        return "seed-metrics-plugin";
+        return "metrics";
     }
 
     @Override

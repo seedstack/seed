@@ -34,6 +34,7 @@
         <jodd.version>3.5</jodd.version>
         <metrics.version>3.1.0</metrics.version>
         <jersey.version>1.19</jersey.version>
+        <jersey2.version>2.22.1</jersey2.version>
 
         <compatibility.version>2.1.0</compatibility.version>
     </properties>
@@ -88,6 +89,8 @@
                             <licenseMerge>BSD|The BSD License</licenseMerge>
                             <licenseMerge>CDDL 1.1|CDDL or GPLv2 with exceptions</licenseMerge>
                             <licenseMerge>CDDL 1.1|Common Development and Distribution License</licenseMerge>
+                            <licenseMerge>CDDL 1.1|CDDL + GPLv2 with classpath exception</licenseMerge>
+                            <licenseMerge>CDDL 1.1|CDDL+GPL License</licenseMerge>
                             <licenseMerge>EPL 1.0|Eclipse Public License 1.0</licenseMerge>
                             <licenseMerge>EPL 1.0|Eclipse Public License v1.0</licenseMerge>
                             <licenseMerge>LGPL 3.0|GNU Lesser Public License</licenseMerge>

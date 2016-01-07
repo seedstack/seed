@@ -65,7 +65,7 @@ public class CryptoPlugin extends AbstractPlugin implements SSLProvider {
 
     @Override
     public String name() {
-        return "seed-crypto-plugin";
+        return "crypto";
     }
 
     @Override

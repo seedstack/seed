@@ -35,7 +35,7 @@ public class CommandPlugin extends AbstractPlugin {
 
     @Override
     public String name() {
-        return "seed-command-plugin";
+        return "command";
     }
 
     @Override

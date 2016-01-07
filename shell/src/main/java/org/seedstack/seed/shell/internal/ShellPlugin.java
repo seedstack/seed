@@ -64,7 +64,7 @@ public class ShellPlugin extends AbstractPlugin {
 
     @Override
     public String name() {
-        return "seed-shell-plugin";
+        return "shell";
     }
 
     @Override

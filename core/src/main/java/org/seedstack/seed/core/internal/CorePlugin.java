@@ -110,7 +110,7 @@ public class CorePlugin extends AbstractPlugin {
 
     @Override
     public String name() {
-        return "seed-core-plugin";
+        return "core";
     }
 
     @Override
