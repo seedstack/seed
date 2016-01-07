@@ -25,7 +25,7 @@ import static org.hamcrest.Matchers.not;
 public class WebResourcesGzipDisabledIT extends AbstractSeedWebIT {
     @Deployment
     public static WebArchive createDeployment() {
-        return ShrinkWrap.create(WebArchive.class).addAsResource("configuration/org.seedstack.seed.web.gzip-disabled.properties", "META-INF/configuration/org.seedstack.seed.web.gzip-disabled.properties").addAsWebResource("META-INF/resources/resources/test.js", "/resources/docroot-test.js").addAsWebResource("META-INF/resources/resources/test.js.gz", "/resources/docroot-test.js.gz").addAsWebResource("META-INF/resources/resources/test.min.js", "/resources/docroot-test.min.js").addAsWebResource("META-INF/resources/resources/test.min.js.gz", "/resources/docroot-test.min.js.gz").addAsWebResource("META-INF/resources/resources/test2.js", "/resources/docroot-test2.js").setWebXML("WEB-INF/web.xml");
+        return ShrinkWrap.create(WebArchive.class).addAsResource("configuration/org.seedstack.seed.web.gzip-disabled.properties", "META-INF/configuration/org.seedstack.seed.web.gzip-disabled.properties").addAsWebResource("META-INF/resources/resources/test.js", "/resources/docroot-test.js").addAsWebResource("META-INF/resources/resources/test.js.gz", "/resources/docroot-test.js.gz").addAsWebResource("META-INF/resources/resources/test.min.js", "/resources/docroot-test.min.js").addAsWebResource("META-INF/resources/resources/test.min.js.gz", "/resources/docroot-test.min.js.gz").addAsWebResource("META-INF/resources/resources/test2.js", "/resources/docroot-test2.js");
     }
 
     @Test

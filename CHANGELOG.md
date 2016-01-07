@@ -1,3 +1,7 @@
+# Version 2.2.0 (2016-01-28)
+
+* [new] Applications can run in a Servlet 3+ environment without web.xml file
+
 # Version 2.1.0 (2015-11-26)
 
 * [brk] Merged dedicated test modules into with their core implementation.

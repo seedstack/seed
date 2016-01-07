@@ -18,6 +18,6 @@ import java.lang.annotation.RetentionPolicy;
  * @author adrien.lauer@mpsa.com
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Concern(name="seed-web-cors-concern", priority= Concern.Priority.HIGHEST, order = 10000)
-public @interface CorsConcern {
+@Concern(name = "seed-web-cors-concern", priority = Concern.Priority.HIGHEST, order = 10000)
+@interface CorsConcern {
 }

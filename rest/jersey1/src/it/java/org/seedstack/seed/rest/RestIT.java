@@ -30,7 +30,7 @@ public class RestIT extends AbstractSeedWebIT {
 
     @Deployment
     public static WebArchive createDeployment() {
-        return ShrinkWrap.create(WebArchive.class).addAsWebResource("index.html", "index.html").setWebXML("WEB-INF/web.xml");
+        return ShrinkWrap.create(WebArchive.class).addAsWebResource("index.html", "index.html");
     }
 
     @RunAsClient

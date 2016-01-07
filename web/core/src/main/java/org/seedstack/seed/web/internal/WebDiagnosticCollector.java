@@ -32,10 +32,13 @@ class WebDiagnosticCollector implements DiagnosticInfoCollector {
         if (servletContext != null) {
             result.put("version", String.format("%d.%d", servletContext.getMajorVersion(), servletContext.getMinorVersion()));
             if (servletContext.getMajorVersion() >= 3) {
-                result.put("effective-version",
-                        String.format("%d.%d", servletContext.getEffectiveMajorVersion(), servletContext.getEffectiveMinorVersion()));
-                result.put("servlets", buildServletList());
-                result.put("filters", buildFilterList());
+                try {
+                    result.put("effective-version", String.format("%d.%d", servletContext.getEffectiveMajorVersion(), servletContext.getEffectiveMinorVersion()));
+                    result.put("servlets", buildServletList());
+                    result.put("filters", buildFilterList());
+                } catch (UnsupportedOperationException e) {
+                    // nothing to do
+                }
             }
         }
         return result;
@@ -85,4 +88,5 @@ class WebDiagnosticCollector implements DiagnosticInfoCollector {
 
         return filterMap;
     }
+
 }

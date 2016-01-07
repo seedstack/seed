@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
 
     Copyright (c) 2013-2015, The SeedStack authors <http://seedstack.org>
@@ -7,22 +8,10 @@
     file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 -->
-<web-fragment metadata-complete="true" version="3.0"
-              xmlns="http://java.sun.com/xml/ns/javaee"
+<web-fragment xmlns="http://java.sun.com/xml/ns/javaee"
               xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-              xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-fragment_3_0.xsd">
-    <name>seed_web_support</name>
-
-    <filter>
-        <filter-name>guiceFilter</filter-name>
-        <filter-class>com.google.inject.servlet.GuiceFilter</filter-class>
-    </filter>
-    <filter-mapping>
-        <filter-name>guiceFilter</filter-name>
-        <url-pattern>/*</url-pattern>
-    </filter-mapping>
-
-    <listener>
-        <listener-class>org.seedstack.seed.web.listener.SeedServletContextListener</listener-class>
-    </listener>
+              xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-fragment_3_0.xsd"
+              version="3.0" metadata-complete="true">
+    <name>seed_web</name>
+    <distributable/>
 </web-fragment>

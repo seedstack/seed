@@ -14,6 +14,8 @@ import org.jboss.arquillian.test.api.ArquillianResource;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Test;
+import org.seedstack.seed.web.fixtures.TestFilter;
+import org.seedstack.seed.web.fixtures.TestServlet;
 
 import java.net.URL;
 
@@ -24,7 +26,7 @@ import static org.hamcrest.Matchers.startsWith;
 public class ServletAndFilterRegistrationIT extends AbstractSeedWebIT {
     @Deployment
     public static WebArchive createDeployment() {
-        return ShrinkWrap.create(WebArchive.class).setWebXML("WEB-INF/web.xml");
+        return ShrinkWrap.create(WebArchive.class);
     }
 
     @Test
