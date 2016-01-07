@@ -58,6 +58,11 @@ public class RestPlugin extends AbstractPlugin {
     }
 
     @Override
+    public String pluginPackageRoot() {
+        return "com.fasterxml.jackson.jaxrs";
+    }
+
+    @Override
     public void provideContainerContext(Object containerContext) {
         if (containerContext != null && ServletContext.class.isAssignableFrom(containerContext.getClass())) {
             this.servletContext = (ServletContext) containerContext;

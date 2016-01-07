@@ -10,6 +10,7 @@ package org.seedstack.seed.rest.jersey2.internal;
 import com.google.common.collect.Sets;
 import com.google.inject.Injector;
 import com.sun.org.apache.xpath.internal.operations.String;
+import io.nuun.kernel.api.annotations.Ignore;
 import mockit.*;
 import mockit.integration.junit4.JMockit;
 import org.glassfish.hk2.api.DynamicConfiguration;
@@ -149,6 +150,7 @@ public class GuiceComponentProviderTest {
         givenServiceLocator();
         givenInjections();
         underTest.initialize(serviceLocator);
+        @Ignore
         @Path("/") class MyResource { }
 
         boolean isBound = underTest.bind(MyResource.class, null);
@@ -156,6 +158,7 @@ public class GuiceComponentProviderTest {
         assertThat(isBound).isTrue();
     }
 
+    @Ignore
     @Provider interface MyProvider { }
     class MyProviderImpl implements MyProvider { }
 

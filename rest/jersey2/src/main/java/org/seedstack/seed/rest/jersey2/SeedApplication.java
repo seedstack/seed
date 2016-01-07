@@ -9,12 +9,9 @@ package org.seedstack.seed.rest.jersey2;
 
 import org.glassfish.jersey.server.ResourceConfig;
 
-import javax.ws.rs.ApplicationPath;
-
 /**
  * @author pierre.thirouin@ext.mpsa.com (Pierre Thirouin)
  */
-@ApplicationPath("/")
 public class SeedApplication extends ResourceConfig {
 
     public SeedApplication() {

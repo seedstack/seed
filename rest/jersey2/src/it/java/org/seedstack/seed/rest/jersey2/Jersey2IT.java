@@ -15,7 +15,6 @@ import org.jboss.arquillian.test.api.ArquillianResource;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.json.JSONException;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.seedstack.seed.it.AbstractSeedWebIT;
 
@@ -38,9 +37,9 @@ public class Jersey2IT extends AbstractSeedWebIT {
 
     @RunAsClient
     @Test
-    @Ignore("Resources not scanned by Arquillian")
+//    @Ignore("Resources not scanned by Arquillian")
     public void test_greetings() throws JSONException {
-        Response response = expect().statusCode(200).given().get(baseURL.toString() + "hello/world");
+        Response response = expect().statusCode(200).given().get(baseURL.toString() + "hello");
         Assertions.assertThat(response.asString()).isEqualTo("hello world");
     }
 }

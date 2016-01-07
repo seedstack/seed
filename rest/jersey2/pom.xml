@@ -31,19 +31,6 @@
             <artifactId>seed-rest-core</artifactId>
             <version>${project.version}</version>
         </dependency>
-
-        <dependency>
-            <groupId>org.glassfish.jersey.containers</groupId>
-            <artifactId>jersey-container-servlet</artifactId>
-            <version>2.22.1</version>
-        </dependency>
-        <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>javax.servlet-api</artifactId>
-            <version>${javax.servlet-api.version}</version>
-            <scope>provided</scope>
-        </dependency>
-
         <dependency>
             <groupId>org.seedstack.seed</groupId>
             <artifactId>seed-web-core</artifactId>
@@ -51,9 +38,22 @@
         </dependency>
 
         <dependency>
+            <groupId>org.glassfish.jersey.containers</groupId>
+            <artifactId>jersey-container-servlet</artifactId>
+            <version>2.22.1</version>
+        </dependency>
+
+        <dependency>
             <groupId>org.glassfish.hk2</groupId>
             <artifactId>guice-bridge</artifactId>
             <version>2.4.0-b34</version>
+        </dependency>
+
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
+            <version>${javax.servlet-api.version}</version>
+            <scope>provided</scope>
         </dependency>
 
         <!-- TESTS -->
@@ -68,14 +68,12 @@
             <artifactId>seed-web-undertow</artifactId>
             <version>${project.version}</version>
         </dependency>
-
         <dependency>
             <groupId>org.jmockit</groupId>
             <artifactId>jmockit</artifactId>
             <version>${jmockit.version}</version>
             <scope>test</scope>
         </dependency>
-
         <dependency>
             <groupId>org.seedstack.poms</groupId>
             <artifactId>arquillian-composite</artifactId>

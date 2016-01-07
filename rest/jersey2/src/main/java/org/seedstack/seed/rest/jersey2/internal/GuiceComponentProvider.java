@@ -72,6 +72,10 @@ public class GuiceComponentProvider implements ComponentProvider {
         return isBound;
     }
 
+    private boolean isJaxRsClass(Class<?> component) {
+        return component.isAnnotationPresent(Path.class) || component.isAnnotationPresent(Provider.class);
+    }
+
     private void registerBindingsInHK2(Class<?> componentClass, Set<Class<?>> providerContracts) {
         ServiceBindingBuilder componentBindingBuilder = getBindingBuilder(componentClass);
         //noinspection unchecked
@@ -88,17 +92,13 @@ public class GuiceComponentProvider implements ComponentProvider {
         return Injections.newFactoryBinder(guiceFactory);
     }
 
+    @SuppressWarnings("unchecked")
     private void bindProviderContracts(ServiceBindingBuilder componentBindingBuilder, Set<Class<?>> providerContracts) {
         if (providerContracts != null) {
             for (Class<?> providerContract : providerContracts) {
-                //noinspection unchecked
                 componentBindingBuilder.to(providerContract);
             }
         }
-    }
-
-    private boolean isJaxRsClass(Class<?> component) {
-        return component.isAnnotationPresent(Path.class) || component.isAnnotationPresent(Provider.class);
     }
 
     @Override
