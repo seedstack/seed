@@ -13,12 +13,14 @@ import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
+import javax.ws.rs.ext.Provider;
 
 /**
  * Default {@link AuthorizationException} exception mapper which returns an HTTP status 403 (forbidden).
  *
  * @author pierre.thirouin@ext.mpsa.com (Pierre Thirouin)
  */
+@Provider
 public class AuthorizationExceptionMapper implements ExceptionMapper<AuthorizationException> {
 
     private static final Logger logger = LoggerFactory.getLogger(AuthorizationExceptionMapper.class);
