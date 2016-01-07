@@ -13,6 +13,7 @@ import io.nuun.kernel.api.plugin.context.InitContext;
 import io.nuun.kernel.core.AbstractPlugin;
 import org.seedstack.seed.core.spi.configuration.ConfigurationProvider;
 import org.seedstack.seed.rest.internal.Jersey1Plugin;
+import org.seedstack.seed.rest.internal.RestPlugin;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Variant;
@@ -26,11 +27,11 @@ public class RestTestPlugin extends AbstractPlugin {
 
     @Override
     public InitState init(InitContext initContext) {
-        Jersey1Plugin jersey1Plugin = initContext.dependency(Jersey1Plugin.class);
+        RestPlugin restPlugin = initContext.dependency(RestPlugin.class);
         ConfigurationProvider configurationProvider = initContext.dependency(ConfigurationProvider.class);
 
         if (!configurationProvider.getConfiguration().getBoolean("disable-text-home", false)) {
-            jersey1Plugin.registerRootResource(new Variant(MediaType.TEXT_PLAIN_TYPE, null, null), TextRootResource.class);
+            restPlugin.addRootResourceVariant(new Variant(MediaType.TEXT_PLAIN_TYPE, null, null), TextRootResource.class);
         }
 
         return InitState.INITIALIZED;
@@ -38,6 +39,6 @@ public class RestTestPlugin extends AbstractPlugin {
 
     @Override
     public Collection<Class<?>> requiredPlugins() {
-        return Lists.<Class<?>>newArrayList(Jersey1Plugin.class, ConfigurationProvider.class);
+        return Lists.<Class<?>>newArrayList(RestPlugin.class, ConfigurationProvider.class);
     }
 }

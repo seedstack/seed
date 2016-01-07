@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory;
 import javax.inject.Inject;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
+import javax.ws.rs.ext.Provider;
 
 /**
  * Default exception mapper for an caught exception with no exception mapper associated.
@@ -23,6 +24,7 @@ import javax.ws.rs.ext.ExceptionMapper;
  *
  * @author pierre.thirouin@ext.mpsa.com (Pierre Thirouin)
  */
+@Provider
 public class InternalErrorExceptionMapper implements ExceptionMapper<Exception> {
 
     private static final Logger logger = LoggerFactory.getLogger(InternalErrorExceptionMapper.class);

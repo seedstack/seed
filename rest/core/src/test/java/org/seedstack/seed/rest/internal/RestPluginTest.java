@@ -14,14 +14,16 @@ import io.nuun.kernel.api.plugin.request.ClasspathScanRequest;
 import mockit.Deencapsulation;
 import mockit.Expectations;
 import mockit.Mocked;
-import mockit.Verifications;
 import mockit.integration.junit4.JMockit;
+import org.apache.commons.configuration.Configuration;
 import org.javatuples.Pair;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.kametic.specifications.Specification;
 import org.seedstack.seed.Ignore;
+import org.seedstack.seed.core.spi.configuration.ConfigurationProvider;
 
+import javax.servlet.ServletContext;
 import javax.ws.rs.Path;
 import javax.ws.rs.ext.Provider;
 import java.util.Collection;
@@ -41,6 +43,12 @@ public class RestPluginTest {
     private RestPlugin underTest = new RestPlugin();
     @Mocked
     private InitContext initContext;
+    @Mocked
+    private Configuration configuration;
+    @Mocked
+    private ConfigurationProvider configurationProvider;
+    @Mocked
+    private ServletContext servletContext;
 
     @Test
     public void testName() throws Exception {
@@ -64,8 +72,9 @@ public class RestPluginTest {
         assertThat(scanSpecification).isTrue();
     }
 
+    @SuppressWarnings("unchecked")
     @Test
-    public void testInitIsInitialized() throws Exception {
+    public void testWithoutServletContext() throws Exception {
         InitState init = underTest.init(initContext);
         assertThat(init).isEqualTo(InitState.INITIALIZED);
     }
@@ -73,11 +82,13 @@ public class RestPluginTest {
     @SuppressWarnings("unchecked")
     @Test
     public void testInitGetJaxRsClasses() throws Exception {
+        givenConfiguration();
         givenSpecifications(
                 new Pair(resourcesSpecification, MyResource.class),
                 new Pair(providersSpecification, MyProvider.class)
         );
 
+        underTest.provideContainerContext(servletContext);
         underTest.init(initContext);
 
         Collection<Class<?>> actualResources = Deencapsulation.getField(underTest, "resources");
@@ -86,10 +97,13 @@ public class RestPluginTest {
         assertThat(actualProviders).containsOnly(MyProvider.class);
     }
 
-    @Ignore @Path("/")
+    @Ignore
+    @Path("/")
     private static class MyResource {
     }
-    @Ignore @Provider
+
+    @Ignore
+    @Provider
     private static class MyProvider {
     }
 
@@ -102,5 +116,16 @@ public class RestPluginTest {
             initContext.scannedTypesBySpecification();
             result = specsMap;
         }};
+    }
+
+    private void givenConfiguration() {
+        new Expectations() {
+            {
+                initContext.dependency(ConfigurationProvider.class);
+                result = configurationProvider;
+                configurationProvider.getConfiguration();
+                result = configuration;
+            }
+        };
     }
 }
