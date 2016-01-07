@@ -20,19 +20,6 @@
         <url-pattern>/*</url-pattern>
     </filter-mapping>
 
-    <servlet>
-        <servlet-name>SeedApplication</servlet-name>
-        <servlet-class>org.glassfish.jersey.servlet.ServletContainer</servlet-class>
-        <init-param>
-            <param-name>javax.ws.rs.Application</param-name>
-            <param-value>org.seedstack.seed.rest.jersey2.SeedApplication</param-value>
-        </init-param>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>SeedApplication</servlet-name>
-        <url-pattern>/*</url-pattern>
-    </servlet-mapping>
-
     <listener>
         <listener-class>org.seedstack.seed.web.listener.SeedServletContextListener</listener-class>
     </listener>
