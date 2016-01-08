@@ -19,6 +19,7 @@ import java.lang.annotation.Target;
  *
  * @author adrien.lauer@mpsa.com
  */
+@io.nuun.kernel.api.annotations.Ignore
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.TYPE, ElementType.CONSTRUCTOR, ElementType.PARAMETER, ElementType.FIELD, ElementType.METHOD, ElementType.PACKAGE, ElementType.LOCAL_VARIABLE })

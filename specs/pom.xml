@@ -60,5 +60,11 @@
             <version>${logback.version}</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>io.nuun</groupId>
+            <artifactId>kernel-core</artifactId>
+            <version>${nuun-kernel.version}</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 </project>
