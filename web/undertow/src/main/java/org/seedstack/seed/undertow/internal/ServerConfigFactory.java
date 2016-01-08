@@ -10,12 +10,9 @@ package org.seedstack.seed.undertow.internal;
 import org.apache.commons.configuration.Configuration;
 import org.seedstack.seed.crypto.spi.SSLProvider;
 
-/**
- * @author pierre.thirouin@ext.mpsa.com (Pierre Thirouin)
- */
-public class ServerConfigFactory {
+class ServerConfigFactory {
 
-    public ServerConfig create(Configuration configuration, SSLProvider sslProvider) {
+    ServerConfig create(Configuration configuration, SSLProvider sslProvider) {
         ServerConfig serverConfig = new ServerConfig();
         if (configuration.containsKey("host")) {
             serverConfig.setHost(configuration.getString("host"));

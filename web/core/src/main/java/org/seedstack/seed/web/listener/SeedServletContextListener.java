@@ -10,6 +10,7 @@ package org.seedstack.seed.web.listener;
 import com.google.inject.Injector;
 import com.google.inject.servlet.GuiceServletContextListener;
 import io.nuun.kernel.api.Kernel;
+import io.nuun.kernel.api.config.KernelConfiguration;
 import io.nuun.kernel.core.NuunCore;
 import org.seedstack.seed.SeedException;
 import org.seedstack.seed.core.internal.CorePlugin;
@@ -19,10 +20,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
-import javax.servlet.annotation.WebListener;
-import java.util.ArrayList;
 import java.util.Enumeration;
-import java.util.List;
 
 /**
  * This context listener has the responsibility to initialize the Seed framework in a Web environment. This listener
@@ -32,12 +30,11 @@ import java.util.List;
  * @author adrien.lauer@mpsa.com
  */
 public class SeedServletContextListener extends GuiceServletContextListener {
-    private static final String KERNEL_ATTRIBUTE_NAME = Kernel.class.getName();
+    public static final String KERNEL_ATTRIBUTE_NAME = Kernel.class.getName();
     private static final Logger LOGGER = LoggerFactory.getLogger(SeedServletContextListener.class);
 
     private Kernel kernel;
 
-    @Override
     public void contextInitialized(ServletContextEvent sce) {
         ServletContext servletContext = sce.getServletContext();
 
@@ -68,7 +65,28 @@ public class SeedServletContextListener extends GuiceServletContextListener {
         LOGGER.info("Seed Web application started");
     }
 
-    @Override
+    private Kernel createKernel(ServletContext servletContext) {
+        KernelConfiguration kernelConfiguration = NuunCore.newKernelConfiguration();
+        kernelConfiguration.containerContext(servletContext);
+
+        Enumeration<?> initParameterNames = servletContext.getInitParameterNames();
+        while (initParameterNames.hasMoreElements()) {
+            String parameterName = (String) initParameterNames.nextElement();
+            if (parameterName != null && !parameterName.isEmpty()) {
+                String parameterValue = servletContext.getInitParameter(parameterName);
+                LOGGER.debug("Setting kernel parameter {} to {}", parameterName, parameterValue);
+                kernelConfiguration.param(parameterName, parameterValue);
+            }
+        }
+
+        return NuunCore.createKernel(kernelConfiguration);
+    }
+
+    private static void handleException(Throwable t) {
+        LOGGER.error("An exception occurred during web application startup, collecting diagnostic information");
+        CorePlugin.getDiagnosticManager().dumpDiagnosticReport(t);
+    }
+
     public void contextDestroyed(ServletContextEvent sce) {
         ServletContext servletContext = sce.getServletContext();
 
@@ -93,29 +111,7 @@ public class SeedServletContextListener extends GuiceServletContextListener {
         }
     }
 
-    @Override
     protected Injector getInjector() {
         return kernel.objectGraph().as(Injector.class);
-    }
-
-    private static void handleException(Throwable t) {
-        LOGGER.error("An exception occurred during web application startup, collecting diagnostic information");
-        CorePlugin.getDiagnosticManager().dumpDiagnosticReport(t);
-    }
-
-    private static Kernel createKernel(ServletContext servletContext) {
-        List<String> params = new ArrayList<String>();
-        Enumeration<?> initparams = servletContext.getInitParameterNames();
-        while (initparams.hasMoreElements()) {
-            String keyName = (String) initparams.nextElement();
-            if (keyName != null && !keyName.isEmpty()) {
-                String value = servletContext.getInitParameter(keyName);
-                LOGGER.debug("Setting kernel parameter {} to {}", keyName, value);
-                params.add(keyName);
-                params.add(value);
-            }
-        }
-
-        return NuunCore.createKernel(NuunCore.newKernelConfiguration().containerContext(servletContext).params(params.toArray(new String[params.size()])));
     }
 }
