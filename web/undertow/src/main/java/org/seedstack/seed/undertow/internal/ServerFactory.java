@@ -21,14 +21,11 @@ import org.xnio.SslClientAuthMode;
 
 import javax.servlet.ServletException;
 
-/**
- * @author pierre.thirouin@ext.mpsa.com (Pierre Thirouin)
- */
-public class ServerFactory {
+class ServerFactory {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ServerFactory.class);
 
-    public Undertow createServer(ServerConfig serverConfig, DeploymentManager manager) {
+    Undertow createServer(ServerConfig serverConfig, DeploymentManager manager) {
         PathHandler path = null;
         try {
             path = Handlers.path(Handlers.redirect(serverConfig.getContextPath()))

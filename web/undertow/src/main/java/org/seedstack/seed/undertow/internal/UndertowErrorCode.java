@@ -9,12 +9,9 @@ package org.seedstack.seed.undertow.internal;
 
 import org.seedstack.seed.ErrorCode;
 
-/**
- * @author pierre.thirouin@ext.mpsa.com (Pierre Thirouin)
- */
-public enum UndertowErrorCode implements ErrorCode {
+enum UndertowErrorCode implements ErrorCode {
     UNEXPECTED_EXCEPTION,
     MISSING_SSL_CONFIGURATION,
     ILLEGAL_HOST_CONFIGURATION,
-    ILLEGAL_PORT_CONFIGURATION
+    UNABLE_TO_INSTANTIATE_SCI, MISSING_UNDERTOW_PLUGIN, ILLEGAL_PORT_CONFIGURATION
 }

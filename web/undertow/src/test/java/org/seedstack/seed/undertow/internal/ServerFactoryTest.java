@@ -5,7 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-package org.seedstack.seed.web.internal;
+package org.seedstack.seed.undertow.internal;
 
 import io.undertow.Undertow;
 import io.undertow.server.HttpHandler;
@@ -13,8 +13,6 @@ import io.undertow.servlet.api.DeploymentManager;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.mockito.Mockito;
-import org.seedstack.seed.undertow.internal.ServerConfig;
-import org.seedstack.seed.undertow.internal.ServerFactory;
 
 /**
  * Tests the server factory which configure an Undertow server.

@@ -20,7 +20,6 @@ public class SeedServletContainerInitializer implements ServletContainerInitiali
     @Override
     public void onStartup(Set<Class<?>> servletContextConfigurerClasses, ServletContext servletContext) throws ServletException {
         configureGuiceFilter(servletContext);
-
         servletContext.addListener(SeedServletContextListener.class);
     }
 
