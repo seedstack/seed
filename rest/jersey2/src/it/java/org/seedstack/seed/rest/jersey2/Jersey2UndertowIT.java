@@ -32,15 +32,18 @@ public class Jersey2UndertowIT {
         launcher.launch(new String[]{});
     }
 
+    @Test
+    public void jersey2_is_working_with_undertow() throws Exception {
+        Response response = expect().statusCode(200).given().contentType(MediaType.APPLICATION_JSON)
+                .body("{ \"body\": \"hello world!\", \"author\": \"test\" }")
+                .post("http://localhost:8080/message");
+
+        JSONAssert.assertEquals(response.asString(), "{\"body\":\"test says: hello world!\",\"author\":\"computer\"}", true);
+    }
+
     @After
     public void tearDown() throws Exception {
         launcher.shutdown();
-    }
-
-    @Test
-    public void jersey2_is_working_with_undertow() throws Exception {
-        Response response = expect().statusCode(200).given().contentType(MediaType.APPLICATION_JSON).body("{ \"body\": \"hello world!\", \"author\": \"test\" }").post("http://localhost:8080/message");
-        JSONAssert.assertEquals(response.asString(), "{\"body\":\"test says: hello world!\",\"author\":\"computer\"}", true);
     }
 
 }

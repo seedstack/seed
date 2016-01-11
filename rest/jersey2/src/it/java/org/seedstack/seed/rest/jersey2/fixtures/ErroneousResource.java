@@ -5,13 +5,13 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-package org.seedstack.seed.rest.fixtures;
+package org.seedstack.seed.rest.jersey2.fixtures;
 
-import com.sun.jersey.api.NotFoundException;
 import org.seedstack.seed.security.AuthenticationException;
 import org.seedstack.seed.security.AuthorizationException;
 
 import javax.ws.rs.GET;
+import javax.ws.rs.NotFoundException;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Response;
 
