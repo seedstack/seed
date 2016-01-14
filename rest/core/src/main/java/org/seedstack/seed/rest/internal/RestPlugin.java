@@ -24,6 +24,7 @@ import org.seedstack.seed.rest.internal.hal.RelRegistryImpl;
 import org.seedstack.seed.rest.internal.jsonhome.JsonHome;
 import org.seedstack.seed.rest.internal.jsonhome.JsonHomeRootResource;
 import org.seedstack.seed.rest.internal.jsonhome.Resource;
+import org.seedstack.seed.rest.spi.RestProvider;
 import org.seedstack.seed.rest.spi.RootResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,15 +32,12 @@ import org.slf4j.LoggerFactory;
 import javax.servlet.ServletContext;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Variant;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author pierre.thirouin@ext.mpsa.com (Pierre Thirouin)
  */
-public class RestPlugin extends AbstractPlugin {
+public class RestPlugin extends AbstractPlugin implements RestProvider {
     public static final Specification<Class<?>> resourcesSpecification = new JaxRsResourceSpecification();
     public static final Specification<Class<?>> providersSpecification = new JaxRsProviderSpecification();
     private static final Logger LOGGER = LoggerFactory.getLogger(RestPlugin.class);
@@ -153,11 +151,13 @@ public class RestPlugin extends AbstractPlugin {
         return enabled;
     }
 
-    public Collection<Class<?>> getResources() {
-        return Collections.unmodifiableCollection(resources);
+    @Override
+    public Set<Class<?>> resources() {
+        return new HashSet<Class<?>>(resources);
     }
 
-    public Collection<Class<?>> getProviders() {
-        return Collections.unmodifiableCollection(providers);
+    @Override
+    public Set<Class<?>> providers() {
+        return new HashSet<Class<?>>(providers);
     }
 }
