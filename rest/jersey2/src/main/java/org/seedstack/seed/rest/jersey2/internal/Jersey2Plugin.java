@@ -12,9 +12,13 @@ import io.nuun.kernel.api.plugin.InitState;
 import io.nuun.kernel.api.plugin.context.InitContext;
 import io.nuun.kernel.core.AbstractPlugin;
 import org.seedstack.seed.rest.internal.RestPlugin;
+import org.seedstack.seed.rest.spi.RestProvider;
 import org.seedstack.seed.web.internal.WebPlugin;
 
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 public class Jersey2Plugin extends AbstractPlugin {
     @Override
@@ -30,19 +34,26 @@ public class Jersey2Plugin extends AbstractPlugin {
 
     @Override
     public Collection<Class<?>> requiredPlugins() {
-        return Lists.<Class<?>>newArrayList(WebPlugin.class, RestPlugin.class);
+        return Lists.<Class<?>>newArrayList(WebPlugin.class, RestPlugin.class, RestProvider.class);
     }
 
     @Override
     public InitState init(InitContext initContext) {
         RestPlugin restPlugin = initContext.dependency(RestPlugin.class);
+        List<RestProvider> restProviders = initContext.dependencies(RestProvider.class);
+        Set<Class<?>> resources = new HashSet<Class<?>>();
+        Set<Class<?>> providers = new HashSet<Class<?>>();
+        for (RestProvider restProvider : restProviders) {
+            resources.addAll(restProvider.resources());
+            providers.addAll(restProvider.providers());
+        }
 
         if (restPlugin.isEnabled()) {
             initContext.dependency(WebPlugin.class).registerAdditionalModule(
                     new Jersey2Module(
                             restPlugin.getConfiguration(),
-                            restPlugin.getResources(),
-                            restPlugin.getProviders()
+                            resources,
+                            providers
                     )
             );
         }
