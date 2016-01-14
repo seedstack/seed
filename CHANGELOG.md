@@ -1,6 +1,19 @@
 # Version 2.2.0 (2016-01-28)
 
-* [new] Applications can run in a Servlet 3+ environment without web.xml file
+* [fix] Fix the `@Ignore` annotation which was not working anymore in version 2.1.0.
+
+## Web
+
+* [new] JAX-RS 2 support through Jersey 2.
+* [new] Applications can launch in a Servlet 3+ environment without web.xml file.
+* [brk] Remove the `org.seedstack.seed.web.DelegateServletContextListener` interface which can be replaced by native servlet listeners.
+
+## Security
+
+* [chg] Disable storage of security sessions by default (can be re-enabled by setting `org.seedstack.seed.security.sessions.enabled` to true)
+* [chg] Sets the default security session timeout to 15 minutes (instead of 30 minutes before) when sessions are enabled
+* [new] Security session timeout can be changed with the `org.seedstack.seed.security.sessions.timeout` property (in seconds).
+* [new] Add an anti-XSRF security filter (named `xsrf`) which can be used in Web security filter chains to prevent XSRF attacks.
 
 # Version 2.1.0 (2015-11-26)
 

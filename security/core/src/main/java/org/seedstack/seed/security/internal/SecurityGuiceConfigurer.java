@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2013-2015, The SeedStack authors <http://seedstack.org>
+ * Copyright (c) 2013-2016, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -29,6 +29,6 @@ public class SecurityGuiceConfigurer {
         binder.bind(SubjectDAO.class).to(DefaultSubjectDAO.class);
         binder.bind(SessionStorageEvaluator.class).to(SeedSessionStorageEvaluator.class);
         binder.bind(CacheManager.class).to(MemoryConstrainedCacheManager.class);
-        binder.bindConstant().annotatedWith(Names.named("shiro.globalSessionTimeout")).to(securityConfiguration.getLong("session.timeout", DEFAULT_GLOBAL_SESSION_TIMEOUT));
+        binder.bindConstant().annotatedWith(Names.named("shiro.globalSessionTimeout")).to(securityConfiguration.getLong("sessions.timeout", DEFAULT_GLOBAL_SESSION_TIMEOUT));
     }
 }
