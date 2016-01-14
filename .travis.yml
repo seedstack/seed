@@ -11,9 +11,10 @@ cache:
   directories: $HOME/.m2/repository
 
 install:
-  - rm ~/.m2/settings.xml
-  - if [ $TRAVIS_PULL_REQUEST = false ] && [ $TRAVIS_BRANCH = master ]; then GOAL=deploy; else GOAL=install; fi
+  - echo "<settings><servers><server><id>bintray</id><username>\${env.BINTRAY_USER}</username><password>\${env.BINTRAY_KEY}</password></server></servers></settings>" > ~/.m2/settings.xml
+  - if [[ $TRAVIS_PULL_REQUEST = false ]] && [[ $TRAVIS_BRANCH = master ]] || [[ $TRAVIS_TAG = v* ]]; then GOAL=deploy; else GOAL=install; fi
+  - if [[ $TRAVIS_TAG = v* ]]; then ADDITIONAL_PROFILES=release; mvn -q -U org.seedstack:seedstack-maven-plugin:release; else ADDITIONAL_PROFILES=snapshots; fi
 
-script: mvn -q -U -T 2 -Pbuild-number,compatibility,bintray,snapshots,javadoc $GOAL jacoco:report
+script: mvn -q -U -T 2 -Pbuild-number,compatibility,bintray,javadoc,$ADDITIONAL_PROFILES $GOAL jacoco:report
 
 after_success: mvn -q coveralls:report -DrepoToken=$COVERALLS_TOKEN
