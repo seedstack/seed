@@ -22,26 +22,18 @@ import java.util.Map;
 class ApplicationDiagnosticCollector implements DiagnosticInfoCollector {
     private String basePackages;
     private Configuration configuration;
-    private String applicationId;
-    private String applicationName;
-    private String applicationVersion;
     private String activeProfiles;
     private String storageLocation;
+    private ApplicationInfo applicationInfo;
 
     @Override
     public Map<String, Object> collect() {
         Map<String, Object> result = new HashMap<String, Object>();
 
-        if (applicationId != null) {
-            result.put("id", applicationId);
-        }
-
-        if (applicationName != null) {
-            result.put("name", applicationName);
-        }
-
-        if (applicationVersion != null) {
-            result.put("version", applicationVersion);
+        if (applicationInfo != null) {
+            result.put("id", applicationInfo.getId());
+            result.put("name", applicationInfo.getName());
+            result.put("version", applicationInfo.getVersion());
         }
 
         if (activeProfiles != null) {
@@ -56,19 +48,15 @@ class ApplicationDiagnosticCollector implements DiagnosticInfoCollector {
             result.put("configuration", ConfigurationConverter.getMap(configuration));
         }
 
+        if (configuration != null) {
+            result.put("base-packages", basePackages);
+        }
+
         return result;
     }
 
     public void setConfiguration(Configuration configuration) {
         this.configuration = configuration;
-    }
-
-    public void setApplicationName(String applicationName) {
-        this.applicationName = applicationName;
-    }
-
-    public void setApplicationVersion(String applicationVersion) {
-        this.applicationVersion = applicationVersion;
     }
 
     public void setActiveProfiles(String activeProfiles) {
@@ -79,11 +67,11 @@ class ApplicationDiagnosticCollector implements DiagnosticInfoCollector {
         this.storageLocation = storageLocation;
     }
 
-    public void setApplicationId(String applicationId) {
-        this.applicationId = applicationId;
-    }
-
     public void setBasePackages(String basePackages) {
         this.basePackages = basePackages;
+    }
+
+    public void setApplicationInfo(ApplicationInfo applicationInfo) {
+        this.applicationInfo = applicationInfo;
     }
 }
