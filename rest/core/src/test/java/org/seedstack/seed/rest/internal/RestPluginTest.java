@@ -75,6 +75,11 @@ public class RestPluginTest {
     @SuppressWarnings("unchecked")
     @Test
     public void testWithoutServletContext() throws Exception {
+        givenConfiguration();
+        givenSpecifications(
+                new Pair(resourcesSpecification, MyResource.class),
+                new Pair(providersSpecification, MyProvider.class)
+        );
         InitState init = underTest.init(initContext);
         assertThat(init).isEqualTo(InitState.INITIALIZED);
     }
