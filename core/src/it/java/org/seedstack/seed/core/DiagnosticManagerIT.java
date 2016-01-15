@@ -102,7 +102,8 @@ public class DiagnosticManagerIT {
         assertThat(applicationInfo.get("id")).isNotNull();
         assertThat(applicationInfo.get("name")).isNotNull();
         assertThat(applicationInfo.get("version")).isNotNull();
-        assertThat(applicationInfo.get("storage-location")).isNotNull();
+        assertThat(applicationInfo.get("storage-location")).isNull();
+        assertThat(applicationInfo.get("base-packages")).isNotNull();
         assertThat(applicationInfo.get("active-profiles")).isNotNull();
         assertThat(applicationInfo.get("configuration")).isNotNull();
     }

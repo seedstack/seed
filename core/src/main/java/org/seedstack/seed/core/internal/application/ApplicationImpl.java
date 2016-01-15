@@ -37,41 +37,41 @@ import java.util.Map;
 class ApplicationImpl implements Application {
     private static final String REGEX_FOR_SUBPACKAGE = "(.*)\\.([^.]*)$";
 
-    private final String name;
-    private final String id;
-    private final String version;
+    private final ApplicationInfo applicationInfo;
     private final File storageRoot;
     private final MapConfiguration configuration;
 
     @Inject
     private Injector injector;
 
-    ApplicationImpl(String name, String id, String version, File storageRoot, MapConfiguration configuration) {
-        this.name = name;
-        this.id = id;
-        this.version = version;
-        this.storageRoot = storageRoot;
+    public ApplicationImpl(ApplicationInfo applicationInfo, MapConfiguration configuration, File seedStorage) {
+        this.applicationInfo = applicationInfo;
         this.configuration = configuration;
+        this.storageRoot = seedStorage;
     }
 
     @Override
     public String getName() {
-        return this.name;
+        return applicationInfo.getName();
     }
 
     @Override
     public String getId() {
-        return this.id;
+        return applicationInfo.getId();
     }
 
     @Override
     public String getVersion() {
-        return version;
+        return applicationInfo.getVersion();
     }
 
     @Override
     public File getStorageLocation(String context) {
-        File location = new File(this.storageRoot, context);
+        if (storageRoot == null) {
+            throw SeedException.createNew(ApplicationErrorCode.NO_LOCAL_STORAGE_CONFIGURED).put("context", context);
+        }
+
+        File location = new File(storageRoot, context);
 
         if (!location.exists() && !location.mkdirs()) {
             throw SeedException.createNew(ApplicationErrorCode.UNABLE_TO_CREATE_STORAGE_DIRECTORY).put("path", location.getAbsolutePath());

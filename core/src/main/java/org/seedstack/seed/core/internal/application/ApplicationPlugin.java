@@ -22,8 +22,8 @@ import org.javatuples.Pair;
 import org.seedstack.seed.Application;
 import org.seedstack.seed.SeedException;
 import org.seedstack.seed.core.internal.CorePlugin;
-import org.seedstack.seed.spi.configuration.ConfigurationLookup;
 import org.seedstack.seed.core.spi.configuration.ConfigurationProvider;
+import org.seedstack.seed.spi.configuration.ConfigurationLookup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.bridge.SLF4JBridgeHandler;
@@ -53,6 +53,7 @@ public class ApplicationPlugin extends AbstractPlugin implements ConfigurationPr
     private final SeedConfigLoader seedConfigLoader = new SeedConfigLoader();
     private final Configuration bootstrapConfiguration = seedConfigLoader.buildBootstrapConfig();
     private final Map<String, String> defaultConfiguration = new ConcurrentHashMap<String, String>();
+    private final ApplicationDiagnosticCollector applicationDiagnosticCollector = new ApplicationDiagnosticCollector();
     private Props props;
     private Application application;
 
@@ -74,13 +75,50 @@ public class ApplicationPlugin extends AbstractPlugin implements ConfigurationPr
     }
 
     @Override
-    public InitState init(InitContext initContext) {
-        // Setup application diagnostic collector
-        ApplicationDiagnosticCollector applicationDiagnosticCollector = new ApplicationDiagnosticCollector();
-        applicationDiagnosticCollector.setBasePackages(pluginPackageRoot());
-        initContext.dependency(CorePlugin.class).registerDiagnosticCollector("org.seedstack.seed.core.application", applicationDiagnosticCollector);
+    public Collection<Class<?>> requiredPlugins() {
+        return Lists.<Class<?>>newArrayList(CorePlugin.class);
+    }
 
-        // Retrieve all configuration resources
+    @Override
+    public Collection<ClasspathScanRequest> classpathScanRequests() {
+        return classpathScanRequestBuilder().resourcesRegex(PROPERTIES_REGEX).resourcesRegex(PROPS_REGEX).annotationType(ConfigurationLookup.class).build();
+    }
+
+    @Override
+    public InitState init(InitContext initContext) {
+        initDiagnosticCollector(initContext);
+
+        MapConfiguration configuration = buildConfiguration(retrieveConfigurationResources(initContext));
+
+        Configuration coreConfiguration = configuration.subset(CorePlugin.CORE_PLUGIN_PREFIX);
+        ApplicationInfo applicationInfo = buildApplicationInfo(coreConfiguration);
+        File seedStorage = setupApplicationStorage(coreConfiguration);
+        configureJUL(coreConfiguration);
+
+        application = new ApplicationImpl(applicationInfo, configuration, seedStorage);
+
+        registerConfigurationLookups(configuration, findConfigurationLookups(initContext));
+
+        return InitState.INITIALIZED;
+    }
+
+    private void initDiagnosticCollector(InitContext initContext) {
+        applicationDiagnosticCollector.setBasePackages(pluginPackageRoot());
+
+        String[] profiles = seedConfigLoader.applicationProfiles();
+        if (profiles == null || profiles.length == 0) {
+            LOGGER.info("No configuration profile selected");
+            applicationDiagnosticCollector.setActiveProfiles("");
+        } else {
+            String activeProfiles = Arrays.toString(profiles);
+            LOGGER.info("Active configuration profile(s): {}", activeProfiles);
+            applicationDiagnosticCollector.setActiveProfiles(activeProfiles);
+        }
+
+        initContext.dependency(CorePlugin.class).registerDiagnosticCollector("org.seedstack.seed.core.application", applicationDiagnosticCollector);
+    }
+
+    private Set<String> retrieveConfigurationResources(InitContext initContext) {
         Set<String> allConfigurationResources = Sets.newHashSet();
         for (String propertiesResource : initContext.mapResourcesByRegex().get(PROPERTIES_REGEX)) {
             if (propertiesResource.startsWith(CONFIGURATION_LOCATION)) {
@@ -92,9 +130,84 @@ public class ApplicationPlugin extends AbstractPlugin implements ConfigurationPr
                 allConfigurationResources.add(propsResource);
             }
         }
+        return allConfigurationResources;
+    }
 
-        // Find configuration lookups
+    private MapConfiguration buildConfiguration(Set<String> allConfigurationResources) {
+        Pair<MapConfiguration, Props> confs = seedConfigLoader.buildConfig(allConfigurationResources, defaultConfiguration);
+        MapConfiguration configuration = confs.getValue0();
+        props = confs.getValue1();
+        applicationDiagnosticCollector.setConfiguration(configuration);
+        return configuration;
+    }
+
+    private ApplicationInfo buildApplicationInfo(Configuration coreConfiguration) {
+        ApplicationInfo applicationInfo = new ApplicationInfo();
+
+        String appId = coreConfiguration.getString("application-id");
+        if (appId == null || appId.isEmpty()) {
+            throw SeedException.createNew(ApplicationErrorCode.MISSING_APPLICATION_IDENTIFIER).put("property",
+                    CorePlugin.CORE_PLUGIN_PREFIX + ".application-id");
+        }
+        applicationInfo.setAppId(appId);
+
+        String appName = coreConfiguration.getString("application-name");
+        if (appName == null) {
+            appName = appId;
+        }
+        applicationInfo.setAppName(appName);
+
+        String appVersion = coreConfiguration.getString("application-version");
+        if (appVersion == null) {
+            appVersion = "1.0.0";
+        }
+        applicationInfo.setAppVersion(appVersion);
+
+        LOGGER.info("Application info: {}", applicationInfo);
+        applicationDiagnosticCollector.setApplicationInfo(applicationInfo);
+
+        return applicationInfo;
+    }
+
+    private File setupApplicationStorage(Configuration coreConfiguration) {
+        String storageLocation = coreConfiguration.getString("storage");
+
+        if (storageLocation != null) {
+            File seedDirectory = new File(storageLocation);
+
+            if (!seedDirectory.exists() && !seedDirectory.mkdirs()) {
+                throw SeedException.createNew(ApplicationErrorCode.UNABLE_TO_CREATE_STORAGE_DIRECTORY).put("path", seedDirectory.getAbsolutePath());
+            }
+
+            if (!seedDirectory.isDirectory()) {
+                throw SeedException.createNew(ApplicationErrorCode.STORAGE_PATH_IS_NOT_A_DIRECTORY).put("path", seedDirectory.getAbsolutePath());
+            }
+
+            if (!seedDirectory.canWrite()) {
+                throw SeedException.createNew(ApplicationErrorCode.STORAGE_DIRECTORY_IS_NOT_WRITABLE).put("path", seedDirectory.getAbsolutePath());
+            }
+
+            LOGGER.info("Application local storage at {}", seedDirectory.getAbsolutePath());
+            applicationDiagnosticCollector.setStorageLocation(seedDirectory.getAbsolutePath());
+
+            return seedDirectory;
+        }
+
+        return null;
+    }
+
+    private void configureJUL(Configuration coreConfiguration) {
+        if (coreConfiguration.getBoolean("redirect-jul", true)) {
+            SLF4JBridgeHandler.removeHandlersForRootLogger();
+            SLF4JBridgeHandler.install();
+
+            LOGGER.debug("Java logging to SLF4J redirection enabled, if you're using logback be sure to have a LevelChangePropagator in your configuration");
+        }
+    }
+
+    private Map<String, Class<? extends StrLookup>> findConfigurationLookups(InitContext initContext) {
         Map<String, Class<? extends StrLookup>> configurationLookups = new HashMap<String, Class<? extends StrLookup>>();
+
         for (Class<?> candidate : initContext.scannedClassesByAnnotationClass().get(ConfigurationLookup.class)) {
             ConfigurationLookup configurationLookup = candidate.getAnnotation(ConfigurationLookup.class);
             if (StrLookup.class.isAssignableFrom(candidate) && configurationLookup != null && !configurationLookup.value().isEmpty()) {
@@ -103,102 +216,29 @@ public class ApplicationPlugin extends AbstractPlugin implements ConfigurationPr
             }
         }
 
-        // Build configuration
-        Pair<MapConfiguration, Props> confs = seedConfigLoader.buildConfig(allConfigurationResources, defaultConfiguration);
-        MapConfiguration configuration = confs.getValue0();
-        props = confs.getValue1();
+        return configurationLookups;
+    }
 
-        // Determine configuration profile
-        String[] profiles = seedConfigLoader.applicationProfiles();
-        if (profiles == null || profiles.length == 0) {
-            LOGGER.info("No configuration profile selected");
-            applicationDiagnosticCollector.setActiveProfiles("");
-        } else {
-            String activeProfiles = Arrays.toString(profiles);
-            LOGGER.info("Active configuration profile(s): {}", activeProfiles);
-            applicationDiagnosticCollector.setActiveProfiles(activeProfiles);
-        }
-
-        applicationDiagnosticCollector.setConfiguration(configuration);
-
-        Configuration coreConfiguration = configuration.subset(CorePlugin.CORE_PLUGIN_PREFIX);
-
-        String appId = coreConfiguration.getString("application-id");
-        if (appId == null || appId.isEmpty()) {
-            throw SeedException.createNew(ApplicationErrorCode.MISSING_APPLICATION_IDENTIFIER).put("property",
-                    CorePlugin.CORE_PLUGIN_PREFIX + ".application-id");
-        }
-
-        String appName = coreConfiguration.getString("application-name");
-        if (appName == null) {
-            appName = appId;
-        }
-
-        String appVersion = coreConfiguration.getString("application-version");
-        if (appVersion == null) {
-            appVersion = "1.0.0";
-        }
-
-        LOGGER.info("Application info: '{}' / '{}' / '{}'", appId, appName, appVersion);
-        applicationDiagnosticCollector.setApplicationId(appId);
-        applicationDiagnosticCollector.setApplicationName(appName);
-        applicationDiagnosticCollector.setApplicationVersion(appVersion);
-
-        File seedDirectory = registerApplicationStorage(coreConfiguration, appId);
-
-        LOGGER.debug("Application storage location is {}", seedDirectory.getAbsolutePath());
-        applicationDiagnosticCollector.setStorageLocation(seedDirectory.getAbsolutePath());
-
-        if (coreConfiguration.getBoolean("redirect-jul", true)) {
-            SLF4JBridgeHandler.removeHandlersForRootLogger();
-            SLF4JBridgeHandler.install();
-
-            LOGGER.debug("Java logging to SLF4J redirection enabled, if you're using logback be sure to have a LevelChangePropagator in your configuration");
-        }
-
-        ApplicationImpl application = new ApplicationImpl(appName, appId, appVersion, seedDirectory, configuration);
-
-        // Register configuration lookups
+    private void registerConfigurationLookups(MapConfiguration configuration, Map<String, Class<? extends StrLookup>> configurationLookups) {
         for (Map.Entry<String, Class<? extends StrLookup>> configurationLookup : configurationLookups.entrySet()) {
             configuration.getInterpolator().registerLookup(configurationLookup.getKey(), buildStrLookup(configurationLookup.getValue(), application));
         }
-
-        this.application = application;
-
-        return InitState.INITIALIZED;
     }
 
-    private File registerApplicationStorage(Configuration coreConfiguration, String appId) {
-        String seedStorage = coreConfiguration.getString("storage");
-        File seedDirectory;
-        if (seedStorage == null) {
-            seedDirectory = new File(new File(getUserHome(), ".seed"), appId);
-        } else {
-            seedDirectory = new File(seedStorage);
+    private StrLookup buildStrLookup(Class<? extends StrLookup> strLookupClass, Application application) {
+        try {
+            try {
+                return strLookupClass.getConstructor(Application.class).newInstance(application);
+            } catch (NoSuchMethodException e1) {
+                try {
+                    return strLookupClass.getConstructor().newInstance();
+                } catch (NoSuchMethodException e2) {
+                    throw SeedException.wrap(e2, ApplicationErrorCode.NO_SUITABLE_CONFIGURATION_LOOKUP_CONSTRUCTOR_FOUND).put("className", strLookupClass.getCanonicalName());
+                }
+            }
+        } catch (Exception e) {
+            throw SeedException.wrap(e, ApplicationErrorCode.UNABLE_TO_INSTANTIATE_CONFIGURATION_LOOKUP).put("className", strLookupClass.getCanonicalName());
         }
-
-        if (!seedDirectory.exists() && !seedDirectory.mkdirs()) {
-            throw SeedException.createNew(ApplicationErrorCode.UNABLE_TO_CREATE_STORAGE_DIRECTORY).put("path", seedDirectory.getAbsolutePath());
-        }
-
-        if (!seedDirectory.isDirectory()) {
-            throw SeedException.createNew(ApplicationErrorCode.STORAGE_PATH_IS_NOT_A_DIRECTORY).put("path", seedDirectory.getAbsolutePath());
-        }
-
-        if (!seedDirectory.canWrite()) {
-            throw SeedException.createNew(ApplicationErrorCode.STORAGE_DIRECTORY_IS_NOT_WRITABLE).put("path", seedDirectory.getAbsolutePath());
-        }
-        return seedDirectory;
-    }
-
-    @Override
-    public Collection<ClasspathScanRequest> classpathScanRequests() {
-        return classpathScanRequestBuilder().resourcesRegex(PROPERTIES_REGEX).resourcesRegex(PROPS_REGEX).annotationType(ConfigurationLookup.class).build();
-    }
-
-    @Override
-    public Collection<Class<?>> requiredPlugins() {
-        return Lists.<Class<?>>newArrayList(CorePlugin.class);
     }
 
     @Override
@@ -233,31 +273,6 @@ public class ApplicationPlugin extends AbstractPlugin implements ConfigurationPr
         return defaultConfiguration;
     }
 
-    private String getUserHome() {
-        String userProfile = System.getenv("USERPROFILE");
-        if (userProfile != null) {
-            return userProfile;
-        } else {
-            return System.getProperty("user.home");
-        }
-    }
-
-    private StrLookup buildStrLookup(Class<? extends StrLookup> strLookupClass, Application application) {
-        try {
-            try {
-                return strLookupClass.getConstructor(Application.class).newInstance(application);
-            } catch (NoSuchMethodException e1) {
-                try {
-                    return strLookupClass.getConstructor().newInstance();
-                } catch (NoSuchMethodException e2) {
-                    throw SeedException.wrap(e2, ApplicationErrorCode.NO_SUITABLE_CONFIGURATION_LOOKUP_CONSTRUCTOR_FOUND).put("className", strLookupClass.getCanonicalName());
-                }
-            }
-        } catch (Exception e) {
-            throw SeedException.wrap(e, ApplicationErrorCode.UNABLE_TO_INSTANTIATE_CONFIGURATION_LOOKUP).put("className", strLookupClass.getCanonicalName());
-        }
-    }
-
     @Override
     public Configuration getConfiguration() {
         return application.getConfiguration();
@@ -267,4 +282,5 @@ public class ApplicationPlugin extends AbstractPlugin implements ConfigurationPr
     public Configuration getConfiguration(Class<?> clazz) {
         return application.getConfiguration(clazz);
     }
+
 }
