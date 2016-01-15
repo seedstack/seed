@@ -32,7 +32,11 @@ import org.slf4j.LoggerFactory;
 import javax.servlet.ServletContext;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Variant;
-import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * @author pierre.thirouin@ext.mpsa.com (Pierre Thirouin)
@@ -149,6 +153,21 @@ public class RestPlugin extends AbstractPlugin implements RestProvider {
 
     public boolean isEnabled() {
         return enabled;
+    }
+
+    @Deprecated
+    public void registerRootResource(Variant variant, Class<? extends RootResource> rootResource) {
+        addRootResourceVariant(variant, rootResource);
+    }
+
+    @Deprecated
+    public String getRestPath() {
+        return restConfiguration.getRestPath();
+    }
+
+    @Deprecated
+    public String getJspPath() {
+        return restConfiguration.getJspPath();
     }
 
     @Override
