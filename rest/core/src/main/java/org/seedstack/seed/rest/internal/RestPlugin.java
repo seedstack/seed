@@ -172,11 +172,11 @@ public class RestPlugin extends AbstractPlugin implements RestProvider {
 
     @Override
     public Set<Class<?>> resources() {
-        return new HashSet<Class<?>>(resources);
+        return resources != null ? new HashSet<Class<?>>(resources) : new HashSet<Class<?>>();
     }
 
     @Override
     public Set<Class<?>> providers() {
-        return new HashSet<Class<?>>(providers);
+        return providers != null ? new HashSet<Class<?>>(providers) : new HashSet<Class<?>>();
     }
 }

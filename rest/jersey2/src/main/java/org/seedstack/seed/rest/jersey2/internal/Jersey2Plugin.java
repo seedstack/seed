@@ -40,22 +40,18 @@ public class Jersey2Plugin extends AbstractPlugin {
     @Override
     public InitState init(InitContext initContext) {
         RestPlugin restPlugin = initContext.dependency(RestPlugin.class);
-        List<RestProvider> restProviders = initContext.dependencies(RestProvider.class);
-        Set<Class<?>> resources = new HashSet<Class<?>>();
-        Set<Class<?>> providers = new HashSet<Class<?>>();
-        for (RestProvider restProvider : restProviders) {
-            resources.addAll(restProvider.resources());
-            providers.addAll(restProvider.providers());
-        }
 
         if (restPlugin.isEnabled()) {
-            initContext.dependency(WebPlugin.class).registerAdditionalModule(
-                    new Jersey2Module(
-                            restPlugin.getConfiguration(),
-                            resources,
-                            providers
-                    )
-            );
+            List<RestProvider> restProviders = initContext.dependencies(RestProvider.class);
+            Set<Class<?>> resources = new HashSet<Class<?>>();
+            Set<Class<?>> providers = new HashSet<Class<?>>();
+            for (RestProvider restProvider : restProviders) {
+                resources.addAll(restProvider.resources());
+                providers.addAll(restProvider.providers());
+            }
+
+            Jersey2Module servletModule = new Jersey2Module(restPlugin.getConfiguration(), resources, providers);
+            initContext.dependency(WebPlugin.class).registerAdditionalModule(servletModule);
         }
 
         return InitState.INITIALIZED;
