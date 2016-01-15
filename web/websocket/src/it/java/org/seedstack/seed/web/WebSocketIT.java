@@ -60,7 +60,7 @@ public class WebSocketIT extends AbstractSeedWebIT {
         final Session session2 = connectToServer(baseUrl, chatClientEndpoint2);
         assertNotNull(session2);
 
-        assertTrue(ChatClientEndpoint1.latch.await(2, TimeUnit.SECONDS));
+        assertTrue(ChatClientEndpoint1.latch.await(2, TimeUnit.SECONDS)); // FIXME there are concurrency issues here
         assertTrue(ChatClientEndpoint2.latch.await(2, TimeUnit.SECONDS));
         assertEquals("echo: " + ChatClientEndpoint2.TEXT, ChatClientEndpoint1.response);
         assertEquals("echo: " + ChatClientEndpoint2.TEXT, ChatClientEndpoint2.response);

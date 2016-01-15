@@ -82,11 +82,6 @@ public class RestPlugin extends AbstractPlugin implements RestProvider {
 
     @Override
     public InitState init(InitContext initContext) {
-        if (servletContext == null) {
-            enabled = false;
-            LOGGER.info("No servlet context detected, REST support disabled");
-            return InitState.INITIALIZED;
-        }
 
         restConfiguration.init(initContext.dependency(ConfigurationProvider.class).getConfiguration());
 
@@ -94,9 +89,15 @@ public class RestPlugin extends AbstractPlugin implements RestProvider {
         resources = scannedClasses.get(RestPlugin.resourcesSpecification);
         providers = scannedClasses.get(RestPlugin.providersSpecification);
 
-        configureExceptionMappers();
-
         initializeHypermedia();
+
+        if (servletContext == null) {
+            enabled = false;
+            LOGGER.info("No servlet context detected, REST support disabled");
+            return InitState.INITIALIZED;
+        }
+
+        configureExceptionMappers();
 
         if (restConfiguration.isJsonHomeEnabled()) {
             addRootResourceVariant(new Variant(new MediaType("application", "json"), null, null), JsonHomeRootResource.class);
@@ -127,20 +128,16 @@ public class RestPlugin extends AbstractPlugin implements RestProvider {
 
     @Override
     public Object nativeUnitModule() {
-        if (enabled) {
             return new AbstractModule() {
                 @Override
                 protected void configure() {
                     install(new RestModule(restConfiguration, resources, providers));
                     install(new HypermediaModule(jsonHome, relRegistry));
-                    if (!rootResourcesByVariant.isEmpty()) {
+                    if (enabled && !rootResourcesByVariant.isEmpty()) {
                         install(new RootResourcesModule(rootResourcesByVariant));
                     }
                 }
             };
-        }
-
-        return null;
     }
 
     public void addRootResourceVariant(Variant variant, Class<? extends RootResource> rootResource) {
