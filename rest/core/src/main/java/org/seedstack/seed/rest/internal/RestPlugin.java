@@ -131,10 +131,12 @@ public class RestPlugin extends AbstractPlugin implements RestProvider {
             return new AbstractModule() {
                 @Override
                 protected void configure() {
-                    install(new RestModule(restConfiguration, resources, providers));
                     install(new HypermediaModule(jsonHome, relRegistry));
-                    if (enabled && !rootResourcesByVariant.isEmpty()) {
-                        install(new RootResourcesModule(rootResourcesByVariant));
+                    if (enabled) {
+                        install(new RestModule(restConfiguration, resources, providers));
+                        if (!rootResourcesByVariant.isEmpty()) {
+                            install(new RootResourcesModule(rootResourcesByVariant));
+                        }
                     }
                 }
             };
