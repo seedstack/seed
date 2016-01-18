@@ -9,17 +9,14 @@ package org.seedstack.seed.rest.internal;
 
 import com.damnhandy.uri.template.UriTemplate;
 import com.damnhandy.uri.template.UriTemplateBuilder;
+import org.seedstack.seed.rest.Rel;
 import org.seedstack.seed.rest.hal.Link;
 import org.seedstack.seed.rest.internal.jsonhome.HintScanner;
 import org.seedstack.seed.rest.internal.jsonhome.Hints;
 import org.seedstack.seed.rest.internal.jsonhome.Resource;
 
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Scans the JAX-RS resources for building JSON-HOME resources and HAL links.
@@ -28,8 +25,8 @@ import java.util.Map;
  */
 public class ResourceScanner {
 
-    private static final RelSpecification REL_SPECIFICATION = new RelSpecification();
-    private static final JsonHomeSpecification JSON_HOME_SPECIFICATION = new JsonHomeSpecification();
+    private static final RelSpecification METHOD_OR_CLASS_HAS_REL = new RelSpecification();
+    private static final JsonHomeSpecification EXPOSE_AS_ENTRY_POINT = new JsonHomeSpecification();
 
     private final Map<String, List<Method>> resourceByRel = new HashMap<String, List<Method>>();
     private final Map<String, Resource> jsonHomeResources = new HashMap<String, Resource>();
@@ -53,33 +50,33 @@ public class ResourceScanner {
      * @return itself
      */
     public ResourceScanner scan(final Collection<Class<?>> classes) {
-        // collect method to scan
         for (Class<?> aClass : classes) {
-            scan(aClass);
+            collectHttpMethodsWithRel(aClass);
         }
-        // do the actual work
         buildJsonHomeResources();
         buildHalLink();
         return this;
     }
 
-    private void scan(Class<?> aClass) {
-        // Collects all the class's HTTP methods with a rel
-        // (all of them if the rel is on the class)
+    private void collectHttpMethodsWithRel(Class<?> aClass) {
         for (Method method : aClass.getDeclaredMethods()) {
-            if (REL_SPECIFICATION.isSatisfiedBy(method)) {
-                String rel = RESTReflect.findRel(method).value();
-                if ("".equals(rel)) {
+            if (METHOD_OR_CLASS_HAS_REL.isSatisfiedBy(method)) {
+                Rel relAnnotation = RESTReflect.findRel(method);
+                if (relAnnotation == null || "".equals(relAnnotation.value())) {
                     throw new IllegalStateException("Missing rel value on " + method.toGenericString());
                 }
-                List<Method> methods = resourceByRel.get(rel);
-                if (methods == null) {
-                    methods = new ArrayList<Method>();
-                }
-                methods.add(method);
-                resourceByRel.put(rel, methods);
+                registerMethod(relAnnotation.value(), method);
             }
         }
+    }
+
+    private void registerMethod(String rel, Method method) {
+        List<Method> methods = resourceByRel.get(rel);
+        if (methods == null) {
+            methods = new ArrayList<Method>();
+        }
+        methods.add(method);
+        resourceByRel.put(rel, methods);
     }
 
     /**
@@ -125,8 +122,7 @@ public class ResourceScanner {
     private Resource buildJsonHomeResource(String baseParam, String rel, Method method) {
         Resource currentResource = null;
 
-        // Check if the resource should be exposed
-        if (JSON_HOME_SPECIFICATION.isSatisfiedBy(method)) {
+        if (EXPOSE_AS_ENTRY_POINT.isSatisfiedBy(method)) {
 
             String path = RESTReflect.findPath(method);
             if (path == null) {
@@ -135,15 +131,14 @@ public class ResourceScanner {
 
             Hints hints = new HintScanner().findHint(method);
 
-            // Add the Seed REST path
-            path = UriBuilder.uri(restConfiguration.getRestPath(), path);
+            String absolutePath = UriBuilder.uri(restConfiguration.getRestPath(), path);
 
-            if (isTemplated(path)) {
+            if (isTemplated(absolutePath)) {
                 Map<String, String> pathParams = RESTReflect.findPathParams(baseParam, method);
                 Map<String, String> queryParams = RESTReflect.findQueryParams(baseParam, method);
-                currentResource = new Resource(rel, path, pathParams, queryParams, hints);
+                currentResource = new Resource(rel, absolutePath, pathParams, queryParams, hints);
             } else {
-                currentResource = new Resource(rel, path, hints);
+                currentResource = new Resource(rel, absolutePath, hints);
             }
         }
         return currentResource;
@@ -155,29 +150,33 @@ public class ResourceScanner {
 
     private void buildHalLink() {
         for (Map.Entry<String, List<Method>> entry : resourceByRel.entrySet()) {
+            String rel = entry.getKey();
+            List<Method> methodsByRel = entry.getValue();
 
-            Map<String, String> queryParams = new HashMap<String, String>();
-            for (Method method : entry.getValue()) {
-                queryParams.putAll(RESTReflect.findQueryParams("", method));
-            }
-
-            String path = RESTReflect.findPath(entry.getValue().get(0));
+            String path = RESTReflect.findPath(methodsByRel.get(0));
             if (path == null) {
-                throw new IllegalStateException("Path not found for rel: " + entry.getKey());
+                throw new IllegalStateException("Path not found for rel: " + rel);
             }
-
-            // Build an URI template level 4
             UriTemplateBuilder uriTemplateBuilder = UriTemplate.buildFromTemplate(path);
 
-            // Add eventual query parameters to the URI
+            Set<String> queryParams = findAllQueryParamsForRel(methodsByRel);
             if (!queryParams.isEmpty()) {
-                uriTemplateBuilder.query(queryParams.keySet().toArray(new String[queryParams.keySet().size()]));
+                uriTemplateBuilder.query(queryParams.toArray(new String[queryParams.size()]));
             }
 
-            // Add the Seed Rest path
-            String finalPath = UriBuilder.uri(restConfiguration.getRestPath(), uriTemplateBuilder.build().getTemplate());
+            String absolutePath = UriBuilder.uri(restConfiguration.getRestPath(), uriTemplateBuilder.build().getTemplate());
 
-            halLinks.put(entry.getKey(), new Link(finalPath));
+            halLinks.put(rel, new Link(absolutePath));
         }
+    }
+
+    private Set<String> findAllQueryParamsForRel(List<Method> methodsByRel) {
+        // A resource correspond to one URI but one URI can correspond to multiple method
+        // so we have to look on all the methods to find the query parameters
+        Set<String> queryParams = new HashSet<String>();
+        for (Method method : methodsByRel) {
+            queryParams.addAll(RESTReflect.findQueryParams("", method).keySet());
+        }
+        return queryParams;
     }
 }
