@@ -17,6 +17,8 @@ import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.seedstack.seed.rest.internal.UriBuilder.uri;
+
 /**
  * Provides a set of functions which scan HTTP methods to find various information
  * like rel, path, query parameters, etc.
@@ -66,30 +68,37 @@ class RESTReflect {
      * @return the resource's path
      */
     static String findPath(Method method) {
-        Path rootPath = method.getDeclaringClass().getAnnotation(Path.class);
-        Path path = method.getAnnotation(Path.class);
+        Path pathFromClass = method.getDeclaringClass().getAnnotation(Path.class);
+        Path pathFromMethod = method.getAnnotation(Path.class);
 
-        // Concatenates paths form class and method
-        String pathValue = null;
-        if (path != null && rootPath != null) {
-            pathValue = UriBuilder.uri(rootPath.value(), path.value());
-        } else if (rootPath != null) {
-            pathValue = UriBuilder.uri(rootPath.value());
-        } else if (path != null) {
-            pathValue = UriBuilder.uri(path.value());
-        }
-
-        if (pathValue != null) {
-            // Path should always starts with a slash
-            if (!pathValue.startsWith("/")) {
-                pathValue = "/" + pathValue;
-            }
-
-            // Extract JAX-RS regex from the path
-            return UriBuilder.stripJaxRsRegex(pathValue);
-        } else {
+        String path = concatenatePathValues(pathFromClass, pathFromMethod);
+        if (path == null) {
             return null;
+        } else {
+            path = addLeadingSlash(path);
+            return UriBuilder.stripJaxRsRegex(path);
         }
+    }
+
+    private static String concatenatePathValues(Path pathFromClass, Path pathFromMethod) {
+        boolean hasPathOnClass = pathFromClass != null;
+        boolean hasPathOnMethod = pathFromMethod != null;
+        String path = null;
+        if (hasPathOnMethod && hasPathOnClass) {
+            path = uri(pathFromClass.value(), pathFromMethod.value());
+        } else if (hasPathOnClass) {
+            path = uri(pathFromClass.value());
+        } else if (hasPathOnMethod) {
+            path = uri(pathFromMethod.value());
+        }
+        return path;
+    }
+
+    private static String addLeadingSlash(String path) {
+        if (!path.startsWith("/")) {
+            path = "/" + path;
+        }
+        return path;
     }
 
     /**
@@ -101,17 +110,16 @@ class RESTReflect {
      */
     static Map<String, String> findPathParams(String baseParam, Method method) {
         Map<String, String> hrefVars = new HashMap<String, String>();
-        for (Annotation[] annotations : method.getParameterAnnotations()) {
-            for (Annotation annotation : annotations) {
-                if (annotation.annotationType().equals(PathParam.class)) {
-                    String varName = ((PathParam) annotation).value();
-                    hrefVars.put(varName, UriBuilder.uri(baseParam, varName));
+        for (Annotation[] paramAnnotations : method.getParameterAnnotations()) {
+            for (Annotation paramAnnotation : paramAnnotations) {
+                if (paramAnnotation.annotationType().equals(PathParam.class)) {
+                    String varName = ((PathParam) paramAnnotation).value();
+                    hrefVars.put(varName, uri(baseParam, varName));
                 }
             }
         }
         return hrefVars;
     }
-
 
     /**
      * Finds query parameters based on {@link javax.ws.rs.QueryParam} annotation.
@@ -122,11 +130,11 @@ class RESTReflect {
      */
     static Map<String, String> findQueryParams(String baseParam, Method method) {
         Map<String, String> hrefVars = new HashMap<String, String>();
-        for (Annotation[] annotations : method.getParameterAnnotations()) {
-            for (Annotation annotation : annotations) {
-                if (annotation.annotationType().equals(QueryParam.class)) {
-                    String varName = ((QueryParam) annotation).value();
-                    hrefVars.put(varName, UriBuilder.uri(baseParam, varName));
+        for (Annotation[] paramAnnotations : method.getParameterAnnotations()) {
+            for (Annotation paramAnnotation : paramAnnotations) {
+                if (paramAnnotation.annotationType().equals(QueryParam.class)) {
+                    String varName = ((QueryParam) paramAnnotation).value();
+                    hrefVars.put(varName, uri(baseParam, varName));
                 }
             }
         }
