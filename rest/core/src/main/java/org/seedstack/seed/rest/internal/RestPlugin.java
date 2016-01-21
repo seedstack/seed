@@ -35,6 +35,7 @@ import javax.ws.rs.core.Variant;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -100,7 +101,9 @@ public class RestPlugin extends AbstractPlugin implements RestProvider {
         configureExceptionMappers();
 
         if (restConfiguration.isJsonHomeEnabled()) {
-            addRootResourceVariant(new Variant(new MediaType("application", "json"), null, null), JsonHomeRootResource.class);
+            // The typed locale variable resolves constructor ambiguity when the JAX-RS 2.0 spec is used
+            Locale locale = null;
+            addRootResourceVariant(new Variant(new MediaType("application", "json"), locale, null), JsonHomeRootResource.class);
         }
 
         return InitState.INITIALIZED;
