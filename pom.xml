@@ -37,6 +37,8 @@
         <jersey2.version>2.22.1</jersey2.version>
 
         <compatibility.version>2.1.0</compatibility.version>
+
+        <bintray.package>seed</bintray.package>
     </properties>
 
     <modules>
