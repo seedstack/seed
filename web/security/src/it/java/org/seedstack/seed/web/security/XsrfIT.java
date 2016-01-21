@@ -34,8 +34,7 @@ public class XsrfIT extends AbstractSeedWebIT {
         return ShrinkWrap
                 .create(WebArchive.class)
                 .addAsResource("web-security.props", "META-INF/configuration/web-security.props")
-                .addAsResource("xsrf.props", "META-INF/configuration/xsrf.props")
-                ;
+                .addAsResource("xsrf.props", "META-INF/configuration/xsrf.props");
     }
 
     @Test
