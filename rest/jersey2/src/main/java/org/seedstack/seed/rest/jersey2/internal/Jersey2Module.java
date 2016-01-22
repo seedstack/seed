@@ -32,12 +32,33 @@ class Jersey2Module extends ServletModule {
 
     @Override
     protected void configureServlets() {
+        Map<String, Object> jerseyProperties = buildJerseyProperties();
+        Map<String, String> initParams = buildInitParams(jerseyProperties);
+
+        filter(restConfiguration.getRestPath() + "/*").through(
+                new SeedServletContainer(resources, providers, jerseyProperties),
+                initParams
+        );
+    }
+
+    private Map<String, String> buildInitParams(Map<String, Object> jerseyProperties) {
+        Map<String, String> initParams = new HashMap<String, String>();
+
+        // Those properties must be defined as init parameters of the filter
+        initParams.put(ServletProperties.FILTER_CONTEXT_PATH, (String) jerseyProperties.get(ServletProperties.FILTER_CONTEXT_PATH));
+        initParams.put(ServletProperties.FILTER_STATIC_CONTENT_REGEX, (String) jerseyProperties.get(ServletProperties.FILTER_STATIC_CONTENT_REGEX));
+
+        return initParams;
+    }
+
+    private Map<String, Object> buildJerseyProperties() {
         Map<String, Object> jerseyProperties = new HashMap<String, Object>();
 
         // Default configuration values
         jerseyProperties.put(ServletProperties.FILTER_FORWARD_ON_404, true);
         jerseyProperties.put(ServerProperties.WADL_FEATURE_DISABLE, true);
 
+        // User-defined configuration values
         jerseyProperties.putAll(propertiesToMap(restConfiguration.getJerseyProperties()));
 
         // Forced configuration values
@@ -46,7 +67,7 @@ class Jersey2Module extends ServletModule {
         }
         jerseyProperties.put(ServletProperties.FILTER_CONTEXT_PATH, restConfiguration.getRestPath());
 
-        filter(restConfiguration.getRestPath() + "/*").through(new SeedServletContainer(resources, providers, jerseyProperties));
+        return jerseyProperties;
     }
 
     private Map<String, String> propertiesToMap(Properties properties) {

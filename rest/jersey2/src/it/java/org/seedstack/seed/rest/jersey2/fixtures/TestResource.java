@@ -7,8 +7,6 @@
  */
 package org.seedstack.seed.rest.jersey2.fixtures;
 
-import org.seedstack.seed.rest.jersey2.fixtures.Message;
-
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
