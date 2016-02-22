@@ -16,7 +16,7 @@ import org.seedstack.seed.Application;
 import org.seedstack.seed.Configuration;
 import org.seedstack.seed.Logging;
 import org.seedstack.seed.core.fixtures.SomeEnum;
-import org.seedstack.seed.core.internal.sample.MyClass;
+import org.seedstack.seed.core.fixtures.MyClass;
 import org.slf4j.Logger;
 
 import javax.inject.Inject;
