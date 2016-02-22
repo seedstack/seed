@@ -10,6 +10,7 @@ package org.seedstack.seed.core.internal;
 import com.google.inject.Module;
 import io.nuun.kernel.api.plugin.InitState;
 import io.nuun.kernel.api.plugin.PluginException;
+import io.nuun.kernel.api.plugin.context.Context;
 import io.nuun.kernel.api.plugin.context.InitContext;
 import io.nuun.kernel.api.plugin.request.ClasspathScanRequest;
 import io.nuun.kernel.core.AbstractPlugin;
@@ -19,6 +20,7 @@ import org.reflections.vfs.Vfs;
 import org.seedstack.seed.CoreErrorCode;
 import org.seedstack.seed.DiagnosticManager;
 import org.seedstack.seed.Install;
+import org.seedstack.seed.LifecycleListener;
 import org.seedstack.seed.SeedException;
 import org.seedstack.seed.core.internal.scan.ClasspathScanHandler;
 import org.seedstack.seed.core.internal.scan.FallbackUrlType;
@@ -30,6 +32,7 @@ import org.seedstack.seed.spi.diagnostic.DiagnosticInfoCollector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.inject.Inject;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -56,9 +59,7 @@ public class CorePlugin extends AbstractPlugin {
     public static final String CORE_PLUGIN_PREFIX = "org.seedstack.seed.core";
     public static final String DETAILS_MESSAGE = "Details of the previous error below";
     private static final Logger LOGGER = LoggerFactory.getLogger(CorePlugin.class);
-
     private static final DiagnosticManagerImpl DIAGNOSTIC_MANAGER = new DiagnosticManagerImpl();
-
     private static final FallbackUrlType FALLBACK_URL_TYPE = new FallbackUrlType();
 
     static {
@@ -98,8 +99,11 @@ public class CorePlugin extends AbstractPlugin {
     }
 
     private final Set<Class<? extends Module>> seedModules = new HashSet<Class<? extends Module>>();
+    private final Set<Class<? extends LifecycleListener>> lifecycleListenerClasses = new HashSet<Class<? extends LifecycleListener>>();
     private final Map<String, DiagnosticInfoCollector> diagnosticInfoCollectors = new HashMap<String, DiagnosticInfoCollector>();
-    private Map<Class<?>, Maybe<? extends DependencyProvider>> optionalDependencies = new HashMap<Class<?>, Maybe<? extends DependencyProvider>>();
+    private final Map<Class<?>, Maybe<? extends DependencyProvider>> optionalDependencies = new HashMap<Class<?>, Maybe<? extends DependencyProvider>>();
+    @Inject
+    private Set<LifecycleListener> lifecycleListeners;
 
     /**
      * @return the diagnostic manager singleton.
@@ -118,10 +122,19 @@ public class CorePlugin extends AbstractPlugin {
         return SEEDSTACK_PACKAGE_ROOT;
     }
 
+    @Override
+    public Collection<ClasspathScanRequest> classpathScanRequests() {
+        return classpathScanRequestBuilder()
+                .subtypeOf(DiagnosticInfoCollector.class)
+                .subtypeOf(LifecycleListener.class)
+                .annotationType(Install.class)
+                .subtypeOf(DependencyProvider.class)
+                .build();
+    }
+
     @SuppressWarnings("unchecked")
     @Override
     public InitState init(InitContext initContext) {
-    	
         int failedUrlCount = FALLBACK_URL_TYPE.getFailedUrls().size();
         if (failedUrlCount > 0) {
             LOGGER.info("{} URL(s) were not scanned, enable debug logging to see them", failedUrlCount);
@@ -142,7 +155,7 @@ public class CorePlugin extends AbstractPlugin {
 
         // Scan optional dependencies
         for (Class<?> candidate : scannedSubTypesByParentClass.get(DependencyProvider.class)) {
-            getDependency((Class<DependencyProvider>)candidate);
+            getDependency((Class<DependencyProvider>) candidate);
         }
 
         for (Class<?> candidate : scannedSubTypesByParentClass.get(DiagnosticInfoCollector.class)) {
@@ -158,8 +171,15 @@ public class CorePlugin extends AbstractPlugin {
                 }
             }
         }
-
         LOGGER.debug("Detected {} diagnostic collector(s)", diagnosticInfoCollectors.size());
+
+        for (Class<?> candidate : scannedSubTypesByParentClass.get(LifecycleListener.class)) {
+            if (LifecycleListener.class.isAssignableFrom(candidate)) {
+                lifecycleListenerClasses.add((Class<? extends LifecycleListener>) candidate);
+                LOGGER.trace("Detected lifecycle listener {}", candidate.getCanonicalName());
+            }
+        }
+        LOGGER.debug("Detected {} lifecycle listener(s)", lifecycleListenerClasses.size());
 
         for (Class<?> candidate : scannedClassesByAnnotationClass.get(Install.class)) {
             if (Module.class.isAssignableFrom(candidate)) {
@@ -167,25 +187,21 @@ public class CorePlugin extends AbstractPlugin {
                 LOGGER.trace("Detected module to install {}", candidate.getCanonicalName());
             }
         }
-
         LOGGER.debug("Detected {} module(s) to install", seedModules.size());
 
         return InitState.INITIALIZED;
     }
 
-    @Override
-    public Collection<ClasspathScanRequest> classpathScanRequests() {
-        return classpathScanRequestBuilder().subtypeOf(DiagnosticInfoCollector.class).annotationType(Install.class).subtypeOf(DependencyProvider.class).build();
-    }
+    @SuppressWarnings("unchecked")
+    private Set<URL> extractScannedUrls(InitContext initContext) {
+        try {
+            return new HashSet<URL>((Set<URL>) SeedReflectionUtils.invokeMethod(SeedReflectionUtils.getFieldValue(unproxify(initContext), "classpathScanner"), "computeUrls"));
+        } catch (Exception e) {
+            LOGGER.warn("Unable to collect scanned classpath");
+            LOGGER.debug(DETAILS_MESSAGE, e);
+        }
 
-    /**
-     * This method registers an existing {@link DiagnosticInfoCollector} instance.
-     *
-     * @param diagnosticDomain        the diagnostic domain name the collector is related to.
-     * @param diagnosticInfoCollector the diagnostic collector instance.
-     */
-    public void registerDiagnosticCollector(String diagnosticDomain, DiagnosticInfoCollector diagnosticInfoCollector) {
-        diagnosticInfoCollectors.put(diagnosticDomain, diagnosticInfoCollector);
+        return null;
     }
 
     @Override
@@ -202,7 +218,45 @@ public class CorePlugin extends AbstractPlugin {
             }
         }
 
-        return new CoreModule(subModules, DIAGNOSTIC_MANAGER, diagnosticInfoCollectors, this.optionalDependencies);
+        return new CoreModule(subModules, lifecycleListenerClasses, DIAGNOSTIC_MANAGER, diagnosticInfoCollectors, this.optionalDependencies);
+    }
+
+    @Override
+    public void start(Context context) {
+        for (LifecycleListener lifecycleListener : lifecycleListeners) {
+            try {
+                lifecycleListener.start();
+            } catch (Exception e) {
+                throw SeedException
+                        .wrap(e, CoreErrorCode.ERROR_DURING_LIFECYCLE_CALLBACK)
+                        .put("lifecycleListenerClass", lifecycleListener.getClass().getCanonicalName())
+                        .put("phase", "start");
+            }
+        }
+    }
+
+    @Override
+    public void stop() {
+        for (LifecycleListener lifecycleListener : lifecycleListeners) {
+            try {
+                lifecycleListener.stop();
+            } catch (Exception e) {
+                throw SeedException
+                        .wrap(e, CoreErrorCode.ERROR_DURING_LIFECYCLE_CALLBACK)
+                        .put("lifecycleListenerClass", lifecycleListener.getClass().getCanonicalName())
+                        .put("phase", "stop");
+            }
+        }
+    }
+
+    /**
+     * This method registers an existing {@link DiagnosticInfoCollector} instance.
+     *
+     * @param diagnosticDomain        the diagnostic domain name the collector is related to.
+     * @param diagnosticInfoCollector the diagnostic collector instance.
+     */
+    public void registerDiagnosticCollector(String diagnosticDomain, DiagnosticInfoCollector diagnosticInfoCollector) {
+        diagnosticInfoCollectors.put(diagnosticDomain, diagnosticInfoCollector);
     }
 
     /**
@@ -213,13 +267,13 @@ public class CorePlugin extends AbstractPlugin {
      * @return {@link Maybe} which contains the provider if dependency is present
      */
     @SuppressWarnings("unchecked")
-    public <T extends DependencyProvider>  Maybe<T> getDependency(Class<T> providerClass) {
-        if (! optionalDependencies.containsKey(providerClass)) {
+    public <T extends DependencyProvider> Maybe<T> getDependency(Class<T> providerClass) {
+        if (!optionalDependencies.containsKey(providerClass)) {
             Maybe<T> maybe = new Maybe<T>(null);
             try {
                 T provider = providerClass.newInstance();
                 if (SeedReflectionUtils.forName(provider.getClassToCheck()).isPresent()) {
-                    LOGGER.debug("Found a new optional provider [{}} for [{}]",providerClass.getName(),provider.getClassToCheck());
+                    LOGGER.debug("Found a new optional provider [{}} for [{}]", providerClass.getName(), provider.getClassToCheck());
                     maybe = new Maybe<T>(provider);
                 }
             } catch (Exception e) {
@@ -227,19 +281,7 @@ public class CorePlugin extends AbstractPlugin {
             }
             optionalDependencies.put(providerClass, maybe);
         }
-        return (Maybe<T>)optionalDependencies.get(providerClass);
-    }
-
-    @SuppressWarnings("unchecked")
-    private Set<URL> extractScannedUrls(InitContext initContext) {
-        try {
-            return new HashSet<URL>((Set<URL>) SeedReflectionUtils.invokeMethod(SeedReflectionUtils.getFieldValue(unproxify(initContext), "classpathScanner"), "computeUrls"));
-        } catch (Exception e) {
-            LOGGER.warn("Unable to collect scanned classpath");
-            LOGGER.debug(DETAILS_MESSAGE, e);
-        }
-
-        return null;
+        return (Maybe<T>) optionalDependencies.get(providerClass);
     }
 
     // TODO remove this when not needed anymore (see at call site)
@@ -247,7 +289,7 @@ public class CorePlugin extends AbstractPlugin {
         InvocationHandler invocationHandler;
         try {
             invocationHandler = Proxy.getInvocationHandler(initContext);
-        } catch(IllegalArgumentException e) {
+        } catch (IllegalArgumentException e) {
             // not a proxy
             return initContext;
         }

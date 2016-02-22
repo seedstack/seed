@@ -5,7 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-package org.seedstack.seed.core.internal.metrics;
+package org.seedstack.seed.core;
 
 import static io.nuun.kernel.core.NuunCore.createKernel;
 import static io.nuun.kernel.core.NuunCore.newKernelConfiguration;
@@ -17,6 +17,8 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.seedstack.seed.core.internal.metrics.HealthCheckMethodReplacer;
+import org.seedstack.seed.core.internal.metrics.HealthcheckProvider;
 import org.seedstack.seed.spi.dependency.Maybe;
 import org.seedstack.seed.core.utils.DependencyClassProxy;
 
