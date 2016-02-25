@@ -351,7 +351,7 @@ public class SeedITRunner extends BlockJUnit4ClassRunner {
                 if (expectedTestingStep == testingStep) {
                     throw SeedException.createNew(ITErrorCode.EXPECTED_EXCEPTION_DID_NOT_OCCURRED).put("expectedClass", expectedClass.getCanonicalName());
                 }
-            } else if (!unwrappedThrowable.getClass().equals(expectedClass)) {
+            } else if (!expectedClass.isAssignableFrom(unwrappedThrowable.getClass())) {
                 throw SeedException.createNew(ITErrorCode.ANOTHER_EXCEPTION_THAN_EXPECTED_OCCURRED).put("expectedClass", expectedClass.getCanonicalName()).put("occurredClass", unwrappedThrowable.getClass().getCanonicalName());
             }
         }
