@@ -7,12 +7,15 @@
  */
 package org.seedstack.seed.rest.internal;
 
+import org.seedstack.seed.core.utils.SeedReflectionUtils;
 import org.seedstack.seed.rest.Rel;
 
+import javax.ws.rs.BeanParam;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
@@ -114,7 +117,7 @@ class RESTReflect {
             for (Annotation paramAnnotation : paramAnnotations) {
                 if (paramAnnotation.annotationType().equals(PathParam.class)) {
                     String varName = ((PathParam) paramAnnotation).value();
-                    hrefVars.put(varName, uri(baseParam, varName));
+                    addHrefVar(baseParam, hrefVars, varName);
                 }
             }
         }
@@ -130,12 +133,37 @@ class RESTReflect {
      */
     static Map<String, String> findQueryParams(String baseParam, Method method) {
         Map<String, String> hrefVars = new HashMap<String, String>();
-        for (Annotation[] paramAnnotations : method.getParameterAnnotations()) {
+        Annotation[][] parameterAnnotations = method.getParameterAnnotations();
+        for (int i = 0; i < parameterAnnotations.length; i++) {
+            Annotation[] paramAnnotations = parameterAnnotations[i];
             for (Annotation paramAnnotation : paramAnnotations) {
-                if (paramAnnotation.annotationType().equals(QueryParam.class)) {
-                    String varName = ((QueryParam) paramAnnotation).value();
-                    hrefVars.put(varName, uri(baseParam, varName));
-                }
+                Class<?> parameterClass = method.getParameterTypes()[i];
+                hrefVars.putAll(findQueryParamOnParameter(baseParam, parameterClass, paramAnnotation));
+            }
+        }
+        return hrefVars;
+    }
+
+    private static Map<String, String> findQueryParamOnParameter(String baseParam, Class<?> parameterClass, Annotation paramAnnotation) {
+        Map<String, String> hrefVars = new HashMap<String, String>();
+        if (paramAnnotation.annotationType().equals(QueryParam.class)) {
+            String varName = ((QueryParam) paramAnnotation).value();
+            addHrefVar(baseParam, hrefVars, varName);
+        } else if (SeedReflectionUtils.isClassPresent("javax.ws.rs.BeanParam") && paramAnnotation.annotationType().equals(BeanParam.class)) {
+            hrefVars.putAll(findQueryParamOnFields(baseParam, parameterClass));
+        }
+        return hrefVars;
+    }
+
+    private static String addHrefVar(String baseParam, Map<String, String> hrefVars, String varName) {
+        return hrefVars.put(varName, uri(baseParam, varName));
+    }
+
+    private static Map<String, String> findQueryParamOnFields(String baseParam, Class<?> aClass) {
+        Map<String, String> hrefVars = new HashMap<String, String>();
+        for (Field field : aClass.getDeclaredFields()) {
+            if (field.getAnnotation(QueryParam.class) != null) {
+                addHrefVar(baseParam, hrefVars, field.getName());
             }
         }
         return hrefVars;
