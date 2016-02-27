@@ -29,4 +29,4 @@ padawan = academy:learn
 /jediCouncil.html = authcBasic, perms[lightSaber:wield, academy:learn]
 /jediAcademy.html = authcBasic, perms[academy:learn]
 /logout = logout
-/teapot = teapot
+/teapot = teapot[param]

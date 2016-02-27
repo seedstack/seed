@@ -27,8 +27,7 @@ public class SecurityWebIT extends AbstractSeedWebIT {
                 .addAsWebResource("jediCouncil.html")
                 .addAsWebResource("jediAcademy.html")
                 .addAsResource("META-INF/resources/resources/image.jpg", "META-INF/resources/resources/image.jpg")
-                .addAsResource("web-security.props", "META-INF/configuration/web-security.props")
-                ;
+                .addAsResource("web-security.props", "META-INF/configuration/web-security.props");
     }
 
     @Test

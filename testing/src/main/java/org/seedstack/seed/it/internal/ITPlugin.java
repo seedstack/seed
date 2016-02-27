@@ -10,7 +10,6 @@ package org.seedstack.seed.it.internal;
 import com.google.common.collect.Lists;
 import com.google.common.io.Files;
 import com.google.inject.Module;
-import io.nuun.kernel.api.Plugin;
 import io.nuun.kernel.api.plugin.InitState;
 import io.nuun.kernel.api.plugin.PluginException;
 import io.nuun.kernel.api.plugin.context.InitContext;
@@ -27,9 +26,6 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.Proxy;
 import java.util.*;
 
 /**
@@ -168,19 +164,5 @@ public class ITPlugin extends AbstractPlugin {
         if (!file.delete()) {
             LOGGER.debug("Unable to delete file {}" + file.getAbsolutePath());
         }
-    }
-
-    // TODO remove this when not needed anymore (see at call site)
-    private InitContext unproxify(InitContext initContext) throws Exception {
-        InvocationHandler invocationHandler;
-        try {
-            invocationHandler = Proxy.getInvocationHandler(initContext);
-        } catch(IllegalArgumentException e) {
-            // not a proxy
-            return initContext;
-        }
-        Field field = invocationHandler.getClass().getDeclaredField("val$initContext");
-        field.setAccessible(true);
-        return (InitContext) field.get(invocationHandler);
     }
 }

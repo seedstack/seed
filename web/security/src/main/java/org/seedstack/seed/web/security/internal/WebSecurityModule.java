@@ -13,12 +13,12 @@ import jodd.props.Props;
 import jodd.props.PropsEntries;
 import jodd.props.PropsEntry;
 import org.apache.shiro.config.ConfigurationException;
-import org.apache.shiro.guice.web.ShiroWebModule;
 import org.apache.shiro.util.StringUtils;
 import org.apache.shiro.web.filter.PathMatchingFilter;
 import org.seedstack.seed.security.internal.SecurityGuiceConfigurer;
 import org.seedstack.seed.security.spi.SecurityConcern;
 import org.seedstack.seed.web.security.SecurityFilter;
+import org.seedstack.seed.web.security.internal.shiro.ShiroWebModule;
 import org.seedstack.seed.web.security.spi.AntiXsrfService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -114,18 +114,14 @@ class WebSecurityModule extends ShiroWebModule {
     }
 
     @SuppressWarnings("unchecked")
-    private Key<? extends Filter>[] getFilterKeys(String[] filters) {
-        Key<? extends Filter>[] keys = new Key[filters.length];
+    private FilterKey[] getFilterKeys(String[] filters) {
+        FilterKey[] keys = new FilterKey[filters.length];
         int index = 0;
         for (String filter : filters) {
             String[] nameConfig = toNameConfigPair(filter);
-            Key<? extends Filter> currentKey = findKey(nameConfig[0]);
-            if (currentKey != null) {
-                if (!org.apache.commons.lang.StringUtils.isEmpty(nameConfig[1])) {
-                    keys[index] = config((Key<? extends PathMatchingFilter>) currentKey, nameConfig[1]);
-                } else {
-                    keys[index] = currentKey;
-                }
+            Key<? extends Filter> key = findKey(nameConfig[0]);
+            if (key != null) {
+                keys[index] = new FilterKey(key, nameConfig[1] == null ? "": nameConfig[1]);
             } else {
                 addError("The filter [" + nameConfig[0] + "] could not be found as a default filter or as a class annotated with SecurityFilter");
             }

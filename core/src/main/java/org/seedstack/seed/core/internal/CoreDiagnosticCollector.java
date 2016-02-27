@@ -14,9 +14,6 @@ import org.seedstack.seed.spi.diagnostic.DiagnosticInfoCollector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.Proxy;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -45,25 +42,16 @@ class CoreDiagnosticCollector implements DiagnosticInfoCollector {
     @SuppressWarnings("unchecked")
     private Set<URL> extractScannedUrls(InitContext initContext) {
         try {
-            return new HashSet<URL>((Set<URL>) SeedReflectionUtils.invokeMethod(SeedReflectionUtils.getFieldValue(unproxify(initContext), "classpathScanner"), "computeUrls"));
+            return new HashSet<URL>((Set<URL>) SeedReflectionUtils.invokeMethod(
+                    SeedReflectionUtils.getFieldValue(
+                            SeedReflectionUtils.getFieldValue(initContext,
+                                    "requestHandler"),
+                            "classpathScanner"),
+                    "computeUrls"));
         } catch (Exception e) {
             SeedLoggingUtils.logWarningWithDebugDetails(LOGGER, e, "Unable to collect scanned classpath");
         }
 
         return null;
-    }
-
-    // TODO remove this when not needed anymore (see at call site)
-    private InitContext unproxify(InitContext initContext) throws Exception {
-        InvocationHandler invocationHandler;
-        try {
-            invocationHandler = Proxy.getInvocationHandler(initContext);
-        } catch (IllegalArgumentException e) {
-            // not a proxy
-            return initContext;
-        }
-        Field field = invocationHandler.getClass().getDeclaredField("val$initContext");
-        field.setAccessible(true);
-        return (InitContext) field.get(invocationHandler);
     }
 }
