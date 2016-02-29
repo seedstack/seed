@@ -7,11 +7,10 @@
  */
 package org.seedstack.seed.core.internal.metrics;
 
-import org.seedstack.seed.spi.dependency.DependencyProvider;
-import org.seedstack.seed.core.utils.DependencyClassProxy;
-
 import com.codahale.metrics.health.HealthCheck;
 import com.codahale.metrics.health.HealthCheckRegistry;
+import org.seedstack.seed.core.utils.DependencyClassProxy;
+import org.seedstack.seed.spi.dependency.DependencyProvider;
 
 /**
  * Provider used to get a {@link HealthCheckRegistry} to register an internal {@link HealthCheck}.
@@ -49,7 +48,7 @@ public class HealthcheckProvider implements DependencyProvider{
 	 * @param methodReplacer proxy method replacer to override {@link HealthCheck} methods.
 	 */
 	public void register(String name, HealthCheckMethodReplacer methodReplacer) {
-		getHealthCheckRegistry().register(name, new DependencyClassProxy<HealthCheck>(HealthCheck.class,methodReplacer).getProxy());
+		getHealthCheckRegistry().register(name, new DependencyClassProxy<>(HealthCheck.class, methodReplacer).getProxy());
 	}
 
 }

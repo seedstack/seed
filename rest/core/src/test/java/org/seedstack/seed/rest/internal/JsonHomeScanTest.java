@@ -140,7 +140,7 @@ public class JsonHomeScanTest {
     }
 
     @Mocked
-    private RestConfiguration restConfiguration;
+    private RestConfig restConfig;
     @Mocked
     private ServletContext servletContext;
     private Map<String, Resource> resourceMap;
@@ -149,18 +149,18 @@ public class JsonHomeScanTest {
     public void before() {
         new Expectations() {
             {
-                restConfiguration.getRestPath();
+                restConfig.getPath();
                 result = REST_PATH;
-                restConfiguration.getBaseRel();
+                restConfig.getBaseRel();
                 result = BASE_REL;
-                restConfiguration.getBaseParam();
+                restConfig.getBaseParam();
                 result = BASE_PARAM;
                 servletContext.getContextPath();
                 result = SERVLET_CONTEXT_PATH;
             }
         };
 
-        ResourceScanner resourceScanner = new ResourceScanner(restConfiguration, servletContext);
+        ResourceScanner resourceScanner = new ResourceScanner(restConfig, servletContext);
         resourceScanner.scan(Lists.newArrayList(
                 MethodResource.class,
                 ClassResource.class,
@@ -208,7 +208,7 @@ public class JsonHomeScanTest {
 
     @Test(expected = Exception.class)
     public void test_bad_rel() {
-        ResourceScanner resourceScanner = new ResourceScanner(restConfiguration, servletContext);
+        ResourceScanner resourceScanner = new ResourceScanner(restConfig, servletContext);
         resourceScanner.scan(Lists.newArrayList(
                 FakeResource.class,
                 FakeResource2.class

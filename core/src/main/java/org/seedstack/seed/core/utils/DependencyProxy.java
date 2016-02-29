@@ -7,13 +7,13 @@
  */
 package org.seedstack.seed.core.utils;
 
+import org.seedstack.seed.SeedException;
+import org.seedstack.seed.core.internal.CoreErrorCode;
+
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
-
-import org.seedstack.seed.SeedException;
-import org.seedstack.seed.core.internal.CoreErrorCode;
 
 /**
  * Proxy to implement interfaces. Override each method to proxy (method from the interface).<br>

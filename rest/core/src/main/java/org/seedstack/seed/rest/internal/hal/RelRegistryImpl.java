@@ -24,7 +24,7 @@ public class RelRegistryImpl implements RelRegistry {
         if (linksByRel != null) {
             this.linksByRel = linksByRel;
         } else {
-            this.linksByRel = new HashMap<String, Link>();
+            this.linksByRel = new HashMap<>();
         }
     }
 

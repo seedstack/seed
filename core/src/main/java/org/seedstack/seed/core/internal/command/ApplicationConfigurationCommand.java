@@ -10,7 +10,6 @@ package org.seedstack.seed.core.internal.command;
 import org.seedstack.seed.Application;
 import org.seedstack.seed.spi.command.Command;
 import org.seedstack.seed.spi.command.CommandDefinition;
-import org.apache.commons.configuration.ConfigurationConverter;
 
 import javax.inject.Inject;
 
@@ -26,6 +25,7 @@ public class ApplicationConfigurationCommand implements Command {
 
     @Override
     public Object execute(Object object) throws Exception {
-        return ConfigurationConverter.getMap(application.getConfiguration());
+//        return ConfigurationConverter.getMap(application.getConfiguration());
+        return null;
     }
 }

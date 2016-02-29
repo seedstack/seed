@@ -50,7 +50,7 @@ class ShiroSecuritySupport implements SecuritySupport {
 
     @Override
     public Collection<PrincipalProvider<?>> getOtherPrincipals() {
-        Collection<PrincipalProvider<?>> principals = new ArrayList<PrincipalProvider<?>>();
+        Collection<PrincipalProvider<?>> principals = new ArrayList<>();
         PrincipalCollection principalCollection = SecurityUtils.getSubject().getPrincipals();
         if (principalCollection == null) {
             return Collections.emptyList();
@@ -137,7 +137,7 @@ class ShiroSecuritySupport implements SecuritySupport {
 
     @Override
     public void checkPermissions(String... stringPermissions) {
-        Collection<org.apache.shiro.authz.Permission> permissions = new ArrayList<org.apache.shiro.authz.Permission>();
+        Collection<org.apache.shiro.authz.Permission> permissions = new ArrayList<>();
         for (String stringPermission : stringPermissions) {
             permissions.add(new ScopePermission(stringPermission));
         }
@@ -217,7 +217,7 @@ class ShiroSecuritySupport implements SecuritySupport {
 
     @Override
     public Set<Role> getRoles() {
-        Set<Role> roles = new HashSet<Role>();
+        Set<Role> roles = new HashSet<>();
         for (Realm realm : realms) {
             SeedAuthorizationInfo authzInfo = getAuthorizationInfo(realm);
             if (authzInfo != null) {
@@ -231,7 +231,7 @@ class ShiroSecuritySupport implements SecuritySupport {
 
     @Override
     public Set<SimpleScope> getSimpleScopes() {
-        Set<SimpleScope> simpleScopes = new HashSet<SimpleScope>();
+        Set<SimpleScope> simpleScopes = new HashSet<>();
         for (Role role : getRoles()) {
             simpleScopes.addAll(role.getScopesByType(SimpleScope.class));
         }

@@ -13,9 +13,8 @@ import com.google.inject.servlet.GuiceFilter;
 import io.nuun.kernel.api.plugin.InitState;
 import io.nuun.kernel.api.plugin.context.Context;
 import io.nuun.kernel.api.plugin.context.InitContext;
-import io.nuun.kernel.core.AbstractPlugin;
 import org.reflections.util.ClasspathHelper;
-import org.seedstack.seed.SeedRuntime;
+import org.seedstack.seed.core.internal.AbstractSeedPlugin;
 import org.seedstack.seed.web.spi.FilterDefinition;
 import org.seedstack.seed.web.spi.ListenerDefinition;
 import org.seedstack.seed.web.spi.ServletDefinition;
@@ -28,7 +27,6 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -38,13 +36,13 @@ import java.util.Set;
  *
  * @author adrien.lauer@mpsa.com
  */
-public class WebPlugin extends AbstractPlugin {
+public class WebPlugin extends AbstractSeedPlugin {
     public static final String WEB_PLUGIN_PREFIX = "org.seedstack.seed.web";
     private static final Logger LOGGER = LoggerFactory.getLogger(WebPlugin.class);
 
-    private final List<FilterDefinition> filterDefinitions = new ArrayList<FilterDefinition>();
-    private final List<ServletDefinition> servletDefinitions = new ArrayList<ServletDefinition>();
-    private final List<ListenerDefinition> listenerDefinitions = new ArrayList<ListenerDefinition>();
+    private final List<FilterDefinition> filterDefinitions = new ArrayList<>();
+    private final List<ServletDefinition> servletDefinitions = new ArrayList<>();
+    private final List<ListenerDefinition> listenerDefinitions = new ArrayList<>();
     private ServletContext servletContext;
 
     @Override
@@ -53,13 +51,13 @@ public class WebPlugin extends AbstractPlugin {
     }
 
     @Override
-    public void provideContainerContext(Object containerContext) {
-        servletContext = ((SeedRuntime) containerContext).contextAs(ServletContext.class);
+    protected void setup() {
+        servletContext = getSeedRuntime().contextAs(ServletContext.class);
     }
 
     @Override
     public Set<URL> computeAdditionalClasspathScan() {
-        Set<URL> additionalUrls = new HashSet<URL>();
+        Set<URL> additionalUrls = new HashSet<>();
 
         if (servletContext != null) {
             // resource paths for WEB-INF/lib can be null when SEED run in the Undertow servlet container
@@ -78,12 +76,12 @@ public class WebPlugin extends AbstractPlugin {
     }
 
     @Override
-    public Collection<Class<?>> requiredPlugins() {
-        return Lists.<Class<?>>newArrayList(WebProvider.class);
+    public Collection<Class<?>> dependencies() {
+        return Lists.newArrayList(WebProvider.class);
     }
 
     @Override
-    public InitState init(InitContext initContext) {
+    public InitState initialize(InitContext initContext) {
         if (servletContext != null) {
             List<WebProvider> webProviders = initContext.dependencies(WebProvider.class);
 
@@ -105,20 +103,10 @@ public class WebPlugin extends AbstractPlugin {
             }
 
             // Sort filter according to the priority in their definition
-            Collections.sort(filterDefinitions, Collections.reverseOrder(new Comparator<FilterDefinition>() {
-                @Override
-                public int compare(FilterDefinition o1, FilterDefinition o2) {
-                    return new Integer(o1.getPriority()).compareTo(o2.getPriority());
-                }
-            }));
+            Collections.sort(filterDefinitions, Collections.reverseOrder((o1, o2) -> new Integer(o1.getPriority()).compareTo(o2.getPriority())));
 
             // Sort listeners according to the priority in their definition
-            Collections.sort(listenerDefinitions, Collections.reverseOrder(new Comparator<ListenerDefinition>() {
-                @Override
-                public int compare(ListenerDefinition o1, ListenerDefinition o2) {
-                    return new Integer(o1.getPriority()).compareTo(o2.getPriority());
-                }
-            }));
+            Collections.sort(listenerDefinitions, Collections.reverseOrder((o1, o2) -> new Integer(o1.getPriority()).compareTo(o2.getPriority())));
         }
 
         return InitState.INITIALIZED;

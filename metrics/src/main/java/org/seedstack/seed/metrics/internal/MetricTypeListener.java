@@ -33,7 +33,7 @@ class MetricTypeListener implements TypeListener {
             for (Field field : typeLiteral.getRawType().getDeclaredFields()) {
                 Metric metricAnnotation = field.getAnnotation(Metric.class);
                 if (metricAnnotation != null && com.codahale.metrics.Metric.class.isAssignableFrom(field.getType())) {
-                    typeEncounter.register(new MetricMembersInjector<T>(metricRegistry, field, metricAnnotation.name(), metricAnnotation.absolute()));
+                    typeEncounter.register(new MetricMembersInjector<>(metricRegistry, field, metricAnnotation.name(), metricAnnotation.absolute()));
                 }
             }
         }

@@ -9,16 +9,18 @@ package org.seedstack.seed.core;
 
 import com.codahale.metrics.Counter;
 import com.codahale.metrics.Gauge;
-import com.codahale.metrics.Metric;
 import com.codahale.metrics.MetricRegistry;
-import com.google.inject.*;
+import com.google.inject.AbstractModule;
+import com.google.inject.Injector;
+import com.google.inject.Key;
+import com.google.inject.Module;
+import com.google.inject.TypeLiteral;
 import io.nuun.kernel.api.Kernel;
 import org.assertj.core.api.Assertions;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.seedstack.seed.core.internal.metrics.MetricHandler;
 import org.seedstack.seed.core.internal.metrics.MetricsProvider;
 import org.seedstack.seed.core.utils.DependencyProxy;
 import org.seedstack.seed.core.utils.ProxyMethodReplacer;
@@ -41,21 +43,15 @@ public class MetricsIT {
     	public void start(){
     		if (metricsProvider.isPresent()) {
     			final Counter c = new Counter();
-    			metricsProvider.get().register(NEW_METRIC, new MetricHandler() {
-    				
-    				@Override
-    				public Metric handle() {
-    					return c;
-    				}
-    			});
+    			metricsProvider.get().register(NEW_METRIC, () -> c);
     			c.inc();
     			
-    			DependencyProxy<Gauge<Long>> gauge = new DependencyProxy<Gauge<Long>>(new Class[]{Gauge.class}, new ProxyMethodReplacer() {
-    	        	@SuppressWarnings("unused")
-    				public Long getValue(){
-    	        		return GAUGE_VALUE;
-    	        	}
-    			});
+    			DependencyProxy<Gauge<Long>> gauge = new DependencyProxy<>(new Class[]{Gauge.class}, new ProxyMethodReplacer() {
+                    @SuppressWarnings("unused")
+                    public Long getValue() {
+                        return GAUGE_VALUE;
+                    }
+                });
     			
     	        metricsProvider.get().register(NEW_GAUGE,gauge.getProxy());
 

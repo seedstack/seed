@@ -7,10 +7,6 @@
  */
 package org.seedstack.seed.rest.jersey1.internal;
 
-import org.seedstack.seed.SeedException;
-import org.seedstack.seed.rest.CacheControl;
-import org.seedstack.seed.rest.CachePolicy;
-import org.seedstack.seed.rest.ResourceFiltering;
 import com.sun.jersey.api.model.AbstractMethod;
 import com.sun.jersey.spi.container.ContainerRequest;
 import com.sun.jersey.spi.container.ContainerRequestFilter;
@@ -18,6 +14,10 @@ import com.sun.jersey.spi.container.ContainerResponse;
 import com.sun.jersey.spi.container.ContainerResponseFilter;
 import com.sun.jersey.spi.container.ResourceFilter;
 import com.sun.jersey.spi.container.ResourceFilterFactory;
+import org.seedstack.seed.SeedException;
+import org.seedstack.seed.rest.CacheControl;
+import org.seedstack.seed.rest.CachePolicy;
+import org.seedstack.seed.rest.ResourceFiltering;
 import org.seedstack.seed.rest.internal.RestErrorCode;
 
 import javax.ws.rs.core.HttpHeaders;

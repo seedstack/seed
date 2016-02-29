@@ -12,9 +12,15 @@ package org.seedstack.seed.core.utils;
 
 import com.google.inject.Key;
 import com.google.inject.TypeLiteral;
-import org.seedstack.seed.SeedException;
 import org.junit.Test;
-import org.seedstack.seed.core.utils.sample.*;
+import org.seedstack.seed.SeedException;
+import org.seedstack.seed.core.utils.sample.CollectionQualifiedTestType2;
+import org.seedstack.seed.core.utils.sample.IType;
+import org.seedstack.seed.core.utils.sample.IntegerType;
+import org.seedstack.seed.core.utils.sample.ObjectIntegerTestType;
+import org.seedstack.seed.core.utils.sample.ObjectStringTestType;
+import org.seedstack.seed.core.utils.sample.StringType;
+import org.seedstack.seed.core.utils.sample.TestType;
 
 import static org.seedstack.seed.core.utils.SeedBindingUtils.resolveBindingDefinitions;
 

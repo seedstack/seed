@@ -12,17 +12,15 @@ import io.nuun.kernel.api.plugin.InitState;
 import io.nuun.kernel.api.plugin.context.InitContext;
 import io.nuun.kernel.api.plugin.request.BindingRequest;
 import io.nuun.kernel.api.plugin.request.ClasspathScanRequest;
-import io.nuun.kernel.core.AbstractPlugin;
-import org.apache.commons.configuration.Configuration;
 import org.seedstack.seed.SeedException;
-import org.seedstack.seed.core.internal.application.ApplicationPlugin;
-import org.seedstack.seed.core.spi.configuration.ConfigurationProvider;
+import org.seedstack.seed.core.internal.AbstractSeedPlugin;
 import org.seedstack.seed.el.internal.ELPlugin;
 import org.seedstack.seed.security.PrincipalCustomizer;
 import org.seedstack.seed.security.Realm;
 import org.seedstack.seed.security.RoleMapping;
 import org.seedstack.seed.security.RolePermissionResolver;
 import org.seedstack.seed.security.Scope;
+import org.seedstack.seed.security.SecurityConfig;
 import org.seedstack.seed.security.spi.SecurityScope;
 import org.seedstack.seed.security.spi.data.DataObfuscationHandler;
 import org.seedstack.seed.security.spi.data.DataSecurityHandler;
@@ -42,13 +40,12 @@ import java.util.Set;
  * @author yves.dautremay@mpsa.com
  * @author adrien.lauer@mpsa.com
  */
-public class SecurityPlugin extends AbstractPlugin {
+public class SecurityPlugin extends AbstractSeedPlugin {
     private static final Logger LOGGER = LoggerFactory.getLogger(SecurityPlugin.class);
-    public static final String SECURITY_PREFIX = "org.seedstack.seed.security";
 
-    private final Map<String, Class<? extends Scope>> scopeClasses = new HashMap<String, Class<? extends Scope>>();
-    private final Set<SecurityProvider> securityProviders = new HashSet<SecurityProvider>();
-    private final Set<Class<? extends DataSecurityHandler<?>>> dataSecurityHandlers = new HashSet<Class<? extends DataSecurityHandler<?>>>();
+    private final Map<String, Class<? extends Scope>> scopeClasses = new HashMap<>();
+    private final Set<SecurityProvider> securityProviders = new HashSet<>();
+    private final Set<Class<? extends DataSecurityHandler<?>>> dataSecurityHandlers = new HashSet<>();
     private SecurityConfigurer securityConfigurer;
     private boolean elDisabled;
 
@@ -58,8 +55,8 @@ public class SecurityPlugin extends AbstractPlugin {
     }
 
     @Override
-    public Collection<Class<?>> requiredPlugins() {
-        return Lists.<Class<?>>newArrayList(ApplicationPlugin.class, ConfigurationProvider.class, ELPlugin.class, SecurityProvider.class);
+    public Collection<Class<?>> dependencies() {
+        return Lists.newArrayList(ELPlugin.class, SecurityProvider.class);
     }
 
     @Override
@@ -80,8 +77,8 @@ public class SecurityPlugin extends AbstractPlugin {
 
     @Override
     @SuppressWarnings({"rawtypes", "unchecked"})
-    public InitState init(InitContext initContext) {
-        Configuration securityConfiguration = initContext.dependency(ConfigurationProvider.class).getConfiguration().subset(SECURITY_PREFIX);
+    public InitState initialize(InitContext initContext) {
+        SecurityConfig securityConfig = getConfiguration(SecurityConfig.class);
         Map<Class<?>, Collection<Class<?>>> scannedClasses = initContext.scannedSubTypesByAncestorClass();
 
         Collection<Class<? extends PrincipalCustomizer<?>>> principalCustomizerClasses = (Collection) scannedClasses.get(PrincipalCustomizer.class);
@@ -90,7 +87,7 @@ public class SecurityPlugin extends AbstractPlugin {
         configureDataSecurityHandlers(scannedClasses.get(DataSecurityHandler.class));
         securityProviders.addAll(initContext.dependencies(SecurityProvider.class));
         elDisabled = initContext.dependency(ELPlugin.class).isDisabled();
-        securityConfigurer = new SecurityConfigurer(securityConfiguration, scannedClasses, principalCustomizerClasses);
+        securityConfigurer = new SecurityConfigurer(securityConfig, scannedClasses, principalCustomizerClasses);
 
         if (elDisabled) {
             LOGGER.info("No Java EL support, data security is disabled");

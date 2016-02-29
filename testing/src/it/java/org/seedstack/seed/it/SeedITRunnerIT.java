@@ -14,8 +14,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.seedstack.seed.Application;
 import org.seedstack.seed.Configuration;
-import org.seedstack.seed.it.fixtures.ITBound;
 import org.seedstack.seed.it.fixtures.BoundThroughITInstalledModule;
+import org.seedstack.seed.it.fixtures.ITBound;
 
 import javax.inject.Inject;
 
@@ -81,7 +81,7 @@ public class SeedITRunnerIT {
 
     @Test
     public void seed_it_runner_is_correctly_passing_default_configuration() {
-        assertThat(injector.getInstance(Application.class).getConfiguration().getString("testKey")).isEqualTo("testValue");
+        assertThat(injector.getInstance(Application.class).getConfiguration().getMandatory(String.class, "testKey")).isEqualTo("testValue");
     }
 
     @Test

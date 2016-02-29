@@ -7,20 +7,19 @@
  */
 package org.seedstack.seed.security.internal;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import java.lang.reflect.Method;
-
-import javax.el.ELContext;
-import javax.inject.Inject;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
 import org.seedstack.seed.el.ELContextBuilder;
 import org.seedstack.seed.el.ELService;
 import org.seedstack.seed.it.SeedITRunner;
 import org.seedstack.seed.security.WithUser;
 import org.seedstack.seed.security.internal.securityexpr.SecurityExpressionUtils;
+
+import javax.el.ELContext;
+import javax.inject.Inject;
+import java.lang.reflect.Method;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  *

@@ -23,7 +23,6 @@ import org.apache.commons.cli.ParseException;
 import org.seedstack.seed.Application;
 import org.seedstack.seed.SeedException;
 import org.seedstack.seed.cli.internal.CliErrorCode;
-import org.seedstack.seed.cli.internal.CommandLinePlugin;
 import org.seedstack.seed.cli.spi.CliContext;
 import org.seedstack.seed.core.Seed;
 import org.seedstack.seed.core.SeedMain;
@@ -86,11 +85,12 @@ public class SeedRunner implements SeedLauncher {
 
         try {
             Injector injector = kernel.objectGraph().as(Injector.class);
-            String defaultCommand = injector.getInstance(Application.class).getConfiguration().getString(CommandLinePlugin.DEFAULT_COMMAND_CONFIG_KEY);
+            CliConfig configuration = injector.getInstance(Application.class).getConfiguration().get(CliConfig.class);
             Callable<Integer> callable;
 
-            if (defaultCommand != null) {
-                callable = new SeedCallable(defaultCommand, args);
+            if (configuration.hasDefaultCommand()) {
+                LOGGER.debug("Executing default CLI command " + configuration.getDefaultCommand());
+                callable = new SeedCallable(configuration.getDefaultCommand(), args);
             } else {
                 if (args == null || args.length == 0 || args[0].isEmpty()) {
                     throw SeedException.createNew(CliErrorCode.NO_COMMAND_SPECIFIED);
@@ -178,8 +178,8 @@ public class SeedRunner implements SeedLauncher {
 
         private void injectCommandLineHandler(CommandLineHandler commandLineHandler) {
             Options options = new Options();
-            List<CliOption> optionAnnotations = new ArrayList<CliOption>();
-            List<Field> optionFields = new ArrayList<Field>();
+            List<CliOption> optionAnnotations = new ArrayList<>();
+            List<Field> optionFields = new ArrayList<>();
             Field argsField = null;
             int mandatoryArgsCount = 0;
 
@@ -289,7 +289,7 @@ public class SeedRunner implements SeedLauncher {
         }
 
         private Map<String, String> buildOptionArgumentMap(String optionName, String[] optionArguments) {
-            Map<String, String> optionArgumentsMap = new HashMap<String, String>();
+            Map<String, String> optionArgumentsMap = new HashMap<>();
 
             if (optionArguments.length % 2 == 0) {
                 for (int i = 0; i < optionArguments.length; i = i + 2) {

@@ -23,7 +23,7 @@ public class AuthenticationInfo {
 
 	private PrincipalProvider<?> identityPrincipal;
 
-	private Collection<PrincipalProvider<?>> otherPrincipals = new ArrayList<PrincipalProvider<?>>();
+	private Collection<PrincipalProvider<?>> otherPrincipals = new ArrayList<>();
 
 	private Object credentials;
 

@@ -7,8 +7,8 @@
  */
 package org.seedstack.seed.rest;
 
-import org.seedstack.seed.rest.hal.Link;
 import org.seedstack.seed.rest.hal.HalBuilder;
+import org.seedstack.seed.rest.hal.Link;
 
 /**
  * A registry which can provide href or HAL link associated to a given relation type.

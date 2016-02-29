@@ -7,12 +7,10 @@
  */
 package org.seedstack.seed.core.internal.metrics;
 
+import com.codahale.metrics.health.HealthCheck;
+import com.codahale.metrics.health.HealthCheckRegistry;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
-
-import com.codahale.metrics.health.HealthCheck;
-import com.codahale.metrics.health.HealthCheck.Result;
-import com.codahale.metrics.health.HealthCheckRegistry;
 
 public class HealthCheckProviderTest {
 
@@ -49,14 +47,10 @@ public class HealthCheckProviderTest {
 	public void testRegisterStringHealthCheckMethodReplacer() {
 		HealthcheckProvider healthCheckProvider = new HealthcheckProvider();
 		final String name = "name";
-		healthCheckProvider.register(name, new HealthCheckMethodReplacer() {
-			
-			@Override
-			public Result check() {
-				// TODO Auto-generated method stub
-				return null;
-			}
-		});
+		healthCheckProvider.register(name, () -> {
+            // TODO Auto-generated method stub
+            return null;
+        });
 		Assertions.assertThat(healthCheckProvider.getHealthCheckRegistry().getNames().contains(name)).isTrue();
 	}
 

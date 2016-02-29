@@ -7,6 +7,8 @@
  */
 package org.seedstack.seed;
 
+import org.seedstack.seed.spi.diagnostic.DiagnosticInfoCollector;
+
 import java.util.Map;
 
 /**
@@ -29,4 +31,12 @@ public interface DiagnosticManager {
      * @param t the exception which may be the origin of this diagnostic generation. May be null.
      */
     void dumpDiagnosticReport(Throwable t);
+
+    /**
+     * Register a diagnostic collector.
+     *
+     * @param domain the diagnostic collector domain which will be used root node in the diagnostic tree.
+     * @param diagnosticInfoCollector the diagnostic collector to register.
+     */
+    void registerDiagnosticInfoCollector(String domain, DiagnosticInfoCollector diagnosticInfoCollector);
 }

@@ -9,8 +9,8 @@ package org.seedstack.seed.metrics.internal;
 
 import com.codahale.metrics.MetricRegistry;
 import com.google.inject.Injector;
-import org.seedstack.seed.it.AbstractSeedIT;
 import org.junit.Test;
+import org.seedstack.seed.it.AbstractSeedIT;
 
 import javax.inject.Inject;
 

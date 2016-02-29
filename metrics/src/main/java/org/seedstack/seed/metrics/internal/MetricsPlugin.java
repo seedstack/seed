@@ -40,7 +40,7 @@ public class MetricsPlugin extends AbstractPlugin {
 
     private MetricRegistry metricRegistry;
     private HealthCheckRegistry healthCheckRegistry ;
-    private final Set<Class<? extends HealthCheck>> healthCheckClasses = new HashSet<Class<? extends HealthCheck>>();
+    private final Set<Class<? extends HealthCheck>> healthCheckClasses = new HashSet<>();
 
     @Inject
     private Map<String, HealthCheck> healthChecks;

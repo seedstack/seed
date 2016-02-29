@@ -30,7 +30,7 @@ public class RepresentationFactory {
 
         OrdersRepresentation orders = new OrdersRepresentation(14, 20);
 
-        List<HalRepresentation> embedded = new ArrayList<HalRepresentation>();
+        List<HalRepresentation> embedded = new ArrayList<>();
 
         embedded.add(HalBuilder.create(new OrderRepresentation(30.00f, "USD", "shipped"))
                 .self(relRegistry.uri(HalResource.ORDER_REL).set("id", 123))

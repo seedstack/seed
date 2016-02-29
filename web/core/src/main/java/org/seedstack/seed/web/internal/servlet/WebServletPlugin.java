@@ -11,13 +11,12 @@ import com.google.common.base.Strings;
 import io.nuun.kernel.api.plugin.InitState;
 import io.nuun.kernel.api.plugin.context.InitContext;
 import io.nuun.kernel.api.plugin.request.ClasspathScanRequest;
-import io.nuun.kernel.core.AbstractPlugin;
-import org.seedstack.seed.SeedRuntime;
+import org.seedstack.seed.core.internal.AbstractSeedPlugin;
+import org.seedstack.seed.web.internal.WebPlugin;
 import org.seedstack.seed.web.spi.FilterDefinition;
 import org.seedstack.seed.web.spi.ListenerDefinition;
 import org.seedstack.seed.web.spi.ServletDefinition;
 import org.seedstack.seed.web.spi.WebProvider;
-import org.seedstack.seed.web.internal.WebPlugin;
 
 import javax.annotation.Priority;
 import javax.servlet.DispatcherType;
@@ -43,10 +42,10 @@ import java.util.Map;
  *
  * @author adrien.lauer@mpsa.com
  */
-public class WebServletPlugin extends AbstractPlugin implements WebProvider {
-    private final List<FilterDefinition> filterDefinitions = new ArrayList<FilterDefinition>();
-    private final List<ServletDefinition> servletDefinitions = new ArrayList<ServletDefinition>();
-    private final List<ListenerDefinition> listenerDefinitions = new ArrayList<ListenerDefinition>();
+public class WebServletPlugin extends AbstractSeedPlugin implements WebProvider {
+    private final List<FilterDefinition> filterDefinitions = new ArrayList<>();
+    private final List<ServletDefinition> servletDefinitions = new ArrayList<>();
+    private final List<ListenerDefinition> listenerDefinitions = new ArrayList<>();
     private ServletContext servletContext;
 
     @Override
@@ -55,8 +54,8 @@ public class WebServletPlugin extends AbstractPlugin implements WebProvider {
     }
 
     @Override
-    public void provideContainerContext(Object containerContext) {
-        servletContext = ((SeedRuntime) containerContext).contextAs(ServletContext.class);
+    public void setup() {
+        servletContext = getSeedRuntime().contextAs(ServletContext.class);
     }
 
     @Override
@@ -69,7 +68,7 @@ public class WebServletPlugin extends AbstractPlugin implements WebProvider {
     }
 
     @Override
-    public InitState init(InitContext initContext) {
+    public InitState initialize(InitContext initContext) {
         if (servletContext != null) {
             listenerDefinitions.addAll(detectListeners(initContext.scannedClassesByAnnotationClass().get(WebListener.class)));
             filterDefinitions.addAll(detectFilters(initContext.scannedClassesByAnnotationClass().get(WebFilter.class)));
@@ -81,7 +80,7 @@ public class WebServletPlugin extends AbstractPlugin implements WebProvider {
 
     @SuppressWarnings("unchecked")
     private Collection<? extends ListenerDefinition> detectListeners(Collection<Class<?>> listenerClasses) {
-        List<ListenerDefinition> listenerDefinitions = new ArrayList<ListenerDefinition>();
+        List<ListenerDefinition> listenerDefinitions = new ArrayList<>();
         for (Class<?> candidate : listenerClasses) {
             if (EventListener.class.isAssignableFrom(candidate)) {
                 Class<? extends EventListener> listenerClass = (Class<? extends EventListener>) candidate;
@@ -99,7 +98,7 @@ public class WebServletPlugin extends AbstractPlugin implements WebProvider {
 
     @SuppressWarnings("unchecked")
     private List<FilterDefinition> detectFilters(Collection<Class<?>> filterClasses) {
-        List<FilterDefinition> filterDefinitions = new ArrayList<FilterDefinition>();
+        List<FilterDefinition> filterDefinitions = new ArrayList<>();
         for (Class<?> candidate : filterClasses) {
             if (Filter.class.isAssignableFrom(candidate)) {
                 Class<? extends Filter> filterClass = (Class<? extends Filter>) candidate;
@@ -133,7 +132,7 @@ public class WebServletPlugin extends AbstractPlugin implements WebProvider {
 
     @SuppressWarnings("unchecked")
     private List<ServletDefinition> detectServlets(Collection<Class<?>> servletClasses) {
-        List<ServletDefinition> servletDefinitions = new ArrayList<ServletDefinition>();
+        List<ServletDefinition> servletDefinitions = new ArrayList<>();
         for (Class<?> candidate : servletClasses) {
             if (Servlet.class.isAssignableFrom(candidate)) {
                 Class<? extends Servlet> servletClass = (Class<? extends Servlet>) candidate;
@@ -167,7 +166,7 @@ public class WebServletPlugin extends AbstractPlugin implements WebProvider {
     }
 
     private Map<String, String> convert(WebInitParam[] webInitParams) {
-        Map<String, String> map = new HashMap<String, String>();
+        Map<String, String> map = new HashMap<>();
         for (WebInitParam webInitParam : webInitParams) {
             map.put(webInitParam.name(), webInitParam.value());
         }

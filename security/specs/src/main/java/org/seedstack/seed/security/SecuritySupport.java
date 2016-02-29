@@ -7,12 +7,12 @@
  */
 package org.seedstack.seed.security;
 
+import org.seedstack.seed.security.principals.PrincipalProvider;
+import org.seedstack.seed.security.principals.SimplePrincipalProvider;
+
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Set;
-
-import org.seedstack.seed.security.principals.PrincipalProvider;
-import org.seedstack.seed.security.principals.SimplePrincipalProvider;
 
 /**
  * Support for all security concerns. Retrieve connected user principals, get/check roles/permissions...

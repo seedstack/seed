@@ -7,8 +7,8 @@
  */
 package org.seedstack.seed.el.internal.fixtures;
 
-import org.seedstack.seed.el.spi.ELHandler;
 import org.seedstack.seed.el.internal.ExpressionLanguageHandlerIT;
+import org.seedstack.seed.el.spi.ELHandler;
 
 /**
  * @author pierre.thirouin@ext.mpsa.com

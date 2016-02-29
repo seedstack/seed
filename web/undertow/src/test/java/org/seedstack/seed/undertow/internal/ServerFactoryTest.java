@@ -13,6 +13,14 @@ import io.undertow.servlet.api.DeploymentManager;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.mockito.Mockito;
+import org.seedstack.seed.crypto.CryptoConfig;
+import org.seedstack.seed.crypto.spi.SSLProvider;
+import org.seedstack.seed.undertow.UndertowConfig;
+import org.seedstack.seed.web.WebConfig;
+
+import java.util.Optional;
+
+import static org.mockito.Mockito.when;
 
 /**
  * Tests the server factory which configure an Undertow server.
@@ -26,12 +34,16 @@ public class ServerFactoryTest {
      */
     @Test
     public void testServerFactory() throws Exception {
-        ServerConfig serverConfig = new ServerConfig();
+        WebConfig.ServerConfig serverConfig = new WebConfig.ServerConfig();
+        UndertowConfig undertowConfig = new UndertowConfig();
         DeploymentManager manager = Mockito.mock(DeploymentManager.class);
         HttpHandler httpHandler = Mockito.mock(HttpHandler.class);
-        Mockito.when(manager.start()).thenReturn(httpHandler);
+        SSLProvider sslProvider = Mockito.mock(SSLProvider.class);
+        when(sslProvider.sslConfig()).thenReturn(new CryptoConfig.SSLConfig());
+        when(sslProvider.sslContext()).thenReturn(Optional.empty());
+        when(manager.start()).thenReturn(httpHandler);
 
-        Undertow server = new ServerFactory().createServer(serverConfig, manager);
+        Undertow server = new ServerFactory().createServer(manager, serverConfig, undertowConfig, null);
 
         Assertions.assertThat(server).isNotNull();
     }

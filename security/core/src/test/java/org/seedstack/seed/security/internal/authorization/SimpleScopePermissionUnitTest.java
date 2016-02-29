@@ -7,12 +7,11 @@
  */
 package org.seedstack.seed.security.internal.authorization;
 
-import static org.junit.Assert.assertEquals;
-
 import org.junit.Before;
 import org.junit.Test;
-
 import org.seedstack.seed.security.SimpleScope;
+
+import static org.junit.Assert.assertEquals;
 
 public class SimpleScopePermissionUnitTest {
 

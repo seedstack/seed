@@ -9,7 +9,6 @@ package org.seedstack.seed.core.internal.scan;
 
 import com.google.common.collect.Lists;
 import org.reflections.vfs.Vfs;
-import org.seedstack.seed.core.internal.scan.ClasspathScanHandler;
 
 import java.util.List;
 

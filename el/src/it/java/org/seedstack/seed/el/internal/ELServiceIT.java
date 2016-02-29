@@ -7,13 +7,13 @@
  */
 package org.seedstack.seed.el.internal;
 
-import org.seedstack.seed.el.ELContextBuilder;
-import org.seedstack.seed.el.ELService;
-import org.seedstack.seed.it.SeedITRunner;
 import de.odysseus.el.util.SimpleContext;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.seedstack.seed.el.ELContextBuilder;
+import org.seedstack.seed.el.ELService;
+import org.seedstack.seed.it.SeedITRunner;
 
 import javax.el.ELContext;
 import javax.el.ExpressionFactory;

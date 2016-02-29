@@ -7,16 +7,15 @@
  */
 package org.seedstack.seed.metrics.internal;
 
-import java.util.Set;
-
-import org.seedstack.seed.metrics.HealthChecked;
-
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.health.HealthCheck;
 import com.codahale.metrics.health.HealthCheckRegistry;
 import com.google.inject.AbstractModule;
 import com.google.inject.matcher.Matchers;
 import com.google.inject.multibindings.MapBinder;
+import org.seedstack.seed.metrics.HealthChecked;
+
+import java.util.Set;
 
 class MetricsModule extends AbstractModule {
     private final MetricRegistry metricRegistry;

@@ -7,21 +7,16 @@
  */
 package org.seedstack.seed.crypto.internal;
 
+import com.google.common.base.Strings;
 import com.google.inject.Key;
-import io.nuun.kernel.api.Plugin;
-import com.google.common.collect.Lists;
 import io.nuun.kernel.api.plugin.InitState;
-import io.nuun.kernel.api.plugin.PluginException;
 import io.nuun.kernel.api.plugin.context.InitContext;
-import io.nuun.kernel.core.AbstractPlugin;
-import org.apache.commons.configuration.Configuration;
-import org.seedstack.seed.Application;
 import org.seedstack.seed.SeedException;
-import org.seedstack.seed.core.internal.application.ApplicationPlugin;
+import org.seedstack.seed.core.internal.AbstractSeedPlugin;
 import org.seedstack.seed.core.utils.ConfigurationUtils;
+import org.seedstack.seed.crypto.CryptoConfig;
 import org.seedstack.seed.crypto.EncryptionService;
 import org.seedstack.seed.crypto.spi.SSLProvider;
-import org.seedstack.seed.crypto.spi.SSLConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,13 +24,14 @@ import javax.net.ssl.KeyManager;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import java.security.KeyStore;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
-public class CryptoPlugin extends AbstractPlugin implements SSLProvider {
-
+public class CryptoPlugin extends AbstractSeedPlugin implements SSLProvider {
     private static final Logger LOGGER = LoggerFactory.getLogger(CryptoPlugin.class);
-
-    public static final String CONFIG_PREFIX = "org.seedstack.seed.crypto";
 
     /* Conventional names */
     public static final String KEYSTORE = "keystore";
@@ -55,12 +51,12 @@ public class CryptoPlugin extends AbstractPlugin implements SSLProvider {
     public static final String CERT_RESOURCE = "resource";
     public static final String QUALIFIER = "qualifier";
 
-    private final Map<Key<EncryptionService>, EncryptionService> encryptionServices = new HashMap<Key<EncryptionService>, EncryptionService>();
-    private final Map<String, KeyStore> keyStores = new HashMap<String, KeyStore>();
-    private final Map<String, KeyStoreConfig> keyStoreConfigs = new HashMap<String, KeyStoreConfig>();
-    private final List<KeyPairConfig> keyPairConfigs = new ArrayList<KeyPairConfig>();
+    private final Map<Key<EncryptionService>, EncryptionService> encryptionServices = new HashMap<>();
+    private final Map<String, KeyStore> keyStores = new HashMap<>();
+    private final Map<String, CryptoConfig.KeyStoreConfig> keyStoreConfigs = new HashMap<>();
+    private final List<KeyPairConfig> keyPairConfigs = new ArrayList<>();
 
-    private SSLConfiguration sslConfiguration;
+    private CryptoConfig.SSLConfig sslConfig;
     private SSLContext sslContext;
 
     @Override
@@ -74,17 +70,14 @@ public class CryptoPlugin extends AbstractPlugin implements SSLProvider {
     }
 
     @Override
-    public InitState init(InitContext initContext) {
-        Application application = initContext.dependency(ApplicationPlugin.class).getApplication();
-        Configuration cryptoConfig = application.getConfiguration().subset(CONFIG_PREFIX);
-
-        // Retrieve key store configurations
-        this.keyStoreConfigs.putAll(getKeyStoreConfigs(cryptoConfig));
+    public InitState initialize(InitContext initContext) {
+        CryptoConfig cryptoConfig = getConfiguration(CryptoConfig.class);
 
         // Load key stores
         KeyStoreLoader keyStoreLoader = new KeyStoreLoader();
-        for (Map.Entry<String, KeyStoreConfig> entry : keyStoreConfigs.entrySet()) {
-            keyStores.put(entry.getKey(), keyStoreLoader.load(entry.getValue()));
+        for (Map.Entry<String, CryptoConfig.KeyStoreConfig> entry : cryptoConfig.keyStores().entrySet()) {
+            keyStores.put(entry.getKey(), keyStoreLoader.load(entry.getKey(), entry.getValue()));
+            keyStoreConfigs.put(entry.getKey(), entry.getValue());
         }
 
         // Retrieve key pair configurations
@@ -97,102 +90,58 @@ public class CryptoPlugin extends AbstractPlugin implements SSLProvider {
         encryptionServices.putAll(new EncryptionServiceBindingFactory().createBindings(cryptoConfig, this.keyPairConfigs, keyStores));
         LOGGER.debug("Registered {} cryptographic key(s)", encryptionServices.size());
 
-        // init SSL context (if a KeyStore is specified or if it should be generated)
-        Configuration sslConfiguration = cryptoConfig.subset(SSL);
-        if (sslConfiguration.containsKey(KEYSTORE)) {
-            configureSSL(sslConfiguration);
-        }
+        // init SSL context if possible
+        this.sslConfig = cryptoConfig.ssl();
+        this.sslContext = configureSSL(this.sslConfig);
 
         return InitState.INITIALIZED;
     }
 
-    private void configureSSL(Configuration sslConfiguration) {
+    private SSLContext configureSSL(CryptoConfig.SSLConfig sslConfig) {
         SSLLoader sslLoader = new SSLLoader();
 
-        KeyManager[] keyManagers = configureKeyManagers(sslConfiguration);
-
-        TrustManager[] trustManagers = null;
-        if (sslConfiguration.containsKey(TRUSTSTORE)) {
-            String trustStoreName = sslConfiguration.getString(TRUSTSTORE);
-            KeyStore trustStore = keyStores.get(trustStoreName);
-            if (trustStore == null) {
-                throw SeedException.createNew(CryptoErrorCodes.MISSING_SSL_TRUST_STORE_CONFIGURATION);
-            }
+        TrustManager[] trustManagers;
+        KeyStore trustStore = keyStores.get(sslConfig.getTrustStore());
+        if (trustStore == null) {
+            return null;
+        } else {
             trustManagers = sslLoader.getTrustManager(trustStore);
         }
 
-        this.sslConfiguration = new SSLConfigFactory().createSSLConfiguration(sslConfiguration);
-        sslContext = sslLoader.getSSLContext(this.sslConfiguration.getProtocol(), keyManagers, trustManagers);
-    }
-
-    private KeyManager[] configureKeyManagers(Configuration sslConfiguration) {
-        SSLLoader sslLoader = new SSLLoader();
-
-        KeyStore keyStore;
-        String password;
-
-        if (sslConfiguration.containsKey(KEYSTORE)) {
-            String keyStoreName = sslConfiguration.getString(KEYSTORE);
-            keyStore = keyStores.get(keyStoreName);
-            if (keyStore == null) {
-                throw SeedException.createNew(CryptoErrorCodes.MISSING_SSL_KEY_STORE_CONFIGURATION)
-                        .put("ksName", keyStoreName);
-            }
-            String alias;
-            if (sslConfiguration.containsKey(ALIAS)) {
-                alias = sslConfiguration.getString(ALIAS);
-            } else {
-                alias = SSL;
-            }
-
-            KeyStoreConfig keyStoreConfig = keyStoreConfigs.get(keyStoreName);
-            password = keyStoreConfig.getAliasPasswords().get(alias);
-            if (password == null || "".equals(password)) {
-                throw SeedException.createNew(CryptoErrorCodes.MISSING_ALIAS_PASSWORD)
-                        .put(ALIAS, alias).put("ksName", keyStoreName);
-            }
+        KeyManager[] keyManagers = configureKeyManagers(sslConfig);
+        if (keyManagers != null) {
+            return sslLoader.getSSLContext(this.sslConfig.getProtocol(), keyManagers, trustManagers);
         } else {
-            throw SeedException.createNew(CryptoErrorCodes.MISSING_SSL_KEY_STORE_CONFIGURATION);
+            return null;
         }
-
-        return sslLoader.getKeyManagers(keyStore, password.toCharArray());
     }
 
-    private Map<String, KeyStoreConfig> getKeyStoreConfigs(Configuration cryptoConfig) {
-        final Map<String, KeyStoreConfig> keyStoreConfigs = new HashMap<String, KeyStoreConfig>();
-        KeyStoreConfigFactory keyStoreConfigFactory = new KeyStoreConfigFactory(cryptoConfig);
+    private KeyManager[] configureKeyManagers(CryptoConfig.SSLConfig sslConfig) {
+        String keyStoreName = sslConfig.getKeyStore();
+        CryptoConfig.KeyStoreConfig keyStoreConfig = keyStoreConfigs.get(keyStoreName);
 
-        for (String keyStoreName : getKeyStoreNames(cryptoConfig, keyStoreConfigFactory)) {
-            keyStoreConfigs.put(keyStoreName, keyStoreConfigFactory.create(keyStoreName));
+        if (keyStoreConfig == null) {
+            return null;
         }
-        return keyStoreConfigs;
-    }
 
-    private List<String> getKeyStoreNames(Configuration cryptoConfig, KeyStoreConfigFactory keyStoreConfigFactory) {
-        String[] strings = cryptoConfig.getStringArray(KEYSTORES);
-        List<String> keyStoreNames = new ArrayList<String>();
-        keyStoreNames.addAll(Arrays.asList(strings));
-        if (keyStoreConfigFactory.isKeyStoreConfigured(MASTER_KEYSTORE_NAME)) {
-            keyStoreNames.add(MASTER_KEYSTORE_NAME);
+        String aliasName = sslConfig.getAlias();
+        CryptoConfig.KeyStoreConfig.AliasConfig aliasConfig = keyStoreConfig.getAliases().get(aliasName);
+        if (aliasConfig == null || Strings.isNullOrEmpty(aliasConfig.getPassword())) {
+            throw SeedException.createNew(CryptoErrorCodes.MISSING_ALIAS_PASSWORD)
+                    .put(ALIAS, aliasName)
+                    .put("ksName", keyStoreName);
         }
-        if (keyStoreConfigFactory.isKeyStoreConfigured(DEFAULT_KEY_NAME)) {
-            keyStoreNames.add(DEFAULT_KEY_NAME);
-        }
-        return keyStoreNames;
+
+        return new SSLLoader().getKeyManagers(keyStores.get(keyStoreName), aliasConfig.getPassword().toCharArray());
     }
 
     @Override
-    public SSLContext sslContext() {
-        return sslContext;
+    public Optional<SSLContext> sslContext() {
+        return Optional.ofNullable(sslContext);
     }
 
     @Override
-    public SSLConfiguration sslConfig() {
-        return sslConfiguration;
-    }
-
-    @Override
-    public Collection<Class<?>> requiredPlugins() {
-        return Lists.<Class<?>>newArrayList(ApplicationPlugin.class);
+    public CryptoConfig.SSLConfig sslConfig() {
+        return sslConfig;
     }
 }

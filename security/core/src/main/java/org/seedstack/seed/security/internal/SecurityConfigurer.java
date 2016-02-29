@@ -7,13 +7,12 @@
  */
 package org.seedstack.seed.security.internal;
 
-import org.apache.commons.configuration.Configuration;
-import org.apache.commons.lang.ArrayUtils;
 import org.apache.shiro.util.CollectionUtils;
 import org.seedstack.seed.security.PrincipalCustomizer;
 import org.seedstack.seed.security.Realm;
 import org.seedstack.seed.security.RoleMapping;
 import org.seedstack.seed.security.RolePermissionResolver;
+import org.seedstack.seed.security.SecurityConfig;
 import org.seedstack.seed.security.internal.authorization.ConfigurationRoleMapping;
 import org.seedstack.seed.security.internal.authorization.ConfigurationRolePermissionResolver;
 import org.seedstack.seed.security.internal.authorization.EmptyRolePermissionResolver;
@@ -38,14 +37,14 @@ class SecurityConfigurer {
     private static final Class<? extends RolePermissionResolver> DEFAULT_ROLE_PERMISSION_RESOLVER = EmptyRolePermissionResolver.class;
     private static final Class<? extends RolePermissionResolver> CONFIGURATION_ROLE_PERMISSION_RESOLVER = ConfigurationRolePermissionResolver.class;
 
-    private final Configuration configuration;
+    private final SecurityConfig securityConfig;
     private final Map<Class<?>, Collection<Class<?>>> securityClasses;
     private final Collection<Class<? extends PrincipalCustomizer<?>>> principalCustomizerClasses;
     private Collection<RealmConfiguration> configurationRealms;
 
-    SecurityConfigurer(Configuration configuration, Map<Class<?>, Collection<Class<?>>> securityClasses,
+    SecurityConfigurer(SecurityConfig securityConfig, Map<Class<?>, Collection<Class<?>>> securityClasses,
                        Collection<Class<? extends PrincipalCustomizer<?>>> principalCustomizerClasses) {
-        this.configuration = configuration;
+        this.securityConfig = securityConfig;
         this.securityClasses = securityClasses;
         this.principalCustomizerClasses = principalCustomizerClasses;
         if (CollectionUtils.isEmpty(securityClasses.get(Realm.class))) {
@@ -67,19 +66,19 @@ class SecurityConfigurer {
         return Collections.unmodifiableCollection(configurationRealms);
     }
 
-    Configuration getSecurityConfiguration() {
-        return this.configuration;
+    SecurityConfig getSecurityConfiguration() {
+        return this.securityConfig;
     }
 
     @SuppressWarnings("unchecked")
     private void buildRealms() {
-        configurationRealms = new ArrayList<RealmConfiguration>();
-        String[] realmNames = configuration.getStringArray(REALMS_KEY);
-        if (ArrayUtils.isEmpty(realmNames)) {
+        configurationRealms = new ArrayList<>();
+
+        if (securityConfig.getRealms().isEmpty()) {
             RealmConfiguration confRealm = new RealmConfiguration(DEFAULT_REALM.getSimpleName(), DEFAULT_REALM);
             configurationRealms.add(confRealm);
         } else {
-            for (String realmName : realmNames) {
+            for (String realmName : securityConfig.getRealms().keySet()) {
                 Class<? extends Realm> realmClass = (Class<? extends Realm>) findClass(realmName, securityClasses.get(Realm.class));
                 if (realmClass == null) {
                     throw new IllegalArgumentException("Unknown realm defined in property " + REALMS_KEY + " : " + realmName);
@@ -88,6 +87,7 @@ class SecurityConfigurer {
                 configurationRealms.add(confRealm);
             }
         }
+
         for (RealmConfiguration confRealm : configurationRealms) {
             confRealm.setRolePermissionResolverClass(findRolePermissionResolver(confRealm));
             confRealm.setRoleMappingClass(findRoleMapping(confRealm));
@@ -95,25 +95,25 @@ class SecurityConfigurer {
     }
 
     private Class<? extends RolePermissionResolver> findRolePermissionResolver(RealmConfiguration realm) {
-        String rolePermissionResolver = configuration.getString(realm.getName() + ROLE_PERMISSION_RESOLVER_KEY);
-        if (rolePermissionResolver == null) {
-            if (configuration.subset(ConfigurationRolePermissionResolver.PERMISSIONS_SECTION_NAME).isEmpty()) {
+        SecurityConfig.RealmConfig realmConfig = securityConfig.getRealms().get(realm.getName());
+        if (realmConfig == null || realmConfig.getPermissionResolver() == null) {
+            if (securityConfig.getPermissions().isEmpty()) {
                 return DEFAULT_ROLE_PERMISSION_RESOLVER;
             }
             return CONFIGURATION_ROLE_PERMISSION_RESOLVER;
         }
-        return findRealmComponent(realm.getName(), rolePermissionResolver, RolePermissionResolver.class);
+        return findRealmComponent(realm.getName(), realmConfig.getPermissionResolver(), RolePermissionResolver.class);
     }
 
     private Class<? extends RoleMapping> findRoleMapping(RealmConfiguration realm) {
-        String roleMapping = configuration.getString(realm.getName() + ROLE_MAPPING_KEY);
-        if (roleMapping == null) {
-            if (configuration.subset(ConfigurationRoleMapping.ROLES_SECTION_NAME).isEmpty()) {
+        SecurityConfig.RealmConfig realmConfig = securityConfig.getRealms().get(realm.getName());
+        if (realmConfig == null || realmConfig.getRoleMapper() == null) {
+            if (securityConfig.getRoles().isEmpty()) {
                 return DEFAULT_ROLE_MAPPING;
             }
             return CONFIGURATION_ROLE_MAPPING;
         }
-        return findRealmComponent(realm.getName(), roleMapping, RoleMapping.class);
+        return findRealmComponent(realm.getName(), realmConfig.getRoleMapper(), RoleMapping.class);
     }
 
     @SuppressWarnings("unchecked")

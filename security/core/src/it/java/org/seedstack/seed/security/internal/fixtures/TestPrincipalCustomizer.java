@@ -7,14 +7,14 @@
  */
 package org.seedstack.seed.security.internal.fixtures;
 
+import org.seedstack.seed.security.PrincipalCustomizer;
+import org.seedstack.seed.security.internal.realms.ConfigurationRealm;
+import org.seedstack.seed.security.principals.PrincipalProvider;
+import org.seedstack.seed.security.principals.SimplePrincipalProvider;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-
-import org.seedstack.seed.security.PrincipalCustomizer;
-import org.seedstack.seed.security.principals.PrincipalProvider;
-import org.seedstack.seed.security.principals.SimplePrincipalProvider;
-import org.seedstack.seed.security.internal.realms.ConfigurationRealm;
 
 public class TestPrincipalCustomizer implements PrincipalCustomizer<ConfigurationRealm> {
 
@@ -25,7 +25,7 @@ public class TestPrincipalCustomizer implements PrincipalCustomizer<Configuratio
 
     @Override
     public Collection<PrincipalProvider<?>> principalsToAdd(PrincipalProvider<?> identity, Collection<PrincipalProvider<?>> realmPrincipals) {
-        List<PrincipalProvider<?>> principals = new ArrayList<PrincipalProvider<?>>();
+        List<PrincipalProvider<?>> principals = new ArrayList<>();
         principals.add(new SimplePrincipalProvider("foo", "bar"));
         return principals;
     }

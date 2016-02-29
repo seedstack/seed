@@ -11,10 +11,10 @@ import com.codahale.metrics.Meter;
 import com.codahale.metrics.Metric;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
+import org.junit.Test;
 import org.seedstack.seed.it.AbstractSeedIT;
 import org.seedstack.seed.it.KernelMode;
 import org.seedstack.seed.it.spi.ITKernelMode;
-import org.junit.Test;
 
 import javax.inject.Inject;
 

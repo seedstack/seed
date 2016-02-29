@@ -7,11 +7,20 @@
  */
 package org.seedstack.seed.security.internal.realms;
 
-import java.security.cert.X509Certificate;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
+import org.seedstack.seed.security.AuthenticationException;
+import org.seedstack.seed.security.AuthenticationInfo;
+import org.seedstack.seed.security.AuthenticationToken;
+import org.seedstack.seed.security.IncorrectCredentialsException;
+import org.seedstack.seed.security.Realm;
+import org.seedstack.seed.security.RoleMapping;
+import org.seedstack.seed.security.RolePermissionResolver;
+import org.seedstack.seed.security.UnsupportedTokenException;
+import org.seedstack.seed.security.X509CertificateToken;
+import org.seedstack.seed.security.principals.PrincipalProvider;
+import org.seedstack.seed.security.principals.Principals;
+import org.seedstack.seed.security.principals.X509CertificatePrincipalProvider;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -19,21 +28,11 @@ import javax.naming.InvalidNameException;
 import javax.naming.ldap.LdapName;
 import javax.naming.ldap.Rdn;
 import javax.security.auth.x500.X500Principal;
-
-import org.seedstack.seed.security.AuthenticationInfo;
-import org.seedstack.seed.security.AuthenticationToken;
-import org.seedstack.seed.security.Realm;
-import org.seedstack.seed.security.RoleMapping;
-import org.seedstack.seed.security.RolePermissionResolver;
-import org.seedstack.seed.security.X509CertificateToken;
-import org.seedstack.seed.security.AuthenticationException;
-import org.seedstack.seed.security.IncorrectCredentialsException;
-import org.seedstack.seed.security.UnsupportedTokenException;
-import org.seedstack.seed.security.principals.PrincipalProvider;
-import org.seedstack.seed.security.principals.Principals;
-import org.seedstack.seed.security.principals.X509CertificatePrincipalProvider;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.security.cert.X509Certificate;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * A realm that is based on an X509Certificate to identify the user and provide his roles. This realm does not actually authentifies the user as this
@@ -104,7 +103,7 @@ public class X509CertificateRealm implements Realm {
 
     @Override
     public Set<String> getRealmRoles(PrincipalProvider<?> identityPrincipal, Collection<PrincipalProvider<?>> otherPrincipals) {
-        Set<String> realmRoles = new HashSet<String>();
+        Set<String> realmRoles = new HashSet<>();
         Collection<PrincipalProvider<X509Certificate[]>> certificatePrincipals = Principals.getPrincipalsByType(otherPrincipals,
                 X509Certificate[].class);
         if (certificatePrincipals.isEmpty()) {

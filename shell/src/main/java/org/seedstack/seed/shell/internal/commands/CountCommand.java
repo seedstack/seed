@@ -7,8 +7,8 @@
  */
 package org.seedstack.seed.shell.internal.commands;
 
-import org.seedstack.seed.spi.command.CommandDefinition;
 import org.seedstack.seed.spi.command.Command;
+import org.seedstack.seed.spi.command.CommandDefinition;
 
 import java.util.Collection;
 import java.util.Map;

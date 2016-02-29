@@ -7,15 +7,14 @@
  */
 package org.seedstack.seed.security.internal.authorization;
 
-import static org.junit.Assert.assertTrue;
+import org.junit.Before;
+import org.junit.Test;
+import org.seedstack.seed.security.Permission;
+import org.seedstack.seed.security.Role;
 
 import java.util.Collection;
 
-import org.junit.Before;
-import org.junit.Test;
-
-import org.seedstack.seed.security.Permission;
-import org.seedstack.seed.security.Role;
+import static org.junit.Assert.assertTrue;
 
 public class EmptyRolePermissionResolverUnitTest {
 

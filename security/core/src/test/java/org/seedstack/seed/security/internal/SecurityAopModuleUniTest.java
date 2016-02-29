@@ -7,12 +7,11 @@
  */
 package org.seedstack.seed.security.internal;
 
-import static org.mockito.Mockito.mock;
-
+import com.google.inject.Binder;
 import org.junit.Test;
 import org.mockito.internal.util.reflection.Whitebox;
 
-import com.google.inject.Binder;
+import static org.mockito.Mockito.mock;
 
 public class SecurityAopModuleUniTest {
 

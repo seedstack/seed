@@ -40,9 +40,9 @@ public class CryptoModuleTest {
     public void testConfigure(@Mocked final EncryptionServiceImpl asymetricCryptingRSA, @Mocked final KeyStore keyStore,
                               @Mocked final Binder binder) {
 
-        final Map<String, KeyStore> keyStores = new HashMap<String, KeyStore>();
+        final Map<String, KeyStore> keyStores = new HashMap<>();
         keyStores.put("k1", keyStore);
-        final Map<Key<EncryptionService>, EncryptionService> rsaServices = new HashMap<Key<EncryptionService>, EncryptionService>();
+        final Map<Key<EncryptionService>, EncryptionService> rsaServices = new HashMap<>();
         rsaServices.put(Key.get(EncryptionService.class, Names.named("k1")), asymetricCryptingRSA);
         rsaServices.put(Key.get(EncryptionService.class, Names.named("k2")), asymetricCryptingRSA);
 

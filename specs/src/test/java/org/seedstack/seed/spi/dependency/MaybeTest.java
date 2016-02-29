@@ -21,18 +21,18 @@ public class MaybeTest {
 
 	@Test
 	public void testHashCode() {
-		Maybe<String> maybe = new Maybe<String>(null);
+		Maybe<String> maybe = new Maybe<>(null);
 		Assertions.assertThat(maybe.hashCode()).isEqualTo(0);
-		maybe = new Maybe<String>(CONTENT);
+		maybe = new Maybe<>(CONTENT);
 		Assertions.assertThat(maybe.hashCode()).isNotEqualTo(0);
 	}
 
 	@Test
 	public void testGet() {
-		Maybe<String> maybe = new Maybe<String>(null);
+		Maybe<String> maybe = new Maybe<>(null);
 		Assertions.assertThat(maybe.isPresent()).isFalse();
 		Assertions.assertThat(maybe.get()).isNull();
-		maybe = new Maybe<String>(CONTENT);
+		maybe = new Maybe<>(CONTENT);
 		Assertions.assertThat(maybe.isPresent()).isTrue();
 		Assertions.assertThat(maybe.get()).isEqualTo(CONTENT);
 	}
@@ -44,18 +44,18 @@ public class MaybeTest {
 
     @Test
     public void testOf() {
-        Assertions.assertThat(Maybe.of("toto")).isEqualTo(new Maybe<String>("toto"));
+        Assertions.assertThat(Maybe.of("toto")).isEqualTo(new Maybe<>("toto"));
     }
 
 	@Test
 	public void testEqualsObject() {
-		Maybe<String> emptyMaybe = new Maybe<String>(null);
+		Maybe<String> emptyMaybe = new Maybe<>(null);
 		Assertions.assertThat(emptyMaybe.equals(CONTENT)).isFalse();
 		Assertions.assertThat(emptyMaybe.equals(null)).isFalse();
 
-        Maybe<String> dummyMaybe = new Maybe<String>(CONTENT);
+        Maybe<String> dummyMaybe = new Maybe<>(CONTENT);
 		Assertions.assertThat(dummyMaybe.equals(dummyMaybe)).isTrue();
-		Maybe<String> emptyMaybe2 = new Maybe<String>(null);
+		Maybe<String> emptyMaybe2 = new Maybe<>(null);
 		Assertions.assertThat(dummyMaybe.equals(emptyMaybe2)).isFalse();
 		Assertions.assertThat(emptyMaybe2.equals(dummyMaybe)).isFalse();
 
@@ -64,9 +64,9 @@ public class MaybeTest {
 
 	@Test
 	public void testToString() {
-		Maybe<String> maybe = new Maybe<String>(null);
+		Maybe<String> maybe = new Maybe<>(null);
 		Assertions.assertThat(maybe.toString()).doesNotContain(CONTENT);
-		maybe = new Maybe<String>(CONTENT);
+		maybe = new Maybe<>(CONTENT);
 		Assertions.assertThat(maybe.toString()).contains(CONTENT);
 	}
 

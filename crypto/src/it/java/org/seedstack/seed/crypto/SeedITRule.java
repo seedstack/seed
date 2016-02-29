@@ -7,20 +7,16 @@
  */
 package org.seedstack.seed.crypto;
 
+import com.google.inject.Injector;
 import io.nuun.kernel.api.Kernel;
-
-import java.lang.reflect.Method;
-
 import org.junit.Rule;
 import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.Statement;
 import org.seedstack.seed.core.Seed;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import com.google.inject.Injector;
+import java.lang.reflect.Method;
 
 /**
  * {@link Rule} to start/stop the {@link Kernel} and to inject a {@link BeforeKernel} method.

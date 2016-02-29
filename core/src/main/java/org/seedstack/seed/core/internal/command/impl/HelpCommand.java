@@ -13,7 +13,11 @@ import org.seedstack.seed.spi.command.Argument;
 import org.seedstack.seed.spi.command.Command;
 
 import javax.inject.Inject;
-import java.util.*;
+import java.util.Map;
+import java.util.SortedMap;
+import java.util.SortedSet;
+import java.util.TreeMap;
+import java.util.TreeSet;
 
 /**
  * This built-in SEED command displays a list of all available commands or can display available options for a particular
@@ -34,11 +38,11 @@ public class HelpCommand implements Command {
         if (commandName == null) {
             StringBuilder builder = new StringBuilder();
 
-            SortedMap<String, SortedSet<CommandDefinition>> allCommands = new TreeMap<String, SortedSet<CommandDefinition>>();
+            SortedMap<String, SortedSet<CommandDefinition>> allCommands = new TreeMap<>();
             for (CommandDefinition commandDefinitionDefinition : commandDefinitions.values()) {
                 SortedSet<CommandDefinition> commandDefinitions = allCommands.get(commandDefinitionDefinition.getScope());
                 if (commandDefinitions == null) {
-                    commandDefinitions = new TreeSet<CommandDefinition>();
+                    commandDefinitions = new TreeSet<>();
                     allCommands.put(commandDefinitionDefinition.getScope(), commandDefinitions);
                 }
 

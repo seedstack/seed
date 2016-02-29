@@ -45,7 +45,7 @@ public class SeedServerEndpointConfigurator extends ServerEndpointConfig.Configu
 
     @Override
     public List<Extension> getNegotiatedExtensions(List<Extension> installed, List<Extension> requested) {
-        List<Extension> result = new ArrayList<Extension>();
+        List<Extension> result = new ArrayList<>();
         for (Extension request : requested) {
             if (installed.contains(request)) {
                 result.add(request);

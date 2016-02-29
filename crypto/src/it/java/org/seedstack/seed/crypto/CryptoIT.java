@@ -58,7 +58,7 @@ public class CryptoIT {
      */
     @BeforeKernel
     public void beforeKernel() throws Exception {
-        final Map<String, String> env = new HashMap<String, String>(System.getenv());
+        final Map<String, String> env = new HashMap<>(System.getenv());
         env.put("KS_PASSWD", "azerty");
         env.put("KEY_PASSWD", "azerty");
         new MockUp<System>() {

@@ -8,8 +8,8 @@
 package org.seedstack.seed;
 
 import org.seedstack.seed.spi.command.Argument;
-import org.seedstack.seed.spi.command.CommandDefinition;
 import org.seedstack.seed.spi.command.Command;
+import org.seedstack.seed.spi.command.CommandDefinition;
 import org.seedstack.seed.spi.command.Option;
 
 import java.util.List;

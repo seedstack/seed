@@ -178,12 +178,7 @@ public abstract class AbstractTransactionManager implements TransactionManager {
 
         // Fetching annotations from method (we fetch all methods in super and interfaces)
         if (transaction == null) {
-            Predicate<? super Method> predicate = new Predicate<Method>() {
-                @Override
-                public boolean apply(Method input) {
-                    return (!method.equals(input)) && methodIsEqual(method, input);
-                }
-            };
+            Predicate<? super Method> predicate = (Predicate<Method>) input -> (!method.equals(input)) && methodIsEqual(method, input);
 
             Set<Method> methods = ReflectionUtils.getAllMethods(targetClass, predicate);
 

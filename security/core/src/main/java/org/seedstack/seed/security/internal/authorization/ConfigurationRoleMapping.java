@@ -7,24 +7,22 @@
  */
 package org.seedstack.seed.security.internal.authorization;
 
-import org.apache.commons.configuration.Configuration;
 import org.apache.commons.lang.StringUtils;
 import org.seedstack.seed.SeedException;
 import org.seedstack.seed.security.Role;
 import org.seedstack.seed.security.RoleMapping;
 import org.seedstack.seed.security.Scope;
-import org.seedstack.seed.security.principals.PrincipalProvider;
+import org.seedstack.seed.security.SecurityConfig;
 import org.seedstack.seed.security.internal.SecurityErrorCodes;
+import org.seedstack.seed.security.principals.PrincipalProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
-import javax.inject.Named;
 import java.lang.reflect.Constructor;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
@@ -67,11 +65,6 @@ public class ConfigurationRoleMapping implements RoleMapping {
     private final static String GLOBAL_WILDCARD = "*";
 
     /**
-     * section name
-     */
-    public static final String ROLES_SECTION_NAME = "roles";
-
-    /**
      * logger
      */
     private static final Logger LOGGER = LoggerFactory.getLogger(ConfigurationRoleMapping.class);
@@ -79,20 +72,20 @@ public class ConfigurationRoleMapping implements RoleMapping {
     /**
      * map : role = mapped roles
      */
-    private final Map<String, Set<String>> map = new HashMap<String, Set<String>>();
+    private final Map<String, Set<String>> map = new HashMap<>();
 
     /**
      * roles given to every user
      */
-    private final Set<String> givenRoles = new HashSet<String>();
+    private final Set<String> everybodyRoles = new HashSet<>();
 
     @Inject
     private Map<String, Class<? extends Scope>> scopeClasses;
 
     @Override
     public Collection<Role> resolveRoles(Set<String> auths, Collection<PrincipalProvider<?>> principalProviders) {
-        Map<String, Role> roleMap = new HashMap<String, Role>();
-        for (String role : givenRoles) {
+        Map<String, Role> roleMap = new HashMap<>();
+        for (String role : everybodyRoles) {
             roleMap.put(role, new Role(role));
         }
         for (String auth : auths) {
@@ -145,37 +138,27 @@ public class ConfigurationRoleMapping implements RoleMapping {
         return currentRole;
     }
 
-    /**
-     * Read the configuration to init role mappings
-     *
-     * @param securityConfiguration configuration of security
-     */
     @Inject
-    public void readConfiguration(@Named("seed-security-config") Configuration securityConfiguration) {
-        Configuration rolesConfiguration = securityConfiguration.subset(ROLES_SECTION_NAME);
-        if (rolesConfiguration.isEmpty()) {
+    void readConfiguration(SecurityConfig securityConfig) {
+        if (securityConfig.getRoles().isEmpty()) {
             LOGGER.warn("{} defined, but its configuration is empty.", getClass().getSimpleName());
             return;
         }
-        map.clear();
-        processRolesConfiguration(rolesConfiguration);
-    }
 
-    private void processRolesConfiguration(Configuration rolesConfiguration) {
-        Iterator<String> keys = rolesConfiguration.getKeys();
-        while (keys.hasNext()) {
-            String roleName = keys.next();
-            String[] perms = rolesConfiguration.getStringArray(roleName);
-            for (String token : perms) {
-                if (GLOBAL_WILDCARD.equals(token)) {
-                    givenRoles.add(roleName);
+        map.clear();
+
+        for (Map.Entry<String, Set<String>> entry : securityConfig.getRoles().entrySet()) {
+            for (String permission : entry.getValue()) {
+                if (GLOBAL_WILDCARD.equals(permission)) {
+                    everybodyRoles.add(entry.getKey());
                 } else {
-                    Set<String> roles = map.get(token);
+                    Set<String> roles = map.get(permission);
                     if (roles == null) {
-                        roles = new HashSet<String>();
+                        roles = new HashSet<>();
                     }
-                    roles.add(roleName);
-                    map.put(token, roles);
+                    roles.add(entry.getKey());
+                    map.put(permission, roles);
+
                 }
             }
         }

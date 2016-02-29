@@ -19,7 +19,7 @@ import java.util.concurrent.ConcurrentHashMap;
 @ITBind
 @Singleton
 class ChatRoom {
-    private final Set<Session> sessions = Collections.newSetFromMap(new ConcurrentHashMap<Session, Boolean>());
+    private final Set<Session> sessions = Collections.newSetFromMap(new ConcurrentHashMap<>());
     @Inject
     EchoService echoService;
 

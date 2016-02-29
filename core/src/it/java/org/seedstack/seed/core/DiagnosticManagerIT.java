@@ -60,14 +60,24 @@ public class DiagnosticManagerIT {
 
     @Test
     @SuppressWarnings("unchecked")
+    public void nuun_info_is_present() {
+        Map<String, Object> diagnosticInfo = holder.diagnosticManager.getDiagnosticInfo(null);
+
+        assertThat(diagnosticInfo).isNotNull();
+
+        Map<String, Object> seedInfo = (Map<String, Object>) diagnosticInfo.get("nuun");
+        assertThat((Set<URL>) (seedInfo.get("scanned-urls"))).isNotEmpty();
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
     public void seed_info_is_present() {
         Map<String, Object> diagnosticInfo = holder.diagnosticManager.getDiagnosticInfo(null);
 
         assertThat(diagnosticInfo).isNotNull();
 
-        Map<String, Object> seedInfo = (Map<String, Object>) diagnosticInfo.get("seed");
-        assertThat((Set<URL>)(seedInfo.get("scanned-urls"))).isNotEmpty();
-        assertThat((Boolean)(seedInfo.get("color-output"))).isNotNull();
+        Map<String, Object> seedInfo = (Map<String, Object>) diagnosticInfo.get("nuun");
+        assertThat((Set<URL>) (seedInfo.get("scanned-urls"))).isNotEmpty();
     }
 
 
@@ -94,16 +104,14 @@ public class DiagnosticManagerIT {
         Map<String, Object> diagnosticInfo = holder.diagnosticManager.getDiagnosticInfo(null);
 
         assertThat(diagnosticInfo).isNotNull();
-        Map<String, Object> applicationInfo = (Map<String, Object>) diagnosticInfo.get("org.seedstack.seed.core.application");
+        Map<String, Object> coreInfo = (Map<String, Object>) diagnosticInfo.get("core");
+        Map<String, Object> applicationInfo = (Map<String, Object>) coreInfo.get("application");
 
         assertThat(applicationInfo).isNotNull();
         assertThat(applicationInfo.get("id")).isNotNull();
         assertThat(applicationInfo.get("name")).isNotNull();
         assertThat(applicationInfo.get("version")).isNotNull();
         assertThat(applicationInfo.get("storage-location")).isNull();
-        assertThat(applicationInfo.get("base-packages")).isNotNull();
-        assertThat(applicationInfo.get("active-profiles")).isNotNull();
-        assertThat(applicationInfo.get("configuration")).isNotNull();
     }
 
     @Test
@@ -112,7 +120,7 @@ public class DiagnosticManagerIT {
         Map<String, Object> diagnosticInfo = holder.diagnosticManager.getDiagnosticInfo(null);
 
         assertThat(diagnosticInfo).isNotNull();
-        Map<String, Object> testInfo = (Map<String, Object>) diagnosticInfo.get("test");
+        Map<String, Object> testInfo = (Map<String, Object>) diagnosticInfo.get("it-collector");
 
         assertThat(testInfo).isNotNull();
         assertThat(testInfo.get("service")).isNotNull();

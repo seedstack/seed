@@ -7,15 +7,14 @@
  */
 package org.seedstack.seed.security.internal.authorization;
 
-import static org.junit.Assert.assertTrue;
+import org.junit.Before;
+import org.junit.Test;
+import org.seedstack.seed.security.Role;
 
 import java.util.HashSet;
 import java.util.Set;
 
-import org.junit.Before;
-import org.junit.Test;
-
-import org.seedstack.seed.security.Role;
+import static org.junit.Assert.assertTrue;
 
 public class SameRoleMappingUnitTest {
 
@@ -29,7 +28,7 @@ public class SameRoleMappingUnitTest {
 	@Test
 	public void resolveRoles_should_return_given_role(){
 		final String role = "foo";
-		Set<String> foos = new HashSet<String>();
+		Set<String> foos = new HashSet<>();
 		foos.add(role);
 		Set<Role> roles = underTest.resolveRoles(foos, null);
 		assertTrue(roles.size() == 1);

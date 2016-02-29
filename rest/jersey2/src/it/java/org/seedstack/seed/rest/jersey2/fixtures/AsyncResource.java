@@ -25,11 +25,6 @@ public class AsyncResource {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public void say(@Suspended final AsyncResponse asyncResponse, final Message message) {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                asyncResponse.resume(new Message(message.getAuthor() + " says: " + message.getBody(), "computer"));
-            }
-        }).start();
+        new Thread(() -> asyncResponse.resume(new Message(message.getAuthor() + " says: " + message.getBody(), "computer"))).start();
     }
 }

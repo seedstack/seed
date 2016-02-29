@@ -7,6 +7,8 @@
  */
 package org.seedstack.seed;
 
+import org.seedstack.coffig.Coffig;
+
 import java.io.File;
 
 /**
@@ -52,39 +54,22 @@ public interface Application {
     File getStorageLocation(String context);
 
     /**
-     * Return the DOT format of the application injector graph filtered by filter regular expression.
-     *
-     * @param filter the filtering regular expression.
-     * @return the DOT formatted graph definition.
+     * @return true if the local storage is enabled, false otherwise.
      */
-    String getInjectionGraph(String filter);
+    boolean isStorageEnabled();
 
     /**
-     * Return the DOT format of the application injector graph unfiltered.
+     * Get the application configuration.
      *
-     * @return the DOT formatted graph definition.
+     * @return the {@link Coffig} object of the whole application configuration.
      */
-    String getInjectionGraph();
+    Coffig getConfiguration();
 
     /**
-     * Return the application global configuration.
+     * Get the configuration of the specified class.
      *
-     * @return the configuration
+     * @param aClass the class to get the configuration from.
+     * @return the {@link Coffig} object of the configuration specific to the specified class.
      */
-    org.apache.commons.configuration.Configuration getConfiguration();
-
-    /**
-     * Looks for eventual props configuration for a class.
-     *
-     * @return the configuration map
-     */
-    org.apache.commons.configuration.Configuration getConfiguration(Class<?> clazz);
-
-    /**
-     * Substitute any ${...} expression in the given string with the configuration values.
-     *
-     * @param value the string to substitute.
-     * @return the substituted string.
-     */
-    String substituteWithConfiguration(String value);
+    Coffig getConfiguration(Class<?> aClass);
 }

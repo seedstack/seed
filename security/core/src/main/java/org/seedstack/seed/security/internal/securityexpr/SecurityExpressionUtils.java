@@ -7,9 +7,9 @@
  */
 package org.seedstack.seed.security.internal.securityexpr;
 
-import org.seedstack.seed.security.SimpleScope;
 import org.seedstack.seed.security.Scope;
 import org.seedstack.seed.security.SecuritySupport;
+import org.seedstack.seed.security.SimpleScope;
 
 import javax.inject.Inject;
 

@@ -27,9 +27,9 @@ public class DependencyClassProxyTest {
 	@Test
 	public void testInvoke() {
 		final int result = 10;
-		AbstractDummyProxy proxy = new DependencyClassProxy<AbstractDummyProxy>(AbstractDummyProxy.class, new ProxyMethodReplacer() {
+		AbstractDummyProxy proxy = new DependencyClassProxy<>(AbstractDummyProxy.class, new ProxyMethodReplacer() {
 			@SuppressWarnings("unused")
-			public int getResult(){
+			public int getResult() {
 				return result;
 			}
 		}).getProxy();
@@ -39,9 +39,9 @@ public class DependencyClassProxyTest {
 	@Test
 	public void testInvokeWithException() {
 		final String errorMessage = "dummy exception";
-		AbstractDummyProxy proxy = new DependencyClassProxy<AbstractDummyProxy>(AbstractDummyProxy.class, new ProxyMethodReplacer() {
+		AbstractDummyProxy proxy = new DependencyClassProxy<>(AbstractDummyProxy.class, new ProxyMethodReplacer() {
 			@SuppressWarnings("unused")
-			public int getResult(){
+			public int getResult() {
 				throw new RuntimeException(errorMessage);
 			}
 		}).getProxy();
@@ -55,7 +55,7 @@ public class DependencyClassProxyTest {
 
 	@Test(expected=SeedException.class)
 	public void testCreationError() {
-		new DependencyClassProxy<AbstractDummyProxyError>(AbstractDummyProxyError.class, new ProxyMethodReplacer() {
+		new DependencyClassProxy<>(AbstractDummyProxyError.class, new ProxyMethodReplacer() {
 		});
 	}
 

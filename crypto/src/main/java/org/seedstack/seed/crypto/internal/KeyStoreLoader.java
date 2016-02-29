@@ -7,7 +7,9 @@
  */
 package org.seedstack.seed.crypto.internal;
 
+import com.google.common.base.Strings;
 import org.seedstack.seed.SeedException;
+import org.seedstack.seed.crypto.CryptoConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,10 +31,15 @@ import java.security.cert.CertificateException;
 class KeyStoreLoader {
     private static final Logger LOGGER = LoggerFactory.getLogger(KeyStoreLoader.class);
 
-    KeyStore load(KeyStoreConfig ksConfig) {
-        String name = ksConfig.getName();
+    KeyStore load(String name, CryptoConfig.KeyStoreConfig ksConfig) {
         String path = ksConfig.getPath();
-        return loadFromInputStream(getInputStream(name, path), ksConfig);
+        if (Strings.isNullOrEmpty(name) || Strings.isNullOrEmpty(path) || Strings.isNullOrEmpty(ksConfig.getPassword())) {
+            throw SeedException.createNew(CryptoErrorCodes.KEYSTORE_CONFIGURATION_ERROR)
+                    .put("keyName", name)
+                    .put("path", path)
+                    .put("password", ksConfig.getPassword());
+        }
+        return loadFromInputStream(name, getInputStream(name, path), ksConfig);
     }
 
     private InputStream getInputStream(String name, String path) {
@@ -45,7 +52,7 @@ class KeyStoreLoader {
         return inputStream;
     }
 
-    private KeyStore loadFromInputStream(InputStream inputStream, KeyStoreConfig ksConfig) {
+    private KeyStore loadFromInputStream(String name, InputStream inputStream, CryptoConfig.KeyStoreConfig ksConfig) {
         KeyStore ks;
         String type = ksConfig.getType();
         String provider = ksConfig.getProvider();
@@ -63,10 +70,10 @@ class KeyStoreLoader {
 
         } catch (KeyStoreException e) {
             throw SeedException.wrap(e, CryptoErrorCodes.KEYSTORE_TYPE_UNAVAILABLE)
-                    .put("ksName", ksConfig.getName()).put("type", type);
+                    .put("ksName", name).put("type", type);
         } catch (NoSuchProviderException e) {
             throw SeedException.wrap(e, CryptoErrorCodes.NO_KEYSTORE_PROVIDER)
-                    .put("ksName", ksConfig.getName()).put("provider", provider);
+                    .put("ksName", name).put("provider", provider);
         } catch (NoSuchAlgorithmException e) {
             throw SeedException.wrap(e, CryptoErrorCodes.ALGORITHM_CANNOT_BE_FOUND);
         } catch (CertificateException e) {

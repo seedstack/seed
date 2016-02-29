@@ -12,7 +12,13 @@ import com.google.inject.Key;
 import com.google.inject.name.Names;
 
 import javax.inject.Inject;
-import javax.naming.*;
+import javax.naming.Binding;
+import javax.naming.Context;
+import javax.naming.Name;
+import javax.naming.NameClassPair;
+import javax.naming.NameParser;
+import javax.naming.NamingEnumeration;
+import javax.naming.NamingException;
 import java.util.Hashtable;
 
 /**

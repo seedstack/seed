@@ -12,16 +12,15 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.google.inject.Injector;
-import org.apache.commons.configuration.Configuration;
 import org.seedstack.seed.Application;
 import org.seedstack.seed.SeedException;
 import org.seedstack.seed.web.ResourceInfo;
 import org.seedstack.seed.web.ResourceRequest;
+import org.seedstack.seed.web.WebConfig;
 import org.seedstack.seed.web.WebResourceResolver;
 import org.seedstack.seed.web.WebResourceResolverFactory;
-import org.seedstack.seed.web.internal.WebErrorCode;
-import org.seedstack.seed.web.internal.WebPlugin;
 import org.seedstack.seed.web.internal.ServletContextUtils;
+import org.seedstack.seed.web.internal.WebErrorCode;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -52,12 +51,10 @@ import java.util.zip.GZIPOutputStream;
  * @author adrien.lauer@mpsa.com
  */
 public class WebResourcesFilter implements Filter {
-    private static final int DEFAULT_CACHE_SIZE = 8192;
-    private static final int DEFAULT_CACHE_CONCURRENCY = 32;
-    private static final int DEFAULT_BUFFER_SIZE = 65536;
     private static final String HEADER_IFMODSINCE = "If-Modified-Since";
     private static final String HEADER_LASTMOD = "Last-Modified";
 
+    private int bufferSize;
     private LoadingCache<ResourceRequest, Optional<ResourceInfo>> resourceInfoCache;
     private long servletInitTime;
     private WebResourceResolver webResourceResolver;
@@ -65,24 +62,29 @@ public class WebResourcesFilter implements Filter {
     @Override
     public void init(FilterConfig config) throws ServletException {
         Injector injector = ServletContextUtils.getInjector(config.getServletContext());
+        WebConfig.StaticResourcesConfig staticResourcesConfig = injector.getInstance(Application.class).getConfiguration().get(WebConfig.class).staticResources();
 
-        Configuration configuration = injector.getInstance(Application.class).getConfiguration();
+        this.bufferSize = staticResourcesConfig.getBufferSize();
 
         // round the time to nearest second for proper comparison with If-Modified-Since header
         this.servletInitTime = System.currentTimeMillis() / 1000L * 1000L;
 
-        int cacheSize = configuration.getInt(WebPlugin.WEB_PLUGIN_PREFIX + ".resources.cache.max-size", DEFAULT_CACHE_SIZE);
-        this.resourceInfoCache = CacheBuilder.newBuilder().maximumSize(cacheSize).concurrencyLevel(configuration.getInt(WebPlugin.WEB_PLUGIN_PREFIX + ".resources.cache.concurrency", DEFAULT_CACHE_CONCURRENCY)).initialCapacity(configuration.getInt(WebPlugin.WEB_PLUGIN_PREFIX + ".resources.cache.initial-size", cacheSize / 4)).build(new CacheLoader<ResourceRequest, Optional<ResourceInfo>>() {
-            @Override
-            public Optional<ResourceInfo> load(ResourceRequest key) {
-                ResourceInfo resourceInfo = webResourceResolver.resolveResourceInfo(key);
-                if (resourceInfo == null) {
-                    return Optional.absent();
-                } else {
-                    return Optional.of(resourceInfo);
-                }
-            }
-        });
+        WebConfig.StaticResourcesConfig.CacheConfig cacheConfig = staticResourcesConfig.cacheConfig();
+        this.resourceInfoCache = CacheBuilder.newBuilder()
+                .maximumSize(cacheConfig.getMaxSize())
+                .concurrencyLevel(cacheConfig.getConcurrencyLevel())
+                .initialCapacity(cacheConfig.getInitialSize())
+                .build(new CacheLoader<ResourceRequest, Optional<ResourceInfo>>() {
+                    @Override
+                    public Optional<ResourceInfo> load(ResourceRequest key) {
+                        ResourceInfo resourceInfo = webResourceResolver.resolveResourceInfo(key);
+                        if (resourceInfo == null) {
+                            return Optional.absent();
+                        } else {
+                            return Optional.of(resourceInfo);
+                        }
+                    }
+                });
 
         this.webResourceResolver = injector.getInstance(WebResourceResolverFactory.class).createWebResourceResolver(config.getServletContext());
     }
@@ -156,7 +158,7 @@ public class WebResourcesFilter implements Filter {
         InputStream is = null;
         try {
             is = resourceInfo.getUrl().openStream();
-            byte[] buffer = new byte[DEFAULT_BUFFER_SIZE];
+            byte[] buffer = new byte[bufferSize];
             int readBytes = is.read(buffer);
             while (readBytes != -1) {
                 os.write(buffer, 0, readBytes);

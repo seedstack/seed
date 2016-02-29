@@ -16,8 +16,6 @@ import org.slf4j.LoggerFactory;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
-import javax.websocket.Decoder;
-import javax.websocket.Encoder;
 import javax.websocket.server.ServerContainer;
 import javax.websocket.server.ServerEndpoint;
 import javax.websocket.server.ServerEndpointConfig;
@@ -36,7 +34,6 @@ class WebSocketServletContextListener implements ServletContextListener {
     @Override
     public void contextInitialized(ServletContextEvent sce) {
         ServletContext servletContext = sce.getServletContext();
-        Injector injector = ServletContextUtils.getInjector(servletContext);
         ServerContainer container = (ServerContainer) servletContext.getAttribute("javax.websocket.server.ServerContainer");
         if (container != null) {
             for (Class<?> endpointClass : serverEndpointClasses) {
@@ -44,10 +41,10 @@ class WebSocketServletContextListener implements ServletContextListener {
                     LOGGER.trace("Registering WebSocket server endpoint {}", endpointClass.getCanonicalName());
                     ServerEndpoint serverEndpoint = endpointClass.getAnnotation(ServerEndpoint.class);
                     ServerEndpointConfig serverEndpointConfig = ServerEndpointConfig.Builder.create(endpointClass, serverEndpoint.value())
-                            .decoders(Arrays.<Class<? extends Decoder>>asList(serverEndpoint.decoders()))
-                            .encoders(Arrays.<Class<? extends Encoder>>asList(serverEndpoint.encoders()))
+                            .decoders(Arrays.asList(serverEndpoint.decoders()))
+                            .encoders(Arrays.asList(serverEndpoint.encoders()))
                             .subprotocols(Arrays.asList(serverEndpoint.subprotocols()))
-                            .configurator(injector.getInstance(serverEndpoint.configurator() == ServerEndpointConfig.Configurator.class ? SeedServerEndpointConfigurator.class : serverEndpoint.configurator()))
+                            .configurator(getConfiguratorInstance(servletContext, serverEndpoint))
                             .build();
                     container.addEndpoint(serverEndpointConfig);
                 } catch (Exception e) {
@@ -61,5 +58,14 @@ class WebSocketServletContextListener implements ServletContextListener {
     @Override
     public void contextDestroyed(ServletContextEvent sce) {
         // nothing to do
+    }
+
+    private ServerEndpointConfig.Configurator getConfiguratorInstance(ServletContext servletContext, ServerEndpoint serverEndpoint) {
+        Injector injector = ServletContextUtils.getInjector(servletContext);
+        if (ServerEndpointConfig.Configurator.class == serverEndpoint.configurator()) {
+            return injector.getInstance(SeedServerEndpointConfigurator.class);
+        } else {
+            return injector.getInstance(serverEndpoint.configurator());
+        }
     }
 }

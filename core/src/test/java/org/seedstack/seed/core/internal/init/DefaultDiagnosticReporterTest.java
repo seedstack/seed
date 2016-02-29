@@ -30,8 +30,8 @@ public class DefaultDiagnosticReporterTest {
     }
 
     private String produceReport() throws IOException {
-        HashMap<String, Object> diagnostics = new HashMap<String, Object>();
-        HashMap<String, Object> subMapDiagnostics = new HashMap<String, Object>();
+        HashMap<String, Object> diagnostics = new HashMap<>();
+        HashMap<String, Object> subMapDiagnostics = new HashMap<>();
         subMapDiagnostics.put("subHello", "subWorld");
 
         diagnostics.put("hello", "world");

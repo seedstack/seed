@@ -7,13 +7,13 @@
  */
 package org.seedstack.seed.core.internal.command.impl;
 
-import org.seedstack.seed.spi.command.Argument;
-import org.seedstack.seed.spi.command.Command;
-import org.seedstack.seed.spi.command.Option;
 import io.nuun.kernel.api.plugin.InitState;
 import io.nuun.kernel.api.plugin.context.InitContext;
 import io.nuun.kernel.api.plugin.request.ClasspathScanRequest;
-import io.nuun.kernel.core.AbstractPlugin;
+import org.seedstack.seed.core.internal.AbstractSeedPlugin;
+import org.seedstack.seed.spi.command.Argument;
+import org.seedstack.seed.spi.command.Command;
+import org.seedstack.seed.spi.command.Option;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,10 +28,10 @@ import java.util.Map;
  *
  * @author adrien.lauer@mpsa.com
  */
-public class CommandPlugin extends AbstractPlugin {
+public class CommandPlugin extends AbstractSeedPlugin {
     private static final Logger LOGGER = LoggerFactory.getLogger(CommandPlugin.class);
 
-    private final Map<String, CommandDefinition> commandDefinitions = new HashMap<String, CommandDefinition>();
+    private final Map<String, CommandDefinition> commandDefinitions = new HashMap<>();
 
     @Override
     public String name() {
@@ -39,7 +39,7 @@ public class CommandPlugin extends AbstractPlugin {
     }
 
     @Override
-    public InitState init(InitContext initContext) {
+    public InitState initialize(InitContext initContext) {
         Map<Class<? extends Annotation>, Collection<Class<?>>> scannedClassesByAnnotationClass = initContext.scannedClassesByAnnotationClass();
 
         Collection<Class<?>> commandAnnotatedClasses = scannedClassesByAnnotationClass.get(org.seedstack.seed.spi.command.CommandDefinition.class);

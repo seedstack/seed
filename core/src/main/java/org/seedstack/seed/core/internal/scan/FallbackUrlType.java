@@ -20,7 +20,7 @@ import java.util.List;
  * @author adrien.lauer@mpsa.com
  */
 public class FallbackUrlType implements Vfs.UrlType {
-    private List<URL> failedUrls = new ArrayList<URL>();
+    private List<URL> failedUrls = new ArrayList<>();
 
     @Override
     public boolean matches(URL url) {
@@ -39,7 +39,7 @@ public class FallbackUrlType implements Vfs.UrlType {
             @Override
             public Iterable<Vfs.File> getFiles() {
                 failedUrls.add(url);
-                return new ArrayList<Vfs.File>();
+                return new ArrayList<>();
             }
 
             @Override

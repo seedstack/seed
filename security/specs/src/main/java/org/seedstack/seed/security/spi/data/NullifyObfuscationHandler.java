@@ -22,7 +22,7 @@ import java.util.Map;
  */
 public class NullifyObfuscationHandler implements DataObfuscationHandler<Object> {
 
-    private static Map<Class<?>, Object> nulls = new HashMap<Class<?>, Object>();
+    private static Map<Class<?>, Object> nulls = new HashMap<>();
 
     @Override
     public Object obfuscate(Object data) {

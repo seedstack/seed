@@ -30,7 +30,7 @@ public class Jersey2WithPrefixIT extends AbstractSeedWebIT {
     public static WebArchive createDeployment() {
         return ShrinkWrap
                 .create(WebArchive.class)
-                .addAsResource("with-prefix.props", "META-INF/configuration/with-prefix.props");
+                .addAsResource("with-prefix.yaml", "META-INF/configuration/with-prefix.yaml");
     }
 
     @RunAsClient

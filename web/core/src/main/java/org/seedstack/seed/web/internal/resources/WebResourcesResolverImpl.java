@@ -8,15 +8,14 @@
 package org.seedstack.seed.web.internal.resources;
 
 import com.google.inject.assistedinject.Assisted;
-import org.apache.commons.configuration.Configuration;
 import org.seedstack.seed.Application;
 import org.seedstack.seed.SeedException;
 import org.seedstack.seed.core.utils.SeedReflectionUtils;
 import org.seedstack.seed.web.ResourceInfo;
 import org.seedstack.seed.web.ResourceRequest;
+import org.seedstack.seed.web.WebConfig;
 import org.seedstack.seed.web.WebResourceResolver;
 import org.seedstack.seed.web.internal.WebErrorCode;
-import org.seedstack.seed.web.internal.WebPlugin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,13 +52,13 @@ class WebResourcesResolverImpl implements WebResourceResolver {
 
     @Inject
     WebResourcesResolverImpl(final Application application, @Assisted ServletContext servletContext) {
-        Configuration webConfiguration = application.getConfiguration().subset(WebPlugin.WEB_PLUGIN_PREFIX);
+        WebConfig.StaticResourcesConfig staticResourcesConfig = application.getConfiguration().get(WebConfig.class).staticResources();
         this.servletContext = servletContext;
         this.classLoader = SeedReflectionUtils.findMostCompleteClassLoader(WebResourcesResolverImpl.class);
         this.mimetypesFileTypeMap = new MimetypesFileTypeMap();
-        this.serveMinifiedResources = webConfiguration.getBoolean("resources.minification-support", true);
-        this.serveGzippedResources = webConfiguration.getBoolean("resources.gzip-support", true);
-        this.onTheFlyGzipping = webConfiguration.getBoolean("resources.gzip-on-the-fly", true);
+        this.serveMinifiedResources = staticResourcesConfig.isMinificationEnabled();
+        this.serveGzippedResources = staticResourcesConfig.isGzipEnabled();
+        this.onTheFlyGzipping = staticResourcesConfig.isOnTheFlyGzipEnabled();
     }
 
     @Override

@@ -20,11 +20,11 @@ import java.util.Map;
 class RestModule extends AbstractModule {
     private final Collection<Class<?>> resources;
     private final Collection<Class<?>> providers;
-    private final RestConfiguration restConfiguration;
+    private final RestConfig restConfig;
     private final Map<Variant, Class<? extends RootResource>> rootResourcesByVariant;
 
-    RestModule(RestConfiguration restConfiguration, Collection<Class<?>> resources, Collection<Class<?>> providers, Map<Variant, Class<? extends RootResource>> rootResourcesByVariant) {
-        this.restConfiguration = restConfiguration;
+    RestModule(RestConfig restConfig, Collection<Class<?>> resources, Collection<Class<?>> providers, Map<Variant, Class<? extends RootResource>> rootResourcesByVariant) {
+        this.restConfig = restConfig;
         this.rootResourcesByVariant = rootResourcesByVariant;
         this.resources = resources;
         this.providers = providers;
@@ -32,8 +32,8 @@ class RestModule extends AbstractModule {
 
     @Override
     protected void configure() {
-        bind(String.class).annotatedWith(Names.named("SeedRestPath")).toInstance(restConfiguration.getRestPath());
-        bind(String.class).annotatedWith(Names.named("SeedJspPath")).toInstance(restConfiguration.getJspPath());
+        bind(String.class).annotatedWith(Names.named("SeedRestPath")).toInstance(restConfig.getPath());
+        bind(String.class).annotatedWith(Names.named("SeedJspPath")).toInstance(restConfig.getJspPath());
 
         for (Class<?> resource : resources) {
             bind(resource);

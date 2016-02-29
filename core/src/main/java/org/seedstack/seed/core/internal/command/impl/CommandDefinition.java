@@ -27,8 +27,8 @@ class CommandDefinition implements Comparable<CommandDefinition> {
     private final org.seedstack.seed.spi.command.CommandDefinition commandDefinition;
     private final Class<? extends Command> commandActionClass;
 
-    private final List<ArgumentDefinition> argumentDefinitions = new ArrayList<ArgumentDefinition>();
-    private final List<OptionDefinition> optionDefinitions = new ArrayList<OptionDefinition>();
+    private final List<ArgumentDefinition> argumentDefinitions = new ArrayList<>();
+    private final List<OptionDefinition> optionDefinitions = new ArrayList<>();
 
     CommandDefinition(org.seedstack.seed.spi.command.CommandDefinition commandDefinition, Class<? extends Command> commandActionClass) {
         this.commandDefinition = commandDefinition;

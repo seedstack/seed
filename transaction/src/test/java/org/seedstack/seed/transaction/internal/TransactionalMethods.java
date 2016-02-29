@@ -7,9 +7,9 @@
  */
 package org.seedstack.seed.transaction.internal;
 
+import org.aopalliance.intercept.MethodInvocation;
 import org.seedstack.seed.transaction.Propagation;
 import org.seedstack.seed.transaction.Transactional;
-import org.aopalliance.intercept.MethodInvocation;
 
 public class TransactionalMethods {
     @Transactional

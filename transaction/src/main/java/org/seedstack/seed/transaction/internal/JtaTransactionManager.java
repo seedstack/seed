@@ -17,7 +17,11 @@ import org.seedstack.seed.transaction.spi.TransactionMetadata;
 import javax.inject.Inject;
 import javax.naming.Context;
 import javax.naming.NamingException;
-import javax.transaction.*;
+import javax.transaction.Status;
+import javax.transaction.SystemException;
+import javax.transaction.Transaction;
+import javax.transaction.TransactionManager;
+import javax.transaction.UserTransaction;
 
 /**
  * This transaction manager delegates to JTA the transactional behavior.

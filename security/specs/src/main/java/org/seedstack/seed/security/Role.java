@@ -42,8 +42,8 @@ public class Role {
      */
     public Role(String name) {
         this.name = name;
-        scopes = new ArrayList<Scope>();
-        permissions = new HashSet<Permission>();
+        scopes = new ArrayList<>();
+        permissions = new HashSet<>();
     }
 
     /**
@@ -82,7 +82,7 @@ public class Role {
      */
     @SuppressWarnings("unchecked")
     public <S extends Scope> Set<S> getScopesByType(Class<S> scopeType) {
-        Set<S> typedScopes = new HashSet<S>();
+        Set<S> typedScopes = new HashSet<>();
         for (Scope scope : getScopes()) {
             if (scopeType.isInstance(scope)) {
                 typedScopes.add((S) scope);

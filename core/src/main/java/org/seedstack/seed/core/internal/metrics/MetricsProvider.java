@@ -7,12 +7,11 @@
  */
 package org.seedstack.seed.core.internal.metrics;
 
-import javax.inject.Singleton;
-
-import org.seedstack.seed.spi.dependency.DependencyProvider;
-
 import com.codahale.metrics.Metric;
 import com.codahale.metrics.MetricRegistry;
+import org.seedstack.seed.spi.dependency.DependencyProvider;
+
+import javax.inject.Singleton;
 
 /**
  * Provider used to get a {@link MetricRegistry} to register an internal {@link Metric}.

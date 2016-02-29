@@ -7,9 +7,9 @@
  */
 package org.seedstack.seed.shell.internal.commands;
 
+import org.seedstack.seed.security.RequiresRoles;
 import org.seedstack.seed.spi.command.Command;
 import org.seedstack.seed.spi.command.CommandDefinition;
-import org.seedstack.seed.security.RequiresRoles;
 
 @CommandDefinition(scope = "test", name = "denied", description = "Secured test command")
 public class DeniedSecuredTestCommand implements Command {

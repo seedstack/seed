@@ -9,11 +9,6 @@ package org.seedstack.seed.core.internal;
 
 import org.seedstack.seed.ErrorCode;
 
-/**
- * SEED core error codes.
- *
- * @author adrien.lauer@mpsa.com
- */
 public enum CoreErrorCode implements ErrorCode {
     UNABLE_TO_INSTANTIATE_MODULE,
     UNABLE_TO_INJECT_LOGGER,
@@ -26,5 +21,12 @@ public enum CoreErrorCode implements ErrorCode {
     RETHROW_EXCEPTION_AFTER_DIAGNOSTIC_FAILURE,
     UNABLE_TO_INSTANTIATE_CLASS,
     ERROR_DURING_LIFECYCLE_CALLBACK,
-    UNABLE_TO_CREATE_PROXY
+    UNABLE_TO_CREATE_PROXY,
+    UNABLE_TO_LOAD_CONFIGURATION_RESOURCE,
+    STORAGE_PATH_IS_NOT_A_DIRECTORY,
+    UNABLE_TO_CREATE_STORAGE_DIRECTORY,
+    STORAGE_DIRECTORY_IS_NOT_WRITABLE,
+    NO_LOCAL_STORAGE_CONFIGURED,
+    UNABLE_TO_INJECT_CONFIGURATION_VALUE,
+    MISSING_CONFIGURATION_KEY
 }

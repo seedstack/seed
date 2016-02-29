@@ -24,7 +24,6 @@ import java.net.URL;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -36,9 +35,9 @@ class JndiInputDir implements Vfs.Dir {
     private static final Logger LOGGER = LoggerFactory.getLogger(JndiInputDir.class);
 
     private final URL url;
-    private final List<String> fullPath = new ArrayList<String>();
-    private final Deque<DirContext> dirContextDeque = new ArrayDeque<DirContext>();
-    private final Deque<NamingEnumeration<NameClassPair>> enumerationDeque = new ArrayDeque<NamingEnumeration<NameClassPair>>();
+    private final List<String> fullPath = new ArrayList<>();
+    private final Deque<DirContext> dirContextDeque = new ArrayDeque<>();
+    private final Deque<NamingEnumeration<NameClassPair>> enumerationDeque = new ArrayDeque<>();
 
     JndiInputDir(URL url) {
         this.url = url;
@@ -46,36 +45,31 @@ class JndiInputDir implements Vfs.Dir {
 
     @Override
     public Iterable<Vfs.File> getFiles() {
-        return new Iterable<Vfs.File>() {
+        return () -> new AbstractIterator<Vfs.File>() {
+            {
+                try {
+                    Object content = url.openConnection().getContent();
+                    dirContextDeque.push((DirContext) content);
+                    enumerationDeque.push(((DirContext) content).list("/"));
+                    fullPath.add(null);
+                } catch (Exception e) {
+                    SeedLoggingUtils.logWarningWithDebugDetails(LOGGER, e, "Unable to open JNDI directory at {}, ignoring it", url.toExternalForm());
+                }
+            }
+
             @Override
-            public Iterator<Vfs.File> iterator() {
-                return new AbstractIterator<Vfs.File>() {
-                    {
-                        try {
-                            Object content = url.openConnection().getContent();
-                            dirContextDeque.push((DirContext) content);
-                            enumerationDeque.push(((DirContext) content).list("/"));
-                            fullPath.add(null);
-                        } catch (Exception e) {
-                            SeedLoggingUtils.logWarningWithDebugDetails(LOGGER, e, "Unable to open JNDI directory at {}, ignoring it", url.toExternalForm());
-                        }
-                    }
+            protected Vfs.File computeNext() {
+                try {
+                    JndiInputFile nextFile = findNextFile();
 
-                    @Override
-                    protected Vfs.File computeNext() {
-                        try {
-                            JndiInputFile nextFile = findNextFile();
-
-                            if (nextFile == null) {
-                                return endOfData();
-                            } else {
-                                return nextFile;
-                            }
-                        } catch (NamingException e) {
-                            throw SeedException.wrap(e, WebErrorCode.UNABLE_TO_SCAN_TOMCAT_JNDI_DIRECTORY);
-                        }
+                    if (nextFile == null) {
+                        return endOfData();
+                    } else {
+                        return nextFile;
                     }
-                };
+                } catch (NamingException e) {
+                    throw SeedException.wrap(e, WebErrorCode.UNABLE_TO_SCAN_TOMCAT_JNDI_DIRECTORY);
+                }
             }
         };
     }

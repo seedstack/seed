@@ -7,10 +7,9 @@
  */
 package org.seedstack.seed.core.internal.metrics;
 
-import org.seedstack.seed.core.utils.ProxyMethodReplacer;
-
 import com.codahale.metrics.health.HealthCheck;
 import com.codahale.metrics.health.HealthCheck.Result;
+import org.seedstack.seed.core.utils.ProxyMethodReplacer;
 
 /**
  * {@link ProxyMethodReplacer} for a {@link HealthCheck}.

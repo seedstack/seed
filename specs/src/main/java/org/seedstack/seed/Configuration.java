@@ -7,9 +7,6 @@
  */
 package org.seedstack.seed;
 
-import org.seedstack.seed.spi.configuration.ConfigurationConverter;
-import org.seedstack.seed.spi.configuration.ConfigurationIdentityConverter;
-
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -25,15 +22,8 @@ import java.lang.annotation.Target;
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ ElementType.FIELD})
+@Target({ElementType.FIELD})
 public @interface Configuration {
-    /**
-     * Provides the default configuration error code.
-     */
-    enum ConfigurationErrorCode implements ErrorCode {
-        CONFIGURATION_ERROR
-    }
-
     /**
      * The configuration property name.
      */
@@ -48,19 +38,4 @@ public @interface Configuration {
      * The default value if configuration property is not present.
      */
     String[] defaultValue() default {};
-
-    /**
-     * The converter (string to any object) to use to convert the configuration property value.
-     */
-    Class<? extends ConfigurationConverter<?>> converter() default ConfigurationIdentityConverter.class;
-
-    /**
-     * The class of the {@link ErrorCode} to use in the SeedException thrown if a configuration error occurs.
-     */
-    Class<? extends Enum<? extends ErrorCode>> errorCodeClass() default ConfigurationErrorCode.class;
-
-    /**
-     * The code name to use in the SeedException thrown if a configuration error occurs.
-     */
-    String errorCodeName() default "CONFIGURATION_ERROR";
 }

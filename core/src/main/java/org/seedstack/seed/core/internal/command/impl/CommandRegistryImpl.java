@@ -50,7 +50,7 @@ class CommandRegistryImpl implements CommandRegistry {
             throw SeedException.createNew(CommandErrorCode.COMMAND_DEFINITION_NOT_FOUND).put("command", qualifiedName);
         }
 
-        List<Option> options = new ArrayList<Option>();
+        List<Option> options = new ArrayList<>();
         for (OptionDefinition optionDefinition : commandDefinitionDefinition.getOptionDefinitions()) {
             options.add(optionDefinition.getAnnotation());
         }
@@ -68,7 +68,7 @@ class CommandRegistryImpl implements CommandRegistry {
             throw SeedException.createNew(CommandErrorCode.COMMAND_DEFINITION_NOT_FOUND).put("command", qualifiedName);
         }
 
-        List<Argument> arguments = new ArrayList<Argument>();
+        List<Argument> arguments = new ArrayList<>();
         for (ArgumentDefinition argumentDefinition : commandDefinitionDefinition.getArgumentDefinitions()) {
             arguments.add(argumentDefinition.getAnnotation());
         }

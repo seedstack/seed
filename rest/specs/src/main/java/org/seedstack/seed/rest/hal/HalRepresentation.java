@@ -60,11 +60,11 @@ public class HalRepresentation {
      */
     @JsonProperty("_links")
     @JsonInclude(JsonInclude.Include.NON_DEFAULT)
-    private final Map<String, Object> links = new HashMap<String, Object>();
+    private final Map<String, Object> links = new HashMap<>();
 
     @JsonProperty("_embedded")
     @JsonInclude(JsonInclude.Include.NON_DEFAULT)
-    private final Map<String, Object> embedded = new HashMap<String, Object>();
+    private final Map<String, Object> embedded = new HashMap<>();
 
     /**
      * Default constructor required by Jackson.
@@ -147,7 +147,7 @@ public class HalRepresentation {
             links.put(rel, linksForRel);
         } else if (obj instanceof Link){
             Link linkCopy = (Link) obj;
-            List<Link> linksForRel = new ArrayList<Link>();
+            List<Link> linksForRel = new ArrayList<>();
             linksForRel.add(linkCopy);
             linksForRel.add(link);
             links.put(rel, linksForRel);

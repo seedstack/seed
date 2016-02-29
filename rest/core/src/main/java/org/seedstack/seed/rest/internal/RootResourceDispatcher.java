@@ -28,7 +28,7 @@ public class RootResourceDispatcher {
 
     @GET
     public Response lookup(@Context Request request, @Context HttpServletRequest httpServletRequest, @Context UriInfo uriInfo) {
-        ArrayList<Variant> variants = new ArrayList<Variant>(rootResources.keySet());
+        ArrayList<Variant> variants = new ArrayList<>(rootResources.keySet());
 
         if (!variants.isEmpty()) {
             Variant v = request.selectVariant(variants);

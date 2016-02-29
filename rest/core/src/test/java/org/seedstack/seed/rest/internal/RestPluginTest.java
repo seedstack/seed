@@ -20,14 +20,17 @@ import mockit.Expectations;
 import mockit.Mocked;
 import mockit.NonStrictExpectations;
 import mockit.integration.junit4.JMockit;
-import org.apache.commons.configuration.Configuration;
 import org.javatuples.Pair;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.kametic.specifications.Specification;
+import org.seedstack.coffig.Coffig;
+import org.seedstack.coffig.provider.PrioritizedProvider;
+import org.seedstack.seed.Application;
 import org.seedstack.seed.Ignore;
 import org.seedstack.seed.SeedRuntime;
-import org.seedstack.seed.core.spi.configuration.ConfigurationProvider;
+import org.seedstack.seed.core.internal.init.DiagnosticManagerImpl;
+import org.seedstack.seed.spi.config.ApplicationProvider;
 
 import javax.servlet.ServletContext;
 import javax.ws.rs.Path;
@@ -45,14 +48,13 @@ import static org.seedstack.seed.rest.internal.RestPlugin.resourcesSpecification
  */
 @RunWith(JMockit.class)
 public class RestPluginTest {
-
     private RestPlugin underTest = new RestPlugin();
     @Mocked
     private InitContext initContext;
     @Mocked
-    private Configuration configuration;
+    private ApplicationProvider applicationProvider;
     @Mocked
-    private ConfigurationProvider configurationProvider;
+    private Application application;
     @Mocked
     private ServletContext servletContext;
 
@@ -99,7 +101,11 @@ public class RestPluginTest {
                 new Pair(providersSpecification, MyProvider.class)
         );
 
-        underTest.provideContainerContext(SeedRuntime.builder().context(servletContext).build());
+        underTest.provideContainerContext(SeedRuntime.builder()
+                .configuration(Coffig.builder().withProviders(new PrioritizedProvider()).build())
+                .diagnosticManager(new DiagnosticManagerImpl())
+                .context(servletContext)
+                .build());
         underTest.init(initContext);
 
         Collection<Class<?>> actualResources = Deencapsulation.getField(underTest, "resources");
@@ -125,7 +131,7 @@ public class RestPluginTest {
     }
 
     private void givenSpecifications(Pair<Specification<Class<?>>, Class<?>>... specEntries) {
-        final Map<Specification, Collection<Class<?>>> specsMap = new HashMap<Specification, Collection<Class<?>>>();
+        final Map<Specification, Collection<Class<?>>> specsMap = new HashMap<>();
         for (Pair<Specification<Class<?>>, Class<?>> specEntry : specEntries) {
             specsMap.put(specEntry.getValue0(), Lists.<Class<?>>newArrayList(specEntry.getValue1()));
         }
@@ -138,10 +144,12 @@ public class RestPluginTest {
     private void givenConfiguration() {
         new Expectations() {
             {
-                initContext.dependency(ConfigurationProvider.class);
-                result = configurationProvider;
-                configurationProvider.getConfiguration();
-                result = configuration;
+                initContext.dependency(ApplicationProvider.class);
+                result = applicationProvider;
+                applicationProvider.getApplication();
+                result = application;
+                application.getConfiguration();
+                result = Coffig.builder().build();
             }
         };
     }

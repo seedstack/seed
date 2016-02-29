@@ -14,7 +14,7 @@ import java.util.List;
 
 public class ServletDefinition extends AbstractDefinition {
     private final Class<? extends Servlet> servletClass;
-    private final List<String> mappings = new ArrayList<String>();
+    private final List<String> mappings = new ArrayList<>();
     private int loadOnStartup = -1;
 
     public ServletDefinition(String name, Class<? extends Servlet> servletClass) {

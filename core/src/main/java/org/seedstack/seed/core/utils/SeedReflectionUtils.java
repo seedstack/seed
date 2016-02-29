@@ -192,7 +192,7 @@ public final class SeedReflectionUtils {
         if (0 == classes.length) {
             return classes;
         } else {
-            List<Class<?>> extendedClasses = new ArrayList<Class<?>>();
+            List<Class<?>> extendedClasses = new ArrayList<>();
             // all interfaces hierarchy
             for (Class<?> clazz : classes) {
                 if (clazz != null) {
@@ -305,14 +305,9 @@ public final class SeedReflectionUtils {
 
         Class<?> targetClass = method.getDeclaringClass();
 
-        Predicate<? super Method> predicate = new Predicate<Method>() {
-            @Override
-            public boolean apply(Method input) {
-                return !method.equals(input) && methodsAreEquivalent(method, input);
-            }
-        };
+        Predicate<? super Method> predicate = (Predicate<Method>) input -> !method.equals(input) && methodsAreEquivalent(method, input);
 
-        Set<Method> methods = new HashSet<Method>();
+        Set<Method> methods = new HashSet<>();
         methods.add(method);
         methods.addAll(ReflectionUtils.getAllMethods(targetClass, predicate));
 
@@ -368,7 +363,7 @@ public final class SeedReflectionUtils {
 
         Set<Method> methodsFromAncestors = methodsFromAncestors(method);
 
-        Set<Annotation[][]> parametersAnnotations = new HashSet<Annotation[][]>();
+        Set<Annotation[][]> parametersAnnotations = new HashSet<>();
 
         for (Method m : methodsFromAncestors) {
             Annotation[][] as = m.getParameterAnnotations();

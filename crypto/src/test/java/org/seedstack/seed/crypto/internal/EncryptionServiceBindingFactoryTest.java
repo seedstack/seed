@@ -12,10 +12,10 @@ import com.google.inject.Key;
 import com.google.inject.name.Names;
 import mockit.Expectations;
 import mockit.Mocked;
-import org.apache.commons.configuration.Configuration;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.seedstack.seed.SeedException;
+import org.seedstack.seed.crypto.CryptoConfig;
 import org.seedstack.seed.crypto.EncryptionService;
 import org.seedstack.seed.crypto.internal.fixtures.AliasQualifier;
 
@@ -37,7 +37,7 @@ public class EncryptionServiceBindingFactoryTest {
     @Mocked
     private KeyStore keyStore;
     @Mocked
-    private Configuration configuration;
+    private CryptoConfig configuration;
     @Mocked
     private EncryptionService encryptionService;
     @Mocked
@@ -134,7 +134,7 @@ public class EncryptionServiceBindingFactoryTest {
     }
 
     private List<KeyPairConfig> prepareKeyPairs(String... aliasNames) {
-        List<KeyPairConfig> keyPairConfigs = new ArrayList<KeyPairConfig>();
+        List<KeyPairConfig> keyPairConfigs = new ArrayList<>();
         for (String aliasName : aliasNames) {
             keyPairConfigs.add(new KeyPairConfig(KEY_STORE_NAME, aliasName, PASSWORD, null, null));
         }

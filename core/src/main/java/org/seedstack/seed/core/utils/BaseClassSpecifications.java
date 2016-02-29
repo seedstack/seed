@@ -8,7 +8,11 @@
 package org.seedstack.seed.core.utils;
 
 import org.apache.commons.lang.ArrayUtils;
-import org.kametic.specifications.*;
+import org.kametic.specifications.AbstractSpecification;
+import org.kametic.specifications.AndSpecification;
+import org.kametic.specifications.NotSpecification;
+import org.kametic.specifications.OrSpecification;
+import org.kametic.specifications.Specification;
 import org.kametic.specifications.reflect.ClassMethodsAnnotatedWith;
 import org.kametic.specifications.reflect.DescendantOfSpecification;
 import org.slf4j.Logger;
@@ -377,7 +381,7 @@ public class BaseClassSpecifications {
         if (0 == classes.length) {
             return classes;
         } else {
-            List<Class<?>> extendedClasses = new ArrayList<Class<?>>();
+            List<Class<?>> extendedClasses = new ArrayList<>();
             // all interfaces hierarchy
             for (Class<?> clazz : classes) {
                 if (clazz != null) {
@@ -412,7 +416,7 @@ public class BaseClassSpecifications {
      * @return the specification
      */
     public static Specification<Class<?>> or(Specification<Class<?>>... participants) {
-        return new OrSpecification<Class<?>>(participants);
+        return new OrSpecification<>(participants);
     }
 
     /**
@@ -422,7 +426,7 @@ public class BaseClassSpecifications {
      * @return the specification
      */
     public static Specification<Class<?>> and(Specification<Class<?>>... participants) {
-        return new AndSpecification<Class<?>>(participants);
+        return new AndSpecification<>(participants);
     }
 
     /**
@@ -432,6 +436,6 @@ public class BaseClassSpecifications {
      * @return the specification
      */
     public static Specification<Class<?>> not(Specification<Class<?>> participant) {
-        return new NotSpecification<Class<?>>(participant);
+        return new NotSpecification<>(participant);
     }
 }

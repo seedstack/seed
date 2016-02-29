@@ -14,7 +14,8 @@ import io.undertow.servlet.api.InstanceFactory;
 import io.undertow.servlet.api.InstanceHandle;
 import io.undertow.servlet.api.ServletContainerInitializerInfo;
 import io.undertow.servlet.util.ImmediateInstanceHandle;
-import org.apache.commons.configuration.Configuration;
+import org.seedstack.coffig.Coffig;
+import org.seedstack.seed.web.WebConfig;
 
 import javax.servlet.ServletContainerInitializer;
 import java.util.HashSet;
@@ -22,11 +23,9 @@ import java.util.ServiceLoader;
 import java.util.Set;
 
 class DeploymentManagerFactory {
-    private static final String DEFAULT_CONTEXT_PATH = "/";
-
-    DeploymentManager createDeploymentManager(Configuration bootstrapConfig) {
-        String contextPath = bootstrapConfig.getString("server.context-path", DEFAULT_CONTEXT_PATH);
-        DeploymentInfo servletBuilder = configureDeploymentInfo(contextPath);
+    DeploymentManager createDeploymentManager(Coffig baseConfiguration) {
+        WebConfig.ServerConfig serverConfig = baseConfiguration.get(WebConfig.ServerConfig.class);
+        DeploymentInfo servletBuilder = configureDeploymentInfo(serverConfig.getContextPath());
         return Servlets.defaultContainer().addDeployment(servletBuilder);
     }
 
@@ -40,6 +39,7 @@ class DeploymentManagerFactory {
             deploymentInfo.addServletContainerInitalizer(createServletContainerInitializerInfo(servletContainerInitializer));
         }
 
+
         return deploymentInfo;
     }
 
@@ -47,13 +47,13 @@ class DeploymentManagerFactory {
         return new ServletContainerInitializerInfo(servletContainerInitializer.getClass(), new InstanceFactory<T>() {
             @Override
             public InstanceHandle<T> createInstance() throws InstantiationException {
-                return new ImmediateInstanceHandle<T>(servletContainerInitializer);
+                return new ImmediateInstanceHandle<>(servletContainerInitializer);
             }
         }, null);
     }
 
     private Set<ServletContainerInitializer> loadServletContainerInitializers() {
-        Set<ServletContainerInitializer> servletContainerInitializers = new HashSet<ServletContainerInitializer>();
+        Set<ServletContainerInitializer> servletContainerInitializers = new HashSet<>();
         for (ServletContainerInitializer servletContainerInitializer : ServiceLoader.load(ServletContainerInitializer.class)) {
             servletContainerInitializers.add(servletContainerInitializer);
         }

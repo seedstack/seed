@@ -10,10 +10,10 @@ package org.seedstack.seed.security.internal.authorization;
 import org.aopalliance.intercept.MethodInvocation;
 import org.junit.Test;
 import org.mockito.Mockito;
-import org.seedstack.seed.security.SecuritySupport;
+import org.seedstack.seed.security.AuthorizationException;
 import org.seedstack.seed.security.Logical;
 import org.seedstack.seed.security.RequiresRoles;
-import org.seedstack.seed.security.AuthorizationException;
+import org.seedstack.seed.security.SecuritySupport;
 
 import static org.mockito.Mockito.when;
 

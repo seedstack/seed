@@ -75,7 +75,7 @@ public class SecurityExpressionInterpreter {
      * @return map of method name and method
      */
     public Map<String, Method> getMethods() {
-        Map<String, Method> availableMethods = new HashMap<String, Method>();
+        Map<String, Method> availableMethods = new HashMap<>();
         try {
             availableMethods.put("hasRole", SecurityExpressionUtils.class.getDeclaredMethod("hasRole", String.class));
             availableMethods.put("hasOneRole", SecurityExpressionUtils.class.getDeclaredMethod("hasOneRole", String[].class));

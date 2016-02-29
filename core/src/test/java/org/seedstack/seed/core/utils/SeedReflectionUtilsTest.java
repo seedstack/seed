@@ -9,15 +9,20 @@ package org.seedstack.seed.core.utils;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.matcher.Matcher;
-import org.seedstack.seed.Ignore;
-import org.seedstack.seed.Install;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.kametic.specifications.Specification;
+import org.seedstack.seed.Ignore;
+import org.seedstack.seed.Install;
 import org.seedstack.seed.core.fixtures.DummyService1;
 import org.seedstack.seed.core.fixtures.DummyService2;
 
-import java.lang.annotation.*;
+import java.lang.annotation.Annotation;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Inherited;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
  * SeedReflectionUtilsTest

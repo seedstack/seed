@@ -18,14 +18,13 @@ import org.seedstack.seed.it.AbstractSeedWebIT;
 import java.net.URL;
 
 import static com.jayway.restassured.RestAssured.expect;
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.not;
 
 public class NoWebResourcesIT extends AbstractSeedWebIT {
     @Deployment
     public static WebArchive createDeployment() {
-        return ShrinkWrap.create(WebArchive.class).addAsResource("configuration/org.seedstack.seed.web.no-resources.properties", "META-INF/configuration/org.seedstack.seed.web.no-resources.properties");
+        return ShrinkWrap
+                .create(WebArchive.class)
+                .addAsResource("configuration/no-resources.yaml", "META-INF/configuration/no-resources.yaml");
     }
 
     @Test

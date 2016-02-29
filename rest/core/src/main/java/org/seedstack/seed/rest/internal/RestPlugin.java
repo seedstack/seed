@@ -11,15 +11,12 @@ import com.fasterxml.jackson.jaxrs.base.JsonMappingExceptionMapper;
 import com.fasterxml.jackson.jaxrs.base.JsonParseExceptionMapper;
 import com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider;
 import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
-import com.google.common.collect.Lists;
 import com.google.inject.AbstractModule;
 import io.nuun.kernel.api.plugin.InitState;
 import io.nuun.kernel.api.plugin.context.InitContext;
 import io.nuun.kernel.api.plugin.request.ClasspathScanRequest;
-import io.nuun.kernel.core.AbstractPlugin;
 import org.kametic.specifications.Specification;
-import org.seedstack.seed.SeedRuntime;
-import org.seedstack.seed.core.spi.configuration.ConfigurationProvider;
+import org.seedstack.seed.core.internal.AbstractSeedPlugin;
 import org.seedstack.seed.rest.RelRegistry;
 import org.seedstack.seed.rest.internal.exceptionmapper.AuthenticationExceptionMapper;
 import org.seedstack.seed.rest.internal.exceptionmapper.AuthorizationExceptionMapper;
@@ -45,12 +42,12 @@ import java.util.Set;
 /**
  * @author pierre.thirouin@ext.mpsa.com (Pierre Thirouin)
  */
-public class RestPlugin extends AbstractPlugin implements RestProvider {
+public class RestPlugin extends AbstractSeedPlugin implements RestProvider {
     static final Specification<Class<?>> resourcesSpecification = new JaxRsResourceSpecification();
     static final Specification<Class<?>> providersSpecification = new JaxRsProviderSpecification();
 
-    private final Map<Variant, Class<? extends RootResource>> rootResourcesByVariant = new HashMap<Variant, Class<? extends RootResource>>();
-    private final RestConfiguration restConfiguration = new RestConfiguration();
+    private final Map<Variant, Class<? extends RootResource>> rootResourcesByVariant = new HashMap<>();
+    private RestConfig restConfig;
     private boolean enabled;
     private ServletContext servletContext;
     private RelRegistry relRegistry;
@@ -64,13 +61,8 @@ public class RestPlugin extends AbstractPlugin implements RestProvider {
     }
 
     @Override
-    public void provideContainerContext(Object containerContext) {
-        servletContext = ((SeedRuntime) containerContext).contextAs(ServletContext.class);
-    }
-
-    @Override
-    public Collection<Class<?>> requiredPlugins() {
-        return Lists.<Class<?>>newArrayList(ConfigurationProvider.class);
+    protected void setup() {
+        servletContext = getSeedRuntime().contextAs(ServletContext.class);
     }
 
     @Override
@@ -82,10 +74,10 @@ public class RestPlugin extends AbstractPlugin implements RestProvider {
     }
 
     @Override
-    public InitState init(InitContext initContext) {
+    public InitState initialize(InitContext initContext) {
         Map<Specification, Collection<Class<?>>> scannedClasses = initContext.scannedTypesBySpecification();
 
-        restConfiguration.init(initContext.dependency(ConfigurationProvider.class).getConfiguration());
+        restConfig = getConfiguration(RestConfig.class);
         resources = scannedClasses.get(RestPlugin.resourcesSpecification);
         providers = scannedClasses.get(RestPlugin.providersSpecification);
 
@@ -96,7 +88,7 @@ public class RestPlugin extends AbstractPlugin implements RestProvider {
 
             configureExceptionMappers();
 
-            if (restConfiguration.isJsonHomeEnabled()) {
+            if (restConfig.isJsonHome()) {
                 // The typed locale parameter resolves constructor ambiguity when the JAX-RS 2.0 spec is in the classpath
                 addRootResourceVariant(new Variant(new MediaType("application", "json"), (Locale) null, null), JsonHomeRootResource.class);
             }
@@ -108,12 +100,12 @@ public class RestPlugin extends AbstractPlugin implements RestProvider {
     }
 
     private void configureExceptionMappers() {
-        if (!restConfiguration.isSecurityExceptionMappingEnabled()) {
+        if (!restConfig.exceptionMapping().isSecurity()) {
             providers.remove(AuthenticationExceptionMapper.class);
             providers.remove(AuthorizationExceptionMapper.class);
         }
 
-        if (!restConfiguration.isExceptionMappingEnabled()) {
+        if (!restConfig.exceptionMapping().isAll()) {
             providers.remove(WebApplicationExceptionMapper.class);
             providers.remove(InternalErrorExceptionMapper.class);
         }
@@ -127,7 +119,7 @@ public class RestPlugin extends AbstractPlugin implements RestProvider {
     }
 
     private void initializeHypermedia() {
-        ResourceScanner resourceScanner = new ResourceScanner(restConfiguration, servletContext).scan(resources);
+        ResourceScanner resourceScanner = new ResourceScanner(restConfig, servletContext).scan(resources);
         Map<String, Resource> resourceMap = resourceScanner.jsonHomeResources();
 
         relRegistry = new RelRegistryImpl(resourceScanner.halLinks());
@@ -141,7 +133,7 @@ public class RestPlugin extends AbstractPlugin implements RestProvider {
             protected void configure() {
                 install(new HypermediaModule(jsonHome, relRegistry));
                 if (enabled) {
-                    install(new RestModule(restConfiguration, filterResourceClasses(resources), providers, rootResourcesByVariant));
+                    install(new RestModule(restConfig, filterResourceClasses(resources), providers, rootResourcesByVariant));
                 }
             }
         };
@@ -151,7 +143,7 @@ public class RestPlugin extends AbstractPlugin implements RestProvider {
         if (!rootResourcesByVariant.isEmpty()) {
             return resourceClasses;
         } else {
-            HashSet<Class<?>> filteredResourceClasses = new HashSet<Class<?>>(resourceClasses);
+            HashSet<Class<?>> filteredResourceClasses = new HashSet<>(resourceClasses);
             filteredResourceClasses.remove(RootResourceDispatcher.class);
             return filteredResourceClasses;
         }
@@ -161,8 +153,8 @@ public class RestPlugin extends AbstractPlugin implements RestProvider {
         rootResourcesByVariant.put(variant, rootResource);
     }
 
-    public RestConfiguration getConfiguration() {
-        return restConfiguration;
+    public RestConfig getRestConfig() {
+        return restConfig;
     }
 
     public boolean isEnabled() {
@@ -171,11 +163,11 @@ public class RestPlugin extends AbstractPlugin implements RestProvider {
 
     @Override
     public Set<Class<?>> resources() {
-        return resources != null ? new HashSet<Class<?>>(filterResourceClasses(resources)) : new HashSet<Class<?>>();
+        return resources != null ? new HashSet<>(filterResourceClasses(resources)) : new HashSet<>();
     }
 
     @Override
     public Set<Class<?>> providers() {
-        return providers != null ? new HashSet<Class<?>>(providers) : new HashSet<Class<?>>();
+        return providers != null ? new HashSet<>(providers) : new HashSet<>();
     }
 }

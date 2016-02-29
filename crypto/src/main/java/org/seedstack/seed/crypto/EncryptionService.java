@@ -10,10 +10,9 @@
  */
 package org.seedstack.seed.crypto;
 
-import java.security.InvalidKeyException;
-
 import javax.crypto.Cipher;
 import javax.security.cert.X509Certificate;
+import java.security.InvalidKeyException;
 
 /**
  * Support to encrypt and decrypt a String.

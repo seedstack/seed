@@ -32,8 +32,8 @@ public class Resource {
 
     private String hrefTemplate;
 
-    private Map<String, String> pathParams = new HashMap<String, String>();
-    private Map<String, String> queryParams = new HashMap<String, String>();
+    private Map<String, String> pathParams = new HashMap<>();
+    private Map<String, String> queryParams = new HashMap<>();
 
     private Hints hints;
 
@@ -111,7 +111,7 @@ public class Resource {
      * @return hrefVars
      */
     public Map<String, String> hrefVars() {
-        Map<String, String> map = new HashMap<String, String>(pathParams);
+        Map<String, String> map = new HashMap<>(pathParams);
         map.putAll(queryParams);
         return map;
     }
@@ -201,7 +201,7 @@ public class Resource {
          * @return the resource map
          */
         public Map<String, Object> toRepresentation () {
-            Map<String, Object> representation = new HashMap<String, Object>();
+            Map<String, Object> representation = new HashMap<>();
             if (templated()) {
                 representation.put("href-template", hrefTemplate);
                 representation.put("href-vars", hrefVars());

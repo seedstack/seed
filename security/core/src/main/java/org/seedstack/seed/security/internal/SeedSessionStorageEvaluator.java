@@ -7,20 +7,18 @@
  */
 package org.seedstack.seed.security.internal;
 
-import org.apache.commons.configuration.Configuration;
 import org.apache.shiro.mgt.SessionStorageEvaluator;
 import org.apache.shiro.subject.Subject;
+import org.seedstack.seed.security.SecurityConfig;
 
 import javax.inject.Inject;
-import javax.inject.Named;
 
 class SeedSessionStorageEvaluator implements SessionStorageEvaluator {
     @Inject
-    @Named("seed-security-config")
-    private Configuration securityConfiguration;
+    private SecurityConfig securityConfig;
 
     @Override
     public boolean isSessionStorageEnabled(Subject subject) {
-        return securityConfiguration.getBoolean("sessions.enabled", false);
+        return securityConfig.session().isEnabled();
     }
 }

@@ -8,8 +8,6 @@
 package org.seedstack.seed;
 
 import org.junit.Test;
-import org.seedstack.seed.ErrorCode;
-import org.seedstack.seed.SeedException;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;

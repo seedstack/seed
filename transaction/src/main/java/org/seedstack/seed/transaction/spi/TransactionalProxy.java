@@ -49,6 +49,6 @@ public final class TransactionalProxy<T> implements InvocationHandler {
      */
     @SuppressWarnings("unchecked")
     public static <T> T create(Class<T> clazz, TransactionalLink<T> transactionalLink) {
-        return (T) Proxy.newProxyInstance(TransactionalProxy.class.getClassLoader(), new Class<?>[]{clazz}, new TransactionalProxy<T>(transactionalLink));
+        return (T) Proxy.newProxyInstance(TransactionalProxy.class.getClassLoader(), new Class<?>[]{clazz}, new TransactionalProxy<>(transactionalLink));
     }
 }

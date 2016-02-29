@@ -30,11 +30,11 @@ public class Maybe<T> {
     }
 
     public static <T> Maybe<T> empty() {
-        return new Maybe<T>(null);
+        return new Maybe<>(null);
     }
 
     public static <T> Maybe<T> of(T t) {
-        return new Maybe<T>(t);
+        return new Maybe<>(t);
     }
     /**
      * Returns the value.

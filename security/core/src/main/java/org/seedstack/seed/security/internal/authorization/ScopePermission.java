@@ -7,9 +7,9 @@
  */
 package org.seedstack.seed.security.internal.authorization;
 
-import org.seedstack.seed.security.Scope;
 import org.apache.shiro.authz.Permission;
 import org.apache.shiro.authz.permission.WildcardPermission;
+import org.seedstack.seed.security.Scope;
 
 /**
  * Represents a permission given on a limited scope

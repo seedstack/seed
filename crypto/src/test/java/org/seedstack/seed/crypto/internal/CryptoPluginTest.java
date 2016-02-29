@@ -19,8 +19,8 @@ import mockit.Mocked;
 import mockit.Verifications;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
-import org.seedstack.seed.core.internal.application.ApplicationPlugin;
 import org.seedstack.seed.crypto.EncryptionService;
+import org.seedstack.seed.spi.config.ApplicationProvider;
 
 import java.security.KeyStore;
 import java.util.Collection;
@@ -41,8 +41,8 @@ public class CryptoPluginTest {
 
     @Test
     public void testNativeUnitModule(@SuppressWarnings("unused") @Mocked final CryptoModule module) {
-        final Map<Key<EncryptionService>, EncryptionService> encryptionServices = new HashMap<Key<EncryptionService>, EncryptionService>();
-        final Map<String, KeyStore> keyStores = new HashMap<String, KeyStore>();
+        final Map<Key<EncryptionService>, EncryptionService> encryptionServices = new HashMap<>();
+        final Map<String, KeyStore> keyStores = new HashMap<>();
         final CryptoPlugin underTest = new CryptoPlugin();
         Deencapsulation.setField(underTest, "encryptionServices", encryptionServices);
         Deencapsulation.setField(underTest, "keyStores", keyStores);
@@ -59,6 +59,6 @@ public class CryptoPluginTest {
     public void testRequiredPlugins() {
         CryptoPlugin plugin = new CryptoPlugin();
         Collection<Class<?>> list = plugin.requiredPlugins();
-        Assertions.assertThat(list.contains(ApplicationPlugin.class)).isTrue();
+        Assertions.assertThat(list.contains(ApplicationProvider.class)).isTrue();
     }
 }

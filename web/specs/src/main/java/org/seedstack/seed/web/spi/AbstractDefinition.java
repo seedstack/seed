@@ -13,7 +13,7 @@ import java.util.Map;
 
 public abstract class AbstractDefinition {
     private final String name;
-    private final Map<String, String> initParams = new HashMap<String, String>();
+    private final Map<String, String> initParams = new HashMap<>();
     private boolean asyncSupported = false;
 
     AbstractDefinition(String name) {

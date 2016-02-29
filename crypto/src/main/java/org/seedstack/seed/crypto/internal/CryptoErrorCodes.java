@@ -14,10 +14,9 @@ import org.seedstack.seed.ErrorCode;
  *
  * @author pierre.thirouin@ext.mpsa.com (Pierre Thirouin)
  */
-public enum  CryptoErrorCodes implements ErrorCode {
+public enum CryptoErrorCodes implements ErrorCode {
     ALGORITHM_CANNOT_BE_FOUND,
     CERTIFICATE_NOT_FOUND,
-    INVALID_CLIENT_AUTHENTICATION_MODE,
     INVALID_QUALIFIER_ANNOTATION,
     KEYSTORE_CONFIGURATION_ERROR,
     KEYSTORE_NOT_FOUND,
@@ -27,8 +26,6 @@ public enum  CryptoErrorCodes implements ErrorCode {
     MISSING_MASTER_KEY_PASSWORD,
     MISSING_PUBLIC_KEY,
     MISSING_PRIVATE_KEY,
-    MISSING_SSL_KEY_STORE_CONFIGURATION,
-    MISSING_SSL_TRUST_STORE_CONFIGURATION,
     NO_KEYSTORE_CONFIGURED,
     NO_KEYSTORE_PROVIDER,
     UNRECOVERABLE_KEY,
@@ -38,5 +35,5 @@ public enum  CryptoErrorCodes implements ErrorCode {
     ENABLE_TO_LOAD_CERTIFICATE,
     ENABLE_TO_READ_CERTIFICATE,
     INCORRECT_PASSWORD,
-    UNEXPECTED_EXCEPTION,
+    UNEXPECTED_EXCEPTION
 }

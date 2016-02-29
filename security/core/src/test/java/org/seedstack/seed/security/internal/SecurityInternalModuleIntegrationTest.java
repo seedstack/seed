@@ -11,13 +11,11 @@ import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.Key;
 import com.google.inject.TypeLiteral;
-import org.apache.commons.configuration.Configuration;
-import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.shiro.realm.Realm;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.internal.util.reflection.Whitebox;
-import org.seedstack.seed.security.Scope;
+import org.seedstack.seed.security.SecurityConfig;
 import org.seedstack.seed.security.internal.authorization.ConfigurationRoleMapping;
 import org.seedstack.seed.security.internal.authorization.ConfigurationRolePermissionResolver;
 import org.seedstack.seed.security.internal.realms.ConfigurationRealm;
@@ -45,19 +43,19 @@ public class SecurityInternalModuleIntegrationTest {
     public void before() {
         securityConfigurer = mock(SecurityConfigurer.class);
         securityGuiceConfigurer = mock(SecurityGuiceConfigurer.class);
-        underTest = new SecurityInternalModule(securityConfigurer, new HashMap<String, Class<? extends Scope>>());
+        underTest = new SecurityInternalModule(securityConfigurer, new HashMap<>());
     }
 
     @Test
     public void configure_should_bind_wanted_components() {
-        Configuration conf = new PropertiesConfiguration();
-        conf.addProperty("users.Obiwan", "mdp, jedi");
+        SecurityConfig conf = new SecurityConfig();
+        conf.addUser("Obiwan", new SecurityConfig.UserConfig().setPassword("mdp").addRole("jedi"));
         when(securityConfigurer.getSecurityConfiguration()).thenReturn(conf);
 
         RealmConfiguration confRealm = new RealmConfiguration("ConfigurationRealm", ConfigurationRealm.class);
         confRealm.setRoleMappingClass(ConfigurationRoleMapping.class);
         confRealm.setRolePermissionResolverClass(ConfigurationRolePermissionResolver.class);
-        Collection<RealmConfiguration> confRealms = new ArrayList<RealmConfiguration>();
+        Collection<RealmConfiguration> confRealms = new ArrayList<>();
         confRealms.add(confRealm);
         when(securityConfigurer.getConfigurationRealms()).thenReturn(confRealms);
 

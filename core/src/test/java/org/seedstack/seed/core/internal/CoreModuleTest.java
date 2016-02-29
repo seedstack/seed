@@ -13,42 +13,32 @@ import com.google.inject.TypeLiteral;
 import mockit.Mocked;
 import mockit.Verifications;
 import org.junit.Test;
-import org.seedstack.seed.LifecycleListener;
+import org.seedstack.seed.Application;
+import org.seedstack.seed.DiagnosticManager;
 import org.seedstack.seed.spi.dependency.DependencyProvider;
 import org.seedstack.seed.spi.dependency.Maybe;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 
-/**
- * Unit test for {@link CoreModule}.
- *
- * @author thierry.bouvet@mpsa.com
- */
 public class CoreModuleTest {
-
-    /**
-     * Test optional dependencies.
-     *
-     * @param binder mock binder
-     */
     @Test
-    public void testConfigure(@Mocked final Binder binder, @Mocked final DependencyProvider myProvider) {
-        Collection<Module> subModules = new ArrayList<Module>();
+    public void testConfigure(@Mocked final Binder binder, @Mocked final DependencyProvider myProvider, @Mocked final Application application, @Mocked final DiagnosticManager diagnosticManager) {
+        Collection<Module> subModules = new ArrayList<>();
 
-        Map<Class<?>, Maybe<? extends DependencyProvider>> optionalDependencies = new HashMap<Class<?>, Maybe<? extends DependencyProvider>>();
-        final Maybe<DependencyProvider> maybe = new Maybe<DependencyProvider>(myProvider);
+        Map<Class<?>, Maybe<? extends DependencyProvider>> optionalDependencies = new HashMap<>();
+        final Maybe<DependencyProvider> maybe = new Maybe<>(myProvider);
         optionalDependencies.put(DependencyProvider.class, maybe);
 
-        CoreModule module = new CoreModule(subModules, null, null, optionalDependencies);
+        CoreModule module = new CoreModule(subModules, optionalDependencies);
         module.configure(binder);
 
         new Verifications() {
             {
-                binder.bind(new TypeLiteral<Maybe<DependencyProvider>>() {}).toInstance(maybe);
+                binder.bind(new TypeLiteral<Maybe<DependencyProvider>>() {
+                }).toInstance(maybe);
             }
         };
     }

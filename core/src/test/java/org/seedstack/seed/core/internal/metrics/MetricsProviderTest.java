@@ -7,12 +7,10 @@
  */
 package org.seedstack.seed.core.internal.metrics;
 
+import com.codahale.metrics.Counter;
+import com.codahale.metrics.MetricRegistry;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
-
-import com.codahale.metrics.Counter;
-import com.codahale.metrics.Metric;
-import com.codahale.metrics.MetricRegistry;
 
 public class MetricsProviderTest {
 
@@ -30,12 +28,7 @@ public class MetricsProviderTest {
 		final String dummyMetric = "dummyMetric";
 		final Counter c = new Counter();
 		MetricsProvider metricsProvider = new MetricsProvider();
-		metricsProvider.register(dummyMetric, new MetricHandler() {
-			@Override
-			public Metric handle() {
-				return c;
-			}
-		});
+		metricsProvider.register(dummyMetric, () -> c);
 		Assertions.assertThat(metricsProvider.getMetricRegistry().counter(dummyMetric)).isEqualTo(c);
 	}
 

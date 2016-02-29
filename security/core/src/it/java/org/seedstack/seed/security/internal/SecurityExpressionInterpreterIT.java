@@ -7,10 +7,10 @@
  */
 package org.seedstack.seed.security.internal;
 
-import org.seedstack.seed.it.SeedITRunner;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.seedstack.seed.it.SeedITRunner;
 import org.seedstack.seed.security.WithUser;
 import org.seedstack.seed.security.internal.securityexpr.SecurityExpressionInterpreter;
 

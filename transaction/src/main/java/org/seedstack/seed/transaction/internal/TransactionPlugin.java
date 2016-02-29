@@ -7,18 +7,15 @@
  */
 package org.seedstack.seed.transaction.internal;
 
-import com.google.common.collect.Lists;
 import com.google.inject.matcher.Matcher;
 import io.nuun.kernel.api.plugin.InitState;
 import io.nuun.kernel.api.plugin.PluginException;
 import io.nuun.kernel.api.plugin.context.InitContext;
 import io.nuun.kernel.api.plugin.request.ClasspathScanRequest;
-import io.nuun.kernel.core.AbstractPlugin;
-import org.apache.commons.configuration.Configuration;
-import org.apache.commons.lang.StringUtils;
-import org.seedstack.seed.core.spi.configuration.ConfigurationProvider;
+import org.seedstack.seed.core.internal.AbstractSeedPlugin;
 import org.seedstack.seed.core.utils.SeedMatchers;
 import org.seedstack.seed.transaction.Transactional;
+import org.seedstack.seed.transaction.TxConfig;
 import org.seedstack.seed.transaction.spi.TransactionHandler;
 import org.seedstack.seed.transaction.spi.TransactionManager;
 import org.seedstack.seed.transaction.spi.TransactionMetadataResolver;
@@ -40,13 +37,13 @@ import java.util.Set;
  *
  * @author adrien.lauer@mpsa.com
  */
-public class TransactionPlugin extends AbstractPlugin {
+public class TransactionPlugin extends AbstractSeedPlugin {
     public static final String TRANSACTION_PLUGIN_CONFIGURATION_PREFIX = "org.seedstack.seed.transaction";
     public static final Matcher<Method> TRANSACTIONAL_MATCHER = SeedMatchers.methodOrAncestorMetaAnnotatedWith(Transactional.class).and(SeedMatchers.methodNotSynthetic()).and(SeedMatchers.methodNotOfObject());
     private static final Logger LOGGER = LoggerFactory.getLogger(TransactionPlugin.class);
 
-    private final Set<Class<? extends TransactionHandler>> registeredTransactionHandlers = new HashSet<Class<? extends TransactionHandler>>();
-    private final Set<Class<? extends TransactionMetadataResolver>> transactionMetadataResolvers = new HashSet<Class<? extends TransactionMetadataResolver>>();
+    private final Set<Class<? extends TransactionHandler>> registeredTransactionHandlers = new HashSet<>();
+    private final Set<Class<? extends TransactionMetadataResolver>> transactionMetadataResolvers = new HashSet<>();
 
     private TransactionManager transactionManager;
     private Class<? extends TransactionHandler> defaultTransactionHandlerClass;
@@ -58,28 +55,16 @@ public class TransactionPlugin extends AbstractPlugin {
 
     @Override
     @SuppressWarnings("unchecked")
-    public InitState init(InitContext initContext) {
-        Configuration transactionConfiguration = initContext.dependency(ConfigurationProvider.class).getConfiguration().subset(TransactionPlugin.TRANSACTION_PLUGIN_CONFIGURATION_PREFIX);
+    public InitState initialize(InitContext initContext) {
+        TxConfig txConfig = getConfiguration(TxConfig.class);
 
-        String transactionManagerClassname = transactionConfiguration.getString("manager");
-        if (transactionManagerClassname != null && !transactionManagerClassname.isEmpty()) {
-            try {
-                this.transactionManager = (TransactionManager) Class.forName(transactionManagerClassname).newInstance();
-            } catch (Exception e) {
-                throw new PluginException("Unable to instantiate transaction manager from class " + transactionManagerClassname, e);
-            }
-        } else {
-            this.transactionManager = new LocalTransactionManager();
+        try {
+            this.transactionManager = txConfig.getManager().newInstance();
+        } catch (Exception e) {
+            throw new PluginException("Unable to instantiate transaction manager from class " + txConfig.getManager(), e);
         }
+        this.defaultTransactionHandlerClass = txConfig.getDefaultHandler();
 
-        String defaultTransactionHandlerClassname = transactionConfiguration.getString("default-handler");
-        if (StringUtils.isNotBlank(defaultTransactionHandlerClassname)) {
-            try {
-                this.defaultTransactionHandlerClass = (Class<? extends TransactionHandler>) Class.forName(defaultTransactionHandlerClassname);
-            } catch (ClassNotFoundException e) {
-                throw new PluginException("Unable to load default transaction handler class " + defaultTransactionHandlerClassname, e);
-            }
-        }
 
         Collection<Class<?>> scannedTransactionMetadataResolverClasses = initContext.scannedSubTypesByParentClass().get(TransactionMetadataResolver.class);
         if (scannedTransactionMetadataResolverClasses != null) {
@@ -90,8 +75,7 @@ public class TransactionPlugin extends AbstractPlugin {
                 }
             }
         }
-
-        LOGGER.debug("Detected {} transaction metadata resolver", transactionMetadataResolvers.size());
+        LOGGER.debug("Detected {} transaction metadata resolver(s)", transactionMetadataResolvers.size());
 
         return InitState.INITIALIZED;
     }
@@ -99,11 +83,6 @@ public class TransactionPlugin extends AbstractPlugin {
     @Override
     public Collection<ClasspathScanRequest> classpathScanRequests() {
         return classpathScanRequestBuilder().subtypeOf(TransactionMetadataResolver.class).build();
-    }
-
-    @Override
-    public Collection<Class<?>> requiredPlugins() {
-        return Lists.<Class<?>>newArrayList(ConfigurationProvider.class);
     }
 
     @Override
