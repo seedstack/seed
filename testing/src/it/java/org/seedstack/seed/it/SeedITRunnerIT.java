@@ -13,6 +13,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.seedstack.seed.Application;
+import org.seedstack.seed.Configuration;
 import org.seedstack.seed.it.fixtures.ITBound;
 import org.seedstack.seed.it.fixtures.BoundThroughITInstalledModule;
 
@@ -24,6 +25,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class SeedITRunnerIT {
     @Inject
     Injector injector;
+
+    @Configuration("custom-property")
+    private String customConfiguration;
 
     static boolean passedBeforeClass = false;
     static boolean passedAfterClass = false;
@@ -88,5 +92,10 @@ public class SeedITRunnerIT {
     @Test
     public void it_install_modules_are_installed() {
         assertThat(injector.getInstance(BoundThroughITInstalledModule.class)).isNotNull();
+    }
+
+    @Test
+    public void configuration_is_injected() {
+        assertThat(customConfiguration).isEqualTo("custom-value");
     }
 }
