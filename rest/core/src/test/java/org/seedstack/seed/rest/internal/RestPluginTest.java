@@ -21,6 +21,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.kametic.specifications.Specification;
 import org.seedstack.seed.Ignore;
+import org.seedstack.seed.SeedRuntime;
 import org.seedstack.seed.core.spi.configuration.ConfigurationProvider;
 
 import javax.servlet.ServletContext;
@@ -93,7 +94,7 @@ public class RestPluginTest {
                 new Pair(providersSpecification, MyProvider.class)
         );
 
-        underTest.provideContainerContext(servletContext);
+        underTest.provideContainerContext(new SeedRuntime(servletContext, null, false));
         underTest.init(initContext);
 
         Collection<Class<?>> actualResources = Deencapsulation.getField(underTest, "resources");

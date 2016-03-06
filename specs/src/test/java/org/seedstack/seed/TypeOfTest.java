@@ -6,14 +6,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 /**
- * 
+ *
  */
 package org.seedstack.seed;
 
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
 
-import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.List;
 
@@ -24,40 +23,37 @@ import java.util.List;
  */
 public class TypeOfTest {
 
-	/**
-	 * Test method for {@link TypeOf#getType()}.
-	 */
-	@Test
-	public void testResult() {
-		TypeOf<List<String>> typeOf = new TypeOf<List<String>>() {
-		};
-		Assertions.assertThat(typeOf.getType().toString()).isEqualTo("java.util.List<java.lang.String>");
-		Assertions.assertThat(typeOf.getRawType()).isEqualTo(List.class);
+    /**
+     * Test method for {@link TypeOf#getType()}.
+     */
+    @Test
+    public void testResult() {
+        TypeOf<List<String>> typeOf = new TypeOf<List<String>>() {
+        };
+        Assertions.assertThat(typeOf.getType().toString()).isEqualTo("java.util.List<java.lang.String>");
+        Assertions.assertThat(typeOf.getRawType()).isEqualTo(List.class);
 
-		TypeOf<Long> typeOf2 = new TypeOf<Long>() {
-		};
-		Assertions.assertThat(typeOf2.getType()).isEqualTo(Long.class);
-		Assertions.assertThat(typeOf2.getRawType()).isEqualTo(Long.class);
+        TypeOf<Long> typeOf2 = new TypeOf<Long>() {
+        };
+        Assertions.assertThat(typeOf2.getType()).isEqualTo(Long.class);
+        Assertions.assertThat(typeOf2.getRawType()).isEqualTo(Long.class);
 
-	}
+    }
 
-	/**
-	 * Test method for {@link TypeOf#getType()}.
-	 * Test a {@link SeedException} if no generic parameter.
-	 */
-	@SuppressWarnings("rawtypes")
-	@Test
-	public void testGetTypeWithoutParameterized() {
+    /**
+     * Test method for {@link TypeOf#getType()}.
+     * Test a {@link SeedException} if no generic parameter.
+     */
+    @SuppressWarnings("rawtypes")
+    @Test
+    public void testGetTypeWithoutParameterized() {
         StringWriter stringWriter = new StringWriter();
-		try {
-			new TypeOf() {};
-			Assertions.fail("Should throw a SeedException");
-		} catch (SeedException e) {
-			e.printStackTrace(new PrintWriter(stringWriter));
-	        String text = stringWriter.toString();
-	        Assertions.assertThat(text).contains("Missing generic parameter");
-	        Assertions.assertThat(text).contains("Check that class has generic parameter");
-		}
-	}
+        try {
+            new TypeOf() {};
+            Assertions.fail("Should throw a SeedException");
+        } catch (Exception e) {
+            Assertions.assertThat(e.getMessage()).contains("Missing generic parameter");
+        }
+    }
 
 }

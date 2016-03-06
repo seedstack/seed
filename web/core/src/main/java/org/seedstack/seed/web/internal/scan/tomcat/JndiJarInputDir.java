@@ -7,20 +7,19 @@
  */
 package org.seedstack.seed.web.internal.scan.tomcat;
 
+import com.google.common.collect.AbstractIterator;
+import org.reflections.vfs.Vfs;
+import org.seedstack.seed.SeedException;
+import org.seedstack.seed.core.utils.SeedLoggingUtils;
+import org.seedstack.seed.web.internal.WebErrorCode;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.IOException;
 import java.net.URL;
 import java.util.Iterator;
 import java.util.jar.JarInputStream;
 import java.util.zip.ZipEntry;
-
-import org.reflections.vfs.Vfs;
-import org.seedstack.seed.SeedException;
-import org.seedstack.seed.core.internal.CorePlugin;
-import org.seedstack.seed.web.internal.WebErrorCode;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.google.common.collect.AbstractIterator;
 
 /**
  * VFS directory implementation for JNDI JAR scanning.
@@ -53,8 +52,7 @@ class JndiJarInputDir implements Vfs.Dir {
                         try {
                             jarInputStream = new JarInputStream(url.openConnection().getInputStream());
                         } catch (Exception e) {
-                            LOGGER.warn("Unable to open JAR at " + url.toExternalForm() + ", ignoring it");
-                            LOGGER.debug(CorePlugin.DETAILS_MESSAGE, e);
+                            SeedLoggingUtils.logWarningWithDebugDetails(LOGGER, e, "Unable to open JAR at {}, ignoring it", url.toExternalForm());
                         }
                     }
 
@@ -89,8 +87,7 @@ class JndiJarInputDir implements Vfs.Dir {
         try {
             jarInputStream.close();
         } catch (IOException e) {
-            LOGGER.warn("Unable to close JAR at " + url.toExternalForm());
-            LOGGER.debug(CorePlugin.DETAILS_MESSAGE, e);
+            SeedLoggingUtils.logWarningWithDebugDetails(LOGGER, e, "Unable to close JAR at {}", url.toExternalForm());
         }
     }
 

@@ -23,12 +23,10 @@ import static com.jayway.restassured.RestAssured.expect;
  * @author pierre.thirouin@ext.mpsa.com (Pierre Thirouin)
  */
 public class Jersey2UndertowIT {
-
-    private SeedLauncher launcher;
+    private final SeedLauncher launcher = SeedMain.getLauncher();
 
     @Before
     public void setUp() throws Exception {
-        launcher = SeedMain.getLauncher();
         launcher.launch(new String[]{});
     }
 

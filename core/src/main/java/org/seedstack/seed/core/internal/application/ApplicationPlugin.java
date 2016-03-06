@@ -26,14 +26,9 @@ import org.seedstack.seed.core.spi.configuration.ConfigurationProvider;
 import org.seedstack.seed.spi.configuration.ConfigurationLookup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.slf4j.bridge.SLF4JBridgeHandler;
 
 import java.io.File;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -93,7 +88,6 @@ public class ApplicationPlugin extends AbstractPlugin implements ConfigurationPr
         Configuration coreConfiguration = configuration.subset(CorePlugin.CORE_PLUGIN_PREFIX);
         ApplicationInfo applicationInfo = buildApplicationInfo(coreConfiguration);
         File seedStorage = setupApplicationStorage(coreConfiguration);
-        configureJUL(coreConfiguration);
 
         application = new ApplicationImpl(applicationInfo, configuration, seedStorage);
 
@@ -146,8 +140,7 @@ public class ApplicationPlugin extends AbstractPlugin implements ConfigurationPr
 
         String appId = coreConfiguration.getString("application-id");
         if (appId == null || appId.isEmpty()) {
-            throw SeedException.createNew(ApplicationErrorCode.MISSING_APPLICATION_IDENTIFIER).put("property",
-                    CorePlugin.CORE_PLUGIN_PREFIX + ".application-id");
+            appId = UUID.randomUUID().toString();
         }
         applicationInfo.setAppId(appId);
 
@@ -163,7 +156,7 @@ public class ApplicationPlugin extends AbstractPlugin implements ConfigurationPr
         }
         applicationInfo.setAppVersion(appVersion);
 
-        LOGGER.info("Application info: {}", applicationInfo);
+        LOGGER.info("Application {}", applicationInfo);
         applicationDiagnosticCollector.setApplicationInfo(applicationInfo);
 
         return applicationInfo;
@@ -194,15 +187,6 @@ public class ApplicationPlugin extends AbstractPlugin implements ConfigurationPr
         }
 
         return null;
-    }
-
-    private void configureJUL(Configuration coreConfiguration) {
-        if (coreConfiguration.getBoolean("redirect-jul", true)) {
-            SLF4JBridgeHandler.removeHandlersForRootLogger();
-            SLF4JBridgeHandler.install();
-
-            LOGGER.debug("Java logging to SLF4J redirection enabled, if you're using logback be sure to have a LevelChangePropagator in your configuration");
-        }
     }
 
     private Map<String, Class<? extends StrLookup>> findConfigurationLookups(InitContext initContext) {

@@ -21,6 +21,7 @@ import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.InitializationError;
 import org.junit.runners.model.Statement;
 import org.seedstack.seed.SeedException;
+import org.seedstack.seed.core.Seed;
 import org.seedstack.seed.core.utils.SeedReflectionUtils;
 import org.seedstack.seed.it.internal.ITErrorCode;
 import org.seedstack.seed.it.internal.ITPlugin;
@@ -35,8 +36,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.ServiceLoader;
-
-import static io.nuun.kernel.core.NuunCore.createKernel;
 
 
 /**
@@ -283,9 +282,7 @@ public class SeedITRunner extends BlockJUnit4ClassRunner {
 
         Exception eventualException = null;
         try {
-            kernel = createKernel(provideKernelConfiguration(configuration));
-            kernel.init();
-            kernel.start();
+            kernel = Seed.createKernel(null, provideKernelConfiguration(configuration), true);
         } catch (Exception e) {
             eventualException = e;
             kernel = null;
@@ -304,7 +301,7 @@ public class SeedITRunner extends BlockJUnit4ClassRunner {
                 Exception eventualException = null;
 
                 try {
-                    kernel.stop();
+                    Seed.disposeKernel(kernel);
                 } catch (Exception e) {
                     eventualException = e;
                 }

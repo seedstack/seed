@@ -11,28 +11,25 @@ import io.nuun.kernel.api.Kernel;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.seedstack.seed.core.Seed;
 
-import static io.nuun.kernel.core.NuunCore.createKernel;
-import static io.nuun.kernel.core.NuunCore.newKernelConfiguration;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class WithoutRunnerIT {
-    static Kernel underTest;
+    private static Kernel kernel;
 
     @BeforeClass
     public static void beforeClass() throws Exception {
-        underTest = createKernel(newKernelConfiguration());
-        underTest.init();
-        underTest.start();
+        kernel = Seed.createKernel();
     }
 
     @AfterClass
     public static void afterClass() {
-        underTest.stop();
+        Seed.disposeKernel(kernel);
     }
 
     @Test
     public void it_plugin_is_working_even_without_seed_runner() {
-        assertThat(underTest).isNotNull();
+        assertThat(kernel).isNotNull();
     }
 }

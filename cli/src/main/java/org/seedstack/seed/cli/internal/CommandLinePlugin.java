@@ -15,6 +15,7 @@ import io.nuun.kernel.core.AbstractPlugin;
 import org.apache.commons.cli.PosixParser;
 import org.apache.commons.configuration.Configuration;
 import org.kametic.specifications.Specification;
+import org.seedstack.seed.SeedRuntime;
 import org.seedstack.seed.cli.CliCommand;
 import org.seedstack.seed.cli.CommandLineHandler;
 import org.seedstack.seed.cli.spi.CliContext;
@@ -26,9 +27,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.seedstack.seed.core.utils.BaseClassSpecifications.ancestorImplements;
-import static org.seedstack.seed.core.utils.BaseClassSpecifications.classIsAbstract;
-import static org.seedstack.seed.core.utils.BaseClassSpecifications.classIsInterface;
+import static org.seedstack.seed.core.utils.BaseClassSpecifications.*;
 
 /**
  * This plugin enables to run {@link CommandLineHandler} through
@@ -64,9 +63,7 @@ public class CommandLinePlugin extends AbstractPlugin {
 
     @Override
     public void provideContainerContext(Object containerContext) {
-        if (containerContext instanceof CliContext) {
-            cliContext = (CliContext) containerContext;
-        }
+        cliContext = ((SeedRuntime)containerContext).contextAs(CliContext.class);
     }
 
     @Override

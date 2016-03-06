@@ -7,27 +7,21 @@
  */
 package org.seedstack.seed.web.internal.scan.tomcat;
 
-import java.net.URL;
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.Deque;
-import java.util.Iterator;
-import java.util.List;
+import com.google.common.base.Joiner;
+import com.google.common.collect.AbstractIterator;
+import org.reflections.vfs.Vfs;
+import org.seedstack.seed.SeedException;
+import org.seedstack.seed.core.utils.SeedLoggingUtils;
+import org.seedstack.seed.web.internal.WebErrorCode;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.naming.NameClassPair;
 import javax.naming.NamingEnumeration;
 import javax.naming.NamingException;
 import javax.naming.directory.DirContext;
-
-import org.reflections.vfs.Vfs;
-import org.seedstack.seed.SeedException;
-import org.seedstack.seed.core.internal.CorePlugin;
-import org.seedstack.seed.web.internal.WebErrorCode;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.google.common.base.Joiner;
-import com.google.common.collect.AbstractIterator;
+import java.net.URL;
+import java.util.*;
 
 /**
  * VFS directory implementation for JNDI directory scanning.
@@ -59,8 +53,7 @@ class JndiInputDir implements Vfs.Dir {
                             enumerationDeque.push(((DirContext) content).list("/"));
                             fullPath.add(null);
                         } catch (Exception e) {
-                            LOGGER.warn("Unable to open JNDI directory at " + url.toExternalForm() + ", ignoring it");
-                            LOGGER.debug(CorePlugin.DETAILS_MESSAGE, e);
+                            SeedLoggingUtils.logWarningWithDebugDetails(LOGGER, e, "Unable to open JNDI directory at {}, ignoring it", url.toExternalForm());
                         }
                     }
 
@@ -89,8 +82,7 @@ class JndiInputDir implements Vfs.Dir {
             try {
                 dirContext.close();
             } catch (NamingException e) {
-                LOGGER.warn("Unable to close JNDI directory at " + url.toExternalForm());
-                LOGGER.debug(CorePlugin.DETAILS_MESSAGE, e);
+                SeedLoggingUtils.logWarningWithDebugDetails(LOGGER, e, "Unable to close JNDI directory at {}", url.toExternalForm());
             }
         }
 

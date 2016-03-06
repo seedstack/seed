@@ -66,9 +66,6 @@ public class ITPlugin extends AbstractPlugin {
         String itClassName = initContext.kernelParam(IT_CLASS_NAME);
         Map<String, String> defaultConfiguration = initContext.dependency(ApplicationPlugin.class).getDefaultConfiguration();
 
-        // Automatically define a unique identifier for this test (can be overridden by explicit identifier in the configuration)
-        defaultConfiguration.put("org.seedstack.seed.core.application-id", UUID.randomUUID().toString());
-
         // Create temporary directory for application storage
         temporaryAppStorage = Files.createTempDir();
         LOGGER.info("Created temporary application storage directory {}", temporaryAppStorage.getAbsolutePath());

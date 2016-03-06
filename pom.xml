@@ -97,11 +97,13 @@
                             <licenseMerge>EPL 1.0|Eclipse Public License 1.0</licenseMerge>
                             <licenseMerge>EPL 1.0|Eclipse Public License v1.0</licenseMerge>
                             <licenseMerge>LGPL 3.0|GNU Lesser Public License</licenseMerge>
+                            <licenseMerge>LGPL 3.0|GNU Lesser General Public License</licenseMerge>
                             <licenseMerge>MIT|The MIT License</licenseMerge>
                             <licenseMerge>MIT|MIT License</licenseMerge>
                             <licenseMerge>IGNORED_LICENSE|GPL2 w/ CPE</licenseMerge>
                             <licenseMerge>IGNORED_LICENSE|MPL 1.1</licenseMerge>
                             <licenseMerge>IGNORED_LICENSE|GNU General Public License, Version 2 with the Classpath Exception</licenseMerge>
+                            <licenseMerge>IGNORED_LICENSE|Eclipse Public License - v 1.0</licenseMerge>
                         </licenseMerges>
                     </configuration>
                 </plugin>
@@ -114,6 +116,8 @@
                                 <exclude>*.internal.*</exclude>
                                 <exclude>org.seedstack.seed.web.DelegateServletContextListener</exclude>
                                 <exclude>org.seedstack.seed.web.listener.SeedServletContextListener</exclude>
+                                <exclude>org.seedstack.seed.CoreErrorCode</exclude>
+                                <exclude>org.seedstack.seed.security.spi.SecurityErrorCodes</exclude>
                             </excludes>
                         </parameter>
                     </configuration>

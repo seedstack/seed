@@ -25,7 +25,6 @@ import org.seedstack.seed.security.Realm;
 import org.seedstack.seed.security.RoleMapping;
 import org.seedstack.seed.security.RolePermissionResolver;
 import org.seedstack.seed.security.Scope;
-import org.seedstack.seed.security.spi.SecurityErrorCodes;
 import org.seedstack.seed.security.spi.SecurityScope;
 import org.seedstack.seed.security.spi.data.DataObfuscationHandler;
 import org.seedstack.seed.security.spi.data.DataSecurityHandler;

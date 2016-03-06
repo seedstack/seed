@@ -8,23 +8,21 @@
 package org.seedstack.seed.core;
 
 import io.nuun.kernel.api.Kernel;
+import io.nuun.kernel.core.NuunCore;
 import org.junit.Test;
 import org.seedstack.seed.core.fixtures.TestLifecycleListener;
 
 import java.util.UUID;
 
-import static io.nuun.kernel.core.NuunCore.createKernel;
-import static io.nuun.kernel.core.NuunCore.newKernelConfiguration;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class LifecycleIT {
     @Test
     public void lifecycle_callbacks_are_invoked() {
         String token = UUID.randomUUID().toString();
-
         TestLifecycleListener.setToken(token);
-        Kernel kernel = createKernel(newKernelConfiguration());
-        kernel.init();
+
+        Kernel kernel = Seed.createKernel(null, NuunCore.newKernelConfiguration(), false);
 
         assertThat(TestLifecycleListener.isStartHasBeenCalled(token)).isFalse();
         assertThat(TestLifecycleListener.isStopHasBeenCalled(token)).isFalse();
@@ -34,7 +32,7 @@ public class LifecycleIT {
         assertThat(TestLifecycleListener.isStartHasBeenCalled(token)).isTrue();
         assertThat(TestLifecycleListener.isStopHasBeenCalled(token)).isFalse();
 
-        kernel.stop();
+        Seed.disposeKernel(kernel);
 
         assertThat(TestLifecycleListener.isStartHasBeenCalled(token)).isTrue();
         assertThat(TestLifecycleListener.isStopHasBeenCalled(token)).isTrue();

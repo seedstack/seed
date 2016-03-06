@@ -15,6 +15,7 @@ import io.nuun.kernel.api.plugin.context.InitContext;
 import io.nuun.kernel.api.plugin.request.BindingRequest;
 import io.nuun.kernel.api.plugin.request.ClasspathScanRequest;
 import io.nuun.kernel.core.AbstractPlugin;
+import org.seedstack.seed.SeedRuntime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -84,8 +85,9 @@ public class WebSocketPlugin extends AbstractPlugin {
 
     @Override
     public void provideContainerContext(Object containerContext) {
-        if (containerContext != null && ServletContext.class.isAssignableFrom(containerContext.getClass())) {
-            this.serverContainer = (ServerContainer) ((ServletContext) containerContext).getAttribute("javax.websocket.server.ServerContainer");
+        ServletContext servletContext = ((SeedRuntime) containerContext).contextAs(ServletContext.class);
+        if (servletContext != null) {
+            serverContainer = (ServerContainer) servletContext.getAttribute("javax.websocket.server.ServerContainer");
         }
     }
 

@@ -5,7 +5,9 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-package org.seedstack.seed;
+package org.seedstack.seed.core.internal;
+
+import org.seedstack.seed.ErrorCode;
 
 /**
  * SEED core error codes.
@@ -21,8 +23,8 @@ public enum CoreErrorCode implements ErrorCode {
     UNABLE_TO_CREATE_DIAGNOSTIC_COLLECTOR,
     MISSING_SEED_ENTRY_POINT,
     MULTIPLE_SEED_ENTRY_POINTS,
-    RETROW_EXCEPTION_AFTER_DIAGNOSTIC_FAILURE,
-    MISSING_GENERIC_PARAMETER,
+    RETHROW_EXCEPTION_AFTER_DIAGNOSTIC_FAILURE,
     UNABLE_TO_INSTANTIATE_CLASS,
-    ERROR_DURING_LIFECYCLE_CALLBACK, UNABLE_TO_CREATE_PROXY
+    ERROR_DURING_LIFECYCLE_CALLBACK,
+    UNABLE_TO_CREATE_PROXY
 }

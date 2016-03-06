@@ -22,11 +22,10 @@ import org.seedstack.seed.spi.SeedLauncher;
  * @author pierre.thirouin@ext.mpsa.com (Pierre Thirouin)
  */
 public class UndertowIT {
-    private SeedLauncher launcher;
+    private final SeedLauncher launcher = SeedMain.getLauncher();
 
     @Before
     public void before() throws Exception {
-        launcher = SeedMain.getLauncher();
         launcher.launch(new String[]{});
     }
 

@@ -5,16 +5,16 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-package org.seedstack.seed.core.internal;
+package org.seedstack.seed.core.internal.init;
 
 import com.google.common.collect.Maps;
 import com.google.inject.Injector;
 import com.google.inject.Key;
 import com.google.inject.TypeLiteral;
-import org.reflections.util.ClasspathHelper;
 import org.seedstack.seed.DiagnosticManager;
 import org.seedstack.seed.SeedException;
-import org.seedstack.seed.CoreErrorCode;
+import org.seedstack.seed.core.internal.CoreErrorCode;
+import org.seedstack.seed.core.utils.SeedLoggingUtils;
 import org.seedstack.seed.spi.diagnostic.DiagnosticInfoCollector;
 import org.seedstack.seed.spi.diagnostic.DiagnosticReporter;
 import org.slf4j.Logger;
@@ -25,23 +25,16 @@ import java.lang.management.ManagementFactory;
 import java.lang.management.RuntimeMXBean;
 import java.lang.management.ThreadInfo;
 import java.lang.management.ThreadMXBean;
-import java.net.URL;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Implementation of the diagnostic manager.
  *
  * @author adrien.lauer@mpsa.com
  */
-class DiagnosticManagerImpl implements DiagnosticManager {
+public class DiagnosticManagerImpl implements DiagnosticManager {
     public static final String REPORTER_SYSTEM_PROPERTY = "org.seedstack.seed.diagnostic.reporter";
     private static final Logger LOGGER = LoggerFactory.getLogger(DiagnosticManagerImpl.class);
     private static final DateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss.SSS");
@@ -50,9 +43,8 @@ class DiagnosticManagerImpl implements DiagnosticManager {
 
     @Inject
     private Injector injector;
-    private Set<URL> classpathUrls;
 
-    DiagnosticManagerImpl() {
+    public DiagnosticManagerImpl() {
         String reporterClassName = System.getProperty(REPORTER_SYSTEM_PROPERTY);
         DiagnosticReporter diagnosticReporterToUse;
 
@@ -60,8 +52,7 @@ class DiagnosticManagerImpl implements DiagnosticManager {
             try {
                 diagnosticReporterToUse = (DiagnosticReporter) Class.forName(reporterClassName).newInstance();
             } catch (Exception e) {
-                LOGGER.warn("Custom diagnostic reporter ({}) cannot be instantiated, fallback to default reporter", reporterClassName);
-                LOGGER.debug(CorePlugin.DETAILS_MESSAGE, e);
+                SeedLoggingUtils.logWarningWithDebugDetails(LOGGER, e, "Custom diagnostic reporter ({}) cannot be instantiated, fallback to default reporter", reporterClassName);
                 diagnosticReporterToUse = new DefaultDiagnosticReporter();
             }
         } else {
@@ -82,12 +73,8 @@ class DiagnosticManagerImpl implements DiagnosticManager {
             diagnosticReporter.writeDiagnosticReport(collectAllDiagnostics(t));
         } catch (Exception e) {
             LOGGER.error("Unable to write diagnostic information", e);
-            throw SeedException.wrap(t, CoreErrorCode.RETROW_EXCEPTION_AFTER_DIAGNOSTIC_FAILURE);
+            throw SeedException.wrap(t, CoreErrorCode.RETHROW_EXCEPTION_AFTER_DIAGNOSTIC_FAILURE);
         }
-    }
-
-    void setClasspathUrls(Set<URL> classpathUrls) {
-        this.classpathUrls = new HashSet<URL>(classpathUrls);
     }
 
     private synchronized Map<String, Object> collectAllDiagnostics(Throwable t) {
@@ -150,13 +137,6 @@ class DiagnosticManagerImpl implements DiagnosticManager {
         result.put("processors", runtime.availableProcessors());
         result.put("memory", buildMemoryInfo(runtime));
 
-        result.put("classpath", getClasspath());
-        if (classpathUrls == null) {
-            result.put("classpath-info", "Classpath is based on class loader information and java.class.path system property");
-        } else {
-            result.put("classpath-info", "Classpath is based on the classpath scanned by SEED");
-        }
-
         RuntimeMXBean runtimeMXBean = ManagementFactory.getRuntimeMXBean();
         result.put("args", runtimeMXBean.getInputArguments());
         result.put("start-time", DATE_FORMAT.format(runtimeMXBean.getStartTime()));
@@ -189,27 +169,6 @@ class DiagnosticManagerImpl implements DiagnosticManager {
         }
 
         return results;
-    }
-
-    private List<String> getClasspath() {
-        List<String> urls = new ArrayList<String>();
-
-        if (classpathUrls != null) {
-            for (URL classpathUrl : classpathUrls) {
-                urls.add(classpathUrl.toExternalForm());
-            }
-        } else {
-            Set<URL> coreClasspathUrls = new HashSet<URL>();
-
-            coreClasspathUrls.addAll(ClasspathHelper.forJavaClassPath());
-            coreClasspathUrls.addAll(ClasspathHelper.forClassLoader());
-
-            for (URL coreClasspathUrl : coreClasspathUrls) {
-                urls.add(coreClasspathUrl.toExternalForm());
-            }
-        }
-
-        return urls;
     }
 
     private Map<String, String> buildSystemPropertiesList() {

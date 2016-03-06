@@ -14,19 +14,19 @@ import com.google.inject.Key;
 import com.google.inject.name.Names;
 import io.nuun.kernel.api.Kernel;
 import io.nuun.kernel.api.config.KernelConfiguration;
-import io.nuun.kernel.core.NuunCore;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
+import org.seedstack.seed.Application;
+import org.seedstack.seed.SeedException;
 import org.seedstack.seed.cli.internal.CliErrorCode;
 import org.seedstack.seed.cli.internal.CommandLinePlugin;
 import org.seedstack.seed.cli.spi.CliContext;
-import org.seedstack.seed.Application;
-import org.seedstack.seed.SeedException;
-import org.seedstack.seed.core.internal.CorePlugin;
+import org.seedstack.seed.core.Seed;
+import org.seedstack.seed.core.SeedMain;
 import org.seedstack.seed.spi.SeedLauncher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,9 +40,8 @@ import java.util.Map;
 import java.util.concurrent.Callable;
 
 /**
- * This class executes {@link CommandLineHandler}s found in the classpath. It can be executed
- * directly as a Java application (i.e. it has a main method) but should preferably be executed with
- * {@link org.seedstack.seed.core.SeedMain}.
+ * This class executes {@link CommandLineHandler}s found in the classpath. The main method of this class is deprecated
+ * and {@link SeedMain#main(String[])} should be used instead.
  *
  * @author epo.jemba@ext.mpsa.com
  * @author adrien.lauer@mpsa.com
@@ -59,34 +58,19 @@ public class SeedRunner implements SeedLauncher {
 
     @Override
     public void shutdown() throws Exception {
-        // nothing to do
+        // nothing to do as we already exited with System.exit()
     }
 
     /**
-     * Main method to run Seed CLI application.
+     * Deprecated main method to run Seed CLI applications. Use {@link SeedMain#main(String[])} instead.
      *
      * @param args the command line arguments.
+     * @deprecated
      */
+    @Deprecated
     public static void main(String[] args) throws Exception {
-        int returnCode = -1;
-
-        LOGGER.info("Starting Seed CLI application");
-
-        try {
-            returnCode = execute(args);
-        } catch (SeedException e) {
-            handleException(e);
-            e.printStackTrace(System.err);
-        } catch (Exception e) {
-            handleException(e);
-            SeedException.wrap(e, CliErrorCode.UNEXPECTED_EXCEPTION).printStackTrace(System.err);
-        }
-
-        // no java.lang.Error handling is done
-
-        LOGGER.info("Stopping Seed CLI application (return code {})", returnCode);
-
-        System.exit(returnCode);
+        System.err.println("This entry point is deprecated, use " + SeedMain.class.getCanonicalName() + " instead");
+        SeedMain.main(args);
     }
 
     /**
@@ -98,7 +82,7 @@ public class SeedRunner implements SeedLauncher {
      * @throws Exception when the CLI command fails to complete.
      */
     public static int execute(String[] args) throws Exception {
-        Kernel kernel = startKernel(new CliContext(args), null);
+        Kernel kernel = Seed.createKernel(new CliContext(args));
 
         try {
             Injector injector = kernel.objectGraph().as(Injector.class);
@@ -123,7 +107,7 @@ public class SeedRunner implements SeedLauncher {
 
             return callable.call();
         } finally {
-            stopKernel(kernel);
+            Seed.disposeKernel(kernel);
         }
     }
 
@@ -136,13 +120,13 @@ public class SeedRunner implements SeedLauncher {
      * @throws Exception when the CLI command fails to complete.
      */
     public static int execute(String[] args, Callable<Integer> callable) throws Exception {
-        Kernel kernel = startKernel(new CliContext(args), null);
+        Kernel kernel = Seed.createKernel(new CliContext(args));
 
         try {
             kernel.objectGraph().as(Injector.class).injectMembers(callable);
             return callable.call();
         } finally {
-            stopKernel(kernel);
+            Seed.disposeKernel(kernel);
         }
     }
 
@@ -156,38 +140,14 @@ public class SeedRunner implements SeedLauncher {
      * @throws Exception when the CLI command fails to complete.
      */
     public static int execute(String[] args, Callable<Integer> callable, KernelConfiguration kernelConfiguration) throws Exception {
-        Kernel kernel = startKernel(new CliContext(args), kernelConfiguration);
+        Kernel kernel = Seed.createKernel(new CliContext(args), kernelConfiguration, true);
 
         try {
             kernel.objectGraph().as(Injector.class).injectMembers(callable);
             return callable.call();
         } finally {
-            stopKernel(kernel);
+            Seed.disposeKernel(kernel);
         }
-    }
-
-    private static Kernel startKernel(CliContext args, KernelConfiguration kernelConfiguration) {
-        // Use the provided kernel configuration if any
-        if (kernelConfiguration == null) {
-            kernelConfiguration = NuunCore.newKernelConfiguration();
-        }
-        kernelConfiguration.containerContext(args);
-
-        Kernel kernel = NuunCore.createKernel(kernelConfiguration);
-        kernel.init();
-        kernel.start();
-        return kernel;
-    }
-
-    private static void stopKernel(Kernel kernel) {
-        if (kernel.isStarted()) {
-            kernel.stop();
-        }
-    }
-
-    private static void handleException(Exception e) {
-        LOGGER.error("An exception occurred during CLI application startup, collecting diagnostic information");
-        CorePlugin.getDiagnosticManager().dumpDiagnosticReport(e);
     }
 
     public static class SeedCallable implements Callable<Integer> {

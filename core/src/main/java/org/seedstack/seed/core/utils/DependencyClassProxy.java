@@ -10,12 +10,12 @@ package org.seedstack.seed.core.utils;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-import org.seedstack.seed.CoreErrorCode;
 import org.seedstack.seed.SeedException;
 
 import javassist.util.proxy.MethodFilter;
 import javassist.util.proxy.MethodHandler;
 import javassist.util.proxy.ProxyFactory;
+import org.seedstack.seed.core.internal.CoreErrorCode;
 
 /**
  * Proxy to implement abstract class. Override methods to proxy.<br>

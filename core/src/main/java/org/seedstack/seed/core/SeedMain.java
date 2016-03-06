@@ -8,9 +8,8 @@
 package org.seedstack.seed.core;
 
 import com.google.common.collect.Lists;
-import org.seedstack.seed.CoreErrorCode;
 import org.seedstack.seed.SeedException;
-import org.seedstack.seed.core.internal.CorePlugin;
+import org.seedstack.seed.core.internal.CoreErrorCode;
 import org.seedstack.seed.spi.SeedLauncher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,14 +26,10 @@ import java.util.ServiceLoader;
  * <p>
  * High-level exception handling and diagnostic is done directly in this class.
  * </p>
- *
- * @author adrien.lauer@mpsa.com
  */
 public class SeedMain {
-    private static final Logger LOGGER = LoggerFactory.getLogger(SeedMain.class);
-    private static final int EXCEPTION_RETURN_CODE = -1;
-
     public static void main(String[] args) {
+        final Logger logger = LoggerFactory.getLogger(Seed.class);
         final SeedLauncher seedLauncher = getLauncher();
 
         Runtime.getRuntime().addShutdownHook(new Thread() {
@@ -42,22 +37,22 @@ public class SeedMain {
             public void run() {
                 try {
                     seedLauncher.shutdown();
-                    LOGGER.info("Seed application stopped");
-                } catch (Exception e) {
-                    handleException(e);
-                    LOGGER.error("Seed application failed to shutdown properly");
+                    logger.info("Seed application stopped");
+                } catch (Throwable t) {
+                    handleThrowable(t);
+                    logger.error("Seed application failed to shutdown properly");
                 }
             }
         });
 
-        LOGGER.info("Seed application starting with launcher {}", seedLauncher.getClass().getCanonicalName());
+        logger.info("Seed application starting with launcher {}", seedLauncher.getClass().getCanonicalName());
 
         try {
             seedLauncher.launch(args);
-        } catch (Exception e) {
-            handleException(e);
-            LOGGER.error("Seed application halted after exception");
-            System.exit(EXCEPTION_RETURN_CODE);
+        } catch (Throwable t) {
+            handleThrowable(t);
+            logger.error("Seed application halted after exception");
+            System.exit(-1);
         }
     }
 
@@ -73,14 +68,11 @@ public class SeedMain {
         return entryPointServices.get(0);
     }
 
-    private static void handleException(Exception e) {
-        LOGGER.error("An exception occurred, collecting diagnostic information");
-        CorePlugin.getDiagnosticManager().dumpDiagnosticReport(e);
-
-        if (e instanceof SeedException) {
-            e.printStackTrace(System.err);
+    private static void handleThrowable(Throwable throwable) {
+        if (throwable instanceof SeedException) {
+            throwable.printStackTrace(System.err);
         } else {
-            SeedException.wrap(e, CoreErrorCode.UNEXPECTED_EXCEPTION).printStackTrace(System.err);
+            SeedException.wrap(throwable, CoreErrorCode.UNEXPECTED_EXCEPTION).printStackTrace(System.err);
         }
     }
 }

@@ -17,9 +17,6 @@ import org.seedstack.seed.Application;
 
 import javax.inject.Inject;
 
-import static io.nuun.kernel.core.NuunCore.createKernel;
-import static io.nuun.kernel.core.NuunCore.newKernelConfiguration;
-
 @NotThreadSafe
 public class ConfigurationProfilesIT {
     static class Holder {
@@ -29,24 +26,24 @@ public class ConfigurationProfilesIT {
 
     @Test
     public void zero_configuration_profile_can_be_applied() {
-        Kernel kernel = setup();
+        Kernel kernel = Seed.createKernel();
 
         try {
             Holder holder = getHolder(kernel);
             Assertions.assertThat(holder.application.getConfiguration().getString("org.seedstack.seed.test.test-property")).isEqualTo("base-value");
         } finally {
-            teardown(kernel);
+            Seed.disposeKernel(kernel);
         }
 
         System.setProperty("org.seedstack.seed.profiles", "");
 
-        kernel = setup();
+        kernel = Seed.createKernel();
         try {
             Holder holder = getHolder(kernel);
             Assertions.assertThat(holder.application.getConfiguration().getString("org.seedstack.seed.test.test-property")).isEqualTo("base-value");
         } finally {
             System.clearProperty("org.seedstack.seed.profiles");
-            teardown(kernel);
+            Seed.disposeKernel(kernel);
         }
     }
 
@@ -54,35 +51,35 @@ public class ConfigurationProfilesIT {
     public void one_configuration_profile_can_be_applied() {
         System.setProperty("org.seedstack.seed.profiles", "dev");
 
-        Kernel kernel = setup();
+        Kernel kernel = Seed.createKernel();
         try {
             Holder holder = getHolder(kernel);
             Assertions.assertThat(holder.application.getConfiguration().getString("org.seedstack.seed.test.test-property")).isEqualTo("dev-value");
         } finally {
             System.clearProperty("org.seedstack.seed.profiles");
-            teardown(kernel);
+            Seed.disposeKernel(kernel);
         }
 
         System.setProperty("org.seedstack.seed.profiles", "preprod");
 
-        kernel = setup();
+        kernel = Seed.createKernel();
         try {
             Holder holder = getHolder(kernel);
             Assertions.assertThat(holder.application.getConfiguration().getString("org.seedstack.seed.test.test-property")).isEqualTo("preprod-value");
         } finally {
             System.clearProperty("org.seedstack.seed.profiles");
-            teardown(kernel);
+            Seed.disposeKernel(kernel);
         }
 
         System.setProperty("org.seedstack.seed.profiles", "prod");
 
-        kernel = setup();
+        kernel = Seed.createKernel();
         try {
             Holder holder = getHolder(kernel);
             Assertions.assertThat(holder.application.getConfiguration().getString("org.seedstack.seed.test.test-property")).isEqualTo("prod-value");
         } finally {
             System.clearProperty("org.seedstack.seed.profiles");
-            teardown(kernel);
+            Seed.disposeKernel(kernel);
         }
     }
 
@@ -90,26 +87,26 @@ public class ConfigurationProfilesIT {
     public void multiple_configuration_profiles_can_be_applied() {
         System.setProperty("org.seedstack.seed.profiles", "dev");
 
-        Kernel kernel = setup();
+        Kernel kernel = Seed.createKernel();
         try {
             Holder holder = getHolder(kernel);
             Assertions.assertThat(holder.application.getConfiguration().getString("org.seedstack.seed.test.test-property")).isEqualTo("dev-value");
             Assertions.assertThat(holder.application.getConfiguration().getString("org.seedstack.seed.test.debug-mode")).isEqualTo("off");
         } finally {
             System.clearProperty("org.seedstack.seed.profiles");
-            teardown(kernel);
+            Seed.disposeKernel(kernel);
         }
 
         System.setProperty("org.seedstack.seed.profiles", "dev,debug");
 
-        kernel = setup();
+        kernel = Seed.createKernel();
         try {
             Holder holder = getHolder(kernel);
             Assertions.assertThat(holder.application.getConfiguration().getString("org.seedstack.seed.test.test-property")).isEqualTo("dev-value");
             Assertions.assertThat(holder.application.getConfiguration().getString("org.seedstack.seed.test.debug-mode")).isEqualTo("on");
         } finally {
             System.clearProperty("org.seedstack.seed.profiles");
-            teardown(kernel);
+            Seed.disposeKernel(kernel);
         }
     }
 
@@ -120,18 +117,5 @@ public class ConfigurationProfilesIT {
                 bind(Holder.class);
             }
         }).getInstance(Holder.class);
-    }
-
-
-    private Kernel setup() {
-        Kernel kernel = createKernel(newKernelConfiguration());
-        kernel.init();
-        kernel.start();
-
-        return kernel;
-    }
-
-    private void teardown(Kernel kernel) {
-        kernel.stop();
     }
 }

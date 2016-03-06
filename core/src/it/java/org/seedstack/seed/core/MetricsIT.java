@@ -7,11 +7,12 @@
  */
 package org.seedstack.seed.core;
 
-import static io.nuun.kernel.core.NuunCore.createKernel;
-import static io.nuun.kernel.core.NuunCore.newKernelConfiguration;
-
-import javax.inject.Inject;
-
+import com.codahale.metrics.Counter;
+import com.codahale.metrics.Gauge;
+import com.codahale.metrics.Metric;
+import com.codahale.metrics.MetricRegistry;
+import com.google.inject.*;
+import io.nuun.kernel.api.Kernel;
 import org.assertj.core.api.Assertions;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -19,24 +20,14 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.seedstack.seed.core.internal.metrics.MetricHandler;
 import org.seedstack.seed.core.internal.metrics.MetricsProvider;
-import org.seedstack.seed.spi.dependency.Maybe;
 import org.seedstack.seed.core.utils.DependencyProxy;
 import org.seedstack.seed.core.utils.ProxyMethodReplacer;
+import org.seedstack.seed.spi.dependency.Maybe;
 
-import com.codahale.metrics.Counter;
-import com.codahale.metrics.Gauge;
-import com.codahale.metrics.Metric;
-import com.codahale.metrics.MetricRegistry;
-import com.google.inject.AbstractModule;
-import com.google.inject.Injector;
-import com.google.inject.Key;
-import com.google.inject.Module;
-import com.google.inject.TypeLiteral;
-
-import io.nuun.kernel.api.Kernel;
+import javax.inject.Inject;
 
 public class MetricsIT {
-    static Kernel underTest;
+    private static Kernel kernel;
     private Injector injector;
 
     public static class MyObjectWithMetrics {
@@ -74,14 +65,12 @@ public class MetricsIT {
 
     @BeforeClass
     public static void beforeClass() {
-        underTest = createKernel(newKernelConfiguration());
-        underTest.init();
-        underTest.start();
+        kernel = Seed.createKernel();
     }
 
     @AfterClass
     public static void afterClass() {
-        underTest.stop();
+        Seed.disposeKernel(kernel);
     }
 
     @Before
@@ -94,7 +83,7 @@ public class MetricsIT {
                 bind(MyObjectWithMetrics.class);
             }
         };
-        injector = underTest.objectGraph().as(Injector.class).createChildInjector(
+        injector = kernel.objectGraph().as(Injector.class).createChildInjector(
                 aggregationModule);
     }
     
