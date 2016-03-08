@@ -32,7 +32,7 @@ public abstract class TypeOf<T> {
 	protected TypeOf() {
 		Type superclass = getClass().getGenericSuperclass();
 		if (!(superclass instanceof ParameterizedType)) {
-			throw new SeedException(CoreErrorCode.MISSING_GENERIC_PARAMETER);
+			throw new IllegalStateException("Missing generic parameter");
 		}
 		this.type = ((ParameterizedType) superclass).getActualTypeArguments()[0];
 	    Class<?> clazz = type instanceof Class<?> ? (Class<?>)type : (Class<?>) ((ParameterizedType) type).getRawType();

@@ -9,7 +9,6 @@ package org.seedstack.seed.core;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Injector;
-import com.google.inject.Module;
 import io.nuun.kernel.api.Kernel;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -19,17 +18,16 @@ import org.seedstack.seed.ErrorCode;
 import org.seedstack.seed.SeedException;
 
 import javax.inject.Inject;
+import java.net.URL;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
-import static io.nuun.kernel.core.NuunCore.createKernel;
-import static io.nuun.kernel.core.NuunCore.newKernelConfiguration;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class DiagnosticManagerIT {
-
-    static Kernel underTest;
-    static Holder holder;
+    private static Kernel kernel;
+    private static Holder holder;
 
     static class Holder {
         @Inject
@@ -51,7 +49,6 @@ public class DiagnosticManagerIT {
         Map<String, Object> systemInfo = (Map<String, Object>) diagnosticInfo.get("system");
 
         assertThat(systemInfo).isNotNull();
-        assertThat((List<String>) systemInfo.get("classpath")).isNotEmpty();
         assertThat((Integer) systemInfo.get("processors")).isGreaterThan(0);
         assertThat((Map<String, Long>) systemInfo.get("memory")).isNotEmpty();
         assertThat((List<String>) systemInfo.get("args")).isNotNull();
@@ -67,9 +64,9 @@ public class DiagnosticManagerIT {
         Map<String, Object> diagnosticInfo = holder.diagnosticManager.getDiagnosticInfo(null);
 
         assertThat(diagnosticInfo).isNotNull();
-        Map<String, Object> systemInfo = (Map<String, Object>) diagnosticInfo.get("system");
 
-        assertThat(systemInfo.get("classpath-info")).isEqualTo("Classpath is based on the classpath scanned by SEED");
+        Map<String, Object> systemInfo = (Map<String, Object>) diagnosticInfo.get("core");
+        assertThat((Set<URL>)(systemInfo.get("scanned-urls"))).isNotEmpty();
     }
 
 
@@ -122,25 +119,18 @@ public class DiagnosticManagerIT {
 
     @BeforeClass
     public static void setup() {
-        underTest = createKernel(newKernelConfiguration());
-        underTest.init();
-        underTest.start();
-
-        Module aggregationModule = new AbstractModule() {
+        kernel = Seed.createKernel();
+        holder = kernel.objectGraph().as(Injector.class).createChildInjector(new AbstractModule() {
             @Override
             protected void configure() {
                 bind(Holder.class);
             }
-        };
-
-        holder = underTest.objectGraph().as(Injector.class).createChildInjector(aggregationModule).getInstance(Holder.class);
+        }).getInstance(Holder.class);
     }
 
     @AfterClass
     public static void teardown() {
-        underTest.stop();
-        underTest = null;
-        holder = null;
+        Seed.disposeKernel(kernel);
     }
 
     private enum TestErrorCode implements ErrorCode {

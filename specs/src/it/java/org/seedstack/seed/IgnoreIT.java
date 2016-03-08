@@ -10,10 +10,10 @@ package org.seedstack.seed;
 import com.google.inject.ConfigurationException;
 import com.google.inject.Injector;
 import io.nuun.kernel.api.Kernel;
-import io.nuun.kernel.core.internal.KernelCoreFactory;
-import io.nuun.kernel.core.internal.ModuleEmbedded;
 import org.assertj.core.api.Assertions;
-import org.junit.*;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
 import static io.nuun.kernel.core.NuunCore.createKernel;
 import static io.nuun.kernel.core.NuunCore.newKernelConfiguration;

@@ -7,11 +7,11 @@
  */
 package org.seedstack.seed.core;
 
-import static io.nuun.kernel.core.NuunCore.createKernel;
-import static io.nuun.kernel.core.NuunCore.newKernelConfiguration;
-
-import javax.inject.Inject;
-
+import com.codahale.metrics.health.HealthCheck;
+import com.codahale.metrics.health.HealthCheck.Result;
+import com.codahale.metrics.health.HealthCheckRegistry;
+import com.google.inject.*;
+import io.nuun.kernel.api.Kernel;
 import org.assertj.core.api.Assertions;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -19,22 +19,13 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.seedstack.seed.core.internal.metrics.HealthCheckMethodReplacer;
 import org.seedstack.seed.core.internal.metrics.HealthcheckProvider;
-import org.seedstack.seed.spi.dependency.Maybe;
 import org.seedstack.seed.core.utils.DependencyClassProxy;
+import org.seedstack.seed.spi.dependency.Maybe;
 
-import com.codahale.metrics.health.HealthCheck;
-import com.codahale.metrics.health.HealthCheck.Result;
-import com.codahale.metrics.health.HealthCheckRegistry;
-import com.google.inject.AbstractModule;
-import com.google.inject.Injector;
-import com.google.inject.Key;
-import com.google.inject.Module;
-import com.google.inject.TypeLiteral;
-
-import io.nuun.kernel.api.Kernel;
+import javax.inject.Inject;
 
 public class HealthCheckIT {
-    static Kernel underTest;
+    private static Kernel kernel;
     private Injector injector;
 
 	private static final String MY_HEALTHCHECK = "my-healthcheck";
@@ -59,14 +50,12 @@ public class HealthCheckIT {
 
     @BeforeClass
     public static void beforeClass() {
-        underTest = createKernel(newKernelConfiguration());
-        underTest.init();
-        underTest.start();
+        kernel = Seed.createKernel();
     }
 
     @AfterClass
     public static void afterClass() {
-        underTest.stop();
+        Seed.disposeKernel(kernel);
     }
 
     @Before
@@ -79,7 +68,7 @@ public class HealthCheckIT {
                 bind(MyHealthCheck.class);
             }
         };
-        injector = underTest.objectGraph().as(Injector.class).createChildInjector(
+        injector = kernel.objectGraph().as(Injector.class).createChildInjector(
                 aggregationModule);
     }
     

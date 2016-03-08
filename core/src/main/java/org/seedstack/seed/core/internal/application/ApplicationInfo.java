@@ -38,6 +38,6 @@ class ApplicationInfo {
 
     @Override
     public String toString() {
-        return String.format("'%s' / '%s' / '%s'", appId, appName, appVersion);
+        return String.format("id: '%s' / name: '%s' / version: '%s'", appId, appName, appVersion);
     }
 }

@@ -7,24 +7,19 @@
  */
 package org.seedstack.seed.transaction.internal;
 
+import org.aopalliance.intercept.MethodInvocation;
 import org.seedstack.seed.Configuration;
 import org.seedstack.seed.SeedException;
-import org.seedstack.seed.core.internal.CorePlugin;
 import org.seedstack.seed.transaction.Propagation;
 import org.seedstack.seed.transaction.spi.TransactionHandler;
 import org.seedstack.seed.transaction.spi.TransactionMetadata;
-import org.aopalliance.intercept.MethodInvocation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import javax.naming.Context;
 import javax.naming.NamingException;
-import javax.transaction.Status;
-import javax.transaction.SystemException;
-import javax.transaction.Transaction;
-import javax.transaction.TransactionManager;
-import javax.transaction.UserTransaction;
+import javax.transaction.*;
 
 /**
  * This transaction manager delegates to JTA the transactional behavior.
@@ -157,8 +152,7 @@ public class JtaTransactionManager extends AbstractTransactionManager {
                 LOGGER.debug("{}: JTA TransactionManager found at fallback JNDI location [" + jndiName + "]", logPrefix);
                 return tm;
             } catch (NamingException ex) {
-                LOGGER.trace("{}: no JTA TransactionManager found at fallback JNDI location [" + jndiName + "]", logPrefix);
-                LOGGER.trace(CorePlugin.DETAILS_MESSAGE, ex);
+                LOGGER.trace(String.format("%s: no JTA TransactionManager found at fallback JNDI location [%s]", logPrefix, jndiName), ex);
             }
         }
 

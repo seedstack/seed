@@ -16,6 +16,7 @@ import io.nuun.kernel.api.plugin.request.ClasspathScanRequest;
 import io.nuun.kernel.core.AbstractPlugin;
 import org.apache.commons.configuration.Configuration;
 import org.reflections.util.ClasspathHelper;
+import org.seedstack.seed.SeedRuntime;
 import org.seedstack.seed.core.internal.CorePlugin;
 import org.seedstack.seed.core.spi.configuration.ConfigurationProvider;
 import org.seedstack.seed.web.WebFilter;
@@ -165,9 +166,7 @@ public class WebPlugin extends AbstractPlugin {
 
     @Override
     public void provideContainerContext(Object containerContext) {
-        if (containerContext != null && ServletContext.class.isAssignableFrom(containerContext.getClass())) {
-            this.servletContext = (ServletContext) containerContext;
-        }
+        servletContext = ((SeedRuntime)containerContext).contextAs(ServletContext.class);
     }
 
     @Override

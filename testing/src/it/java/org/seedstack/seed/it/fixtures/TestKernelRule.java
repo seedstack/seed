@@ -10,10 +10,10 @@ package org.seedstack.seed.it.fixtures;
 import com.google.inject.Injector;
 import io.nuun.kernel.api.Kernel;
 import io.nuun.kernel.api.config.KernelConfiguration;
-import io.nuun.kernel.core.NuunCore;
 import org.junit.rules.MethodRule;
 import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.Statement;
+import org.seedstack.seed.core.Seed;
 import org.seedstack.seed.it.ITBind;
 import org.seedstack.seed.it.spi.KernelRule;
 
@@ -29,10 +29,6 @@ public class TestKernelRule implements MethodRule, KernelRule {
         this.kernelConfiguration = kernelConfiguration;
     }
 
-    public KernelConfiguration getKernelConfiguration() {
-        return kernelConfiguration;
-    }
-
     @Override
     public Statement apply(final Statement base, final FrameworkMethod method, final Object target) {
         return new Statement() {
@@ -42,17 +38,15 @@ public class TestKernelRule implements MethodRule, KernelRule {
                 Kernel kernel = null;
 
                 if (method.getAnnotation(WithTestAnnotation.class) != null) {
-                    kernel = NuunCore.createKernel(kernelConfiguration);
-                    kernel.init();
-                    kernel.start();
+                    kernel = Seed.createKernel(null, kernelConfiguration, true);
                     kernel.objectGraph().as(Injector.class).injectMembers(target);
                 }
 
                 try {
                     base.evaluate();
                 } finally {
-                    if (kernel != null && kernel.isStarted()) {
-                        kernel.stop();
+                    if (kernel != null) {
+                        Seed.disposeKernel(kernel);
                     }
                 }
             }

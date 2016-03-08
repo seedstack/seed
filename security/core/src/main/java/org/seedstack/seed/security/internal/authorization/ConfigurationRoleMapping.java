@@ -14,7 +14,7 @@ import org.seedstack.seed.security.Role;
 import org.seedstack.seed.security.RoleMapping;
 import org.seedstack.seed.security.Scope;
 import org.seedstack.seed.security.principals.PrincipalProvider;
-import org.seedstack.seed.security.spi.SecurityErrorCodes;
+import org.seedstack.seed.security.internal.SecurityErrorCodes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -7,20 +7,19 @@
  */
 package org.seedstack.seed.web.internal.scan.websphere;
 
+import com.google.common.collect.AbstractIterator;
+import org.reflections.vfs.Vfs;
+import org.seedstack.seed.SeedException;
+import org.seedstack.seed.core.utils.SeedLoggingUtils;
+import org.seedstack.seed.web.internal.WebErrorCode;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.IOException;
 import java.net.URL;
 import java.util.Iterator;
 import java.util.jar.JarInputStream;
 import java.util.zip.ZipEntry;
-
-import org.reflections.vfs.Vfs;
-import org.seedstack.seed.SeedException;
-import org.seedstack.seed.core.internal.CorePlugin;
-import org.seedstack.seed.web.internal.WebErrorCode;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.google.common.collect.AbstractIterator;
 
 /**
  * VFS file implementation for WebSphere WSJAR scanning. Scan for directory.
@@ -62,8 +61,7 @@ class WsInputDir implements Vfs.Dir {
                             jarInputStream = new JarInputStream(new URL(warfile).openStream());
 
                         } catch (Exception e) {
-                            LOGGER.warn("Unable to open WAR at " + url.toExternalForm() + ", ignoring it");
-                            LOGGER.debug(CorePlugin.DETAILS_MESSAGE, e);
+                            SeedLoggingUtils.logWarningWithDebugDetails(LOGGER, e, "Unable to open WAR at {}, ignoring it", url.toExternalForm());
                         }
                     }
 
@@ -101,8 +99,7 @@ class WsInputDir implements Vfs.Dir {
         try {
             jarInputStream.close();
         } catch (IOException e) {
-            LOGGER.warn("Unable to close WAR at " + url.toExternalForm());
-            LOGGER.debug(CorePlugin.DETAILS_MESSAGE, e);
+            SeedLoggingUtils.logWarningWithDebugDetails(LOGGER, e, "Unable to close WAR at {}", url.toExternalForm());
         }
     }
 

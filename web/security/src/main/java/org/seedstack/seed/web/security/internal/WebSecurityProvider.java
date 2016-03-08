@@ -15,6 +15,7 @@ import io.nuun.kernel.api.plugin.request.ClasspathScanRequestBuilder;
 import jodd.props.Props;
 import org.apache.commons.configuration.Configuration;
 import org.apache.shiro.guice.web.ShiroWebModule;
+import org.seedstack.seed.SeedRuntime;
 import org.seedstack.seed.core.internal.application.ApplicationPlugin;
 import org.seedstack.seed.security.internal.SecurityPlugin;
 import org.seedstack.seed.security.internal.SecurityProvider;
@@ -65,9 +66,7 @@ public class WebSecurityProvider implements SecurityProvider {
 
     @Override
     public void provideContainerContext(Object containerContext) {
-        if (containerContext instanceof ServletContext) {
-            servletContext = (ServletContext) containerContext;
-        }
+        servletContext = ((SeedRuntime)containerContext).contextAs(ServletContext.class);
     }
 
     @Override

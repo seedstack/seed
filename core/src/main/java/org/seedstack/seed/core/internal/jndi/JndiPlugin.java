@@ -51,7 +51,7 @@ public class JndiPlugin extends AbstractPlugin {
         // Default JNDI context
         try {
             this.defaultJndiContext = new InitialContext();
-            LOGGER.info("Default JNDI context has been configured");
+            LOGGER.debug("Default JNDI context has been configured");
         } catch (NamingException e) {
             throw SeedException.wrap(e, JndiErrorCode.UNABLE_TO_CONFIGURE_DEFAULT_JNDI_CONTEXT);
         }
@@ -68,7 +68,7 @@ public class JndiPlugin extends AbstractPlugin {
                     try {
                         properties.load(propertiesResourceStream);
                         this.additionalJndiContexts.put(jndiContextName, new InitialContext(properties));
-                        LOGGER.info("JNDI context " + jndiContextName + " has been configured from " + propertiesResource);
+                        LOGGER.debug("JNDI context " + jndiContextName + " has been configured from " + propertiesResource);
                     } catch (Exception e) {
                         throw SeedException.wrap(e, JndiErrorCode.UNABLE_TO_CONFIGURE_ADDITIONAL_JNDI_CONTEXT).put("context", jndiContextName);
                     }

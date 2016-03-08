@@ -25,23 +25,18 @@ import javax.inject.Named;
 import javax.naming.Context;
 import javax.naming.NamingException;
 
-import static io.nuun.kernel.core.NuunCore.createKernel;
-import static io.nuun.kernel.core.NuunCore.newKernelConfiguration;
-
 public class JndiPluginIT {
-	static Kernel underTest;
+	static Kernel kernel;
     Injector injector;
 
 	@BeforeClass
 	public static void beforeClass() throws Exception {
-		underTest = createKernel(newKernelConfiguration());
-		underTest.init();
-		underTest.start();
+		kernel = Seed.createKernel();
 	}
 
     @AfterClass
     public static void afterClass() {
-        underTest.stop();
+        Seed.disposeKernel(kernel);
     }
 
     static class Holder {
@@ -75,7 +70,7 @@ public class JndiPluginIT {
             }
         };
 
-        injector = underTest.objectGraph().as(Injector.class).createChildInjector(aggregationModule);
+        injector = kernel.objectGraph().as(Injector.class).createChildInjector(aggregationModule);
     }
 
 

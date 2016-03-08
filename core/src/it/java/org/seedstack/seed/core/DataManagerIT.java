@@ -9,7 +9,6 @@ package org.seedstack.seed.core;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Injector;
-import com.google.inject.Module;
 import io.nuun.kernel.api.Kernel;
 import org.assertj.core.api.Assertions;
 import org.junit.AfterClass;
@@ -24,8 +23,6 @@ import org.seedstack.seed.core.utils.SeedReflectionUtils;
 import javax.inject.Inject;
 import java.io.ByteArrayOutputStream;
 
-import static io.nuun.kernel.core.NuunCore.createKernel;
-import static io.nuun.kernel.core.NuunCore.newKernelConfiguration;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -33,9 +30,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  *         Date: 12/03/14
  */
 public class DataManagerIT {
-
-    static Kernel underTest;
-    static Holder holder;
+    private static Kernel kernel;
+    private static Holder holder;
 
     static class Holder {
         @Inject
@@ -86,24 +82,17 @@ public class DataManagerIT {
 
     @BeforeClass
     public static void setup() {
-        underTest = createKernel(newKernelConfiguration());
-        underTest.init();
-        underTest.start();
-
-        Module aggregationModule = new AbstractModule() {
+        kernel = Seed.createKernel();
+        holder = kernel.objectGraph().as(Injector.class).createChildInjector(new AbstractModule() {
             @Override
             protected void configure() {
                 bind(Holder.class);
             }
-        };
-
-        holder = underTest.objectGraph().as(Injector.class).createChildInjector(aggregationModule).getInstance(Holder.class);
+        }).getInstance(Holder.class);
     }
 
     @AfterClass
     public static void teardown() {
-        underTest.stop();
-        underTest = null;
-        holder = null;
+        Seed.disposeKernel(kernel);
     }
 }

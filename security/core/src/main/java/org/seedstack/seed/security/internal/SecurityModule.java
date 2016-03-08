@@ -21,7 +21,6 @@ import org.seedstack.seed.security.Scope;
 import org.seedstack.seed.security.internal.data.DataSecurityModule;
 import org.seedstack.seed.security.internal.securityexpr.SecurityExpressionModule;
 import org.seedstack.seed.security.spi.SecurityConcern;
-import org.seedstack.seed.security.spi.SecurityErrorCodes;
 import org.seedstack.seed.security.spi.data.DataSecurityHandler;
 
 import java.util.Collection;
@@ -30,7 +29,6 @@ import java.util.Map;
 
 @SecurityConcern
 class SecurityModule extends AbstractModule {
-    public static final long DEFAULT_GLOBAL_SESSION_TIMEOUT = 15 * 60 * 1000;
     private static final Key<org.apache.shiro.mgt.SecurityManager> SECURITY_MANAGER_KEY = Key.get(SecurityManager.class);
 
     private final Map<String, Class<? extends Scope>> scopeClasses;

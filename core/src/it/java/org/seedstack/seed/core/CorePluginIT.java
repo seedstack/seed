@@ -28,23 +28,18 @@ import some.other.pkg.ForeignClass;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 
-import static io.nuun.kernel.core.NuunCore.createKernel;
-import static io.nuun.kernel.core.NuunCore.newKernelConfiguration;
-
 public class CorePluginIT {
-    Injector injector;
-    static Kernel underTest;
+    private static Kernel kernel;
+    private Injector injector;
 
     @BeforeClass
     public static void beforeClass() {
-        underTest = createKernel(newKernelConfiguration());
-        underTest.init();
-        underTest.start();
+        kernel = Seed.createKernel();
     }
 
     @AfterClass
     public static void afterClass() {
-        underTest.stop();
+        Seed.disposeKernel(kernel);
     }
 
     static class LoggerHolder {
@@ -80,7 +75,7 @@ public class CorePluginIT {
                 bind(LoggerHolder.class);
             }
         };
-        injector = underTest.objectGraph().as(Injector.class).createChildInjector(
+        injector = kernel.objectGraph().as(Injector.class).createChildInjector(
                 aggregationModule);
     }
 

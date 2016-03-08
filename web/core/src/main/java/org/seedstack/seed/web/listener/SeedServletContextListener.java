@@ -10,10 +10,8 @@ package org.seedstack.seed.web.listener;
 import com.google.inject.Injector;
 import com.google.inject.servlet.GuiceServletContextListener;
 import io.nuun.kernel.api.Kernel;
-import io.nuun.kernel.api.config.KernelConfiguration;
-import io.nuun.kernel.core.NuunCore;
 import org.seedstack.seed.SeedException;
-import org.seedstack.seed.core.internal.CorePlugin;
+import org.seedstack.seed.core.Seed;
 import org.seedstack.seed.web.internal.WebErrorCode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,6 +19,8 @@ import org.slf4j.LoggerFactory;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * This context listener has the responsibility to initialize the Seed framework in a Web environment. This listener
@@ -49,10 +49,8 @@ public class SeedServletContextListener extends GuiceServletContextListener {
         LOGGER.info("Starting Seed Web application");
 
         try {
-            kernel = createKernel(servletContext);
+            kernel = Seed.createKernel(servletContext, extractInitParameters(servletContext));
             servletContext.setAttribute(KERNEL_ATTRIBUTE_NAME, kernel);
-            kernel.init();
-            kernel.start();
             super.contextInitialized(sce);
         } catch (SeedException e) {
             handleException(e);
@@ -65,28 +63,6 @@ public class SeedServletContextListener extends GuiceServletContextListener {
         LOGGER.info("Seed Web application started");
     }
 
-    private Kernel createKernel(ServletContext servletContext) {
-        KernelConfiguration kernelConfiguration = NuunCore.newKernelConfiguration();
-        kernelConfiguration.containerContext(servletContext);
-
-        Enumeration<?> initParameterNames = servletContext.getInitParameterNames();
-        while (initParameterNames.hasMoreElements()) {
-            String parameterName = (String) initParameterNames.nextElement();
-            if (parameterName != null && !parameterName.isEmpty()) {
-                String parameterValue = servletContext.getInitParameter(parameterName);
-                LOGGER.debug("Setting kernel parameter {} to {}", parameterName, parameterValue);
-                kernelConfiguration.param(parameterName, parameterValue);
-            }
-        }
-
-        return NuunCore.createKernel(kernelConfiguration);
-    }
-
-    private static void handleException(Throwable t) {
-        LOGGER.error("An exception occurred during web application startup, collecting diagnostic information");
-        CorePlugin.getDiagnosticManager().dumpDiagnosticReport(t);
-    }
-
     public void contextDestroyed(ServletContextEvent sce) {
         ServletContext servletContext = sce.getServletContext();
 
@@ -95,10 +71,8 @@ public class SeedServletContextListener extends GuiceServletContextListener {
 
             try {
                 super.contextDestroyed(sce);
-                if (kernel.isStarted()) {
-                    kernel.stop();
-                }
                 servletContext.removeAttribute(KERNEL_ATTRIBUTE_NAME);
+                Seed.disposeKernel(kernel);
             } catch (SeedException e) {
                 handleException(e);
                 throw e;
@@ -113,5 +87,25 @@ public class SeedServletContextListener extends GuiceServletContextListener {
 
     protected Injector getInjector() {
         return kernel.objectGraph().as(Injector.class);
+    }
+
+    private Map<String, String> extractInitParameters(ServletContext servletContext) {
+        Map<String, String> parameters = new HashMap<String, String>();
+
+        Enumeration<?> initParameterNames = servletContext.getInitParameterNames();
+        while (initParameterNames.hasMoreElements()) {
+            String parameterName = (String) initParameterNames.nextElement();
+            if (parameterName != null && !parameterName.isEmpty()) {
+                String parameterValue = servletContext.getInitParameter(parameterName);
+                parameters.put(parameterName, parameterValue);
+            }
+        }
+
+        return parameters;
+    }
+
+    private void handleException(Throwable t) {
+        LOGGER.error("An exception occurred during web application startup, collecting diagnostic information");
+        Seed.diagnostic(kernel).dumpDiagnosticReport(t);
     }
 }

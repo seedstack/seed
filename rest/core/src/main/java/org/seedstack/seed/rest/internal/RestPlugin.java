@@ -14,6 +14,7 @@ import io.nuun.kernel.api.plugin.context.InitContext;
 import io.nuun.kernel.api.plugin.request.ClasspathScanRequest;
 import io.nuun.kernel.core.AbstractPlugin;
 import org.kametic.specifications.Specification;
+import org.seedstack.seed.SeedRuntime;
 import org.seedstack.seed.core.spi.configuration.ConfigurationProvider;
 import org.seedstack.seed.rest.RelRegistry;
 import org.seedstack.seed.rest.internal.exceptionmapper.AuthenticationExceptionMapper;
@@ -32,12 +33,7 @@ import org.slf4j.LoggerFactory;
 import javax.servlet.ServletContext;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Variant;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @author pierre.thirouin@ext.mpsa.com (Pierre Thirouin)
@@ -63,9 +59,7 @@ public class RestPlugin extends AbstractPlugin implements RestProvider {
 
     @Override
     public void provideContainerContext(Object containerContext) {
-        if (containerContext != null && ServletContext.class.isAssignableFrom(containerContext.getClass())) {
-            this.servletContext = (ServletContext) containerContext;
-        }
+        servletContext = ((SeedRuntime)containerContext).contextAs(ServletContext.class);
     }
 
     @Override

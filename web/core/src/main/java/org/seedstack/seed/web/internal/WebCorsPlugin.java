@@ -12,6 +12,7 @@ import io.nuun.kernel.api.plugin.InitState;
 import io.nuun.kernel.api.plugin.context.InitContext;
 import io.nuun.kernel.core.AbstractPlugin;
 import org.apache.commons.configuration.Configuration;
+import org.seedstack.seed.SeedRuntime;
 import org.seedstack.seed.core.spi.configuration.ConfigurationProvider;
 import org.seedstack.seed.core.utils.SeedConfigurationUtils;
 import org.slf4j.Logger;
@@ -70,9 +71,7 @@ public class WebCorsPlugin extends AbstractPlugin {
 
     @Override
     public void provideContainerContext(Object containerContext) {
-        if (containerContext != null && ServletContext.class.isAssignableFrom(containerContext.getClass())) {
-            this.servletContext = (ServletContext) containerContext;
-        }
+        servletContext = ((SeedRuntime)containerContext).contextAs(ServletContext.class);
     }
 
     @Override

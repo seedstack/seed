@@ -13,9 +13,9 @@ import io.nuun.kernel.api.config.KernelConfiguration;
 import org.junit.rules.MethodRule;
 import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.Statement;
+import org.seedstack.seed.SeedException;
 import org.seedstack.seed.cli.SeedRunner;
 import org.seedstack.seed.cli.WithCommandLine;
-import org.seedstack.seed.SeedException;
 import org.seedstack.seed.it.ITBind;
 import org.seedstack.seed.it.spi.KernelRule;
 import org.seedstack.seed.it.spi.PausableStatement;
@@ -42,12 +42,9 @@ public class CommandLineITRule implements MethodRule, KernelRule {
                 }
 
                 if (annotation != null) {
-                    String[] value = annotation.args();
-                    int expectedExitCode = annotation.expectedExitCode();
-
-                    int returnCode = SeedRunner.execute(value, new CommandLineITCallable(target, statement, annotation.command(), annotation.args()), kernelConfiguration);
-
-                    assertThat(returnCode).as("Exit code returned by SeedRunner").isEqualTo(expectedExitCode);
+                    String[] args = annotation.args();
+                    int returnCode = SeedRunner.execute(args, new CommandLineITCallable(target, statement, annotation.command(), args), kernelConfiguration);
+                    assertThat(returnCode).as("Exit code returned by SeedRunner").isEqualTo(annotation.expectedExitCode());
                 }
 
                 if (statement instanceof PausableStatement) {
