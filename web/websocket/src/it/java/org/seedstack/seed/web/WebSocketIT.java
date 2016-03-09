@@ -27,9 +27,7 @@ import java.net.URL;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
-import static junit.framework.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class WebSocketIT extends AbstractSeedWebIT {
     @Inject
@@ -49,21 +47,21 @@ public class WebSocketIT extends AbstractSeedWebIT {
         ChatClientEndpoint1.latch = new CountDownLatch(1);
 
         final Session session1 = connectToServer(baseUrl, chatClientEndpoint1);
-        assertNotNull(session1);
+        assertThat(session1).isNotNull();
 
-        assertTrue(ChatClientEndpoint1.latch.await(2, TimeUnit.SECONDS));
-        assertEquals("echo: " + ChatClientEndpoint1.TEXT, ChatClientEndpoint1.response);
+        assertThat(ChatClientEndpoint1.latch.await(2, TimeUnit.SECONDS)).isTrue();
+        assertThat("echo: " + ChatClientEndpoint1.TEXT).isEqualTo(ChatClientEndpoint1.response);
 
         ChatClientEndpoint1.latch = new CountDownLatch(1);
         ChatClientEndpoint2.latch = new CountDownLatch(1);
 
         final Session session2 = connectToServer(baseUrl, chatClientEndpoint2);
-        assertNotNull(session2);
+        assertThat(session2).isNotNull();
 
-        assertTrue(ChatClientEndpoint1.latch.await(2, TimeUnit.SECONDS)); // FIXME there are concurrency issues here
-        assertTrue(ChatClientEndpoint2.latch.await(2, TimeUnit.SECONDS));
-        assertEquals("echo: " + ChatClientEndpoint2.TEXT, ChatClientEndpoint1.response);
-        assertEquals("echo: " + ChatClientEndpoint2.TEXT, ChatClientEndpoint2.response);
+        assertThat(ChatClientEndpoint1.latch.await(2, TimeUnit.SECONDS)).isTrue(); // FIXME there are concurrency issues here
+        assertThat(ChatClientEndpoint2.latch.await(2, TimeUnit.SECONDS)).isTrue();
+        assertThat("echo: " + ChatClientEndpoint2.TEXT).isEqualTo(ChatClientEndpoint1.response);
+        assertThat("echo: " + ChatClientEndpoint2.TEXT).isEqualTo(ChatClientEndpoint2.response);
     }
 
     private Session connectToServer(URL baseUrl, Object endpoint) throws DeploymentException, IOException, URISyntaxException, IllegalAccessException, InstantiationException {

@@ -46,7 +46,7 @@
             <version>${undertow.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.sonatype.sisu.inject</groupId>
+            <groupId>com.google.inject.extensions</groupId>
             <artifactId>guice-servlet</artifactId>
             <version>${guice.version}</version>
         </dependency>

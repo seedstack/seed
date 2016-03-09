@@ -14,13 +14,13 @@ import io.nuun.kernel.api.plugin.context.InitContext;
 import io.nuun.kernel.api.plugin.request.ClasspathScanRequestBuilder;
 import jodd.props.Props;
 import org.apache.commons.configuration.Configuration;
-import org.apache.shiro.guice.web.ShiroWebModule;
 import org.seedstack.seed.SeedRuntime;
 import org.seedstack.seed.core.internal.application.ApplicationPlugin;
 import org.seedstack.seed.security.internal.SecurityPlugin;
 import org.seedstack.seed.security.internal.SecurityProvider;
 import org.seedstack.seed.security.internal.SecurityGuiceConfigurer;
 import org.seedstack.seed.web.security.SecurityFilter;
+import org.seedstack.seed.web.security.internal.shiro.ShiroWebModule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
