@@ -3,3 +3,4 @@ org.seedstack.seed.core.internal.application.ApplicationPlugin
 org.seedstack.seed.core.internal.jndi.JndiPlugin
 org.seedstack.seed.core.internal.command.impl.CommandPlugin
 org.seedstack.seed.core.internal.data.DataPlugin
+org.seedstack.seed.core.internal.lifecycle.LifecyclePlugin

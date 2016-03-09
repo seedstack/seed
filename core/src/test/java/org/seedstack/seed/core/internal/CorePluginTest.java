@@ -95,7 +95,7 @@ public class CorePluginTest {
 
     @Test
     public void classpathScanRequestsTest() {
-        Assertions.assertThat(pluginUnderTest.classpathScanRequests()).hasSize(4);
+        Assertions.assertThat(pluginUnderTest.classpathScanRequests()).hasSize(3);
     }
 
     @Test
