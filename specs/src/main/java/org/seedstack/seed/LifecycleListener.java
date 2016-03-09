@@ -14,12 +14,12 @@ package org.seedstack.seed;
 public interface LifecycleListener {
 
     /**
-     * This method is called by Seed upon application startup.
+     * This method is called by Seed just after the application has started up.
      */
-    void start();
+    void started();
 
     /**
-     * This method is called by Seed upon application shutdown.
+     * This method is called by Seed just before the application is shut down.
      */
-    void stop();
+    void stopping();
 }

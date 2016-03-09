@@ -35,7 +35,7 @@ public class LifecycleExtension implements KernelExtension<LifecycleListenerScan
         for (LifecycleListenerScanner extendedPlugin : extendedPlugins) {
             for (LifecycleListener lifecycleListener : extendedPlugin.get()) {
                 try {
-                    lifecycleListener.start();
+                    lifecycleListener.started();
                 } catch (Exception e) {
                     throw SeedException
                             .wrap(e, CoreErrorCode.ERROR_DURING_LIFECYCLE_CALLBACK)
@@ -51,7 +51,7 @@ public class LifecycleExtension implements KernelExtension<LifecycleListenerScan
         for (LifecycleListenerScanner extendedPlugin : extendedPlugins) {
             for (LifecycleListener lifecycleListener : extendedPlugin.get()) {
                 try {
-                    lifecycleListener.stop();
+                    lifecycleListener.stopping();
                 } catch (Exception e) {
                     throw SeedException
                             .wrap(e, CoreErrorCode.ERROR_DURING_LIFECYCLE_CALLBACK)

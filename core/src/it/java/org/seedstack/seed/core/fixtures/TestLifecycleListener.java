@@ -31,13 +31,13 @@ public class TestLifecycleListener implements LifecycleListener {
     };
 
     @Override
-    public void start() {
+    public void started() {
         Assertions.assertThat(logger).isNotNull();
         state.get().startToken = state.get().token;
     }
 
     @Override
-    public void stop() {
+    public void stopping() {
         State state = TestLifecycleListener.state.get();
         state.stopToken = state.token;
     }
