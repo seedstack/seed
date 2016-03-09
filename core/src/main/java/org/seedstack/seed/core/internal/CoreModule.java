@@ -37,11 +37,9 @@ class CoreModule extends AbstractModule {
     private final DiagnosticManager diagnosticManager;
     private final Map<String, DiagnosticInfoCollector> diagnosticInfoCollectors;
     private final Map<Class<?>, Maybe<? extends DependencyProvider>> optionalDependencies;
-    private final Set<Class<? extends LifecycleListener>> lifecycleListenerClasses;
 
-    CoreModule(Collection<Module> subModules, Set<Class<? extends LifecycleListener>> lifecycleListenerClasses, DiagnosticManager diagnosticManager, Map<String, DiagnosticInfoCollector> diagnosticInfoCollectors, Map<Class<?>, Maybe<? extends DependencyProvider>> optionalDependencies) {
+    CoreModule(Collection<Module> subModules, DiagnosticManager diagnosticManager, Map<String, DiagnosticInfoCollector> diagnosticInfoCollectors, Map<Class<?>, Maybe<? extends DependencyProvider>> optionalDependencies) {
         this.subModules = subModules;
-        this.lifecycleListenerClasses = lifecycleListenerClasses;
         this.diagnosticManager = diagnosticManager;
         this.diagnosticInfoCollectors = diagnosticInfoCollectors;
         this.optionalDependencies = optionalDependencies;
@@ -71,12 +69,6 @@ class CoreModule extends AbstractModule {
         // Install detected modules
         for (Module subModule : subModules) {
             install(subModule);
-        }
-
-        // Lifecycle listeners
-        Multibinder<LifecycleListener> lifecycleListenerMultibinder = Multibinder.newSetBinder(binder(), LifecycleListener.class);
-        for (Class<? extends LifecycleListener> lifecycleListenerClass : lifecycleListenerClasses) {
-            lifecycleListenerMultibinder.addBinding().to(lifecycleListenerClass);
         }
 
         // Optional dependencies

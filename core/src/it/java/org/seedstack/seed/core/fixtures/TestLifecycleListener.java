@@ -7,7 +7,10 @@
  */
 package org.seedstack.seed.core.fixtures;
 
+import org.assertj.core.api.Assertions;
 import org.seedstack.seed.LifecycleListener;
+import org.seedstack.seed.Logging;
+import org.slf4j.Logger;
 
 
 public class TestLifecycleListener implements LifecycleListener {
@@ -16,6 +19,9 @@ public class TestLifecycleListener implements LifecycleListener {
         private String startToken;
         private String stopToken;
     }
+
+    @Logging
+    private Logger logger;
 
     private static ThreadLocal<State> state = new ThreadLocal<State>() {
         @Override
@@ -26,6 +32,7 @@ public class TestLifecycleListener implements LifecycleListener {
 
     @Override
     public void start() {
+        Assertions.assertThat(logger).isNotNull();
         state.get().startToken = state.get().token;
     }
 

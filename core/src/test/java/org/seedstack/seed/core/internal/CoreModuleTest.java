@@ -30,7 +30,6 @@ import java.util.Map;
  */
 public class CoreModuleTest {
 
-
     /**
      * Test optional dependencies.
      *
@@ -44,7 +43,7 @@ public class CoreModuleTest {
         final Maybe<DependencyProvider> maybe = new Maybe<DependencyProvider>(myProvider);
         optionalDependencies.put(DependencyProvider.class, maybe);
 
-        CoreModule module = new CoreModule(subModules, new HashSet<Class<? extends LifecycleListener>>(), null, null, optionalDependencies);
+        CoreModule module = new CoreModule(subModules, null, null, optionalDependencies);
         module.configure(binder);
 
         new Verifications() {

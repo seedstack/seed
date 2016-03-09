@@ -9,11 +9,13 @@ package org.seedstack.seed.core.internal;
 
 import com.google.inject.Module;
 import io.nuun.kernel.api.plugin.InitState;
-import io.nuun.kernel.api.plugin.context.Context;
 import io.nuun.kernel.api.plugin.context.InitContext;
 import io.nuun.kernel.api.plugin.request.ClasspathScanRequest;
 import io.nuun.kernel.core.AbstractPlugin;
-import org.seedstack.seed.*;
+import org.seedstack.seed.DiagnosticManager;
+import org.seedstack.seed.Install;
+import org.seedstack.seed.SeedException;
+import org.seedstack.seed.SeedRuntime;
 import org.seedstack.seed.core.utils.SeedReflectionUtils;
 import org.seedstack.seed.spi.dependency.DependencyProvider;
 import org.seedstack.seed.spi.dependency.Maybe;
@@ -22,10 +24,13 @@ import org.seedstack.seed.spi.diagnostic.DiagnosticInfoCollector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.inject.Inject;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
-import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Core plugin that setup common Seed package roots and scans modules to install via the
@@ -39,13 +44,9 @@ public class CorePlugin extends AbstractPlugin {
     private static final Logger LOGGER = LoggerFactory.getLogger(CorePlugin.class);
 
     private final Set<Class<? extends Module>> seedModules = new HashSet<Class<? extends Module>>();
-    private final Set<Class<? extends LifecycleListener>> lifecycleListenerClasses = new HashSet<Class<? extends LifecycleListener>>();
     private final Map<String, DiagnosticInfoCollector> diagnosticInfoCollectors = new HashMap<String, DiagnosticInfoCollector>();
     private final Map<Class<?>, Maybe<? extends DependencyProvider>> optionalDependencies = new HashMap<Class<?>, Maybe<? extends DependencyProvider>>();
-
     private DiagnosticManager diagnosticManager;
-    @Inject
-    private Set<LifecycleListener> lifecycleListeners;
 
     @Override
     public String name() {
@@ -66,7 +67,6 @@ public class CorePlugin extends AbstractPlugin {
     public Collection<ClasspathScanRequest> classpathScanRequests() {
         return classpathScanRequestBuilder()
                 .subtypeOf(DiagnosticInfoCollector.class)
-                .subtypeOf(LifecycleListener.class)
                 .annotationType(Install.class)
                 .subtypeOf(DependencyProvider.class)
                 .build();
@@ -100,14 +100,6 @@ public class CorePlugin extends AbstractPlugin {
         }
         LOGGER.debug("Detected {} diagnostic collector(s)", diagnosticInfoCollectors.size());
 
-        for (Class<?> candidate : scannedSubTypesByParentClass.get(LifecycleListener.class)) {
-            if (LifecycleListener.class.isAssignableFrom(candidate)) {
-                lifecycleListenerClasses.add((Class<? extends LifecycleListener>) candidate);
-                LOGGER.trace("Detected lifecycle listener {}", candidate.getCanonicalName());
-            }
-        }
-        LOGGER.debug("Detected {} lifecycle listener(s)", lifecycleListenerClasses.size());
-
         for (Class<?> candidate : scannedClassesByAnnotationClass.get(Install.class)) {
             if (Module.class.isAssignableFrom(candidate)) {
                 seedModules.add(Module.class.getClass().cast(candidate));
@@ -133,35 +125,7 @@ public class CorePlugin extends AbstractPlugin {
             }
         }
 
-        return new CoreModule(subModules, lifecycleListenerClasses, diagnosticManager, diagnosticInfoCollectors, this.optionalDependencies);
-    }
-
-    @Override
-    public void start(Context context) {
-        for (LifecycleListener lifecycleListener : lifecycleListeners) {
-            try {
-                lifecycleListener.start();
-            } catch (Exception e) {
-                throw SeedException
-                        .wrap(e, CoreErrorCode.ERROR_DURING_LIFECYCLE_CALLBACK)
-                        .put("lifecycleListenerClass", lifecycleListener.getClass().getCanonicalName())
-                        .put("phase", "start");
-            }
-        }
-    }
-
-    @Override
-    public void stop() {
-        for (LifecycleListener lifecycleListener : lifecycleListeners) {
-            try {
-                lifecycleListener.stop();
-            } catch (Exception e) {
-                throw SeedException
-                        .wrap(e, CoreErrorCode.ERROR_DURING_LIFECYCLE_CALLBACK)
-                        .put("lifecycleListenerClass", lifecycleListener.getClass().getCanonicalName())
-                        .put("phase", "stop");
-            }
-        }
+        return new CoreModule(subModules, diagnosticManager, diagnosticInfoCollectors, this.optionalDependencies);
     }
 
     /**
