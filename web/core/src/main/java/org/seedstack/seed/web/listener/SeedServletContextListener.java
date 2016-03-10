@@ -46,8 +46,6 @@ public class SeedServletContextListener extends GuiceServletContextListener {
             );
         }
 
-        LOGGER.info("Starting Seed Web application");
-
         try {
             kernel = Seed.createKernel(servletContext, extractInitParameters(servletContext));
             servletContext.setAttribute(KERNEL_ATTRIBUTE_NAME, kernel);
@@ -59,16 +57,12 @@ public class SeedServletContextListener extends GuiceServletContextListener {
             handleException(e);
             throw SeedException.wrap(e, WebErrorCode.UNEXPECTED_EXCEPTION);
         }
-
-        LOGGER.info("Seed Web application started");
     }
 
     public void contextDestroyed(ServletContextEvent sce) {
         ServletContext servletContext = sce.getServletContext();
 
         if (kernel != null) {
-            LOGGER.info("Stopping Seed Web application");
-
             try {
                 super.contextDestroyed(sce);
                 servletContext.removeAttribute(KERNEL_ATTRIBUTE_NAME);
@@ -80,8 +74,6 @@ public class SeedServletContextListener extends GuiceServletContextListener {
                 handleException(e);
                 throw SeedException.wrap(e, WebErrorCode.UNEXPECTED_EXCEPTION);
             }
-
-            LOGGER.info("Seed Web application stopped");
         }
     }
 

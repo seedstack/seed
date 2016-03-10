@@ -11,8 +11,6 @@ import com.google.common.collect.Lists;
 import org.seedstack.seed.SeedException;
 import org.seedstack.seed.core.internal.CoreErrorCode;
 import org.seedstack.seed.spi.SeedLauncher;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.ServiceLoader;
@@ -29,7 +27,6 @@ import java.util.ServiceLoader;
  */
 public class SeedMain {
     public static void main(String[] args) {
-        final Logger logger = LoggerFactory.getLogger(Seed.class);
         final SeedLauncher seedLauncher = getLauncher();
 
         Runtime.getRuntime().addShutdownHook(new Thread() {
@@ -37,21 +34,16 @@ public class SeedMain {
             public void run() {
                 try {
                     seedLauncher.shutdown();
-                    logger.info("Seed application stopped");
                 } catch (Throwable t) {
                     handleThrowable(t);
-                    logger.error("Seed application failed to shutdown properly");
                 }
             }
         });
-
-        logger.info("Seed application starting with launcher {}", seedLauncher.getClass().getCanonicalName());
 
         try {
             seedLauncher.launch(args);
         } catch (Throwable t) {
             handleThrowable(t);
-            logger.error("Seed application halted after exception");
             System.exit(-1);
         }
     }
