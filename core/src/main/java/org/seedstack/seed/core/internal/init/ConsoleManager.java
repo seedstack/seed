@@ -20,18 +20,22 @@ import static org.fusesource.jansi.internal.CLibrary.isatty;
 
 public class ConsoleManager {
     private volatile boolean colorSupported;
+    private PrintStream savedOut;
+    private PrintStream savedErr;
 
     public synchronized void install() {
         OutputStream out = wrapOutputStream(System.out);
         OutputStream err = wrapOutputStream(System.err);
         colorSupported = isColorSupported(out) || isColorSupported(err);
+        savedOut = System.out;
         System.setOut(new PrintStream(out));
+        savedErr = System.err;
         System.setErr(new PrintStream(err));
     }
 
     public synchronized void uninstall() {
-        System.setOut(null);
-        System.setErr(null);
+        System.setOut(savedOut);
+        System.setErr(savedErr);
         colorSupported = false;
     }
 
