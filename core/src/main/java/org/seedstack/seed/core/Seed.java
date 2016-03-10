@@ -24,6 +24,7 @@ import org.slf4j.bridge.SLF4JBridgeHandler;
 import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.LogManager;
 
 /**
  * This class is the Seed framework entry point, which is used create and dispose kernels. It handles global
@@ -80,9 +81,11 @@ public class Seed {
             );
             kernelConfiguration.containerContext(seedRuntime);
 
+            LoggerFactory.getLogger(Seed.class).info("Starting Seed application");
             Kernel kernel = Holder.INSTANCE.nuunManager.initKernel(kernelConfiguration);
             if (start) {
                 kernel.start();
+                LoggerFactory.getLogger(Seed.class).info("Seed application started");
             }
 
             Holder.INSTANCE.registerDiagnosticManager(kernel.name(), diagnosticManager);
@@ -93,7 +96,9 @@ public class Seed {
 
     public static void disposeKernel(Kernel kernel) {
         if (kernel.isStarted()) {
+            LoggerFactory.getLogger(Seed.class).info("Stopping Seed application");
             kernel.stop();
+            LoggerFactory.getLogger(Seed.class).info("Seed application stopped");
         }
 
         synchronized (Holder.INSTANCE) {
@@ -116,11 +121,11 @@ public class Seed {
 
     synchronized private void init() {
         if (initializationCount == 0) {
-            LoggerFactory.getLogger(Seed.class).debug("Seed runtime is initializing");
-
             consoleManager = new ConsoleManager();
             consoleManager.install();
 
+            LogManager.getLogManager().reset();
+            SLF4JBridgeHandler.removeHandlersForRootLogger();
             SLF4JBridgeHandler.install();
             if (isLogbackInUse()) {
                 logbackManager = new LogbackManager();
@@ -136,8 +141,6 @@ public class Seed {
 
     synchronized private void shutdown() {
         if (initializationCount > 0) {
-            LoggerFactory.getLogger(Seed.class).debug("Seed runtime is shutting down");
-
             if (nuunManager != null) {
                 nuunManager.restore();
                 nuunManager = null;

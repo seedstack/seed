@@ -11,6 +11,8 @@ import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.encoder.PatternLayoutEncoder;
+import ch.qos.logback.classic.jul.LevelChangePropagator;
+import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.ConsoleAppender;
 import ch.qos.logback.core.joran.util.ConfigurationWatchListUtil;
 import org.slf4j.LoggerFactory;
@@ -24,14 +26,20 @@ public class LogbackManager {
         if (!isExplicitlyConfigured()) {
             context.reset();
 
+            LevelChangePropagator levelChangePropagator = new LevelChangePropagator();
+            levelChangePropagator.setContext(context);
+            levelChangePropagator.setResetJUL(true);
+            levelChangePropagator.start();
+            context.addListener(levelChangePropagator);
+
             PatternLayoutEncoder logEncoder = new PatternLayoutEncoder();
             logEncoder.setContext(context);
             logEncoder.setPattern("%highlight(%-5level) %yellow(%d{ISO8601}) %magenta(%thread) %cyan(%logger{15}) - %msg%n%red(%rEx)");
             logEncoder.start();
 
-            ConsoleAppender logConsoleAppender = new ConsoleAppender();
-            logConsoleAppender.setTarget("System.out");
+            ConsoleAppender<ILoggingEvent> logConsoleAppender = new ConsoleAppender<ILoggingEvent>();
             logConsoleAppender.setContext(context);
+            logConsoleAppender.setTarget("System.out");
             logConsoleAppender.setEncoder(logEncoder);
             logConsoleAppender.start();
 

@@ -14,7 +14,11 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Constructor;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -38,6 +42,7 @@ public class SeedException extends RuntimeException {
     private static final String ERROR_TEMPLATE_EXTENSION = ".properties";
     private static final String JAVA_LANG_THROWABLE = "java.lang.Throwable";
     private static final String PRINT_STACK_TRACE = "printStackTrace";
+    private static final String CONSTRUCTOR = "<init>";
 
     private final ErrorCode errorCode;
     private final Map<String, Object> properties = new HashMap<String, Object>();
@@ -118,9 +123,15 @@ public class SeedException extends RuntimeException {
      */
     @Override
     public String toString() {
-        boolean inPrintStackTrace = isInPrintStackTrace();
+        int location = getLocation();
 
-        if (inPrintStackTrace) {
+        if (location == 1) {
+            // if called from throwable constructor we return the simple message to avoid messing stack trace
+            return getMessage();
+        }
+
+        if (location == 2) {
+            // if called from printStackTrace() we ensure that only the first SeedException is fully displayed
             try {
                 if (alreadyVisited.get()) {
                     // Already displayed in the cause list of the first SeedException
@@ -177,7 +188,8 @@ public class SeedException extends RuntimeException {
             s.append(url).append("\n");
         }
 
-        if (inPrintStackTrace) {
+        if (location == 2) {
+            // this header is displayed only if called from printStackTrace()
             s.append("\nStacktrace\n----------");
         }
 
@@ -375,14 +387,20 @@ public class SeedException extends RuntimeException {
         return templates.getProperty(errorCode + "." + templateType);
     }
 
-    private boolean isInPrintStackTrace() {
+    /**
+     * @return 1 if in throwable constructor, 2 if in throwable printStackTrace, 0 otherwise.
+     */
+    private int getLocation() {
         for (StackTraceElement stackTraceElement : Thread.currentThread().getStackTrace()) {
+            if (JAVA_LANG_THROWABLE.equals(stackTraceElement.getClassName()) && CONSTRUCTOR.equals(stackTraceElement.getMethodName())) {
+                return 1;
+            }
             if (JAVA_LANG_THROWABLE.equals(stackTraceElement.getClassName()) && PRINT_STACK_TRACE.equals(stackTraceElement.getMethodName())) {
-                return true;
+                return 2;
             }
         }
 
-        return false;
+        return 0;
     }
 
     private static String formatErrorCode(ErrorCode errorCode) {
@@ -460,7 +478,7 @@ public class SeedException extends RuntimeException {
     /**
      * Replace ${...} placeholders in a string looking up in a replacement map.
      *
-     * @param text the text to replace.
+     * @param text         the text to replace.
      * @param replacements the map of replacements.
      * @return the replaced text.
      */
