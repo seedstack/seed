@@ -44,9 +44,6 @@ public class Jersey2PluginTest {
             result = Lists.newArrayList(restProvider);
 
             restPlugin.getConfiguration(); result = null;
-
-            initContext.dependency(WebPlugin.class);
-            result = webPlugin;
         }};
 
         underTest.init(initContext);

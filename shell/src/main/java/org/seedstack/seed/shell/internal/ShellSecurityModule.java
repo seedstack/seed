@@ -11,16 +11,9 @@ import com.google.inject.name.Names;
 import org.apache.shiro.guice.ShiroModule;
 import org.apache.shiro.mgt.DefaultSecurityManager;
 import org.apache.shiro.mgt.SecurityManager;
-import org.seedstack.seed.security.spi.SecurityConcern;
 
 import java.util.Collection;
 
-/**
- * Guice module to initialize a Shiro environment for shell entry point
- *
- * @author yves.dautremay@mpsa.com
- */
-@SecurityConcern
 class ShellSecurityModule extends ShiroModule {
     private static final String SHELL_SECURITY_MANAGER = "shell";
 

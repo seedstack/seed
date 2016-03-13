@@ -12,6 +12,7 @@ import org.glassfish.jersey.server.ServerProperties;
 import org.glassfish.jersey.server.mvc.jsp.JspMvcFeature;
 import org.glassfish.jersey.servlet.ServletProperties;
 import org.seedstack.seed.core.utils.SeedReflectionUtils;
+import org.seedstack.seed.rest.internal.RestConcern;
 import org.seedstack.seed.rest.internal.RestConfiguration;
 
 import java.util.Collection;
@@ -19,6 +20,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
+@RestConcern
 class Jersey2Module extends ServletModule {
     private final RestConfiguration restConfiguration;
     private final Collection<Class<?>> resources;

@@ -16,7 +16,6 @@ import org.apache.shiro.config.ConfigurationException;
 import org.apache.shiro.util.StringUtils;
 import org.apache.shiro.web.filter.PathMatchingFilter;
 import org.seedstack.seed.security.internal.SecurityGuiceConfigurer;
-import org.seedstack.seed.security.spi.SecurityConcern;
 import org.seedstack.seed.web.security.SecurityFilter;
 import org.seedstack.seed.web.security.internal.shiro.ShiroWebModule;
 import org.seedstack.seed.web.security.spi.AntiXsrfService;
@@ -25,18 +24,8 @@ import org.slf4j.LoggerFactory;
 
 import javax.servlet.Filter;
 import javax.servlet.ServletContext;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
+import java.util.*;
 
-/**
- * Guice module to initialize a Shiro environment for the Web entry point.
- *
- * @author yves.dautremay@mpsa.com
- */
-@SecurityConcern
 class WebSecurityModule extends ShiroWebModule {
     private static final Logger LOGGER = LoggerFactory.getLogger(ShiroWebModule.class);
     private static final String PROPERTIES_PREFIX = "org.seedstack.seed.security.urls";

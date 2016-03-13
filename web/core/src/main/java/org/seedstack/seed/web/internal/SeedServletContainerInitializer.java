@@ -10,10 +10,12 @@ package org.seedstack.seed.web.internal;
 import com.google.inject.servlet.GuiceFilter;
 import org.seedstack.seed.web.listener.SeedServletContextListener;
 
+import javax.servlet.DispatcherType;
 import javax.servlet.FilterRegistration;
 import javax.servlet.ServletContainerInitializer;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
+import java.util.EnumSet;
 import java.util.Set;
 
 public class SeedServletContainerInitializer implements ServletContainerInitializer {
@@ -36,7 +38,7 @@ public class SeedServletContainerInitializer implements ServletContainerInitiali
         if (!guiceFilterAlreadyRegistered) {
             FilterRegistration.Dynamic guiceFilter = ctx.addFilter("guiceFilter", GuiceFilter.class);
             if (guiceFilter != null) {
-                guiceFilter.addMappingForUrlPatterns(null, false, "/*");
+                guiceFilter.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST, DispatcherType.FORWARD), false, "/*");
             }
         } else {
             ctx.log("Guice filter already registered, avoiding automatic registration");
