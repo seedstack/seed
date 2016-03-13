@@ -5,14 +5,14 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-package org.seedstack.seed.web.internal;
+package org.seedstack.seed.transaction.internal;
 
 import io.nuun.kernel.spi.Concern;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
+@Concern(name = "transaction", priority = Concern.Priority.NORMAL)
 @Retention(RetentionPolicy.RUNTIME)
-@Concern(name = "web", priority = Concern.Priority.NORMAL, order = 10000)
-@interface WebConcern {
+@interface TransactionConcern {
 }

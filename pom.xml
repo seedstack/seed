@@ -118,6 +118,8 @@
                                 <exclude>org.seedstack.seed.web.listener.SeedServletContextListener</exclude>
                                 <exclude>org.seedstack.seed.CoreErrorCode</exclude>
                                 <exclude>org.seedstack.seed.security.spi.SecurityErrorCodes</exclude>
+                                <exclude>org.seedstack.seed.security.spi.SecurityConcern</exclude>
+                                <exclude>org.seedstack.seed.transaction.spi.TransactionConcern</exclude>
                             </excludes>
                         </parameter>
                     </configuration>

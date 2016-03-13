@@ -5,7 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-package org.seedstack.seed.web.internal;
+package org.seedstack.seed.web.internal.cors;
 
 import io.nuun.kernel.spi.Concern;
 
@@ -13,6 +13,6 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 @Retention(RetentionPolicy.RUNTIME)
-@Concern(name = "web", priority = Concern.Priority.NORMAL, order = 10000)
-@interface WebConcern {
+@Concern(name = "web-cors", priority = Concern.Priority.HIGHEST, order = 10000)
+@interface CorsConcern {
 }

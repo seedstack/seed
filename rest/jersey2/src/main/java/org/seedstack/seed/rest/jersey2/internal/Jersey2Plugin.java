@@ -13,7 +13,6 @@ import io.nuun.kernel.api.plugin.context.InitContext;
 import io.nuun.kernel.core.AbstractPlugin;
 import org.seedstack.seed.rest.internal.RestPlugin;
 import org.seedstack.seed.rest.spi.RestProvider;
-import org.seedstack.seed.web.internal.WebPlugin;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -21,6 +20,8 @@ import java.util.List;
 import java.util.Set;
 
 public class Jersey2Plugin extends AbstractPlugin {
+    private Jersey2Module jersey2Module;
+
     @Override
     public String name() {
         return "jersey2";
@@ -34,7 +35,7 @@ public class Jersey2Plugin extends AbstractPlugin {
 
     @Override
     public Collection<Class<?>> requiredPlugins() {
-        return Lists.<Class<?>>newArrayList(WebPlugin.class, RestPlugin.class, RestProvider.class);
+        return Lists.<Class<?>>newArrayList(RestPlugin.class, RestProvider.class);
     }
 
     @Override
@@ -50,10 +51,14 @@ public class Jersey2Plugin extends AbstractPlugin {
                 providers.addAll(restProvider.providers());
             }
 
-            Jersey2Module servletModule = new Jersey2Module(restPlugin.getConfiguration(), resources, providers);
-            initContext.dependency(WebPlugin.class).registerAdditionalModule(servletModule);
+            jersey2Module = new Jersey2Module(restPlugin.getConfiguration(), resources, providers);
         }
 
         return InitState.INITIALIZED;
+    }
+
+    @Override
+    public Object nativeUnitModule() {
+        return jersey2Module;
     }
 }

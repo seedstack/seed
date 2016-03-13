@@ -13,7 +13,6 @@ import com.google.inject.matcher.Matchers;
 import com.google.inject.multibindings.Multibinder;
 import com.google.inject.name.Names;
 import com.google.inject.util.Providers;
-import org.seedstack.seed.transaction.spi.TransactionConcern;
 import org.seedstack.seed.transaction.spi.TransactionHandler;
 import org.seedstack.seed.transaction.spi.TransactionManager;
 import org.seedstack.seed.transaction.spi.TransactionMetadata;
