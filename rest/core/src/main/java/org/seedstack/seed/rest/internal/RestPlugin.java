@@ -7,6 +7,10 @@
  */
 package org.seedstack.seed.rest.internal;
 
+import com.fasterxml.jackson.jaxrs.base.JsonMappingExceptionMapper;
+import com.fasterxml.jackson.jaxrs.base.JsonParseExceptionMapper;
+import com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider;
+import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 import com.google.common.collect.Lists;
 import com.google.inject.AbstractModule;
 import io.nuun.kernel.api.plugin.InitState;
@@ -90,6 +94,8 @@ public class RestPlugin extends AbstractPlugin implements RestProvider {
         resources = scannedClasses.get(RestPlugin.resourcesSpecification);
         providers = scannedClasses.get(RestPlugin.providersSpecification);
 
+        addJacksonProviders(providers);
+
         initializeHypermedia();
 
         if (servletContext == null) {
@@ -119,6 +125,13 @@ public class RestPlugin extends AbstractPlugin implements RestProvider {
             providers.remove(WebApplicationExceptionMapper.class);
             providers.remove(InternalErrorExceptionMapper.class);
         }
+    }
+
+    private void addJacksonProviders(Collection<Class<?>> providers) {
+        providers.add(JsonMappingExceptionMapper.class);
+        providers.add(JsonParseExceptionMapper.class);
+        providers.add(JacksonJsonProvider.class);
+        providers.add(JacksonJaxbJsonProvider.class);
     }
 
     private void initializeHypermedia() {

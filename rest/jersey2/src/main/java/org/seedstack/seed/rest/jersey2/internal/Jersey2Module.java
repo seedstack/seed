@@ -14,20 +14,22 @@ import org.glassfish.jersey.servlet.ServletProperties;
 import org.seedstack.seed.core.utils.SeedReflectionUtils;
 import org.seedstack.seed.rest.internal.RestConfiguration;
 
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 
 class Jersey2Module extends ServletModule {
     private final RestConfiguration restConfiguration;
-    private final Collection<Class<?>> resources;
-    private final Collection<Class<?>> providers;
+    private final Set<Class<?>> resources;
+    private final Set<Class<?>> providers;
+    private final Set<Class<?>> features;
 
-    Jersey2Module(RestConfiguration restConfiguration, Collection<Class<?>> resources, Collection<Class<?>> providers) {
+    Jersey2Module(RestConfiguration restConfiguration, Set<Class<?>> resources, Set<Class<?>> providers, Set<Class<?>> features) {
         this.restConfiguration = restConfiguration;
         this.resources = resources;
         this.providers = providers;
+        this.features = features;
     }
 
     @Override
@@ -36,7 +38,7 @@ class Jersey2Module extends ServletModule {
         Map<String, String> initParams = buildInitParams(jerseyProperties);
 
         filter(restConfiguration.getRestPath() + "/*").through(
-                new SeedServletContainer(resources, providers, jerseyProperties),
+                new SeedServletContainer(resources, providers, features, jerseyProperties),
                 initParams
         );
     }
@@ -62,10 +64,10 @@ class Jersey2Module extends ServletModule {
         jerseyProperties.putAll(propertiesToMap(restConfiguration.getJerseyProperties()));
 
         // Forced configuration values
-        if (SeedReflectionUtils.forName("org.glassfish.jersey.server.mvc.jsp.JspMvcFeature").isPresent()) {
+        jerseyProperties.put(ServletProperties.FILTER_CONTEXT_PATH, restConfiguration.getRestPath());
+        if (Jersey2Plugin.isJspFeaturePresent()) {
             jerseyProperties.put(JspMvcFeature.TEMPLATE_BASE_PATH, restConfiguration.getJspPath());
         }
-        jerseyProperties.put(ServletProperties.FILTER_CONTEXT_PATH, restConfiguration.getRestPath());
 
         return jerseyProperties;
     }
