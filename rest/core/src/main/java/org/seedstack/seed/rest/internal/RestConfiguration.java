@@ -8,9 +8,12 @@
 package org.seedstack.seed.rest.internal;
 
 import org.apache.commons.configuration.Configuration;
+import org.seedstack.seed.SeedException;
 import org.seedstack.seed.core.utils.SeedConfigurationUtils;
 
+import java.util.HashSet;
 import java.util.Properties;
+import java.util.Set;
 
 public class RestConfiguration {
     private static final String PREFIX = "org.seedstack.seed.rest";
@@ -23,6 +26,7 @@ public class RestConfiguration {
     private boolean securityExceptionMappingEnabled;
     private boolean exceptionMappingEnabled;
     private Properties jerseyProperties;
+    private Set<Class<?>> features;
 
     public String getRestPath() {
         return restPath;
@@ -56,6 +60,10 @@ public class RestConfiguration {
         return jerseyProperties;
     }
 
+    public Set<Class<?>> getFeatures() {
+        return features;
+    }
+
     void init(Configuration configuration) {
         Configuration restConfiguration = configuration.subset(PREFIX);
 
@@ -67,5 +75,13 @@ public class RestConfiguration {
         securityExceptionMappingEnabled = restConfiguration.getBoolean("map-security-exceptions", true);
         exceptionMappingEnabled = restConfiguration.getBoolean("map-all-exceptions", true);
         jerseyProperties = SeedConfigurationUtils.buildPropertiesFromConfiguration(restConfiguration, "jersey.property");
+        features = new HashSet<Class<?>>();
+        for (String featureClassName : restConfiguration.getStringArray("features")) {
+            try {
+                features.add(Class.forName(featureClassName));
+            } catch (ClassNotFoundException e) {
+                throw SeedException.wrap(e, RestErrorCode.JAX_RS_FEATURE_NOT_FOUND);
+            }
+        }
     }
 }

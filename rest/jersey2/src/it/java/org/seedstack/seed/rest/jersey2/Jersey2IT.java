@@ -22,6 +22,7 @@ import javax.ws.rs.core.MediaType;
 import java.net.URL;
 
 import static com.jayway.restassured.RestAssured.expect;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * @author pierre.thirouin@ext.mpsa.com (Pierre Thirouin)
@@ -41,5 +42,20 @@ public class Jersey2IT extends AbstractSeedWebIT {
     public void test_greetings() throws JSONException {
         Response response = expect().statusCode(200).given().contentType(MediaType.APPLICATION_JSON).body("{ \"body\": \"hello world!\", \"author\": \"test\" }").post(baseURL.toString() + "message");
         JSONAssert.assertEquals(response.asString(), "{\"body\":\"test says: hello world!\",\"author\":\"computer\"}", true);
+    }
+
+    @RunAsClient
+    @Test
+    public void subresources_locators_are_working() {
+        String result = expect().statusCode(200).when().get(baseURL.toString() + "locator/sub/1").asString();
+        assertThat(result).isEqualTo("sub:1");
+    }
+
+    @RunAsClient
+    @Test
+    public void test_multipart() throws JSONException {
+        expect().statusCode(200).given()
+                .multiPart("file.txt", "Hello world!".getBytes())
+                .post(baseURL.toString() + "multipart");
     }
 }

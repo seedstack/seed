@@ -13,8 +13,10 @@ import mockit.Mocked;
 import mockit.NonStrictExpectations;
 import mockit.StrictExpectations;
 import mockit.integration.junit4.JMockit;
+import org.apache.commons.configuration.MapConfiguration;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.seedstack.seed.rest.internal.RestConfiguration;
 import org.seedstack.seed.rest.internal.RestPlugin;
 import org.seedstack.seed.rest.spi.RestProvider;
 import org.seedstack.seed.web.internal.WebPlugin;
@@ -31,6 +33,8 @@ public class Jersey2PluginTest {
     private RestProvider restProvider;
     @Mocked
     private WebPlugin webPlugin;
+    @Mocked
+    private RestConfiguration restConfiguration;
 
     @Test
     public void testInit() {
@@ -40,10 +44,10 @@ public class Jersey2PluginTest {
 
             restPlugin.isEnabled(); result = true;
 
+            restPlugin.getConfiguration(); result = restConfiguration;
+
             initContext.dependencies(RestProvider.class);
             result = Lists.newArrayList(restProvider);
-
-            restPlugin.getConfiguration(); result = null;
         }};
 
         underTest.init(initContext);

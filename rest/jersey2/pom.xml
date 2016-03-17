@@ -85,6 +85,7 @@
             <groupId>org.seedstack.seed</groupId>
             <artifactId>seed-web-undertow</artifactId>
             <version>${project.version}</version>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.jmockit</groupId>

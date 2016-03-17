@@ -105,4 +105,11 @@ public class RestIT extends AbstractSeedWebIT {
         Assertions.assertThat(relRegistry).isNotNull();
     }
 
+    @RunAsClient
+    @Test
+    public void test_multipart() throws JSONException {
+        expect().statusCode(200).given()
+                .multiPart("file.txt", "Hello world!".getBytes())
+                .post(baseURL.toString() + "multipart");
+    }
 }
