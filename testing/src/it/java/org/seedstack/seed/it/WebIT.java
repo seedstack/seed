@@ -19,7 +19,7 @@ import java.net.URL;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class WebIT extends AbstractSeedWebIT {
-     @Deployment
+    @Deployment
     public static WebArchive createDeployment() {
         return ShrinkWrap.create(WebArchive.class);
     }

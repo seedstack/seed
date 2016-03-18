@@ -10,6 +10,7 @@ package org.seedstack.seed.core.internal.init;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.util.DefaultIndenter;
 import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -44,7 +45,7 @@ class DefaultDiagnosticReporter implements DiagnosticReporter {
         JSON_FACTORY = new JsonFactory().setCodec(objectMapper);
 
         DEFAULT_PRETTY_PRINTER = new DefaultPrettyPrinter();
-        DEFAULT_PRETTY_PRINTER.indentArraysWith(new DefaultPrettyPrinter.Lf2SpacesIndenter());
+        DEFAULT_PRETTY_PRINTER.indentArraysWith(DefaultIndenter.SYSTEM_LINEFEED_INSTANCE);
     }
 
     @Override

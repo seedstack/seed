@@ -27,16 +27,6 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>de.odysseus.juel</groupId>
-            <artifactId>juel-impl</artifactId>
-            <version>${juel.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>de.odysseus.juel</groupId>
-            <artifactId>juel-spi</artifactId>
-            <version>${juel.version}</version>
-        </dependency>
-        <dependency>
             <groupId>javax.el</groupId>
             <artifactId>javax.el-api</artifactId>
             <version>${javax-el.version}</version>
@@ -47,6 +37,18 @@
             <groupId>org.seedstack.seed</groupId>
             <artifactId>seed-testing</artifactId>
             <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>de.odysseus.juel</groupId>
+            <artifactId>juel-impl</artifactId>
+            <version>${juel.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>de.odysseus.juel</groupId>
+            <artifactId>juel-spi</artifactId>
+            <version>${juel.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>

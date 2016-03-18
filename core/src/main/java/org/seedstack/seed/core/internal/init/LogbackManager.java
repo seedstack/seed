@@ -13,7 +13,9 @@ import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.encoder.PatternLayoutEncoder;
 import ch.qos.logback.classic.jul.LevelChangePropagator;
 import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.classic.util.ContextInitializer;
 import ch.qos.logback.core.ConsoleAppender;
+import ch.qos.logback.core.joran.spi.JoranException;
 import ch.qos.logback.core.joran.util.ConfigurationWatchListUtil;
 import org.slf4j.LoggerFactory;
 
@@ -21,9 +23,18 @@ public class LogbackManager {
     private final LoggerContext context = (LoggerContext) LoggerFactory.getILoggerFactory();
 
     public synchronized void configure() {
-        context.start();
+        if (!context.isStarted()) {
+            context.start();
+        }
 
-        if (!isExplicitlyConfigured()) {
+        boolean autoConfigurationFailed = false;
+        try {
+            new ContextInitializer(context).autoConfig();
+        } catch (JoranException e) {
+            autoConfigurationFailed = true;
+        }
+
+        if (autoConfigurationFailed || !isExplicitlyConfigured()) {
             context.reset();
 
             LevelChangePropagator levelChangePropagator = new LevelChangePropagator();

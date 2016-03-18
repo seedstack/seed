@@ -89,6 +89,18 @@
         </dependency>
 
         <dependency>
+            <groupId>de.odysseus.juel</groupId>
+            <artifactId>juel-impl</artifactId>
+            <version>${juel.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>de.odysseus.juel</groupId>
+            <artifactId>juel-spi</artifactId>
+            <version>${juel.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>org.easytesting</groupId>
             <artifactId>fest-reflect</artifactId>
             <version>${fest-reflect.version}</version>

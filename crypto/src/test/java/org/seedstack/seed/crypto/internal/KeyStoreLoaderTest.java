@@ -7,15 +7,8 @@
  */
 package org.seedstack.seed.crypto.internal;
 
-import mockit.Expectations;
-import mockit.Mocked;
-import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.seedstack.seed.SeedException;
-import org.slf4j.LoggerFactory;
-
-import java.io.FileInputStream;
-import java.security.KeyStore;
 
 import static org.junit.Assert.fail;
 
@@ -66,37 +59,8 @@ public class KeyStoreLoaderTest {
         }
     }
 
-    // TODO avoid to mock fileInputStream this causes issues with the logger
-    @Test
-    public void testKeyStoreLoader(@Mocked LoggerFactory loggerFactory, @Mocked final KeyStore mockedKeyStore,
-                                   @Mocked final FileInputStream fileInputStream) throws Exception {
-        new Expectations() {
-            {
-                new FileInputStream(PATH_TO_KEYSTORE);
-                result = fileInputStream;
-                mockedKeyStore.load(fileInputStream, PASSWORD.toCharArray());
-            }
-        };
-        KeyStore keyStore = new KeyStoreLoader().load(KEY_STORE_CONFIG);
-        Assertions.assertThat(keyStore).isNotNull();
-    }
-
     @Test(expected = SeedException.class)
-    public void testKeyStoreLoaderMissingProvider(@Mocked LoggerFactory loggerFactory, @Mocked final FileInputStream fileInputStream) {
+    public void testKeyStoreLoaderMissingProvider() {
         new KeyStoreLoader().load(new KeyStoreConfig("name", PATH_TO_KEYSTORE, PASSWORD, "jks", "provider"));
-    }
-
-    @Test
-    public void testKeyStoreLoaderWithProvider(@Mocked LoggerFactory loggerFactory, @Mocked final KeyStore mockedKeyStore,
-                                               @Mocked final FileInputStream fileInputStream) throws Exception {
-        new Expectations() {
-            {
-                new FileInputStream(PATH_TO_KEYSTORE);
-                result = fileInputStream;
-                mockedKeyStore.load(fileInputStream, PASSWORD.toCharArray());
-            }
-        };
-        KeyStore keyStore = new KeyStoreLoader().load(new KeyStoreConfig("name", PATH_TO_KEYSTORE, PASSWORD, "jks", "provider"));
-        Assertions.assertThat(keyStore).isNotNull();
     }
 }
