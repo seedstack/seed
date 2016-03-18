@@ -13,18 +13,24 @@
  */
 package org.seedstack.seed.crypto.internal;
 
-import mockit.*;
+import mockit.Expectations;
+import mockit.Mock;
+import mockit.MockUp;
+import mockit.Mocked;
+import mockit.Verifications;
 import org.apache.commons.configuration.Configuration;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.seedstack.seed.SeedException;
 import org.seedstack.seed.crypto.EncryptionService;
 
-import java.io.FileInputStream;
 import java.net.URL;
-import java.security.*;
+import java.security.Key;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.PublicKey;
+import java.security.UnrecoverableKeyException;
 import java.security.cert.Certificate;
-import java.security.cert.CertificateFactory;
 
 import static org.seedstack.seed.core.utils.ConfigurationUtils.buildKey;
 
@@ -133,40 +139,7 @@ public class EncryptionServiceFactoryTest {
     }
 
     @Test
-    public void testCreateWithExternalCertificateFromFile(@Mocked final FileInputStream fileInputStream, @Mocked CertificateFactory certificateFactory) throws Exception {
-
-        new Expectations() {
-            {
-                keyStore.getKey(ALIAS, PASSWORD);
-                result = key;
-
-                certificate.getPublicKey();
-                result = publicKey;
-
-                configuration.containsKey(CERT_FILE_KEY);
-                result = true;
-                configuration.getString(CERT_FILE_KEY);
-                result = "path/to/cert";
-
-                new FileInputStream("path/to/cert");
-                result = fileInputStream;
-            }
-        };
-
-        EncryptionServiceFactory factory = new EncryptionServiceFactory(configuration, keyStore);
-        EncryptionService encryptionService = factory.create(ALIAS, PASSWORD);
-
-        Assertions.assertThat(encryptionService).isNotNull();
-
-        new Verifications() {
-            {
-                new EncryptionServiceImpl(ALIAS, publicKey, key);
-            }
-        };
-    }
-
-    @Test
-    public void testCreateWithExternalCertificateFromResource(@Mocked CertificateFactory certificateFactory, @Mocked final URL url) throws Exception {
+    public void testCreateWithExternalCertificateFromResource(@Mocked final URL url) throws Exception {
         new MockUp<ClassLoader> (){
             @Mock
             public URL getResource(String name) {

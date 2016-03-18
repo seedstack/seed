@@ -7,12 +7,13 @@
  */
 package org.seedstack.seed.el.internal;
 
+import org.apache.commons.lang.StringUtils;
 import org.seedstack.seed.core.utils.SeedCheckUtils;
 import org.seedstack.seed.el.ELContextBuilder;
-import de.odysseus.el.util.SimpleContext;
-import org.apache.commons.lang.StringUtils;
 
 import javax.el.ELContext;
+import javax.el.ExpressionFactory;
+import javax.el.StandardELContext;
 import java.lang.reflect.Method;
 
 /**
@@ -21,11 +22,12 @@ import java.lang.reflect.Method;
  * @author pierre.thirouin@ext.mpsa.com
  *         Date: 11/07/2014
  */
-public class ELContextBuilderImpl implements ELContextBuilder {
+class ELContextBuilderImpl implements ELContextBuilder {
+    private ExpressionFactory expressionFactory = ExpressionFactory.newInstance();
 
     @Override
     public ELPropertyProvider defaultContext() {
-        return new SubContextBuilderImpl(new SimpleContext());
+        return new SubContextBuilderImpl(new StandardELContext(expressionFactory));
     }
 
     @Override
@@ -33,7 +35,7 @@ public class ELContextBuilderImpl implements ELContextBuilder {
         return new SubContextBuilderImpl(elContext);
     }
 
-    class SubContextBuilderImpl implements ELContextBuilder.ELPropertyProvider {
+    private class SubContextBuilderImpl implements ELContextBuilder.ELPropertyProvider {
 
         private ELContext elContext;
 
@@ -50,11 +52,8 @@ public class ELContextBuilderImpl implements ELContextBuilder {
 
         @Override
         public ELPropertyProvider withFunction(String prefix, String localName, Method method) {
-            if (elContext instanceof SimpleContext) {
-                ((SimpleContext) elContext).setFunction(prefix, localName, method);
-            } else {
-                throw new UnsupportedOperationException("This method is only supported by the default context.");
-            }
+            SeedCheckUtils.checkIf(StringUtils.isNotBlank(localName));
+            elContext.getFunctionMapper().mapFunction(prefix, localName, method);
             return this;
         }
 

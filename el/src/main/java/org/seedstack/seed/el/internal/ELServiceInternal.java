@@ -7,13 +7,18 @@
  */
 package org.seedstack.seed.el.internal;
 
+import org.apache.commons.lang.StringUtils;
 import org.seedstack.seed.SeedException;
 import org.seedstack.seed.core.utils.SeedCheckUtils;
 import org.seedstack.seed.el.ELService;
-import de.odysseus.el.util.SimpleContext;
-import org.apache.commons.lang.StringUtils;
 
-import javax.el.*;
+import javax.el.ELContext;
+import javax.el.ELException;
+import javax.el.ExpressionFactory;
+import javax.el.MethodExpression;
+import javax.el.PropertyNotFoundException;
+import javax.el.StandardELContext;
+import javax.el.ValueExpression;
 
 /**
  * Implementation of ELService.
@@ -46,7 +51,7 @@ class ELServiceInternal implements ELService {
         return elInstance;
     }
 
-    class ELInstance implements ELContextProvider, ELExpressionProvider, ELService.MethodExpressionProvider, ELService.ValueExpressionProvider {
+    private class ELInstance implements ELContextProvider, ELExpressionProvider, ELService.MethodExpressionProvider, ELService.ValueExpressionProvider {
 
         private ExpressionFactory expressionFactory = ExpressionFactory.newInstance();
 
@@ -77,7 +82,7 @@ class ELServiceInternal implements ELService {
 
         @Override
         public ELExpressionProvider withDefaultContext() {
-            context = new SimpleContext();
+            context = new StandardELContext(expressionFactory);
             return this;
         }
 

@@ -12,7 +12,6 @@ import io.nuun.kernel.api.plugin.InitState;
 import io.nuun.kernel.api.plugin.context.InitContext;
 import io.nuun.kernel.api.plugin.request.ClasspathScanRequest;
 import io.nuun.kernel.core.AbstractPlugin;
-import org.apache.commons.cli.PosixParser;
 import org.apache.commons.configuration.Configuration;
 import org.kametic.specifications.Specification;
 import org.seedstack.seed.SeedRuntime;
@@ -27,7 +26,9 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.seedstack.seed.core.utils.BaseClassSpecifications.*;
+import static org.seedstack.seed.core.utils.BaseClassSpecifications.ancestorImplements;
+import static org.seedstack.seed.core.utils.BaseClassSpecifications.classIsAbstract;
+import static org.seedstack.seed.core.utils.BaseClassSpecifications.classIsInterface;
 
 /**
  * This plugin enables to run {@link CommandLineHandler} through
@@ -63,7 +64,7 @@ public class CommandLinePlugin extends AbstractPlugin {
 
     @Override
     public void provideContainerContext(Object containerContext) {
-        cliContext = ((SeedRuntime)containerContext).contextAs(CliContext.class);
+        cliContext = ((SeedRuntime) containerContext).contextAs(CliContext.class);
     }
 
     @Override
@@ -88,14 +89,9 @@ public class CommandLinePlugin extends AbstractPlugin {
         LOGGER.debug("Detected {} CLI handler(s)", cliHandlers.size());
 
         String defaultCommand = cliConfiguration.getString(DEFAULT_COMMAND_CONFIG_KEY);
-        String[] effectiveArgs;
-        if (defaultCommand == null) {
-        } else {
-            effectiveArgs = cliContext.getArgs();
+        if (defaultCommand != null) {
+            LOGGER.debug("Default CLI command is " + defaultCommand);
         }
-
-        PosixParser posixParser = new PosixParser();
-
 
         return InitState.INITIALIZED;
     }

@@ -8,16 +8,16 @@
 package org.seedstack.seed.shell.internal;
 
 import com.google.common.base.Strings;
-import org.seedstack.seed.CommandRegistry;
-import org.seedstack.seed.SeedException;
-import org.seedstack.seed.spi.command.Command;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
-import org.apache.commons.cli.PosixParser;
 import org.apache.sshd.server.ExitCallback;
+import org.seedstack.seed.CommandRegistry;
+import org.seedstack.seed.SeedException;
+import org.seedstack.seed.spi.command.Command;
 
 import javax.inject.Inject;
 import java.io.InputStream;
@@ -31,7 +31,7 @@ import java.util.Scanner;
 
 abstract class AbstractShell implements org.apache.sshd.server.Command, Runnable {
     public static final String COMMAND_PATTERN = "([a-zA-Z][a-zA-Z0-9\\-]+:)?[a-zA-Z][a-zA-Z0-9\\-]+";
-    private final CommandLineParser commandLineParser = new PosixParser();
+    private final CommandLineParser commandLineParser = new DefaultParser();
 
     protected InputStream inputStream;
     protected OutputStream outputStream;

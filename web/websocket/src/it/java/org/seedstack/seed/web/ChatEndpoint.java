@@ -8,23 +8,35 @@
 package org.seedstack.seed.web;
 
 import javax.inject.Inject;
-import javax.websocket.EncodeException;
-import javax.websocket.OnMessage;
+import javax.websocket.MessageHandler;
+import javax.websocket.OnClose;
+import javax.websocket.OnOpen;
 import javax.websocket.Session;
 import javax.websocket.server.ServerEndpoint;
-import java.io.IOException;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
-/**
- * This WebSocket endpoint get messages and retrieve them.
- */
 @ServerEndpoint(value = "/chat")
 public class ChatEndpoint {
+    private final Map<Session, MessageHandler> messageHandlers = new ConcurrentHashMap<Session, MessageHandler>();
     @Inject
-    EchoService echoService;
+    private ChatRoom chatRoom;
 
-    @OnMessage
-    public void message(String message, Session client) throws IOException, EncodeException {
-        for (Session peer : client.getOpenSessions())
-            peer.getBasicRemote().sendText(echoService.echo(message));
+    @OnOpen
+    public void onOpen(Session session) {
+        ChatMessageHandler handler = new ChatMessageHandler(chatRoom, session);
+        if (messageHandlers.put(session, handler) == null) {
+            chatRoom.addClient(session);
+            session.addMessageHandler(handler);
+        }
+    }
+
+    @OnClose
+    public void onClose(Session session) {
+        MessageHandler handler = messageHandlers.get(session);
+        if (handler != null) {
+            session.removeMessageHandler(handler);
+            chatRoom.removeClient(session);
+        }
     }
 }

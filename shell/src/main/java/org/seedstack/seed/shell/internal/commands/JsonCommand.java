@@ -9,6 +9,7 @@ package org.seedstack.seed.shell.internal.commands;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.util.DefaultIndenter;
 import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -31,7 +32,7 @@ public class JsonCommand implements PrettyCommand<String> {
 
     static {
         DEFAULT_PRETTY_PRINTER = new DefaultPrettyPrinter();
-        DEFAULT_PRETTY_PRINTER.indentArraysWith(new DefaultPrettyPrinter.Lf2SpacesIndenter());
+        DEFAULT_PRETTY_PRINTER.indentArraysWith(DefaultIndenter.SYSTEM_LINEFEED_INSTANCE);
 
         OBJECT_MAPPER = new ObjectMapper();
         OBJECT_MAPPER.configure(SerializationFeature.WRITE_NULL_MAP_VALUES, false);

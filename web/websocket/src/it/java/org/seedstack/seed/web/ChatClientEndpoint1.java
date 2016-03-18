@@ -16,10 +16,6 @@ import javax.websocket.Session;
 import java.io.IOException;
 import java.util.concurrent.CountDownLatch;
 
-/**
- * @author pierre.thirouin@ext.mpsa.com
- *         Date: 19/12/13
- */
 @ClientEndpoint(configurator = SeedClientEndpointConfigurator.class)
 public class ChatClientEndpoint1 {
     public static final String TEXT = "Client1 joins";
