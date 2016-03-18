@@ -48,7 +48,7 @@ public class ELPlugin extends AbstractPlugin {
     @SuppressWarnings("unchecked")
     @Override
     public InitState init(InitContext initContext) {
-        if (!SeedReflectionUtils.isClassPresent("javax.el.Expression")) {
+        if (!isELPresent()) {
             disabled = true;
             LOGGER.info("Java EL is not present in the classpath, EL support disabled");
             return InitState.INITIALIZED;
@@ -85,5 +85,17 @@ public class ELPlugin extends AbstractPlugin {
 
     public boolean isDisabled() {
         return disabled;
+    }
+
+    static boolean isELPresent() {
+        return SeedReflectionUtils.isClassPresent("javax.el.Expression");
+    }
+
+    static boolean isEL3Present() {
+        return SeedReflectionUtils.isClassPresent("javax.el.StandardELContext");
+    }
+
+    static boolean isJUELPresent() {
+        return SeedReflectionUtils.isClassPresent("de.odysseus.el.util.SimpleContext");
     }
 }

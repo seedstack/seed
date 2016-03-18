@@ -51,7 +51,7 @@ public interface ELService {
     /**
      * This interface provides methods to add ELContext for EL evaluation.
      */
-    public interface ELContextProvider {
+    interface ELContextProvider {
 
         /**
          * Use a specific context to use.
@@ -73,7 +73,7 @@ public interface ELService {
      *
      * @author pierre.thirouin@ext.mpsa.com
      */
-    public interface ELExpressionProvider {
+    interface ELExpressionProvider {
 
         /**
          * Gets a {@link javax.el.ValueExpression}.
@@ -97,7 +97,7 @@ public interface ELService {
      *
      * @author pierre.thirouin@ext.mpsa.com
      */
-    public interface ValueExpressionProvider {
+    interface ValueExpressionProvider {
 
         /**
          * Evaluates the EL.
@@ -119,7 +119,7 @@ public interface ELService {
      *
      * @author pierre.thirouin@ext.mpsa.com
      */
-    public interface MethodExpressionProvider {
+    interface MethodExpressionProvider {
 
         /**
          * Invokes the method specified in the EL with the provided arguments.

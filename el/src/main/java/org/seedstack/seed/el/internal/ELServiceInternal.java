@@ -7,6 +7,7 @@
  */
 package org.seedstack.seed.el.internal;
 
+import de.odysseus.el.util.SimpleContext;
 import org.apache.commons.lang.StringUtils;
 import org.seedstack.seed.SeedException;
 import org.seedstack.seed.core.utils.SeedCheckUtils;
@@ -82,8 +83,15 @@ class ELServiceInternal implements ELService {
 
         @Override
         public ELExpressionProvider withDefaultContext() {
-            context = new StandardELContext(expressionFactory);
-            return this;
+            if (ELPlugin.isEL3Present()) {
+                context = new StandardELContext(expressionFactory);
+                return this;
+            } else if (ELPlugin.isJUELPresent()) {
+                context = new SimpleContext();
+                return this;
+            } else {
+                throw new UnsupportedOperationException("StandardELContext is not supported in this environment (EL level 3+ required)");
+            }
         }
 
         @Override

@@ -39,7 +39,7 @@ public interface ELContextBuilder {
     /**
      * Grammar to add properties and methods to an ELContext.
      */
-    public interface ELPropertyProvider {
+    interface ELPropertyProvider {
 
         /**
          * Gets the context used by the service.

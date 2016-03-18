@@ -7,6 +7,7 @@
  */
 package org.seedstack.seed.el.internal;
 
+import de.odysseus.el.util.SimpleContext;
 import org.apache.commons.lang.StringUtils;
 import org.seedstack.seed.core.utils.SeedCheckUtils;
 import org.seedstack.seed.el.ELContextBuilder;
@@ -23,11 +24,17 @@ import java.lang.reflect.Method;
  *         Date: 11/07/2014
  */
 class ELContextBuilderImpl implements ELContextBuilder {
-    private ExpressionFactory expressionFactory = ExpressionFactory.newInstance();
+    private final ExpressionFactory expressionFactory = ExpressionFactory.newInstance();
 
     @Override
     public ELPropertyProvider defaultContext() {
-        return new SubContextBuilderImpl(new StandardELContext(expressionFactory));
+        if (ELPlugin.isEL3Present()) {
+            return new SubContextBuilderImpl(new StandardELContext(expressionFactory));
+        } else if (ELPlugin.isJUELPresent()) {
+            return new SubContextBuilderImpl(new SimpleContext());
+        } else {
+            throw new UnsupportedOperationException("StandardELContext is not supported in this environment (EL level 3+ required)");
+        }
     }
 
     @Override
@@ -37,7 +44,7 @@ class ELContextBuilderImpl implements ELContextBuilder {
 
     private class SubContextBuilderImpl implements ELContextBuilder.ELPropertyProvider {
 
-        private ELContext elContext;
+        private final ELContext elContext;
 
         SubContextBuilderImpl(ELContext elContext) {
             this.elContext = elContext;
@@ -53,7 +60,17 @@ class ELContextBuilderImpl implements ELContextBuilder {
         @Override
         public ELPropertyProvider withFunction(String prefix, String localName, Method method) {
             SeedCheckUtils.checkIf(StringUtils.isNotBlank(localName));
-            elContext.getFunctionMapper().mapFunction(prefix, localName, method);
+            if (ELPlugin.isEL3Present()) {
+                elContext.getFunctionMapper().mapFunction(prefix, localName, method);
+            } else if (ELPlugin.isJUELPresent()) {
+                if (elContext instanceof SimpleContext) {
+                    ((SimpleContext) elContext).setFunction(prefix, localName, method);
+                } else {
+                    throw new UnsupportedOperationException("Function mapping is only supported by the default context");
+                }
+            } else {
+                throw new UnsupportedOperationException("Function mapping is not supported in this environment (EL level 3+ required)");
+            }
             return this;
         }
 

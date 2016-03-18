@@ -32,23 +32,23 @@
             <version>${javax-el.version}</version>
             <scope>provided</scope>
         </dependency>
-
-        <dependency>
-            <groupId>org.seedstack.seed</groupId>
-            <artifactId>seed-testing</artifactId>
-            <version>${project.version}</version>
-            <scope>test</scope>
-        </dependency>
         <dependency>
             <groupId>de.odysseus.juel</groupId>
             <artifactId>juel-impl</artifactId>
             <version>${juel.version}</version>
-            <scope>test</scope>
+            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>de.odysseus.juel</groupId>
             <artifactId>juel-spi</artifactId>
             <version>${juel.version}</version>
+            <optional>true</optional>
+        </dependency>
+
+        <dependency>
+            <groupId>org.seedstack.seed</groupId>
+            <artifactId>seed-testing</artifactId>
+            <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
