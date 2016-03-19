@@ -14,11 +14,12 @@ import org.seedstack.seed.el.ELContextBuilder;
 import org.seedstack.seed.el.ELService;
 import org.seedstack.seed.el.spi.ELHandler;
 
+import javax.el.ExpressionFactory;
 import java.lang.annotation.Annotation;
 import java.util.Map;
 
 class ELModule extends AbstractModule {
-    private static final TypeLiteral<ImmutableMap<Class<? extends Annotation>, Class<ELHandler>>> MAP_TYPE_LITERAL = new TypeLiteral<ImmutableMap<Class<? extends Annotation>, Class<ELHandler>>>() {};
+    private static final TypeLiteral<Map<Class<? extends Annotation>, Class<ELHandler>>> MAP_TYPE_LITERAL = new TypeLiteral<Map<Class<? extends Annotation>, Class<ELHandler>>>() {};
     private final Map<Class<? extends Annotation>, Class<ELHandler>> elMap;
 
     ELModule(Map<Class<? extends Annotation>, Class<ELHandler>> elMap) {
@@ -27,6 +28,7 @@ class ELModule extends AbstractModule {
 
     @Override
     protected void configure() {
+        bind(ExpressionFactory.class).toInstance(ExpressionFactory.newInstance());
         bind(ELService.class).to(ELServiceInternal.class);
         bind(ELContextBuilder.class).to(ELContextBuilderImpl.class);
 
@@ -34,7 +36,7 @@ class ELModule extends AbstractModule {
             bind(elHandlerClass);
         }
 
-        // bind the map of annotation, elHandler
+        // bind the map of annotation -> ELHandler
         bind(MAP_TYPE_LITERAL).toInstance(ImmutableMap.copyOf(elMap));
     }
 }

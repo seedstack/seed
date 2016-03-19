@@ -7,7 +7,6 @@
  */
 package org.seedstack.seed.el.internal;
 
-import de.odysseus.el.util.SimpleContext;
 import org.apache.commons.lang.StringUtils;
 import org.seedstack.seed.SeedException;
 import org.seedstack.seed.core.utils.SeedCheckUtils;
@@ -18,8 +17,8 @@ import javax.el.ELException;
 import javax.el.ExpressionFactory;
 import javax.el.MethodExpression;
 import javax.el.PropertyNotFoundException;
-import javax.el.StandardELContext;
 import javax.el.ValueExpression;
+import javax.inject.Inject;
 
 /**
  * Implementation of ELService.
@@ -28,18 +27,20 @@ import javax.el.ValueExpression;
  *         Date: 02/07/2014
  */
 class ELServiceInternal implements ELService {
+    @Inject
+    private ExpressionFactory expressionFactory;
 
     @Override
     public ELContextProvider withExpression(String el, Class returnType) {
         SeedCheckUtils.checkIf(StringUtils.isNotBlank(el));
         SeedCheckUtils.checkIfNotNull(returnType);
-        return new ELInstance(el, returnType);
+        return new ELInstance(expressionFactory, el, returnType);
     }
 
     @Override
     public ValueExpressionProvider withValueExpression(ValueExpression valueExpression) {
         SeedCheckUtils.checkIfNotNull(valueExpression);
-        ELInstance elInstance = new ELInstance();
+        ELInstance elInstance = new ELInstance(expressionFactory);
         elInstance.setValueExpression(valueExpression);
         return elInstance;
     }
@@ -47,29 +48,31 @@ class ELServiceInternal implements ELService {
     @Override
     public MethodExpressionProvider withMethodExpression(MethodExpression methodExpression) {
         SeedCheckUtils.checkIfNotNull(methodExpression);
-        ELInstance elInstance = new ELInstance();
+        ELInstance elInstance = new ELInstance(expressionFactory);
         elInstance.setMethodExpression(methodExpression);
         return elInstance;
     }
 
-    private class ELInstance implements ELContextProvider, ELExpressionProvider, ELService.MethodExpressionProvider, ELService.ValueExpressionProvider {
+    private static class ELInstance implements ELContextProvider, ELExpressionProvider, ELService.MethodExpressionProvider, ELService.ValueExpressionProvider {
 
-        private ExpressionFactory expressionFactory = ExpressionFactory.newInstance();
+        private final ExpressionFactory expressionFactory;
+
+        private String el;
+
+        private Class returnType;
 
         private MethodExpression methodExpression;
 
         private ValueExpression valueExpression;
 
-        private Class returnType;
-
         private ELContext context;
 
-        private String el;
-
-        ELInstance() {
+        ELInstance(ExpressionFactory expressionFactory) {
+            this.expressionFactory = expressionFactory;
         }
 
-        ELInstance(String el, Class returnType) {
+        ELInstance(ExpressionFactory expressionFactory, String el, Class returnType) {
+            this.expressionFactory = expressionFactory;
             this.el = el;
             this.returnType = returnType;
         }
@@ -83,15 +86,8 @@ class ELServiceInternal implements ELService {
 
         @Override
         public ELExpressionProvider withDefaultContext() {
-            if (ELPlugin.isEL3Present()) {
-                context = new StandardELContext(expressionFactory);
-                return this;
-            } else if (ELPlugin.isJUELPresent()) {
-                context = new SimpleContext();
-                return this;
-            } else {
-                throw new UnsupportedOperationException("StandardELContext is not supported in this environment (EL level 3+ required)");
-            }
+            context = ELContextBuilderImpl.createDefaultELContext(expressionFactory);
+            return this;
         }
 
         @Override

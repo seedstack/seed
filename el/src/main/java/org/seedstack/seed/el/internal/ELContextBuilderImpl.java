@@ -14,7 +14,7 @@ import org.seedstack.seed.el.ELContextBuilder;
 
 import javax.el.ELContext;
 import javax.el.ExpressionFactory;
-import javax.el.StandardELContext;
+import javax.inject.Inject;
 import java.lang.reflect.Method;
 
 /**
@@ -24,17 +24,32 @@ import java.lang.reflect.Method;
  *         Date: 11/07/2014
  */
 class ELContextBuilderImpl implements ELContextBuilder {
-    private final ExpressionFactory expressionFactory = ExpressionFactory.newInstance();
+    @Inject
+    private ExpressionFactory expressionFactory;
+
+    static ELContext createDefaultELContext(ExpressionFactory expressionFactory) {
+        if (ELPlugin.EL3_MAYBE.isPresent()) {
+            try {
+                return ELPlugin.EL3_MAYBE.get().getConstructor(ExpressionFactory.class).newInstance(expressionFactory);
+            } catch (Exception e) {
+                throw new RuntimeException("Unable to instantiate StandardELContext");
+            }
+        }
+
+        if (ELPlugin.JUEL_MAYBE.isPresent()) {
+            try {
+                return ELPlugin.JUEL_MAYBE.get().newInstance();
+            } catch (Exception e) {
+                throw new RuntimeException("Unable to instantiate JUEL SimpleContext");
+            }
+        }
+
+        throw new UnsupportedOperationException("StandardELContext is not supported in this environment (EL level 3+ required)");
+    }
 
     @Override
     public ELPropertyProvider defaultContext() {
-        if (ELPlugin.isEL3Present()) {
-            return new SubContextBuilderImpl(new StandardELContext(expressionFactory));
-        } else if (ELPlugin.isJUELPresent()) {
-            return new SubContextBuilderImpl(new SimpleContext());
-        } else {
-            throw new UnsupportedOperationException("StandardELContext is not supported in this environment (EL level 3+ required)");
-        }
+        return new SubContextBuilderImpl(createDefaultELContext(expressionFactory));
     }
 
     @Override
@@ -42,8 +57,7 @@ class ELContextBuilderImpl implements ELContextBuilder {
         return new SubContextBuilderImpl(elContext);
     }
 
-    private class SubContextBuilderImpl implements ELContextBuilder.ELPropertyProvider {
-
+    private static class SubContextBuilderImpl implements ELContextBuilder.ELPropertyProvider {
         private final ELContext elContext;
 
         SubContextBuilderImpl(ELContext elContext) {
@@ -60,9 +74,9 @@ class ELContextBuilderImpl implements ELContextBuilder {
         @Override
         public ELPropertyProvider withFunction(String prefix, String localName, Method method) {
             SeedCheckUtils.checkIf(StringUtils.isNotBlank(localName));
-            if (ELPlugin.isEL3Present()) {
+            if (ELPlugin.EL3_MAYBE.isPresent()) {
                 elContext.getFunctionMapper().mapFunction(prefix, localName, method);
-            } else if (ELPlugin.isJUELPresent()) {
+            } else if (ELPlugin.JUEL_MAYBE.isPresent()) {
                 if (elContext instanceof SimpleContext) {
                     ((SimpleContext) elContext).setFunction(prefix, localName, method);
                 } else {

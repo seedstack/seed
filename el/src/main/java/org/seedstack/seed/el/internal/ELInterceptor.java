@@ -7,19 +7,19 @@
  */
 package org.seedstack.seed.el.internal;
 
-import com.google.common.collect.ImmutableMap;
 import com.google.inject.Injector;
+import org.aopalliance.intercept.MethodInterceptor;
+import org.aopalliance.intercept.MethodInvocation;
 import org.seedstack.seed.SeedException;
 import org.seedstack.seed.el.ELContextBuilder;
 import org.seedstack.seed.el.ELService;
 import org.seedstack.seed.el.spi.ELHandler;
-import org.aopalliance.intercept.MethodInterceptor;
-import org.aopalliance.intercept.MethodInvocation;
 
 import javax.inject.Inject;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Map;
 
 
 class ELInterceptor implements MethodInterceptor {
@@ -30,7 +30,7 @@ class ELInterceptor implements MethodInterceptor {
 
     // Get a map of annotation handler
     @Inject
-    private ImmutableMap<Class<? extends Annotation>, Class<ELHandler>> elMap;
+    private Map<Class<? extends Annotation>, Class<ELHandler>> elMap;
 
     @Inject
     private ELService elService;

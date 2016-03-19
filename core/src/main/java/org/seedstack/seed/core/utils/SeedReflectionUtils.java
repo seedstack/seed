@@ -20,7 +20,11 @@ import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Field;
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Class with various utility methods for reflection.
@@ -550,9 +554,10 @@ public final class SeedReflectionUtils {
      * @param dependency class to look for
      * @return a Maybe of the class or an empty maybe is the class is not present
      */
-    public static Maybe<Class<?>> forName(String dependency) {
+    @SuppressWarnings("unchecked")
+    public static <T> Maybe<Class<T>> forName(String dependency) {
         try {
-            return Maybe.<Class<?>>of(Class.forName(dependency));
+            return Maybe.of((Class<T>) Class.forName(dependency));
         } catch (ClassNotFoundException e) {
             return Maybe.empty();
         }

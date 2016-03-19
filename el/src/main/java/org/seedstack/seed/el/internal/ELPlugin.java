@@ -16,9 +16,11 @@ import org.kametic.specifications.Specification;
 import org.seedstack.seed.SeedException;
 import org.seedstack.seed.core.utils.SeedReflectionUtils;
 import org.seedstack.seed.el.spi.ELHandler;
+import org.seedstack.seed.spi.dependency.Maybe;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.el.ELContext;
 import java.lang.annotation.Annotation;
 import java.util.Collection;
 import java.util.HashMap;
@@ -30,10 +32,12 @@ import java.util.Map;
  */
 public class ELPlugin extends AbstractPlugin {
     private static final Logger LOGGER = LoggerFactory.getLogger(ELPlugin.class);
+    private static final Maybe<Class<Object>> EL_MAYBE = SeedReflectionUtils.forName("javax.el.Expression");
+    static final Maybe<Class<ELContext>> EL3_MAYBE = SeedReflectionUtils.forName("javax.el.StandardELContext");
+    static final Maybe<Class<ELContext>> JUEL_MAYBE = SeedReflectionUtils.forName("de.odysseus.el.util.SimpleContext");
 
     private final Specification<Class<?>> specificationELHandlers = classImplements(ELHandler.class);
-    private Map<Class<? extends Annotation>, Class<ELHandler>> elMap = new HashMap<Class<? extends Annotation>, Class<ELHandler>>();
-    private boolean disabled = false;
+    private ELModule elModule;
 
     @Override
     public String name() {
@@ -48,27 +52,29 @@ public class ELPlugin extends AbstractPlugin {
     @SuppressWarnings("unchecked")
     @Override
     public InitState init(InitContext initContext) {
-        if (!isELPresent()) {
-            disabled = true;
-            LOGGER.info("Java EL is not present in the classpath, EL support disabled");
-            return InitState.INITIALIZED;
-        }
+        if (EL_MAYBE.isPresent()) {
+            Map<Class<? extends Annotation>, Class<ELHandler>> elMap = new HashMap<Class<? extends Annotation>, Class<ELHandler>>();
 
-        // Scan all the ExpressionLanguageHandler
-        Map<Specification, Collection<Class<?>>> scannedTypesBySpecification = initContext.scannedTypesBySpecification();
-        Collection<Class<?>> elHandlerClasses = scannedTypesBySpecification.get(specificationELHandlers);
+            // Scan all the ExpressionLanguageHandler
+            Map<Specification, Collection<Class<?>>> scannedTypesBySpecification = initContext.scannedTypesBySpecification();
+            Collection<Class<?>> elHandlerClasses = scannedTypesBySpecification.get(specificationELHandlers);
 
-        // Look for their type parameters
-        for (Class<?> elHandlerClass : elHandlerClasses) {
-            Class<Annotation> typeParameterClass = (Class<Annotation>) TypeResolver.resolveRawArguments(ELHandler.class, (Class<ELHandler>) elHandlerClass)[0];
-            // transform this type parameters in a map of annotation, ExpressionHandler
-            if (elMap.get(typeParameterClass) != null) {
-                throw SeedException.createNew(ELErrorCode.EL_ANNOTATION_IS_ALREADY_BIND)
-                        .put("annotation", typeParameterClass.getSimpleName())
-                        .put("handler", elHandlerClass);
+            // Look for their type parameters
+            for (Class<?> elHandlerClass : elHandlerClasses) {
+                Class<Annotation> typeParameterClass = (Class<Annotation>) TypeResolver.resolveRawArguments(ELHandler.class, (Class<ELHandler>) elHandlerClass)[0];
+                // transform this type parameters in a map of annotation, ExpressionHandler
+                if (elMap.get(typeParameterClass) != null) {
+                    throw SeedException.createNew(ELErrorCode.EL_ANNOTATION_IS_ALREADY_BIND)
+                            .put("annotation", typeParameterClass.getSimpleName())
+                            .put("handler", elHandlerClass);
+                }
+
+                elMap.put(typeParameterClass, (Class<ELHandler>) elHandlerClass);
             }
 
-            elMap.put(typeParameterClass, (Class<ELHandler>) elHandlerClass);
+            elModule = new ELModule(elMap);
+        } else {
+            LOGGER.info("Java EL is not present in the classpath, EL support disabled");
         }
 
         return InitState.INITIALIZED;
@@ -76,26 +82,10 @@ public class ELPlugin extends AbstractPlugin {
 
     @Override
     public Object nativeUnitModule() {
-        if (!disabled) {
-            return new ELModule(elMap);
-        } else {
-            return null;
-        }
+        return elModule;
     }
 
     public boolean isDisabled() {
-        return disabled;
-    }
-
-    static boolean isELPresent() {
-        return SeedReflectionUtils.isClassPresent("javax.el.Expression");
-    }
-
-    static boolean isEL3Present() {
-        return SeedReflectionUtils.isClassPresent("javax.el.StandardELContext");
-    }
-
-    static boolean isJUELPresent() {
-        return SeedReflectionUtils.isClassPresent("de.odysseus.el.util.SimpleContext");
+        return elModule == null;
     }
 }

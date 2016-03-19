@@ -70,7 +70,7 @@ class EncryptionServiceBindingFactory {
 
     private Key<EncryptionService> createKeyFromQualifier(String qualifier) {
         Key<EncryptionService> key;
-        Maybe<Class<?>> classMaybe = SeedReflectionUtils.forName(qualifier);
+        Maybe<Class<Object>> classMaybe = SeedReflectionUtils.forName(qualifier);
         if (classMaybe.isPresent()) {
             Class<?> qualifierClass = classMaybe.get();
             if (!Annotation.class.isAssignableFrom(qualifierClass) || !qualifierClass.isAnnotationPresent(Qualifier.class)) {

@@ -23,6 +23,7 @@ public class LogbackManager {
     private final LoggerContext context = (LoggerContext) LoggerFactory.getILoggerFactory();
 
     public synchronized void configure() {
+        context.reset();
         if (!context.isStarted()) {
             context.start();
         }
