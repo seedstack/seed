@@ -1,3 +1,8 @@
+# Version 2.2.1 (2016-03-22)
+
+* [new] Support configuration of Jersey 2 features. Automatically enable multipart and JSP features if detected on the classpath.
+* [new] Add multipart feature as a dependency of Jersey 2 module, enabling it by default.
+
 # Version 2.2.0 (2016-01-28)
 
 * [fix] Fix the `@Ignore` annotation which was not working anymore in version 2.1.0.
