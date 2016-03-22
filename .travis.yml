@@ -4,9 +4,6 @@ language: java
 
 jdk: oraclejdk8
 
-notifications:
-  irc: chat.freenode.net#seedstack-dev
-
 cache:
   directories: $HOME/.m2/repository
 
