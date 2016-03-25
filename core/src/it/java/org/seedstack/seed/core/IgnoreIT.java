@@ -5,7 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-package org.seedstack.seed;
+package org.seedstack.seed.core;
 
 import com.google.inject.ConfigurationException;
 import com.google.inject.Injector;
@@ -35,13 +35,12 @@ public class IgnoreIT {
     static class ScannedClass {
     }
 
-    @interface Scan {}
+    @interface Scan {
+    }
 
     @BeforeClass
     public static void setUp() throws Exception {
-        kernel = createKernel(newKernelConfiguration().withoutSpiPluginsLoader().addPlugin(IgnorePlugin.class));
-        kernel.init();
-        kernel.start();
+        kernel = Seed.createKernel(null, newKernelConfiguration().withoutSpiPluginsLoader().addPlugin(IgnorePlugin.class), true);
         injector = kernel.objectGraph().as(Injector.class);
     }
 
@@ -58,6 +57,6 @@ public class IgnoreIT {
 
     @AfterClass
     public static void tearDown() throws Exception {
-        kernel.stop();
+        Seed.disposeKernel(kernel);
     }
 }

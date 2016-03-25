@@ -21,7 +21,9 @@ import org.apache.commons.lang.text.StrLookup;
 import org.javatuples.Pair;
 import org.seedstack.seed.Application;
 import org.seedstack.seed.SeedException;
+import org.seedstack.seed.core.Seed;
 import org.seedstack.seed.core.internal.CorePlugin;
+import org.seedstack.seed.core.internal.init.SeedConfigLoader;
 import org.seedstack.seed.core.spi.configuration.ConfigurationProvider;
 import org.seedstack.seed.spi.configuration.ConfigurationLookup;
 import org.slf4j.Logger;
@@ -46,7 +48,6 @@ public class ApplicationPlugin extends AbstractPlugin implements ConfigurationPr
     public static final String BASE_PACKAGES_KEY = "org.seedstack.seed.base-packages";
 
     private final SeedConfigLoader seedConfigLoader = new SeedConfigLoader();
-    private final Configuration bootstrapConfiguration = seedConfigLoader.buildBootstrapConfig();
     private final Map<String, String> defaultConfiguration = new ConcurrentHashMap<String, String>();
     private final ApplicationDiagnosticCollector applicationDiagnosticCollector = new ApplicationDiagnosticCollector();
     private Props props;
@@ -61,7 +62,7 @@ public class ApplicationPlugin extends AbstractPlugin implements ConfigurationPr
     public String pluginPackageRoot() {
         String packageRoots = CONFIGURATION_PACKAGE;
 
-        String[] applicationPackageRoots = bootstrapConfiguration.getStringArray(BASE_PACKAGES_KEY);
+        String[] applicationPackageRoots = Seed.getConfiguration().getStringArray(BASE_PACKAGES_KEY);
         if (applicationPackageRoots != null && applicationPackageRoots.length > 0) {
             packageRoots += "," + StringUtils.join(applicationPackageRoots, ",");
         }
@@ -156,7 +157,7 @@ public class ApplicationPlugin extends AbstractPlugin implements ConfigurationPr
         }
         applicationInfo.setAppVersion(appVersion);
 
-        LOGGER.info("Application {}", applicationInfo);
+        LOGGER.info("Application info: {}", applicationInfo);
         applicationDiagnosticCollector.setApplicationInfo(applicationInfo);
 
         return applicationInfo;

@@ -17,6 +17,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.seedstack.seed.Application;
 import org.seedstack.seed.core.internal.CorePlugin;
+import org.seedstack.seed.core.internal.init.SeedConfigLoader;
 import org.seedstack.seed.spi.configuration.ConfigurationLookup;
 
 import java.lang.annotation.Annotation;
@@ -46,31 +47,10 @@ public class ApplicationPluginTest {
     }
 
     @Test
-    public void testBootstrapConfig() {
-        Configuration configuration = new SeedConfigLoader().buildBootstrapConfig();
-
-        Assertions.assertThat(configuration).isNotNull();
-        Assertions.assertThat(configuration.getString(ApplicationPlugin.BASE_PACKAGES_KEY)).isEqualTo("some.other.pkg");
-        Assertions.assertThat(configuration.getString("test.key2")).isEqualTo("val2");
-    }
-
-    @Test
     public void package_root_should_valid() {
         String pluginPackageRoot = pluginUnderTest.pluginPackageRoot();
         Assertions.assertThat(pluginPackageRoot).contains(ApplicationPlugin.CONFIGURATION_PACKAGE);
         Assertions.assertThat(pluginPackageRoot).contains("some.other.pkg");
-    }
-
-    @Test
-    public void environment_variables_are_accessible_in_bootstrap_configuration() {
-        Configuration configuration = new SeedConfigLoader().buildBootstrapConfig();
-
-        String javaHome = System.getenv().get("JAVA_HOME");
-        if (javaHome == null) {
-            Assertions.assertThat(configuration.getString("test.environmentVariable")).isEqualTo("${env:JAVA_HOME}");
-        } else {
-            Assertions.assertThat(configuration.getString("test.environmentVariable")).isEqualTo(javaHome);
-        }
     }
 
     @Test

@@ -6,12 +6,5 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 #
 
-[org.seedstack.seed.core]
-application-id = testapp
-
-[org.seedstack.seed.security.users]
-test = good, ALLOWED
-
-[org.seedstack.seed.shell]
-enabled = true
-port = 2002
+org.seedstack.seed.logs.level = WARN
+custom-property = custom-value

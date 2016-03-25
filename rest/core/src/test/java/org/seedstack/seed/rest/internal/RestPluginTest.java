@@ -98,7 +98,7 @@ public class RestPluginTest {
                 new Pair(providersSpecification, MyProvider.class)
         );
 
-        underTest.provideContainerContext(new SeedRuntime(servletContext, null, false));
+        underTest.provideContainerContext(SeedRuntime.builder().context(servletContext).build());
         underTest.init(initContext);
 
         Collection<Class<?>> actualResources = Deencapsulation.getField(underTest, "resources");

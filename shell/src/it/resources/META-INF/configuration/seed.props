@@ -6,4 +6,13 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 #
 
-org.seedstack.seed.cli.default-command = test
+[org.seedstack.seed]
+logs.level = WARN
+core.application-id = testapp
+
+[org.seedstack.seed.security.users]
+test = good, ALLOWED
+
+[org.seedstack.seed.shell]
+enabled = true
+port = 2002

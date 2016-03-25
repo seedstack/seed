@@ -8,22 +8,23 @@
 package org.seedstack.seed.core;
 
 import ch.qos.logback.classic.LoggerContext;
+import com.google.common.base.Joiner;
 import io.nuun.kernel.api.Kernel;
+import io.nuun.kernel.api.Plugin;
 import io.nuun.kernel.api.config.KernelConfiguration;
 import io.nuun.kernel.core.NuunCore;
+import org.apache.commons.configuration.Configuration;
 import org.seedstack.seed.DiagnosticManager;
 import org.seedstack.seed.SeedRuntime;
-import org.seedstack.seed.core.internal.init.ConsoleManager;
-import org.seedstack.seed.core.internal.init.DiagnosticManagerImpl;
-import org.seedstack.seed.core.internal.init.LogbackManager;
-import org.seedstack.seed.core.internal.init.NuunManager;
+import org.seedstack.seed.core.internal.init.*;
 import org.seedstack.seed.core.utils.SeedReflectionUtils;
 import org.slf4j.LoggerFactory;
 import org.slf4j.bridge.SLF4JBridgeHandler;
 
 import javax.annotation.Nullable;
-import java.util.HashMap;
-import java.util.Map;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.*;
 import java.util.logging.LogManager;
 
 /**
@@ -33,6 +34,10 @@ import java.util.logging.LogManager;
  * @author adrien.lauer@mpsa.com
  */
 public class Seed {
+    private static final String SEED_PACKAGE_PREFIX = "org.seedstack.seed";
+
+    private static final Configuration bootstrapConfig = new SeedConfigLoader().buildBootstrapConfig();
+
     private static class Holder {
         private static final Seed INSTANCE = new Seed();
     }
@@ -73,19 +78,36 @@ public class Seed {
         synchronized (Holder.INSTANCE) {
             Holder.INSTANCE.init();
 
-            DiagnosticManagerImpl diagnosticManager = new DiagnosticManagerImpl();
-            SeedRuntime seedRuntime = new SeedRuntime(
-                    runtimeContext,
-                    diagnosticManager,
-                    Holder.INSTANCE.consoleManager.isColorSupported()
-            );
-            kernelConfiguration.containerContext(seedRuntime);
+            DiagnosticManager diagnosticManager = new DiagnosticManagerImpl();
+            SeedRuntime seedRuntime = SeedRuntime.builder()
+                    .context(runtimeContext)
+                    .diagnosticManager(diagnosticManager)
+                    .colorSupported(Holder.INSTANCE.consoleManager.isColorSupported())
+                    .version(Seed.class.getPackage().getImplementationVersion())
+                    .build();
 
-            LoggerFactory.getLogger(Seed.class).info("Starting Seed application");
+            // Startup message
+            StringBuilder startMessage = new StringBuilder(">>> Starting Seed");
+            if (seedRuntime.getVersion() != null) {
+                startMessage.append(" v").append(seedRuntime.getVersion());
+            }
+            LoggerFactory.getLogger(Seed.class).info(startMessage.toString());
+
+            // Banner
+            String banner = Holder.INSTANCE.getBanner();
+            if (banner != null) {
+                System.out.println(banner);
+            }
+
+            // Safety checks
+            Holder.INSTANCE.checkConsistency(seedRuntime);
+
+            // Kernel
+            kernelConfiguration.containerContext(seedRuntime);
             Kernel kernel = Holder.INSTANCE.nuunManager.initKernel(kernelConfiguration);
             if (start) {
                 kernel.start();
-                LoggerFactory.getLogger(Seed.class).info("Seed application started");
+                LoggerFactory.getLogger(Seed.class).info("Seed started");
             }
 
             Holder.INSTANCE.registerDiagnosticManager(kernel.name(), diagnosticManager);
@@ -96,9 +118,9 @@ public class Seed {
 
     public static void disposeKernel(Kernel kernel) {
         if (kernel.isStarted()) {
-            LoggerFactory.getLogger(Seed.class).info("Stopping Seed application");
+            LoggerFactory.getLogger(Seed.class).info("Stopping Seed");
             kernel.stop();
-            LoggerFactory.getLogger(Seed.class).info("Seed application stopped");
+            LoggerFactory.getLogger(Seed.class).info("<<< Seed stopped");
         }
 
         synchronized (Holder.INSTANCE) {
@@ -119,6 +141,10 @@ public class Seed {
         return new DiagnosticManagerImpl();
     }
 
+    public static Configuration getConfiguration() {
+        return bootstrapConfig;
+    }
+
     synchronized private void init() {
         if (initializationCount == 0) {
             consoleManager = new ConsoleManager();
@@ -128,7 +154,7 @@ public class Seed {
             SLF4JBridgeHandler.removeHandlersForRootLogger();
             SLF4JBridgeHandler.install();
             if (isLogbackInUse()) {
-                logbackManager = new LogbackManager();
+                logbackManager = new LogbackManager(bootstrapConfig);
                 logbackManager.configure();
             }
 
@@ -175,6 +201,46 @@ public class Seed {
 
     synchronized private void unregisterDiagnosticManager(String name) {
         diagnosticManagers.remove(name);
+    }
+
+    private String getBanner() {
+        InputStream bannerStream = SeedReflectionUtils.findMostCompleteClassLoader(Seed.class).getResourceAsStream("banner.txt");
+        if (bannerStream != null) {
+            try {
+                return new Scanner(bannerStream).useDelimiter("\\Z").next();
+            } finally {
+                try {
+                    bannerStream.close();
+                } catch (IOException e) {
+                    // nothing to do
+                }
+            }
+        }
+
+        return null;
+    }
+
+    private void checkConsistency(SeedRuntime seedRuntime) {
+        Set<String> inconsistentPlugins = new HashSet<String>();
+        String seedVersion = seedRuntime.getVersion();
+
+        if (seedVersion != null) {
+            for (Plugin plugin : ServiceLoader.load(Plugin.class)) {
+                Class<? extends Plugin> pluginClass = plugin.getClass();
+                Package pluginPackage = pluginClass.getPackage();
+
+                if (pluginPackage != null && pluginPackage.getName().startsWith(SEED_PACKAGE_PREFIX)) {
+                    String pluginVersion = pluginPackage.getImplementationVersion();
+                    if (pluginVersion != null && !pluginVersion.equals(seedVersion)) {
+                        inconsistentPlugins.add(plugin.name());
+                    }
+                }
+            }
+        }
+
+        if (!inconsistentPlugins.isEmpty()) {
+            LoggerFactory.getLogger(Seed.class).warn("Version inconsistency detected on plugin(s): " + Joiner.on(", ").join(inconsistentPlugins));
+        }
     }
 
     private boolean isLogbackInUse() {

@@ -6,9 +6,10 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 #
 
-[org.seedstack.seed.crypto]
-keystores=keystoreName1, keystoreName2
-certs=client
+[org.seedstack.seed]
+logs.level = WARN
+crypto.keystores=keystoreName1, keystoreName2
+crypto.certs=client
 
 [org.seedstack.seed.crypto.keystore.default]
 path=src/it/resources/node.keystore

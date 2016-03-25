@@ -5,7 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-package org.seedstack.seed.core.internal.application;
+package org.seedstack.seed.core.internal.init;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Sets;
@@ -15,19 +15,15 @@ import org.apache.commons.configuration.MapConfiguration;
 import org.javatuples.Pair;
 import org.seedstack.seed.SeedException;
 import org.seedstack.seed.core.internal.CoreErrorCode;
+import org.seedstack.seed.core.internal.application.ApplicationErrorCode;
+import org.seedstack.seed.core.internal.application.EnvLookup;
 import org.seedstack.seed.core.utils.SeedReflectionUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Utility class which allows to load the application and Seed properties.
@@ -37,7 +33,6 @@ import java.util.Set;
 public class SeedConfigLoader {
     private static final String SEED_BOOTSTRAP_PROPS_PATH = "META-INF/configuration/seed.props";
     private static final String SEED_BOOTSTRAP_PROPERTIES_PATH = "META-INF/configuration/seed.properties";
-    private static final Logger LOGGER = LoggerFactory.getLogger(SeedConfigLoader.class);
 
     /**
      * Build the configuration needed to bootstrap a Seed application.
@@ -81,10 +76,8 @@ public class SeedConfigLoader {
                         resourceAsStream = url.openStream();
 
                         if (isOverrideResource(configurationResource)) {
-                            LOGGER.debug("Adding {} to configuration override", url.toExternalForm());
                             propsOverride.load(resourceAsStream);
                         } else {
-                            LOGGER.debug("Adding {} to configuration", url.toExternalForm());
                             props.load(resourceAsStream);
                         }
                     } finally {
@@ -92,7 +85,7 @@ public class SeedConfigLoader {
                             try {
                                 resourceAsStream.close();
                             } catch (IOException e) {
-                                LOGGER.warn("Unable to close configuration resource " + configurationResource, e);
+                                // nothing to do
                             }
                         }
                     }
