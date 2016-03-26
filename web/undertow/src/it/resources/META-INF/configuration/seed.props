@@ -6,8 +6,9 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 #
 
-[org.seedstack.seed.core]
-application-id = test-app
+[org.seedstack.seed]
+logs.level = WARN
+core.application-id = test-app
 
 [org.seedstack.seed.server]
 host=0.0.0.0

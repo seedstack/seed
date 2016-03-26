@@ -24,13 +24,10 @@ import com.google.inject.Injector;
 
 /**
  * {@link Rule} to start/stop the {@link Kernel} and to inject a {@link BeforeKernel} method.
- * 
+ *
  * @author thierry.bouvet@mpsa.com
  */
 public class SeedITRule implements TestRule {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(SeedITRule.class);
-
     private Object target;
 
     public SeedITRule(Object target) {
@@ -53,13 +50,11 @@ public class SeedITRule implements TestRule {
                     }
                 }
 
-                LOGGER.info("Starting kernel");
                 startKernel();
 
                 try {
                     base.evaluate();
                 } finally {
-                    LOGGER.info("Stopping kernel");
                     stopKernel();
                 }
 

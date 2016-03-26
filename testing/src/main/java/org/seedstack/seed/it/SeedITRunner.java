@@ -134,8 +134,6 @@ public class SeedITRunner extends BlockJUnit4ClassRunner {
             kernelMode = ITKernelMode.PER_TEST_CLASS;
         }
 
-        LOGGER.info("Kernel mode is {}", kernelMode);
-
         if (kernelMode == ITKernelMode.PER_TEST_CLASS) {
             initKernel(gatherConfiguration(null));
         }

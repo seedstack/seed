@@ -156,7 +156,6 @@ public class SeedException extends RuntimeException {
         StringBuilder s = new StringBuilder(16384);
 
         s.append(super.toString());
-        s.append("\n");
 
         String seedMessage = getDescription();
         if (seedMessage != null) {

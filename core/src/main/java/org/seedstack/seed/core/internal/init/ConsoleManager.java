@@ -48,14 +48,10 @@ public class ConsoleManager {
     }
 
     private OutputStream wrapOutputStream(final OutputStream stream) {
-        if (isIntelliJ()) {
+        if (isIntelliJ() || isTTY() || isCygwin()) {
             return ansiOutput(stream);
-        } else if (isEclipse()) {
-            return basicOutput(stream);
         } else if (isWindows()) {
             return windowsOutput(stream);
-        } else if (isTTY()) {
-            return ansiOutput(stream);
         } else {
             return basicOutput(stream);
         }
@@ -86,12 +82,12 @@ public class ConsoleManager {
         }
     }
 
-    private boolean isEclipse() {
-        return false;
-    }
-
     private boolean isWindows() {
         return System.getProperty("os.name").startsWith("Windows");
+    }
+
+    private boolean isCygwin() {
+        return isWindows() && System.getenv("TERM") != null;
     }
 
     private boolean isTTY() {
@@ -103,7 +99,7 @@ public class ConsoleManager {
     }
 
     private static class ColorOutputStream extends FilterOutputStream {
-        public ColorOutputStream(OutputStream stream) {
+        private ColorOutputStream(OutputStream stream) {
             super(stream);
         }
 

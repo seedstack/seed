@@ -13,7 +13,7 @@ import io.undertow.Undertow;
 import io.undertow.servlet.api.DeploymentManager;
 import io.undertow.servlet.spec.ServletContextImpl;
 import org.seedstack.seed.SeedException;
-import org.seedstack.seed.core.internal.application.SeedConfigLoader;
+import org.seedstack.seed.core.Seed;
 import org.seedstack.seed.spi.SeedLauncher;
 import org.seedstack.seed.web.listener.SeedServletContextListener;
 import org.slf4j.Logger;
@@ -31,7 +31,7 @@ public class UndertowLauncher implements SeedLauncher {
     @Override
     public void launch(String[] args) throws Exception {
         DeploymentManagerFactory factory = new DeploymentManagerFactory();
-        manager = factory.createDeploymentManager(new SeedConfigLoader().buildBootstrapConfig());
+        manager = factory.createDeploymentManager(Seed.getConfiguration());
 
         manager.deploy();
 

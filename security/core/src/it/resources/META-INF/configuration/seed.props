@@ -6,8 +6,8 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 #
 
-[org.seedstack.seed.security]
-realms = ConfigurationRealm
+[org.seedstack.seed]
+security.realms = ConfigurationRealm
 
 [org.seedstack.seed.security.users]
 Obiwan = yodarulez, SEED.JEDI, UNKNOWN.ROLE,
