@@ -35,7 +35,6 @@ import java.util.logging.LogManager;
  */
 public class Seed {
     private static final String SEED_PACKAGE_PREFIX = "org.seedstack.seed";
-
     private static final Configuration bootstrapConfig = new SeedConfigLoader().buildBootstrapConfig();
 
     private static class Holder {
@@ -43,13 +42,16 @@ public class Seed {
     }
 
     private final Map<String, DiagnosticManager> diagnosticManagers = new HashMap<String, DiagnosticManager>();
+    private final String seedVersion;
     private int initializationCount = 0;
     private ConsoleManager consoleManager;
     private LogbackManager logbackManager;
     private NuunManager nuunManager;
 
+    // no direct instantiation allowed
     private Seed() {
-        // no direct instantiation allowed
+        Package seedPackage = Seed.class.getPackage();
+        seedVersion = seedPackage == null ? null : seedPackage.getImplementationVersion();
     }
 
     public static Kernel createKernel() {
@@ -83,7 +85,7 @@ public class Seed {
                     .context(runtimeContext)
                     .diagnosticManager(diagnosticManager)
                     .colorSupported(Holder.INSTANCE.consoleManager.isColorSupported())
-                    .version(Seed.class.getPackage().getImplementationVersion())
+                    .version(Holder.INSTANCE.seedVersion)
                     .build();
 
             // Startup message
@@ -100,7 +102,7 @@ public class Seed {
             }
 
             // Safety checks
-            Holder.INSTANCE.checkConsistency(seedRuntime);
+            Holder.INSTANCE.checkConsistency();
 
             // Kernel
             kernelConfiguration.containerContext(seedRuntime);
@@ -220,9 +222,8 @@ public class Seed {
         return null;
     }
 
-    private void checkConsistency(SeedRuntime seedRuntime) {
+    private void checkConsistency() {
         Set<String> inconsistentPlugins = new HashSet<String>();
-        String seedVersion = seedRuntime.getVersion();
 
         if (seedVersion != null) {
             for (Plugin plugin : ServiceLoader.load(Plugin.class)) {

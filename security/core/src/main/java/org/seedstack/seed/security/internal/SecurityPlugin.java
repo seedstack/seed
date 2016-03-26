@@ -113,7 +113,7 @@ public class SecurityPlugin extends AbstractPlugin {
         }
 
         if (elDisabled) {
-            LOGGER.warn("No Java EL support, data security is disabled");
+            LOGGER.info("No Java EL support, data security is disabled");
         }
 
         return InitState.INITIALIZED;

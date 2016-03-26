@@ -74,7 +74,7 @@ public class ELPlugin extends AbstractPlugin {
 
             elModule = new ELModule(elMap);
         } else {
-            LOGGER.info("Java EL is not present in the classpath, EL support disabled");
+            LOGGER.debug("Java EL is not present in the classpath, EL support disabled");
         }
 
         return InitState.INITIALIZED;
