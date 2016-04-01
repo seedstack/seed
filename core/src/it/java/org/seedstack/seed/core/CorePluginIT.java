@@ -46,7 +46,17 @@ public class CorePluginIT {
         private static final Logger logger = LoggerFactory.getLogger(LoggerHolder.class);
 
         @Logging
-        private Logger logger1;
+        protected Logger logger1;
+    }
+
+    static class SubLoggerHolder1 extends LoggerHolder {
+        @Logging
+        private Logger logger2;
+    }
+
+    static class SubLoggerHolder2 extends LoggerHolder {
+        @Logging
+        private Logger logger2;
     }
 
     static class HolderNominal {
@@ -73,6 +83,8 @@ public class CorePluginIT {
             protected void configure() {
                 bind(HolderNominal.class);
                 bind(LoggerHolder.class);
+                bind(SubLoggerHolder1.class);
+                bind(SubLoggerHolder2.class);
             }
         };
         injector = kernel.objectGraph().as(Injector.class).createChildInjector(
@@ -99,6 +111,17 @@ public class CorePluginIT {
 
         Assertions.assertThat(LoggerHolder.logger).isNotNull();
         Assertions.assertThat(holder.logger1).isSameAs(LoggerHolder.logger);
+    }
+
+    @Test
+    public void logger_injection_with_subclasses() {
+        SubLoggerHolder1 subHolder1 = injector.getInstance(SubLoggerHolder1.class);
+        SubLoggerHolder2 subHolder2 = injector.getInstance(SubLoggerHolder2.class);
+
+        Assertions.assertThat(subHolder1.logger2).isNotNull();
+        Assertions.assertThat(subHolder1.logger1).isNotNull();
+        Assertions.assertThat(subHolder2.logger2).isNotNull();
+        Assertions.assertThat(subHolder2.logger1).isNotNull();
     }
 
     @Test

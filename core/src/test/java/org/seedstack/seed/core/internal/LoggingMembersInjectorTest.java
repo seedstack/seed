@@ -12,6 +12,10 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.lang.reflect.Field;
+import java.util.HashSet;
+import java.util.Set;
+
 
 /**
  * LoggingMembersInjector Test
@@ -19,7 +23,6 @@ import org.slf4j.LoggerFactory;
  * @author redouane.loulou@ext.mpsa.com
  */
 public class LoggingMembersInjectorTest {
-
     private Logger log1;
 
     private final static Logger logger = LoggerFactory.getLogger(LoggingMembersInjectorTest.class);
@@ -27,7 +30,9 @@ public class LoggingMembersInjectorTest {
 
     @Test
     public void injectMembersTest() throws Exception {
-        LoggingMembersInjector<LoggingMembersInjectorTest> loggingMembersInjector1 = new LoggingMembersInjector<LoggingMembersInjectorTest>(this.getClass().getDeclaredField("log1"));
+        Set<Field> fields = new HashSet<Field>();
+        fields.add(this.getClass().getDeclaredField("log1"));
+        LoggingMembersInjector<LoggingMembersInjectorTest> loggingMembersInjector1 = new LoggingMembersInjector<LoggingMembersInjectorTest>(fields);
         loggingMembersInjector1.injectMembers(this);
 
         Assertions.assertThat(logger).isNotNull();

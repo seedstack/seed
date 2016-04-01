@@ -16,6 +16,8 @@ import org.slf4j.Logger;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Guice type listener that will register any type having a field annotated with {@link Logging}.
@@ -25,16 +27,17 @@ import java.lang.reflect.Field;
 class LoggingTypeListener implements TypeListener {
     @Override
     public <T> void hear(TypeLiteral<T> typeLiteral, TypeEncounter<T> typeEncounter) {
+        Set<Field> fields = new HashSet<Field>();
         for (Class<?> c = typeLiteral.getRawType(); c != Object.class; c = c.getSuperclass()) {
-            for (Field field : typeLiteral.getRawType().getDeclaredFields()) {
+            for (Field field : c.getDeclaredFields()) {
                 if (field.getType() == Logger.class && annotationPresent(field, Logging.class)) {
-                    try {
-                        typeEncounter.register(new LoggingMembersInjector<T>(field));
-                    } catch (Exception e) {
-                        // nothing to do here, exception will be thrown when the actual logger will be injected
-                    }
+                    fields.add(field);
                 }
             }
+        }
+
+        if (!fields.isEmpty()) {
+            typeEncounter.register(new LoggingMembersInjector<T>(fields));
         }
     }
 

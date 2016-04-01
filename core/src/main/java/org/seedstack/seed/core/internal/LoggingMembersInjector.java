@@ -12,6 +12,7 @@ import org.seedstack.seed.SeedException;
 import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Field;
+import java.util.Set;
 
 /**
  * Guice members injector that inject logger instances.
@@ -20,19 +21,23 @@ import java.lang.reflect.Field;
  * @author adrien.lauer@mpsa.com
  */
 class LoggingMembersInjector<T> implements MembersInjector<T> {
-    private final Field field;
+    private final Set<Field> fields;
 
-    LoggingMembersInjector(Field field) {
-        this.field = field;
-        field.setAccessible(true);
+    LoggingMembersInjector(Set<Field> fields) {
+        this.fields = fields;
+        for (Field field : fields) {
+            field.setAccessible(true);
+        }
     }
 
     @Override
     public void injectMembers(T t) {
-        try {
-            field.set(t, LoggerFactory.getLogger(field.getDeclaringClass()));
-        } catch (IllegalAccessException e) {
-            throw SeedException.wrap(e, CoreErrorCode.UNABLE_TO_INJECT_LOGGER).put("class", field.getDeclaringClass().getCanonicalName()).put("field", field.getName());
+        for (Field field : fields) {
+            try {
+                field.set(t, LoggerFactory.getLogger(field.getDeclaringClass()));
+            } catch (IllegalAccessException e) {
+                throw SeedException.wrap(e, CoreErrorCode.UNABLE_TO_INJECT_LOGGER).put("class", field.getDeclaringClass().getCanonicalName()).put("field", field.getName());
+            }
         }
     }
 }
