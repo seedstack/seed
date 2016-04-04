@@ -20,6 +20,7 @@ import org.seedstack.seed.rest.Rel;
 import org.seedstack.seed.rest.hal.Link;
 import org.seedstack.seed.rest.internal.jsonhome.Resource;
 
+import javax.servlet.ServletContext;
 import javax.ws.rs.GET;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
@@ -35,6 +36,7 @@ import java.util.Map;
 @RunWith(JMockit.class)
 public class ResourceParserTest {
 
+    private static final String SERVLET_CONTEXT_PATH = "/app/";
     private static final String REST_PATH = "/rest/";
     private static final String BASE_REL = "http://example.org/rel/";
     private static final String BASE_PARAM = "http://example.org/param/";
@@ -43,6 +45,8 @@ public class ResourceParserTest {
     private Map<String, Link> links;
     @Mocked
     private RestConfiguration restConfiguration;
+    @Mocked
+    private ServletContext servletContext;
 
     @Ignore
     @Rel(value = "widget", home = true)
@@ -70,10 +74,12 @@ public class ResourceParserTest {
                 result = BASE_REL;
                 restConfiguration.getBaseParam();
                 result = BASE_PARAM;
+                servletContext.getContextPath();
+                result = SERVLET_CONTEXT_PATH;
             }
         };
 
-        ResourceScanner resourceScanner = new ResourceScanner(restConfiguration);
+        ResourceScanner resourceScanner = new ResourceScanner(restConfiguration, servletContext);
         resourceScanner.scan(Lists.<Class<?>>newArrayList(MyLinkTemplateResource.class));
         resourceMap = resourceScanner.jsonHomeResources();
         links = resourceScanner.halLinks();
@@ -87,7 +93,7 @@ public class ResourceParserTest {
         Assertions.assertThat(underTest).isNotNull();
         Assertions.assertThat(underTest.rel()).isEqualTo(UriBuilder.uri(BASE_REL, "widget"));
 
-        Assertions.assertThat(underTest.hrefTemplate()).isEqualTo("/rest/widgets/{widgetName}{?lang}");
+        Assertions.assertThat(underTest.hrefTemplate()).isEqualTo("/app/rest/widgets/{widgetName}{?lang}");
         Assertions.assertThat(underTest.hrefVars()).hasSize(2);
         Assertions.assertThat(underTest.hrefVars().get("widgetName")).isEqualTo(UriBuilder.uri(BASE_PARAM, "widgetName"));
         Assertions.assertThat(underTest.hrefVars().get("lang")).isEqualTo(UriBuilder.uri(BASE_PARAM, "lang"));
@@ -102,14 +108,13 @@ public class ResourceParserTest {
         Assertions.assertThat(underTest).hasSize(3);
 
         String hrefTemplate = (String) underTest.get("href-template");
-        Assertions.assertThat(hrefTemplate).isEqualTo("/rest/widgets/{widgetName}");
+        Assertions.assertThat(hrefTemplate).isEqualTo("/app/rest/widgets/{widgetName}");
     }
 
     @Test
     public void testHalLinks() {
-        Link widgetLink = links.get("widget");
-        Assertions.assertThat(widgetLink).isNotNull();
-        Assertions.assertThat(widgetLink.getHref()).isEqualTo("/rest/widgets/{widgetName}{?lang}");
-        Assertions.assertThat(widgetLink.set("lang", "EN").set("widgetName", 1).expand()).isEqualTo("/rest/widgets/1?lang=EN");
+        Assertions.assertThat(new Link(links.get("widget"))).isNotNull();
+        Assertions.assertThat(new Link(links.get("widget")).templated().getHref()).isEqualTo("/app/rest/widgets/{widgetName}{?lang}");
+        Assertions.assertThat(new Link(links.get("widget")).set("lang", "EN").set("widgetName", 1).getHref()).isEqualTo("/app/rest/widgets/1?lang=EN");
     }
 }

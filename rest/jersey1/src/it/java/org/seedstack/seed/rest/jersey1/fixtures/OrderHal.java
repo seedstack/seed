@@ -7,6 +7,7 @@
  */
 package org.seedstack.seed.rest.jersey1.fixtures;
 
+import org.seedstack.seed.rest.RelRegistry;
 import org.seedstack.seed.rest.hal.HalRepresentation;
 
 /**
@@ -21,8 +22,8 @@ public class OrderHal extends HalRepresentation {
     OrderHal() {
     }
 
-    public OrderHal(String id, String currency, String status, float total) {
-        self("/orders/" + id);
+    public OrderHal(RelRegistry relRegistry, String id, String currency, String status, float total) {
+        self(relRegistry.uri(HalResource.ORDER_REL).set("id", id));
         this.currency = currency;
         this.status = status;
         this.total = total;

@@ -129,7 +129,7 @@ public class RestPlugin extends AbstractPlugin implements RestProvider {
     }
 
     private void initializeHypermedia() {
-        ResourceScanner resourceScanner = new ResourceScanner(restConfiguration).scan(resources);
+        ResourceScanner resourceScanner = new ResourceScanner(restConfiguration, servletContext).scan(resources);
         Map<String, Resource> resourceMap = resourceScanner.jsonHomeResources();
 
         relRegistry = new RelRegistryImpl(resourceScanner.halLinks());

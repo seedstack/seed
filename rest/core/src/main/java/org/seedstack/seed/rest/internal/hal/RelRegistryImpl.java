@@ -30,15 +30,7 @@ public class RelRegistryImpl implements RelRegistry {
 
     @Override
     public String href(String rel) {
-        if (rel == null || rel.equals("")) {
-            throw new IllegalArgumentException("rel can't be blank");
-        }
-        Link link = linksByRel.get(rel);
-        if (link != null) {
-            return link.getHref();
-        } else {
-            return null;
-        }
+        return uri(rel).getHref();
     }
 
     @Override
@@ -46,6 +38,10 @@ public class RelRegistryImpl implements RelRegistry {
         if (rel == null || rel.equals("")) {
             throw new IllegalArgumentException("rel can't be blank");
         }
-        return linksByRel.get(rel);
+        Link link = linksByRel.get(rel);
+        if (link == null) {
+            throw new IllegalArgumentException("Unknown rel " + rel);
+        }
+        return new Link(link);
     }
 }

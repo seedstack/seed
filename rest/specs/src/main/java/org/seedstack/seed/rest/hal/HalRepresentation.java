@@ -84,6 +84,17 @@ public class HalRepresentation {
     }
 
     /**
+     * Adds the self link.
+     *
+     * @param link the link
+     * @return itself
+     */
+    public HalRepresentation self(Link link) {
+        addLink("self", link);
+        return this;
+    }
+
+    /**
      * Adds a link with the specified rel and href.
      *
      * @param rel  the rel
