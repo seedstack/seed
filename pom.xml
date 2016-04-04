@@ -119,6 +119,7 @@
                                 <exclude>org.seedstack.seed.security.spi.SecurityErrorCodes</exclude>
                                 <exclude>org.seedstack.seed.security.spi.SecurityConcern</exclude>
                                 <exclude>org.seedstack.seed.transaction.spi.TransactionConcern</exclude>
+                                <exclude>org.seedstack.seed.rest.hal.Link</exclude>
                             </excludes>
                         </parameter>
                     </configuration>

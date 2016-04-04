@@ -15,7 +15,7 @@ import java.util.regex.Pattern;
  */
 class UriBuilder {
 
-    private static final Pattern JAX_RS_TEMPLATE_PARAMETERS = Pattern.compile("\\{(\\w[\\w\\.-]*): .+?\\}");
+    private static final Pattern JAX_RS_TEMPLATE_PARAMETERS = Pattern.compile("\\{\\s*(\\w[\\w\\.-]*)\\s*:\\s*.+?\\s*\\}");
     private static final Pattern JAX_RS_TEMPLATE = Pattern.compile(".*\\{(\\w[\\w\\.-]*)(: .+?)?\\}.*");
 
     private UriBuilder() {

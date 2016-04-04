@@ -42,7 +42,7 @@ public class JsonHomeResourceIT extends AbstractSeedWebIT {
         Response response = expect().statusCode(200).given().header(HttpHeaders.ACCEPT, "application/json")
                 .get(baseURL.toString());
 
-        String expectedBody = "{\"resources\":{\"http://example.org/rel/order\":{\"href-template\":\"/orders/{id}\",\"hints\":{\"allow\":[\"GET\"],\"formats\":{\"application/hal+json\":\"\"}},\"href-vars\":{\"id\":\"id\"}},\"http://example.org/rel/order2\":{\"href-template\":\"/orders/v2/{id}\",\"hints\":{\"allow\":[\"GET\"],\"formats\":{\"application/hal+json\":\"\"}},\"href-vars\":{\"id\":\"id\"}}}}";
+        String expectedBody = "{\"resources\":{\"http://example.org/rel/order\":{\"href-template\":\"" + baseURL.getPath() + "orders/{id}\",\"hints\":{\"allow\":[\"GET\"],\"formats\":{\"application/hal+json\":\"\"}},\"href-vars\":{\"id\":\"id\"}},\"http://example.org/rel/order2\":{\"href-template\":\"" + baseURL.getPath() + "orders/v2/{id}\",\"hints\":{\"allow\":[\"GET\"],\"formats\":{\"application/hal+json\":\"\"}},\"href-vars\":{\"id\":\"id\"}}}}";
 
         JSONAssert.assertEquals(expectedBody, response.asString(), false);
     }

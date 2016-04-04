@@ -16,35 +16,38 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 
 /**
  * @author pierre.thirouin@ext.mpsa.com (Pierre Thirouin)
  */
 @Path("orders")
+@Rel(HalResource.ORDERS_REL)
 public class HalResource {
 
     public static final String ORDER_REL = "order";
     public static final String ORDER_REL2 = "order2";
+    public static final String ORDERS_REL = "orders";
 
     @Inject
     private RelRegistry relRegistry;
 
     @GET
     @Produces("application/hal+json")
-    public Response getOrders() {
-        return Response.ok(new RepresentationFactory().createOrders()).build();
+    public Response getOrders(@QueryParam("page") int page) {
+        return Response.ok(new RepresentationFactory(relRegistry).createOrders()).build();
     }
 
     @Rel(value = ORDER_REL, home = true)
     @GET
     @Path("{id}")
     @Produces("application/hal+json")
-    public Response getOrders(@PathParam("id") String id) {
+    public Response getOrder(@PathParam("id") String id) {
         return Response.ok(
-                new OrderHal(id, "USD", "shipped", 10.20f)
-                        .link("warehouse", "/warehouse/" + 56)
-                        .link("invoice", "/invoices/873"))
+                new OrderHal(relRegistry, id, "USD", "shipped", 10.20f)
+                        .link(WarehousesResource.REL_WAREHOUSE, relRegistry.uri(WarehousesResource.REL_WAREHOUSE).set("id", 56))
+                        .link(InvoicesResource.REL_INVOICE, relRegistry.uri(InvoicesResource.REL_INVOICE).set("id", 873)))
                 .build();
     }
 
@@ -52,11 +55,12 @@ public class HalResource {
     @GET
     @Path("v2/{id}")
     @Produces("application/hal+json")
-    public Response getOrders2(@PathParam("id") String id) {
-        return Response.ok(HalBuilder.create(new OrderRepresentation(10.20f, "USD", "shipped"))
-                .self(relRegistry.uri(ORDER_REL2).set("id", id).expand())
-                .link("warehouse", "/warehouse/56")
-                .link("invoice", "/invoices/873"))
+    public Response getOrder2(@PathParam("id") String id) {
+        return Response.ok(
+                HalBuilder.create(new OrderRepresentation(10.20f, "USD", "shipped"))
+                        .self(relRegistry.uri(ORDER_REL2).set("id", id))
+                        .link(WarehousesResource.REL_WAREHOUSE, relRegistry.uri(WarehousesResource.REL_WAREHOUSE).set("id", 56))
+                        .link(InvoicesResource.REL_INVOICE, relRegistry.uri(InvoicesResource.REL_INVOICE).set("id", 873)))
                 .build();
     }
 }

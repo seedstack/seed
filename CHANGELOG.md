@@ -2,6 +2,10 @@
 
 * [fix] Fix the `@Ignore` annotation which was not working anymore in version 2.1.0.
 
+## Rest
+
+* [chg] `RelRegistry` automatically prepends the servlet context path to generated HAL links.
+
 ## Web
 
 * [new] JAX-RS 2 support through Jersey 2.

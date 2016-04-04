@@ -31,7 +31,7 @@ public class Link {
     private URI profile;
     private String title;
     private String hrefLang;
-
+    // this map must only contain strings to allow clean copy
     private Map<String, Object> hrefVars = new HashMap<String, Object>();
 
     /**
@@ -63,7 +63,7 @@ public class Link {
         this.profile = link.profile;
         this.title = link.title;
         this.hrefLang = link.hrefLang;
-        this.hrefVars = link.hrefVars;
+        this.hrefVars = new HashMap<String, Object>(link.hrefVars);
     }
 
     /**
@@ -92,9 +92,11 @@ public class Link {
      * Indicates the media type used by the resource.
      *
      * @param type the media type
+     * @return itself
      */
-    public void type(String type) {
+    public Link type(String type) {
         this.type = type;
+        return this;
     }
 
     /**
@@ -124,17 +126,23 @@ public class Link {
     }
 
     public String getHref() {
-        return href;
+        return isTemplated() ? href : expand();
     }
 
     public Link set(String variableName, Object value) {
-        Link link = new Link(this);
-        link.hrefVars.put(variableName, value);
-        return link;
+        hrefVars.put(variableName, value.toString());
+        return this;
     }
 
+    /**
+     * Expand the href template with specified parameters.
+     *
+     * @return the expanded template.
+     * @deprecated use {@link #getHref()} which directly returns the correct form of the href.
+     */
+    @Deprecated
     public String expand() {
-        return UriTemplate.fromTemplate(href).expand(hrefVars);
+        return href == null ? null : UriTemplate.fromTemplate(href).expand(hrefVars);
     }
 
     public boolean isTemplated() {
@@ -163,5 +171,38 @@ public class Link {
 
     public String getHrefLang() {
         return hrefLang;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Link link = (Link) o;
+
+        if (templated != link.templated) return false;
+        if (href != null ? !href.equals(link.href) : link.href != null) return false;
+        if (type != null ? !type.equals(link.type) : link.type != null) return false;
+        if (deprecation != null ? !deprecation.equals(link.deprecation) : link.deprecation != null) return false;
+        if (name != null ? !name.equals(link.name) : link.name != null) return false;
+        if (profile != null ? !profile.equals(link.profile) : link.profile != null) return false;
+        if (title != null ? !title.equals(link.title) : link.title != null) return false;
+        if (hrefLang != null ? !hrefLang.equals(link.hrefLang) : link.hrefLang != null) return false;
+        return hrefVars.equals(link.hrefVars);
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = href != null ? href.hashCode() : 0;
+        result = 31 * result + (templated ? 1 : 0);
+        result = 31 * result + (type != null ? type.hashCode() : 0);
+        result = 31 * result + (deprecation != null ? deprecation.hashCode() : 0);
+        result = 31 * result + (name != null ? name.hashCode() : 0);
+        result = 31 * result + (profile != null ? profile.hashCode() : 0);
+        result = 31 * result + (title != null ? title.hashCode() : 0);
+        result = 31 * result + (hrefLang != null ? hrefLang.hashCode() : 0);
+        result = 31 * result + hrefVars.hashCode();
+        return result;
     }
 }

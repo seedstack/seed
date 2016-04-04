@@ -39,5 +39,11 @@ public class UriBuilderTest {
 
         hrefTemplate = UriBuilder.stripJaxRsRegex("/widgets/{widgetName: [a-zA-Z][a-zA-Z_0-9]}/items/{itemId: [a-zA-Z][a-zA-Z_0-9]}/id");
         Assertions.assertThat(hrefTemplate).isEqualTo("/widgets/{widgetName}/items/{itemId}/id");
+
+        hrefTemplate = UriBuilder.stripJaxRsRegex("/widgets/{widgetName:.+}");
+        Assertions.assertThat(hrefTemplate).isEqualTo("/widgets/{widgetName}");
+
+        hrefTemplate = UriBuilder.stripJaxRsRegex("/widgets/{ widgetName : .+ }");
+        Assertions.assertThat(hrefTemplate).isEqualTo("/widgets/{widgetName}");
     }
 }

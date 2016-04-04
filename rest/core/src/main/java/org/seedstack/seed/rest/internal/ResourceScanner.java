@@ -15,8 +15,15 @@ import org.seedstack.seed.rest.internal.jsonhome.HintScanner;
 import org.seedstack.seed.rest.internal.jsonhome.Hints;
 import org.seedstack.seed.rest.internal.jsonhome.Resource;
 
+import javax.servlet.ServletContext;
 import java.lang.reflect.Method;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Scans the JAX-RS resources for building JSON-HOME resources and HAL links.
@@ -33,14 +40,17 @@ public class ResourceScanner {
     private final Map<String, Link> halLinks = new HashMap<String, Link>();
 
     private final RestConfiguration restConfiguration;
+    private final String servletContextPath;
 
     /**
      * Constructor.
      *
      * @param restConfiguration the REST configuration object.
+     * @param servletContext    the servlet context
      */
-    public ResourceScanner(RestConfiguration restConfiguration) {
+    public ResourceScanner(RestConfiguration restConfiguration, ServletContext servletContext) {
         this.restConfiguration = restConfiguration;
+        this.servletContextPath = servletContext == null ? "" : servletContext.getContextPath();
     }
 
     /**
@@ -131,7 +141,7 @@ public class ResourceScanner {
 
             Hints hints = new HintScanner().findHint(method);
 
-            String absolutePath = UriBuilder.uri(restConfiguration.getRestPath(), path);
+            String absolutePath = UriBuilder.uri(servletContextPath, restConfiguration.getRestPath(), path);
 
             if (isTemplated(absolutePath)) {
                 Map<String, String> pathParams = RESTReflect.findPathParams(baseParam, method);
@@ -164,7 +174,7 @@ public class ResourceScanner {
                 uriTemplateBuilder.query(queryParams.toArray(new String[queryParams.size()]));
             }
 
-            String absolutePath = UriBuilder.uri(restConfiguration.getRestPath(), uriTemplateBuilder.build().getTemplate());
+            String absolutePath = UriBuilder.uri(servletContextPath, restConfiguration.getRestPath(), uriTemplateBuilder.build().getTemplate());
 
             halLinks.put(rel, new Link(absolutePath));
         }

@@ -7,12 +7,11 @@
  */
 package org.seedstack.seed.rest.jersey1.fixtures;
 
+import org.seedstack.seed.rest.RelRegistry;
 import org.seedstack.seed.rest.hal.HalBuilder;
 import org.seedstack.seed.rest.hal.HalDefaultRepresentation;
 import org.seedstack.seed.rest.hal.HalRepresentation;
-import org.seedstack.seed.rest.hal.Link;
 
-import javax.ws.rs.core.UriBuilder;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,6 +20,12 @@ import java.util.List;
  */
 public class RepresentationFactory {
 
+    private final RelRegistry relRegistry;
+
+    public RepresentationFactory(RelRegistry relRegistry) {
+        this.relRegistry = relRegistry;
+    }
+
     public HalDefaultRepresentation createOrders() {
 
         OrdersRepresentation orders = new OrdersRepresentation(14, 20);
@@ -28,15 +33,19 @@ public class RepresentationFactory {
         List<HalRepresentation> embedded = new ArrayList<HalRepresentation>();
 
         embedded.add(HalBuilder.create(new OrderRepresentation(30.00f, "USD", "shipped"))
-                .self("/order/123").link("basket", "/baskets/98712").link("customer", "/customers/7809"));
+                .self(relRegistry.uri(HalResource.ORDER_REL).set("id", 123))
+                .link(BasketsResource.REL_BASKET, relRegistry.uri(BasketsResource.REL_BASKET).set("id", "98712"))
+                .link(CustomersResource.REL_CUSTOMER, relRegistry.uri(CustomersResource.REL_CUSTOMER).set("id", "7809")));
 
         embedded.add(HalBuilder.create(new OrderRepresentation(20.00f, "USD", "processing"))
-                .self("/order/124").link("basket", "/baskets/97213").link("customer", "/customers/12369"));
+                .self(relRegistry.uri(HalResource.ORDER_REL).set("id", "124"))
+                .link(BasketsResource.REL_BASKET, relRegistry.uri(BasketsResource.REL_BASKET).set("id", "97213"))
+                .link(CustomersResource.REL_CUSTOMER, relRegistry.uri(CustomersResource.REL_CUSTOMER).set("id", "12369")));
 
         return (HalDefaultRepresentation) HalBuilder.create(orders)
-                .link("self", "/orders")
-                .link("next", UriBuilder.fromPath("/orders").queryParam("page", 2).build().toString())
-                .link("find", new Link("/orders{?id}").templated())
+                .link("self", relRegistry.uri(HalResource.ORDERS_REL))
+                .link("next", relRegistry.uri(HalResource.ORDERS_REL).set("page", "2"))
+                .link("find", relRegistry.uri(HalResource.ORDER_REL).templated())
                 .embedded("orders", embedded);
     }
 }
