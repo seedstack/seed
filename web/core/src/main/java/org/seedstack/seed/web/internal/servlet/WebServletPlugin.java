@@ -7,35 +7,47 @@
  */
 package org.seedstack.seed.web.internal.servlet;
 
-import com.google.inject.Module;
+import com.google.common.base.Strings;
 import io.nuun.kernel.api.plugin.InitState;
 import io.nuun.kernel.api.plugin.context.InitContext;
 import io.nuun.kernel.api.plugin.request.ClasspathScanRequest;
 import io.nuun.kernel.core.AbstractPlugin;
 import org.seedstack.seed.SeedRuntime;
-import org.seedstack.seed.web.WebFilter;
-import org.seedstack.seed.web.WebInitParam;
-import org.seedstack.seed.web.WebServlet;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.seedstack.seed.web.FilterDefinition;
+import org.seedstack.seed.web.ListenerDefinition;
+import org.seedstack.seed.web.ServletDefinition;
+import org.seedstack.seed.web.WebProvider;
+import org.seedstack.seed.web.internal.WebPlugin;
 
+import javax.annotation.Priority;
+import javax.servlet.DispatcherType;
 import javax.servlet.Filter;
 import javax.servlet.Servlet;
 import javax.servlet.ServletContext;
-import javax.servlet.http.HttpServlet;
-import java.lang.annotation.Annotation;
-import java.util.*;
+import javax.servlet.annotation.WebFilter;
+import javax.servlet.annotation.WebInitParam;
+import javax.servlet.annotation.WebListener;
+import javax.servlet.annotation.WebServlet;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.EnumSet;
+import java.util.EventListener;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
- * This plugin provides support for programmatically registering Servlet and Filters.
+ * This plugin detects {@link WebServlet}, {@link WebFilter} and {@link WebListener} annotated classes and provides their
+ * corresponding definitions to {@link WebPlugin} for registration with the container.
  *
  * @author adrien.lauer@mpsa.com
  */
-public class WebServletPlugin extends AbstractPlugin {
-    private static final Logger LOGGER = LoggerFactory.getLogger(WebServletPlugin.class);
-
+public class WebServletPlugin extends AbstractPlugin implements WebProvider {
+    private final List<FilterDefinition> filterDefinitions = new ArrayList<FilterDefinition>();
+    private final List<ServletDefinition> servletDefinitions = new ArrayList<ServletDefinition>();
+    private final List<ListenerDefinition> listenerDefinitions = new ArrayList<ListenerDefinition>();
     private ServletContext servletContext;
-    private WebServletModule webServletModule;
 
     @Override
     public String name() {
@@ -49,73 +61,136 @@ public class WebServletPlugin extends AbstractPlugin {
 
     @Override
     public Collection<ClasspathScanRequest> classpathScanRequests() {
-        return classpathScanRequestBuilder().annotationType(WebServlet.class).annotationType(WebFilter.class).build();
+        return classpathScanRequestBuilder()
+                .annotationType(WebFilter.class)
+                .annotationType(WebServlet.class)
+                .annotationType(WebListener.class)
+                .build();
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public InitState init(InitContext initContext) {
-        if (servletContext == null) {
-            LOGGER.info("No servlet context detected, servlet and filters disabled");
-            return InitState.INITIALIZED;
+        if (servletContext != null) {
+            listenerDefinitions.addAll(detectListeners(initContext.scannedClassesByAnnotationClass().get(WebListener.class)));
+            filterDefinitions.addAll(detectFilters(initContext.scannedClassesByAnnotationClass().get(WebFilter.class)));
+            servletDefinitions.addAll(detectServlets(initContext.scannedClassesByAnnotationClass().get(WebServlet.class)));
         }
-
-        Map<Class<? extends Annotation>, Collection<Class<?>>> scannedClassesByAnnotationClass = initContext.scannedClassesByAnnotationClass();
-
-        Collection<Class<?>> list = scannedClassesByAnnotationClass.get(WebServlet.class);
-        List<ConfiguredServlet> servlets = new ArrayList<ConfiguredServlet>();
-        for (Class<?> candidate : list) {
-            if (Servlet.class.isAssignableFrom(candidate)) {
-                WebServlet annotation = candidate.getAnnotation(WebServlet.class);
-
-                ConfiguredServlet configuredServlet = new ConfiguredServlet();
-                configuredServlet.setName(annotation.name());
-
-                Map<String, String> initParams = new HashMap<String, String>();
-                for (WebInitParam initParam : annotation.initParams()) {
-                    initParams.put(initParam.name(), initParam.value());
-                }
-                configuredServlet.setInitParams(initParams);
-
-                configuredServlet.setUrlPatterns(annotation.value());
-
-                configuredServlet.setClazz((Class<? extends HttpServlet>) candidate);
-
-                servlets.add(configuredServlet);
-                LOGGER.debug("Serving {} with {}", Arrays.toString(configuredServlet.getUrlPatterns()), configuredServlet.getClazz().getCanonicalName());
-            }
-        }
-
-        List<ConfiguredFilter> filters = new ArrayList<ConfiguredFilter>();
-        for (Class<?> candidate : scannedClassesByAnnotationClass.get(WebFilter.class)) {
-            if (Filter.class.isAssignableFrom(candidate)) {
-                WebFilter annotation = candidate.getAnnotation(WebFilter.class);
-
-                ConfiguredFilter configuredFilter = new ConfiguredFilter();
-                configuredFilter.setName(annotation.filterName());
-
-                Map<String, String> initParams = new HashMap<String, String>();
-                for (WebInitParam initParam : annotation.initParams()) {
-                    initParams.put(initParam.name(), initParam.value());
-                }
-                configuredFilter.setInitParams(initParams);
-
-                configuredFilter.setUrlPatterns(annotation.value());
-
-                configuredFilter.setClazz((Class<? extends Filter>) candidate);
-
-                filters.add(configuredFilter);
-                LOGGER.debug("Filtering {} through {}", Arrays.toString(configuredFilter.getUrlPatterns()), configuredFilter.getClazz().getCanonicalName());
-            }
-        }
-
-        webServletModule = new WebServletModule(servlets, filters);
 
         return InitState.INITIALIZED;
     }
 
+    @SuppressWarnings("unchecked")
+    private Collection<? extends ListenerDefinition> detectListeners(Collection<Class<?>> listenerClasses) {
+        List<ListenerDefinition> listenerDefinitions = new ArrayList<ListenerDefinition>();
+        for (Class<?> candidate : listenerClasses) {
+            if (EventListener.class.isAssignableFrom(candidate)) {
+                Class<? extends EventListener> listenerClass = (Class<? extends EventListener>) candidate;
+                ListenerDefinition listenerDefinition = new ListenerDefinition(listenerClass);
+                Priority priority = listenerClass.getAnnotation(Priority.class);
+                if (priority != null) {
+                    listenerDefinition.setPriority(priority.value());
+                }
+
+                listenerDefinitions.add(listenerDefinition);
+            }
+        }
+        return listenerDefinitions;
+    }
+
+    @SuppressWarnings("unchecked")
+    private List<FilterDefinition> detectFilters(Collection<Class<?>> filterClasses) {
+        List<FilterDefinition> filterDefinitions = new ArrayList<FilterDefinition>();
+        for (Class<?> candidate : filterClasses) {
+            if (Filter.class.isAssignableFrom(candidate)) {
+                Class<? extends Filter> filterClass = (Class<? extends Filter>) candidate;
+                WebFilter annotation = filterClass.getAnnotation(WebFilter.class);
+                FilterDefinition filterDefinition = new FilterDefinition(
+                        Strings.isNullOrEmpty(annotation.filterName()) ? filterClass.getCanonicalName() : annotation.filterName(),
+                        filterClass
+                );
+                filterDefinition.setAsyncSupported(annotation.asyncSupported());
+                if (annotation.servletNames().length > 0) {
+                    filterDefinition.addServletMappings(convert(annotation.dispatcherTypes(), false, annotation.servletNames()));
+                }
+                if (annotation.value().length > 0) {
+                    filterDefinition.addMappings(convert(annotation.dispatcherTypes(), false, annotation.value()));
+                }
+                if (annotation.urlPatterns().length > 0) {
+                    filterDefinition.addMappings(convert(annotation.dispatcherTypes(), false, annotation.urlPatterns()));
+                }
+                filterDefinition.addInitParameters(convert(annotation.initParams()));
+                Priority priority = filterClass.getAnnotation(Priority.class);
+                if (priority != null) {
+                    filterDefinition.setPriority(priority.value());
+                }
+
+                filterDefinitions.add(filterDefinition);
+            }
+        }
+
+        return filterDefinitions;
+    }
+
+    @SuppressWarnings("unchecked")
+    private List<ServletDefinition> detectServlets(Collection<Class<?>> servletClasses) {
+        List<ServletDefinition> servletDefinitions = new ArrayList<ServletDefinition>();
+        for (Class<?> candidate : servletClasses) {
+            if (Servlet.class.isAssignableFrom(candidate)) {
+                Class<? extends Servlet> servletClass = (Class<? extends Servlet>) candidate;
+                WebServlet annotation = servletClass.getAnnotation(WebServlet.class);
+                ServletDefinition servletDefinition = new ServletDefinition(
+                        Strings.isNullOrEmpty(annotation.name()) ? servletClass.getCanonicalName() : annotation.name(),
+                        servletClass
+                );
+                servletDefinition.setAsyncSupported(annotation.asyncSupported());
+                if (annotation.value().length > 0) {
+                    servletDefinition.addMappings(annotation.value());
+                }
+                if (annotation.urlPatterns().length > 0) {
+                    servletDefinition.addMappings(annotation.urlPatterns());
+                }
+                servletDefinition.setLoadOnStartup(annotation.loadOnStartup());
+                servletDefinition.addInitParameters(convert(annotation.initParams()));
+
+                servletDefinitions.add(servletDefinition);
+            }
+        }
+
+        return servletDefinitions;
+    }
+
+    private FilterDefinition.Mapping convert(DispatcherType[] dispatcherTypes, boolean isMatchAfter, String... values) {
+        EnumSet<DispatcherType> enumSet = EnumSet.noneOf(DispatcherType.class);
+        Collections.addAll(enumSet, dispatcherTypes);
+
+        return new FilterDefinition.Mapping(enumSet, isMatchAfter, values);
+    }
+
+    private Map<String, String> convert(WebInitParam[] webInitParams) {
+        Map<String, String> map = new HashMap<String, String>();
+        for (WebInitParam webInitParam : webInitParams) {
+            map.put(webInitParam.name(), webInitParam.value());
+        }
+        return map;
+    }
+
     @Override
-    public Module nativeUnitModule() {
-        return webServletModule;
+    public Object nativeUnitModule() {
+        return new WebServletModule(filterDefinitions, servletDefinitions, listenerDefinitions);
+    }
+
+    @Override
+    public List<ServletDefinition> servlets() {
+        return servletDefinitions;
+    }
+
+    @Override
+    public List<FilterDefinition> filters() {
+        return filterDefinitions;
+    }
+
+    @Override
+    public List<ListenerDefinition> listeners() {
+        return listenerDefinitions;
     }
 }

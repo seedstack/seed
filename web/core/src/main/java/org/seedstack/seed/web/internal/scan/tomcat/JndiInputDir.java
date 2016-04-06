@@ -21,7 +21,11 @@ import javax.naming.NamingEnumeration;
 import javax.naming.NamingException;
 import javax.naming.directory.DirContext;
 import java.net.URL;
-import java.util.*;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Deque;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * VFS directory implementation for JNDI directory scanning.
@@ -30,11 +34,11 @@ import java.util.*;
  */
 class JndiInputDir implements Vfs.Dir {
     private static final Logger LOGGER = LoggerFactory.getLogger(JndiInputDir.class);
-    private final URL url;
 
-    private List<String> fullPath = new ArrayList<String>();
-    private Deque<DirContext> dirContextDeque = new ArrayDeque<DirContext>();
-    private Deque<NamingEnumeration<NameClassPair>> enumerationDeque = new ArrayDeque<NamingEnumeration<NameClassPair>>();
+    private final URL url;
+    private final List<String> fullPath = new ArrayList<String>();
+    private final Deque<DirContext> dirContextDeque = new ArrayDeque<DirContext>();
+    private final Deque<NamingEnumeration<NameClassPair>> enumerationDeque = new ArrayDeque<NamingEnumeration<NameClassPair>>();
 
     JndiInputDir(URL url) {
         this.url = url;

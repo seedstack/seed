@@ -20,12 +20,10 @@ package org.seedstack.seed.web.security.internal.shiro;
 
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;
-import com.google.inject.Binder;
 import com.google.inject.Key;
 import com.google.inject.TypeLiteral;
 import com.google.inject.binder.AnnotatedBindingBuilder;
 import com.google.inject.name.Names;
-import com.google.inject.servlet.ServletModule;
 import org.apache.shiro.config.ConfigurationException;
 import org.apache.shiro.env.Environment;
 import org.apache.shiro.guice.ShiroModule;
@@ -99,28 +97,6 @@ public abstract class ShiroWebModule extends ShiroModule {
 
     public ShiroWebModule(ServletContext servletContext) {
         this.servletContext = servletContext;
-    }
-
-    public static void bindGuiceFilter(Binder binder) {
-        binder.install(guiceFilterModule());
-    }
-
-    @SuppressWarnings({"UnusedDeclaration"})
-    public static void bindGuiceFilter(final String pattern, Binder binder) {
-        binder.install(guiceFilterModule(pattern));
-    }
-
-    public static ServletModule guiceFilterModule() {
-        return guiceFilterModule("/*");
-    }
-
-    public static ServletModule guiceFilterModule(final String pattern) {
-        return new ServletModule() {
-            @Override
-            protected void configureServlets() {
-                filter(pattern).through(GuiceShiroFilter.class);
-            }
-        };
     }
 
     @Override
@@ -222,7 +198,7 @@ public abstract class ShiroWebModule extends ShiroModule {
      * provider.
      *
      * @param pattern the pattern
-     * @param keys the filter keys
+     * @param keys    the filter keys
      */
     @SuppressWarnings({"UnusedDeclaration"})
     protected final void addFilterChain(String pattern, FilterKey... keys) {

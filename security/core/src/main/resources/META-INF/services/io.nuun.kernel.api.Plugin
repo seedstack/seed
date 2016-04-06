@@ -1,1 +1,2 @@
 org.seedstack.seed.security.internal.SecurityPlugin
+org.seedstack.seed.security.internal.DefaultSecurityPlugin

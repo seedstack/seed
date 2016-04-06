@@ -31,25 +31,27 @@ import org.seedstack.seed.rest.internal.jsonhome.JsonHomeRootResource;
 import org.seedstack.seed.rest.internal.jsonhome.Resource;
 import org.seedstack.seed.rest.spi.RestProvider;
 import org.seedstack.seed.rest.spi.RootResource;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.servlet.ServletContext;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Variant;
-import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * @author pierre.thirouin@ext.mpsa.com (Pierre Thirouin)
  */
 public class RestPlugin extends AbstractPlugin implements RestProvider {
-    public static final Specification<Class<?>> resourcesSpecification = new JaxRsResourceSpecification();
-    public static final Specification<Class<?>> providersSpecification = new JaxRsProviderSpecification();
-    private static final Logger LOGGER = LoggerFactory.getLogger(RestPlugin.class);
+    static final Specification<Class<?>> resourcesSpecification = new JaxRsResourceSpecification();
+    static final Specification<Class<?>> providersSpecification = new JaxRsProviderSpecification();
 
     private final Map<Variant, Class<? extends RootResource>> rootResourcesByVariant = new HashMap<Variant, Class<? extends RootResource>>();
     private final RestConfiguration restConfiguration = new RestConfiguration();
-    private boolean enabled = true;
+    private boolean enabled;
     private ServletContext servletContext;
     private RelRegistry relRegistry;
     private JsonHome jsonHome;
@@ -63,7 +65,7 @@ public class RestPlugin extends AbstractPlugin implements RestProvider {
 
     @Override
     public void provideContainerContext(Object containerContext) {
-        servletContext = ((SeedRuntime)containerContext).contextAs(ServletContext.class);
+        servletContext = ((SeedRuntime) containerContext).contextAs(ServletContext.class);
     }
 
     @Override
@@ -81,29 +83,25 @@ public class RestPlugin extends AbstractPlugin implements RestProvider {
 
     @Override
     public InitState init(InitContext initContext) {
+        Map<Specification, Collection<Class<?>>> scannedClasses = initContext.scannedTypesBySpecification();
 
         restConfiguration.init(initContext.dependency(ConfigurationProvider.class).getConfiguration());
-
-        Map<Specification, Collection<Class<?>>> scannedClasses = initContext.scannedTypesBySpecification();
         resources = scannedClasses.get(RestPlugin.resourcesSpecification);
         providers = scannedClasses.get(RestPlugin.providersSpecification);
 
-        addJacksonProviders(providers);
-
         initializeHypermedia();
 
-        if (servletContext == null) {
-            enabled = false;
-            LOGGER.info("No servlet context detected, REST support disabled");
-            return InitState.INITIALIZED;
-        }
+        if (servletContext != null) {
+            addJacksonProviders(providers);
 
-        configureExceptionMappers();
+            configureExceptionMappers();
 
-        if (restConfiguration.isJsonHomeEnabled()) {
-            // The typed locale variable resolves constructor ambiguity when the JAX-RS 2.0 spec is used
-            Locale locale = null;
-            addRootResourceVariant(new Variant(new MediaType("application", "json"), locale, null), JsonHomeRootResource.class);
+            if (restConfiguration.isJsonHomeEnabled()) {
+                // The typed locale parameter resolves constructor ambiguity when the JAX-RS 2.0 spec is in the classpath
+                addRootResourceVariant(new Variant(new MediaType("application", "json"), (Locale) null, null), JsonHomeRootResource.class);
+            }
+
+            enabled = true;
         }
 
         return InitState.INITIALIZED;
@@ -138,18 +136,25 @@ public class RestPlugin extends AbstractPlugin implements RestProvider {
 
     @Override
     public Object nativeUnitModule() {
-            return new AbstractModule() {
-                @Override
-                protected void configure() {
-                    install(new HypermediaModule(jsonHome, relRegistry));
-                    if (enabled) {
-                        install(new RestModule(restConfiguration, resources, providers));
-                        if (!rootResourcesByVariant.isEmpty()) {
-                            install(new RootResourcesModule(rootResourcesByVariant));
-                        }
-                    }
+        return new AbstractModule() {
+            @Override
+            protected void configure() {
+                install(new HypermediaModule(jsonHome, relRegistry));
+                if (enabled) {
+                    install(new RestModule(restConfiguration, filterResourceClasses(resources), providers, rootResourcesByVariant));
                 }
-            };
+            }
+        };
+    }
+
+    private Collection<Class<?>> filterResourceClasses(Collection<Class<?>> resourceClasses) {
+        if (!rootResourcesByVariant.isEmpty()) {
+            return resourceClasses;
+        } else {
+            HashSet<Class<?>> filteredResourceClasses = new HashSet<Class<?>>(resourceClasses);
+            filteredResourceClasses.remove(RootResourceDispatcher.class);
+            return filteredResourceClasses;
+        }
     }
 
     public void addRootResourceVariant(Variant variant, Class<? extends RootResource> rootResource) {
@@ -164,24 +169,9 @@ public class RestPlugin extends AbstractPlugin implements RestProvider {
         return enabled;
     }
 
-    @Deprecated
-    public void registerRootResource(Variant variant, Class<? extends RootResource> rootResource) {
-        addRootResourceVariant(variant, rootResource);
-    }
-
-    @Deprecated
-    public String getRestPath() {
-        return restConfiguration.getRestPath();
-    }
-
-    @Deprecated
-    public String getJspPath() {
-        return restConfiguration.getJspPath();
-    }
-
     @Override
     public Set<Class<?>> resources() {
-        return resources != null ? new HashSet<Class<?>>(resources) : new HashSet<Class<?>>();
+        return resources != null ? new HashSet<Class<?>>(filterResourceClasses(resources)) : new HashSet<Class<?>>();
     }
 
     @Override

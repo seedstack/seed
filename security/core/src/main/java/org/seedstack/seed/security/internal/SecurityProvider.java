@@ -8,8 +8,7 @@
 package org.seedstack.seed.security.internal;
 
 import com.google.inject.Module;
-import io.nuun.kernel.api.plugin.context.InitContext;
-import io.nuun.kernel.api.plugin.request.ClasspathScanRequestBuilder;
+import io.nuun.kernel.api.annotations.Facet;
 
 /**
  * A plugin to augment security in any entry point while original security
@@ -17,28 +16,8 @@ import io.nuun.kernel.api.plugin.request.ClasspathScanRequestBuilder;
  *
  * @author yves.dautremay@mpsa.com
  */
+@Facet
 public interface SecurityProvider {
-
-    /**
-     * Init phase.
-     *
-     * @param initContext The init context.
-     */
-    void init(InitContext initContext);
-
-    /**
-     * If container context is needed (web environment)
-     *
-     * @param containerContext the container context
-     */
-    void provideContainerContext(Object containerContext);
-
-    /**
-     * Requests for classpath scan
-     *
-     * @param classpathScanRequestBuilder the request builder to address the requests
-     */
-    void classpathScanRequests(ClasspathScanRequestBuilder classpathScanRequestBuilder);
 
     /**
      * Provides the Guice module for handling the main application security. There can be only one main Guice module
@@ -46,7 +25,7 @@ public interface SecurityProvider {
      *
      * @return the Guice module for the application main security.
      */
-    Module provideMainSecurityModule();
+    Module provideMainSecurityModule(SecurityGuiceConfigurer securityGuiceConfigurer);
 
     /**
      * Provides a Guice module for handling additional entry point security. Multiple entry-point-specific Guice modules
@@ -55,4 +34,5 @@ public interface SecurityProvider {
      * @return the Guice module for the specific entry-point.
      */
     Module provideAdditionalSecurityModule();
+
 }

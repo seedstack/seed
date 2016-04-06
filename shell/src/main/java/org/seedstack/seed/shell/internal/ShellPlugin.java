@@ -8,6 +8,7 @@
 package org.seedstack.seed.shell.internal;
 
 import com.google.common.collect.Lists;
+import com.google.inject.Module;
 import io.nuun.kernel.api.plugin.InitState;
 import io.nuun.kernel.api.plugin.PluginException;
 import io.nuun.kernel.api.plugin.context.Context;
@@ -31,6 +32,8 @@ import org.apache.sshd.server.keyprovider.SimpleGeneratorHostKeyProvider;
 import org.apache.sshd.server.session.ServerSession;
 import org.seedstack.seed.Application;
 import org.seedstack.seed.core.internal.application.ApplicationPlugin;
+import org.seedstack.seed.security.internal.SecurityGuiceConfigurer;
+import org.seedstack.seed.security.internal.SecurityProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,7 +50,7 @@ import java.util.List;
  *
  * @author adrien.lauer@mpsa.com
  */
-public class ShellPlugin extends AbstractPlugin {
+public class ShellPlugin extends AbstractPlugin implements SecurityProvider {
     private static final int SHELL_DEFAULT_PORT = 2222;
     private static final String SHELL_PLUGIN_CONFIGURATION_PREFIX = "org.seedstack.seed.shell";
     private static final Logger LOGGER = LoggerFactory.getLogger(ShellPlugin.class);
@@ -148,6 +151,16 @@ public class ShellPlugin extends AbstractPlugin {
     @Override
     public Collection<Class<?>> requiredPlugins() {
         return Lists.<Class<?>>newArrayList(ApplicationPlugin.class);
+    }
+
+    @Override
+    public Module provideMainSecurityModule(SecurityGuiceConfigurer securityGuiceConfigurer) {
+        return null;
+    }
+
+    @Override
+    public Module provideAdditionalSecurityModule() {
+        return new ShellSecurityModule();
     }
 
     private final class ShiroAuthFactory implements NamedFactory<UserAuth> {

@@ -8,11 +8,13 @@
 package org.seedstack.seed.web.security.internal;
 
 import com.google.inject.Key;
+import com.google.inject.Scopes;
 import com.google.inject.name.Names;
 import jodd.props.Props;
 import jodd.props.PropsEntries;
 import jodd.props.PropsEntry;
 import org.apache.shiro.config.ConfigurationException;
+import org.apache.shiro.guice.web.GuiceShiroFilter;
 import org.apache.shiro.util.StringUtils;
 import org.apache.shiro.web.filter.PathMatchingFilter;
 import org.seedstack.seed.security.internal.SecurityGuiceConfigurer;
@@ -24,7 +26,11 @@ import org.slf4j.LoggerFactory;
 
 import javax.servlet.Filter;
 import javax.servlet.ServletContext;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 class WebSecurityModule extends ShiroWebModule {
     private static final Logger LOGGER = LoggerFactory.getLogger(ShiroWebModule.class);
@@ -98,6 +104,9 @@ class WebSecurityModule extends ShiroWebModule {
         // Shiro global configuration
         securityGuiceConfigurer.configure(binder());
 
+        // Shiro filter
+        bind(GuiceShiroFilter.class).in(Scopes.SINGLETON);
+
         // Exposed binding
         expose(AntiXsrfService.class);
     }
@@ -110,7 +119,7 @@ class WebSecurityModule extends ShiroWebModule {
             String[] nameConfig = toNameConfigPair(filter);
             Key<? extends Filter> key = findKey(nameConfig[0]);
             if (key != null) {
-                keys[index] = new FilterKey(key, nameConfig[1] == null ? "": nameConfig[1]);
+                keys[index] = new FilterKey(key, nameConfig[1] == null ? "" : nameConfig[1]);
             } else {
                 addError("The filter [" + nameConfig[0] + "] could not be found as a default filter or as a class annotated with SecurityFilter");
             }

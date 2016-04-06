@@ -7,60 +7,29 @@
  */
 package org.seedstack.seed.rest.jersey1.internal;
 
+import com.google.inject.AbstractModule;
 import com.google.inject.Scopes;
 import com.google.inject.multibindings.Multibinder;
-import com.google.inject.servlet.ServletModule;
 import com.sun.jersey.spi.container.ResourceFilterFactory;
 import org.seedstack.seed.rest.internal.RestConcern;
-import org.seedstack.seed.rest.internal.RestConfiguration;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
 import java.util.Set;
 
 @RestConcern
-class Jersey1Module extends ServletModule {
+class Jersey1Module extends AbstractModule {
     private final Set<Class<? extends ResourceFilterFactory>> resourceFilterFactories;
-    private final RestConfiguration restConfiguration;
 
-    Jersey1Module(RestConfiguration restConfiguration, Set<Class<? extends ResourceFilterFactory>> resourceFilterFactories) {
-        this.restConfiguration = restConfiguration;
+    Jersey1Module(Set<Class<? extends ResourceFilterFactory>> resourceFilterFactories) {
         this.resourceFilterFactories = resourceFilterFactories;
     }
 
     @Override
-    protected void configureServlets() {
-        Map<String, String> initParams = new HashMap<String, String>();
-
-        // Default configuration values
-        initParams.put("com.sun.jersey.api.json.POJOMappingFeature", "true");
-        initParams.put("com.sun.jersey.config.feature.FilterForwardOn404", "true");
-        initParams.put("com.sun.jersey.config.feature.DisableWADL", "true");
-
-        // User configuration values
-        initParams.putAll(propertiesToMap(restConfiguration.getJerseyProperties()));
-
-        // Forced configuration values
-        initParams.put("com.sun.jersey.config.property.JSPTemplatesBasePath", restConfiguration.getJspPath());
-        initParams.put("com.sun.jersey.config.feature.FilterContextPath", restConfiguration.getRestPath());
-
+    protected void configure() {
         bind(SeedContainer.class).in(Scopes.SINGLETON);
-        filter(restConfiguration.getRestPath() + "/*").through(SeedContainer.class, initParams);
 
         Multibinder<ResourceFilterFactory> resourceFilterFactoryMultibinder = Multibinder.newSetBinder(binder(), ResourceFilterFactory.class);
         for (Class<? extends ResourceFilterFactory> resourceFilterFactory : resourceFilterFactories) {
             resourceFilterFactoryMultibinder.addBinding().to(resourceFilterFactory);
         }
-    }
-
-    private Map<String, String> propertiesToMap(Properties properties) {
-        Map<String, String> map = new HashMap<String, String>();
-
-        for (Object key : properties.keySet()) {
-            map.put(key.toString(), properties.getProperty(key.toString()));
-        }
-
-        return map;
     }
 }

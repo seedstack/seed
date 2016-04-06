@@ -30,11 +30,12 @@ public class RootResourceDispatcher {
     public Response lookup(@Context Request request, @Context HttpServletRequest httpServletRequest, @Context UriInfo uriInfo) {
         ArrayList<Variant> variants = new ArrayList<Variant>(rootResources.keySet());
 
-        Variant v = request.selectVariant(variants);
-        if (v == null) {
-            return Response.status(Response.Status.NOT_FOUND).build();
-        } else {
-            return rootResources.get(v).buildResponse(httpServletRequest, uriInfo);
+        if (!variants.isEmpty()) {
+            Variant v = request.selectVariant(variants);
+            if (v != null) {
+                return rootResources.get(v).buildResponse(httpServletRequest, uriInfo);
+            }
         }
+        return Response.status(Response.Status.NOT_FOUND).build();
     }
 }

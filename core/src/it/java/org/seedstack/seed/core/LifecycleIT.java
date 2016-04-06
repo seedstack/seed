@@ -8,7 +8,6 @@
 package org.seedstack.seed.core;
 
 import io.nuun.kernel.api.Kernel;
-import io.nuun.kernel.core.NuunCore;
 import org.junit.Test;
 import org.seedstack.seed.core.fixtures.TestLifecycleListener;
 
@@ -22,7 +21,7 @@ public class LifecycleIT {
         String token = UUID.randomUUID().toString();
         TestLifecycleListener.setToken(token);
 
-        Kernel kernel = Seed.createKernel(null, NuunCore.newKernelConfiguration(), false);
+        Kernel kernel = Seed.createKernel(null, null, false);
 
         assertThat(TestLifecycleListener.isStartHasBeenCalled(token)).isFalse();
         assertThat(TestLifecycleListener.isStopHasBeenCalled(token)).isFalse();

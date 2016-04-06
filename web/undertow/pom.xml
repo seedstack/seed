@@ -45,11 +45,6 @@
             <artifactId>undertow-servlet</artifactId>
             <version>${undertow.version}</version>
         </dependency>
-        <dependency>
-            <groupId>com.google.inject.extensions</groupId>
-            <artifactId>guice-servlet</artifactId>
-            <version>${guice.version}</version>
-        </dependency>
 
         <dependency>
             <groupId>com.jayway.restassured</groupId>

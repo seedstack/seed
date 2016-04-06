@@ -30,8 +30,7 @@ class JndiJarInputDir implements Vfs.Dir {
     private static final Logger LOGGER = LoggerFactory.getLogger(JndiJarInputDir.class);
 
     private final URL url;
-
-    JarInputStream jarInputStream;
+    private JarInputStream jarInputStream;
 
     JndiJarInputDir(URL url) {
         this.url = url;

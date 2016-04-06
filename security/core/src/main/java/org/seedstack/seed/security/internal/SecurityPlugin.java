@@ -12,13 +12,11 @@ import io.nuun.kernel.api.plugin.InitState;
 import io.nuun.kernel.api.plugin.context.InitContext;
 import io.nuun.kernel.api.plugin.request.BindingRequest;
 import io.nuun.kernel.api.plugin.request.ClasspathScanRequest;
-import io.nuun.kernel.api.plugin.request.ClasspathScanRequestBuilder;
 import io.nuun.kernel.core.AbstractPlugin;
 import org.apache.commons.configuration.Configuration;
 import org.seedstack.seed.SeedException;
 import org.seedstack.seed.core.internal.application.ApplicationPlugin;
 import org.seedstack.seed.core.spi.configuration.ConfigurationProvider;
-import org.seedstack.seed.core.utils.SeedReflectionUtils;
 import org.seedstack.seed.el.internal.ELPlugin;
 import org.seedstack.seed.security.PrincipalCustomizer;
 import org.seedstack.seed.security.Realm;
@@ -31,11 +29,11 @@ import org.seedstack.seed.security.spi.data.DataSecurityHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
-import java.util.ServiceLoader;
+import java.util.Set;
 
 /**
  * This plugin provides core security infrastructure, based on Apache Shiro
@@ -46,23 +44,13 @@ import java.util.ServiceLoader;
  */
 public class SecurityPlugin extends AbstractPlugin {
     private static final Logger LOGGER = LoggerFactory.getLogger(SecurityPlugin.class);
-
     public static final String SECURITY_PREFIX = "org.seedstack.seed.security";
 
-    private final Collection<SecurityProvider> securityProviders = new ArrayList<SecurityProvider>();
     private final Map<String, Class<? extends Scope>> scopeClasses = new HashMap<String, Class<? extends Scope>>();
-
-    private Configuration securityConfiguration;
-    private Map<Class<?>, Collection<Class<?>>> scannedClasses;
-    private Collection<Class<? extends DataSecurityHandler<?>>> dataSecurityHandlers;
-    private Collection<Class<? extends PrincipalCustomizer<?>>> principalCustomizerClasses;
+    private final Set<SecurityProvider> securityProviders = new HashSet<SecurityProvider>();
+    private final Set<Class<? extends DataSecurityHandler<?>>> dataSecurityHandlers = new HashSet<Class<? extends DataSecurityHandler<?>>>();
+    private SecurityConfigurer securityConfigurer;
     private boolean elDisabled;
-
-    public SecurityPlugin() {
-        for (SecurityProvider securityProvider : ServiceLoader.load(SecurityProvider.class, SeedReflectionUtils.findMostCompleteClassLoader(SecurityPlugin.class))) {
-            securityProviders.add(securityProvider);
-        }
-    }
 
     @Override
     public String name() {
@@ -70,18 +58,62 @@ public class SecurityPlugin extends AbstractPlugin {
     }
 
     @Override
+    public Collection<Class<?>> requiredPlugins() {
+        return Lists.<Class<?>>newArrayList(ApplicationPlugin.class, ConfigurationProvider.class, ELPlugin.class, SecurityProvider.class);
+    }
+
+    @Override
+    public Collection<ClasspathScanRequest> classpathScanRequests() {
+        return classpathScanRequestBuilder()
+                .descendentTypeOf(Realm.class)
+                .descendentTypeOf(RoleMapping.class)
+                .descendentTypeOf(RolePermissionResolver.class)
+                .descendentTypeOf(Scope.class)
+                .descendentTypeOf(DataSecurityHandler.class)
+                .descendentTypeOf(PrincipalCustomizer.class).build();
+    }
+
+    @Override
+    public Collection<BindingRequest> bindingRequests() {
+        return bindingRequestsBuilder().descendentTypeOf(DataObfuscationHandler.class).build();
+    }
+
+    @Override
     @SuppressWarnings({"rawtypes", "unchecked"})
     public InitState init(InitContext initContext) {
-        securityConfiguration = initContext.dependency(ConfigurationProvider.class).getConfiguration().subset(SECURITY_PREFIX);
+        Configuration securityConfiguration = initContext.dependency(ConfigurationProvider.class).getConfiguration().subset(SECURITY_PREFIX);
+        Map<Class<?>, Collection<Class<?>>> scannedClasses = initContext.scannedSubTypesByAncestorClass();
+
+        Collection<Class<? extends PrincipalCustomizer<?>>> principalCustomizerClasses = (Collection) scannedClasses.get(PrincipalCustomizer.class);
+
+        configureScopes(scannedClasses.get(Scope.class));
+        configureDataSecurityHandlers(scannedClasses.get(DataSecurityHandler.class));
+        securityProviders.addAll(initContext.dependencies(SecurityProvider.class));
         elDisabled = initContext.dependency(ELPlugin.class).isDisabled();
+        securityConfigurer = new SecurityConfigurer(securityConfiguration, scannedClasses, principalCustomizerClasses);
 
-        scannedClasses = initContext.scannedSubTypesByAncestorClass();
-        principalCustomizerClasses = (Collection) scannedClasses.get(PrincipalCustomizer.class);
-        dataSecurityHandlers = (Collection) scannedClasses.get(DataSecurityHandler.class);
+        if (elDisabled) {
+            LOGGER.info("No Java EL support, data security is disabled");
+        }
 
-        Collection<Class<? extends Scope>> scopeCandidateClasses = (Collection) scannedClasses.get(Scope.class);
-        if (scopeCandidateClasses != null) {
-            for (Class<?> scopeCandidateClass : scopeCandidateClasses) {
+        return InitState.INITIALIZED;
+    }
+
+    @SuppressWarnings("unchecked")
+    private void configureDataSecurityHandlers(Collection<Class<?>> securityHandlerClasses) {
+        if (securityHandlerClasses != null) {
+            for (Class<?> candidate : securityHandlerClasses) {
+                if (DataSecurityHandler.class.isAssignableFrom(candidate)) {
+                    dataSecurityHandlers.add((Class<? extends DataSecurityHandler<?>>) candidate);
+                }
+            }
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private void configureScopes(Collection<Class<?>> scopeClasses) {
+        if (scopeClasses != null) {
+            for (Class<?> scopeCandidateClass : scopeClasses) {
                 if (Scope.class.isAssignableFrom(scopeCandidateClass)) {
                     SecurityScope securityScope = scopeCandidateClass.getAnnotation(SecurityScope.class);
                     String scopeName;
@@ -98,71 +130,24 @@ public class SecurityPlugin extends AbstractPlugin {
                         throw SeedException.wrap(e, SecurityErrorCodes.MISSING_ADEQUATE_SCOPE_CONSTRUCTOR).put("scopeName", scopeName);
                     }
 
-                    if (scopeClasses.containsKey(scopeName)) {
+                    if (this.scopeClasses.containsKey(scopeName)) {
                         throw SeedException.createNew(SecurityErrorCodes.DUPLICATE_SCOPE_NAME).put("scopeName", scopeName);
                     }
 
-                    scopeClasses.put(scopeName, (Class<? extends Scope>) scopeCandidateClass);
+                    this.scopeClasses.put(scopeName, (Class<? extends Scope>) scopeCandidateClass);
                 }
             }
         }
-
-        for (SecurityProvider securityProvider : securityProviders) {
-            LOGGER.debug("Initializing security provider {}", securityProvider.getClass().getCanonicalName());
-            securityProvider.init(initContext);
-        }
-
-        if (elDisabled) {
-            LOGGER.info("No Java EL support, data security is disabled");
-        }
-
-        return InitState.INITIALIZED;
-    }
-
-    @Override
-    public void provideContainerContext(Object containerContext) {
-        for (SecurityProvider securityProvider : securityProviders) {
-            securityProvider.provideContainerContext(containerContext);
-        }
-    }
-
-    @Override
-    public Collection<Class<?>> requiredPlugins() {
-        return Lists.<Class<?>>newArrayList(ApplicationPlugin.class, ConfigurationProvider.class, ELPlugin.class);
     }
 
     @Override
     public Object nativeUnitModule() {
         return new SecurityModule(
-                new SecurityConfigurer(securityConfiguration, scannedClasses, principalCustomizerClasses),
+                securityConfigurer,
                 scopeClasses,
                 dataSecurityHandlers,
                 elDisabled,
                 securityProviders
         );
-    }
-
-    @Override
-    public Collection<ClasspathScanRequest> classpathScanRequests() {
-        // Core plugin requests
-        ClasspathScanRequestBuilder builder = classpathScanRequestBuilder()
-                .descendentTypeOf(Realm.class)
-                .descendentTypeOf(RoleMapping.class)
-                .descendentTypeOf(RolePermissionResolver.class)
-                .descendentTypeOf(Scope.class)
-                .descendentTypeOf(DataSecurityHandler.class)
-                .descendentTypeOf(PrincipalCustomizer.class);
-
-        // Additional plugins requests
-        for (SecurityProvider securityProvider : securityProviders) {
-            securityProvider.classpathScanRequests(builder);
-        }
-
-        return builder.build();
-    }
-
-    @Override
-    public Collection<BindingRequest> bindingRequests() {
-        return bindingRequestsBuilder().descendentTypeOf(DataObfuscationHandler.class).build();
     }
 }

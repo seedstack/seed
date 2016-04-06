@@ -82,7 +82,7 @@ public class SeedRunner implements SeedLauncher {
      * @throws Exception when the CLI command fails to complete.
      */
     public static int execute(String[] args) throws Exception {
-        Kernel kernel = Seed.createKernel(new CliContext(args));
+        Kernel kernel = Seed.createKernel(new CliContext(args), null, true);
 
         try {
             Injector injector = kernel.objectGraph().as(Injector.class);
@@ -120,7 +120,7 @@ public class SeedRunner implements SeedLauncher {
      * @throws Exception when the CLI command fails to complete.
      */
     public static int execute(String[] args, Callable<Integer> callable) throws Exception {
-        Kernel kernel = Seed.createKernel(new CliContext(args));
+        Kernel kernel = Seed.createKernel(new CliContext(args), null, true);
 
         try {
             kernel.objectGraph().as(Injector.class).injectMembers(callable);

@@ -12,7 +12,7 @@ import org.apache.shiro.guice.ShiroModule;
 class DefaultSecurityModule extends ShiroModule {
     private final SecurityGuiceConfigurer securityGuiceConfigurer;
 
-    public DefaultSecurityModule(SecurityGuiceConfigurer securityGuiceConfigurer) {
+    DefaultSecurityModule(SecurityGuiceConfigurer securityGuiceConfigurer) {
         this.securityGuiceConfigurer = securityGuiceConfigurer;
     }
 
