@@ -9,9 +9,9 @@ package org.seedstack.seed.web.internal.servlet;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Scopes;
-import org.seedstack.seed.web.FilterDefinition;
-import org.seedstack.seed.web.ListenerDefinition;
-import org.seedstack.seed.web.ServletDefinition;
+import org.seedstack.seed.web.spi.FilterDefinition;
+import org.seedstack.seed.web.spi.ListenerDefinition;
+import org.seedstack.seed.web.spi.ServletDefinition;
 
 import java.util.List;
 

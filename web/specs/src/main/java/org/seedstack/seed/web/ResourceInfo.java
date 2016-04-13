@@ -10,7 +10,7 @@ package org.seedstack.seed.web;
 import java.net.URL;
 
 /**
- * This immutable class represent informations relative to a static web resource.
+ * This immutable class holds information relative to a static web resource.
  *
  * @author adrien.lauer@mpsa.com
  */

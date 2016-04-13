@@ -20,10 +20,10 @@ import org.seedstack.seed.SeedRuntime;
 import org.seedstack.seed.core.internal.application.ApplicationPlugin;
 import org.seedstack.seed.security.internal.SecurityGuiceConfigurer;
 import org.seedstack.seed.security.internal.SecurityProvider;
-import org.seedstack.seed.web.FilterDefinition;
-import org.seedstack.seed.web.ListenerDefinition;
-import org.seedstack.seed.web.ServletDefinition;
-import org.seedstack.seed.web.WebProvider;
+import org.seedstack.seed.web.spi.FilterDefinition;
+import org.seedstack.seed.web.spi.ListenerDefinition;
+import org.seedstack.seed.web.spi.ServletDefinition;
+import org.seedstack.seed.web.spi.WebProvider;
 import org.seedstack.seed.web.security.SecurityFilter;
 
 import javax.servlet.Filter;

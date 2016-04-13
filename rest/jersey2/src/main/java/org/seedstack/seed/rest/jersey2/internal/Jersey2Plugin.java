@@ -19,10 +19,10 @@ import org.seedstack.seed.core.utils.SeedReflectionUtils;
 import org.seedstack.seed.rest.internal.RestConfiguration;
 import org.seedstack.seed.rest.internal.RestPlugin;
 import org.seedstack.seed.rest.spi.RestProvider;
-import org.seedstack.seed.web.FilterDefinition;
-import org.seedstack.seed.web.ListenerDefinition;
-import org.seedstack.seed.web.ServletDefinition;
-import org.seedstack.seed.web.WebProvider;
+import org.seedstack.seed.web.spi.FilterDefinition;
+import org.seedstack.seed.web.spi.ListenerDefinition;
+import org.seedstack.seed.web.spi.ServletDefinition;
+import org.seedstack.seed.web.spi.WebProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

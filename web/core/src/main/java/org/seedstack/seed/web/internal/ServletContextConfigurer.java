@@ -8,9 +8,9 @@
 package org.seedstack.seed.web.internal;
 
 import com.google.inject.Injector;
-import org.seedstack.seed.web.FilterDefinition;
-import org.seedstack.seed.web.ListenerDefinition;
-import org.seedstack.seed.web.ServletDefinition;
+import org.seedstack.seed.web.spi.FilterDefinition;
+import org.seedstack.seed.web.spi.ListenerDefinition;
+import org.seedstack.seed.web.spi.ServletDefinition;
 
 import javax.servlet.FilterRegistration;
 import javax.servlet.ServletContext;
