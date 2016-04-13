@@ -14,13 +14,22 @@ import io.nuun.kernel.api.plugin.context.InitContext;
 import io.nuun.kernel.api.plugin.request.ClasspathScanRequest;
 import io.nuun.kernel.core.AbstractPlugin;
 import org.seedstack.seed.rest.ResourceFiltering;
+import org.seedstack.seed.rest.internal.RestConfiguration;
 import org.seedstack.seed.rest.internal.RestPlugin;
-import org.seedstack.seed.web.internal.WebPlugin;
+import org.seedstack.seed.web.FilterDefinition;
+import org.seedstack.seed.web.ListenerDefinition;
+import org.seedstack.seed.web.ServletDefinition;
+import org.seedstack.seed.web.WebProvider;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.lang.annotation.Annotation;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 
 /**
@@ -29,7 +38,10 @@ import java.util.Set;
  * @author adrien.lauer@mpsa.com
  * @author pierre.thirouin@ext.mpsa.com
  */
-public class Jersey1Plugin extends AbstractPlugin {
+public class Jersey1Plugin extends AbstractPlugin implements WebProvider {
+    private static final Logger LOGGER = LoggerFactory.getLogger(Jersey1Plugin.class);
+
+    private FilterDefinition jersey1FilterDefinition;
     private Jersey1Module jersey1Module;
 
     @Override
@@ -39,7 +51,7 @@ public class Jersey1Plugin extends AbstractPlugin {
 
     @Override
     public Collection<Class<?>> requiredPlugins() {
-        return Lists.<Class<?>>newArrayList(WebPlugin.class, RestPlugin.class);
+        return Lists.<Class<?>>newArrayList(RestPlugin.class);
     }
 
     @Override
@@ -52,18 +64,18 @@ public class Jersey1Plugin extends AbstractPlugin {
         RestPlugin restPlugin = initContext.dependency(RestPlugin.class);
 
         if (restPlugin.isEnabled()) {
-            jersey1Module = new Jersey1Module(
-                    restPlugin.getConfiguration(),
-                    scanResourceFilterFactories(initContext)
-            );
+            RestConfiguration restConfiguration = restPlugin.getConfiguration();
+
+            jersey1Module = new Jersey1Module(scanResourceFilterFactories(initContext));
+
+            jersey1FilterDefinition = new FilterDefinition("jersey1", SeedContainer.class);
+            jersey1FilterDefinition.addMappings(new FilterDefinition.Mapping(restConfiguration.getRestPath() + "/*"));
+            jersey1FilterDefinition.addInitParameters(buildInitParams(restConfiguration));
+
+            LOGGER.info("Jersey 1 serving JAX-RS resources on " + restConfiguration.getRestPath());
         }
 
         return InitState.INITIALIZED;
-    }
-
-    @Override
-    public Object nativeUnitModule() {
-        return jersey1Module;
     }
 
     private Set<Class<? extends ResourceFilterFactory>> scanResourceFilterFactories(InitContext initContext) {
@@ -80,5 +92,53 @@ public class Jersey1Plugin extends AbstractPlugin {
         }
 
         return resourceFilterFactories;
+    }
+
+    private Map<String, String> buildInitParams(RestConfiguration restConfiguration) {
+        Map<String, String> initParams = new HashMap<String, String>();
+
+        // Default configuration values
+        initParams.put("com.sun.jersey.api.json.POJOMappingFeature", "true");
+        initParams.put("com.sun.jersey.config.feature.FilterForwardOn404", "true");
+        initParams.put("com.sun.jersey.config.feature.DisableWADL", "true");
+
+        // User configuration values
+        initParams.putAll(propertiesToMap(restConfiguration.getJerseyProperties()));
+
+        // Forced configuration values
+        initParams.put("com.sun.jersey.config.property.JSPTemplatesBasePath", restConfiguration.getJspPath());
+        initParams.put("com.sun.jersey.config.feature.FilterContextPath", restConfiguration.getRestPath());
+
+        return initParams;
+    }
+
+    private Map<String, String> propertiesToMap(Properties properties) {
+        Map<String, String> map = new HashMap<String, String>();
+
+        for (Object key : properties.keySet()) {
+            map.put(key.toString(), properties.getProperty(key.toString()));
+        }
+
+        return map;
+    }
+
+    @Override
+    public Object nativeUnitModule() {
+        return jersey1Module;
+    }
+
+    @Override
+    public List<ServletDefinition> servlets() {
+        return null;
+    }
+
+    @Override
+    public List<FilterDefinition> filters() {
+        return jersey1FilterDefinition != null ? Lists.newArrayList(jersey1FilterDefinition) : null;
+    }
+
+    @Override
+    public List<ListenerDefinition> listeners() {
+        return null;
     }
 }

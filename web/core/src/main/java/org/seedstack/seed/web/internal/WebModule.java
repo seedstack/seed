@@ -7,23 +7,13 @@
  */
 package org.seedstack.seed.web.internal;
 
+import com.google.inject.Scopes;
+import com.google.inject.servlet.GuiceFilter;
 import com.google.inject.servlet.ServletModule;
 
-import javax.inject.Singleton;
-
-@WebConcern
 class WebModule extends ServletModule {
-    private final boolean requestDiagnosticEnabled;
-
-    WebModule(boolean requestDiagnosticEnabled) {
-        this.requestDiagnosticEnabled = requestDiagnosticEnabled;
-    }
-
     @Override
     protected void configureServlets() {
-        if (requestDiagnosticEnabled) {
-            bind(ExceptionDiagnosticFilter.class).in(Singleton.class);
-            filter("/*").through(ExceptionDiagnosticFilter.class);
-        }
+        bind(GuiceFilter.class).in(Scopes.SINGLETON);
     }
 }

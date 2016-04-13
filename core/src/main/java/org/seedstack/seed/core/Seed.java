@@ -16,7 +16,11 @@ import io.nuun.kernel.core.NuunCore;
 import org.apache.commons.configuration.Configuration;
 import org.seedstack.seed.DiagnosticManager;
 import org.seedstack.seed.SeedRuntime;
-import org.seedstack.seed.core.internal.init.*;
+import org.seedstack.seed.core.internal.init.ConsoleManager;
+import org.seedstack.seed.core.internal.init.DiagnosticManagerImpl;
+import org.seedstack.seed.core.internal.init.LogbackManager;
+import org.seedstack.seed.core.internal.init.NuunManager;
+import org.seedstack.seed.core.internal.init.SeedConfigLoader;
 import org.seedstack.seed.core.utils.SeedReflectionUtils;
 import org.slf4j.LoggerFactory;
 import org.slf4j.bridge.SLF4JBridgeHandler;
@@ -24,7 +28,12 @@ import org.slf4j.bridge.SLF4JBridgeHandler;
 import javax.annotation.Nullable;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Scanner;
+import java.util.ServiceLoader;
+import java.util.Set;
 import java.util.logging.LogManager;
 
 /**
@@ -55,28 +64,10 @@ public class Seed {
     }
 
     public static Kernel createKernel() {
-        return createKernel(null, null);
+        return createKernel(null, null, true);
     }
 
-    public static Kernel createKernel(@Nullable Object runtimeContext) {
-        return createKernel(runtimeContext, null);
-    }
-
-    public static Kernel createKernel(@Nullable Object runtimeContext, @Nullable Map<String, String> parameters) {
-        KernelConfiguration kernelConfiguration = NuunCore.newKernelConfiguration();
-
-        if (parameters != null) {
-            for (Map.Entry<String, String> parameter : parameters.entrySet()) {
-                String key = parameter.getKey();
-                String value = parameter.getValue();
-                kernelConfiguration.param(key, value);
-            }
-        }
-
-        return createKernel(runtimeContext, kernelConfiguration, true);
-    }
-
-    public static Kernel createKernel(@Nullable Object runtimeContext, KernelConfiguration kernelConfiguration, boolean start) {
+    public static Kernel createKernel(@Nullable Object runtimeContext, @Nullable KernelConfiguration kernelConfiguration, boolean autoStart) {
         synchronized (Holder.INSTANCE) {
             Holder.INSTANCE.init();
 
@@ -105,9 +96,12 @@ public class Seed {
             Holder.INSTANCE.checkConsistency();
 
             // Kernel
+            if (kernelConfiguration == null) {
+                kernelConfiguration = NuunCore.newKernelConfiguration();
+            }
             kernelConfiguration.containerContext(seedRuntime);
             Kernel kernel = Holder.INSTANCE.nuunManager.initKernel(kernelConfiguration);
-            if (start) {
+            if (autoStart) {
                 kernel.start();
                 LoggerFactory.getLogger(Seed.class).info("Seed started");
             }

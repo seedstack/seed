@@ -30,10 +30,8 @@ class WsInputDir implements Vfs.Dir {
     private static final Logger LOGGER = LoggerFactory.getLogger(WsInputDir.class);
 
     private final URL url;
-
     private String classesPath;
     private String warfile;
-
     private JarInputStream jarInputStream;
 
     WsInputDir(URL url) {

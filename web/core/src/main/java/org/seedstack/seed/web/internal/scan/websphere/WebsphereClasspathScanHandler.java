@@ -7,12 +7,12 @@
  */
 package org.seedstack.seed.web.internal.scan.websphere;
 
+import org.reflections.vfs.Vfs;
+import org.seedstack.seed.core.internal.scan.ClasspathScanHandler;
+
 import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
-
-import org.reflections.vfs.Vfs;
-import org.seedstack.seed.core.internal.scan.ClasspathScanHandler;
 
 /**
  * Provides classpath scan capabilities for Websphere environment.

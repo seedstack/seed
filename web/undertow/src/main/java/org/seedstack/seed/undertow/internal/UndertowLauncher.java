@@ -15,7 +15,7 @@ import io.undertow.servlet.spec.ServletContextImpl;
 import org.seedstack.seed.SeedException;
 import org.seedstack.seed.core.Seed;
 import org.seedstack.seed.spi.SeedLauncher;
-import org.seedstack.seed.web.listener.SeedServletContextListener;
+import org.seedstack.seed.web.internal.ServletContextUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,7 +36,7 @@ public class UndertowLauncher implements SeedLauncher {
         manager.deploy();
 
         ServletContextImpl servletContext = manager.getDeployment().getServletContext();
-        Kernel kernel = (Kernel) servletContext.getAttribute(SeedServletContextListener.KERNEL_ATTRIBUTE_NAME);
+        Kernel kernel = (Kernel) servletContext.getAttribute(ServletContextUtils.KERNEL_ATTRIBUTE_NAME);
 
         try {
             ServerConfig serverConfig = getUndertowPlugin(kernel).getServerConfig();

@@ -7,19 +7,21 @@
  */
 package org.seedstack.seed.web;
 
-import org.seedstack.seed.it.AbstractSeedWebIT;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.test.api.ArquillianResource;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Test;
-import org.seedstack.seed.web.fixtures.TestFilter;
-import org.seedstack.seed.web.fixtures.TestServlet;
+import org.seedstack.seed.it.AbstractSeedWebIT;
+import org.seedstack.seed.web.fixtures.servlet.TestFilter;
+import org.seedstack.seed.web.fixtures.servlet.TestListener;
+import org.seedstack.seed.web.fixtures.servlet.TestServlet;
 
 import java.net.URL;
 
 import static com.jayway.restassured.RestAssured.expect;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.endsWith;
 import static org.hamcrest.Matchers.startsWith;
 
@@ -27,6 +29,12 @@ public class ServletAndFilterRegistrationIT extends AbstractSeedWebIT {
     @Deployment
     public static WebArchive createDeployment() {
         return ShrinkWrap.create(WebArchive.class);
+    }
+
+    @Test
+    @RunAsClient
+    public void listener_is_correctly_registered(@ArquillianResource URL baseURL) throws Exception {
+        assertThat(TestListener.called).isTrue();
     }
 
     @Test

@@ -11,6 +11,7 @@ import com.google.inject.AbstractModule;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.UsernamePasswordToken;
+import org.apache.shiro.mgt.SecurityManager;
 import org.apache.shiro.subject.Subject;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
@@ -21,10 +22,11 @@ import org.seedstack.seed.security.AuthorizationException;
 import org.seedstack.seed.security.SecuritySupport;
 import org.seedstack.seed.security.SimpleScope;
 import org.seedstack.seed.security.WithUser;
-import org.seedstack.seed.security.principals.Principals;
 import org.seedstack.seed.security.internal.fixtures.AnnotatedClass4Security;
+import org.seedstack.seed.security.principals.Principals;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -38,7 +40,11 @@ public class SecurityIT {
     private SecuritySupport securitySupport;
 
     @Inject
-    private org.apache.shiro.mgt.SecurityManager securityManager;
+    private SecurityManager securityManager;
+
+    @Inject
+    @Named("test")
+    private SecurityManager testSecurityManager;
 
     @Test
     @WithUser(id = "Obiwan", password = "yodarulez")

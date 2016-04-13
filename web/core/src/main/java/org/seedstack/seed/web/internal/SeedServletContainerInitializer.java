@@ -7,41 +7,83 @@
  */
 package org.seedstack.seed.web.internal;
 
-import com.google.inject.servlet.GuiceFilter;
-import org.seedstack.seed.web.listener.SeedServletContextListener;
+import com.google.inject.Injector;
+import io.nuun.kernel.api.Kernel;
+import io.nuun.kernel.api.config.KernelConfiguration;
+import io.nuun.kernel.core.NuunCore;
+import org.seedstack.seed.SeedException;
+import org.seedstack.seed.core.Seed;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import javax.servlet.DispatcherType;
-import javax.servlet.FilterRegistration;
 import javax.servlet.ServletContainerInitializer;
 import javax.servlet.ServletContext;
+import javax.servlet.ServletContextEvent;
+import javax.servlet.ServletContextListener;
 import javax.servlet.ServletException;
-import java.util.EnumSet;
+import java.util.Enumeration;
 import java.util.Set;
 
-public class SeedServletContainerInitializer implements ServletContainerInitializer {
+public class SeedServletContainerInitializer implements ServletContainerInitializer, ServletContextListener {
+    private static final Logger LOGGER = LoggerFactory.getLogger(SeedServletContainerInitializer.class);
+    private Kernel kernel;
+
     @Override
     public void onStartup(Set<Class<?>> servletContextConfigurerClasses, ServletContext servletContext) throws ServletException {
-        configureGuiceFilter(servletContext);
-        servletContext.addListener(SeedServletContextListener.class);
+        try {
+            kernel = Seed.createKernel(servletContext, buildKernelConfiguration(servletContext), true);
+            servletContext.setAttribute(ServletContextUtils.KERNEL_ATTRIBUTE_NAME, kernel);
+        } catch (SeedException e) {
+            handleException(e);
+            throw e;
+        } catch (Exception e) {
+            handleException(e);
+            throw SeedException.wrap(e, WebErrorCode.UNEXPECTED_EXCEPTION);
+        }
+
+        servletContext.addListener(this);
     }
 
-    private void configureGuiceFilter(ServletContext ctx) {
-        boolean guiceFilterAlreadyRegistered = false;
+    @Override
+    public void contextInitialized(ServletContextEvent sce) {
+        sce.getServletContext().setAttribute(ServletContextUtils.INJECTOR_ATTRIBUTE_NAME, kernel.objectGraph().as(Injector.class));
+    }
 
-        for (FilterRegistration filterRegistration : ctx.getFilterRegistrations().values()) {
-            if (GuiceFilter.class.getName().equals(filterRegistration.getClassName())) {
-                guiceFilterAlreadyRegistered = true;
-                break;
+    @Override
+    public void contextDestroyed(ServletContextEvent sce) {
+        if (kernel != null) {
+            try {
+                ServletContext servletContext = sce.getServletContext();
+                servletContext.removeAttribute(ServletContextUtils.INJECTOR_ATTRIBUTE_NAME);
+                servletContext.removeAttribute(ServletContextUtils.KERNEL_ATTRIBUTE_NAME);
+                Seed.disposeKernel(kernel);
+            } catch (SeedException e) {
+                handleException(e);
+                throw e;
+            } catch (Exception e) {
+                handleException(e);
+                throw SeedException.wrap(e, WebErrorCode.UNEXPECTED_EXCEPTION);
+            }
+        }
+    }
+
+    private KernelConfiguration buildKernelConfiguration(ServletContext servletContext) {
+        KernelConfiguration kernelConfiguration = NuunCore.newKernelConfiguration();
+
+        Enumeration<?> initParameterNames = servletContext.getInitParameterNames();
+        while (initParameterNames.hasMoreElements()) {
+            String parameterName = (String) initParameterNames.nextElement();
+            if (parameterName != null && !parameterName.isEmpty()) {
+                String parameterValue = servletContext.getInitParameter(parameterName);
+                kernelConfiguration.param(parameterName, parameterValue);
             }
         }
 
-        if (!guiceFilterAlreadyRegistered) {
-            FilterRegistration.Dynamic guiceFilter = ctx.addFilter("guiceFilter", GuiceFilter.class);
-            if (guiceFilter != null) {
-                guiceFilter.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST, DispatcherType.FORWARD), false, "/*");
-            }
-        } else {
-            ctx.log("Guice filter already registered, avoiding automatic registration");
-        }
+        return kernelConfiguration;
+    }
+
+    private void handleException(Throwable t) {
+        LOGGER.error("An exception occurred during web application startup, collecting diagnostic information");
+        Seed.diagnostic(kernel).dumpDiagnosticReport(t);
     }
 }

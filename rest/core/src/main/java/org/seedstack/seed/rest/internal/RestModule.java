@@ -9,41 +9,45 @@ package org.seedstack.seed.rest.internal;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Scopes;
+import com.google.inject.multibindings.MapBinder;
 import com.google.inject.name.Names;
+import org.seedstack.seed.rest.spi.RootResource;
 
+import javax.ws.rs.core.Variant;
 import java.util.Collection;
+import java.util.Map;
 
 class RestModule extends AbstractModule {
     private final Collection<Class<?>> resources;
     private final Collection<Class<?>> providers;
     private final RestConfiguration restConfiguration;
+    private final Map<Variant, Class<? extends RootResource>> rootResourcesByVariant;
 
-    RestModule(RestConfiguration restConfiguration, Collection<Class<?>> resources, Collection<Class<?>> providers) {
+    RestModule(RestConfiguration restConfiguration, Collection<Class<?>> resources, Collection<Class<?>> providers, Map<Variant, Class<? extends RootResource>> rootResourcesByVariant) {
         this.restConfiguration = restConfiguration;
+        this.rootResourcesByVariant = rootResourcesByVariant;
         this.resources = resources;
         this.providers = providers;
     }
 
     @Override
     protected void configure() {
-        bindResources();
-        bindProviders();
-    }
-
-    private void bindResources() {
         bind(String.class).annotatedWith(Names.named("SeedRestPath")).toInstance(restConfiguration.getRestPath());
         bind(String.class).annotatedWith(Names.named("SeedJspPath")).toInstance(restConfiguration.getJspPath());
 
         for (Class<?> resource : resources) {
-            if (!RootResourceDispatcher.class.isAssignableFrom(resource)) {
-                bind(resource);
-            }
+            bind(resource);
         }
-    }
 
-    private void bindProviders() {
         for (Class<?> provider : providers) {
             bind(provider).in(Scopes.SINGLETON);
+        }
+
+        if (!rootResourcesByVariant.isEmpty()) {
+            MapBinder<Variant, RootResource> multiBinder = MapBinder.newMapBinder(binder(), Variant.class, RootResource.class);
+            for (Map.Entry<Variant, Class<? extends RootResource>> rootResourceClassEntry : rootResourcesByVariant.entrySet()) {
+                multiBinder.addBinding(rootResourceClassEntry.getKey()).to(rootResourceClassEntry.getValue());
+            }
         }
     }
 }

@@ -9,6 +9,8 @@ package org.seedstack.seed.web;
 
 
 import javax.servlet.ServletException;
+import javax.servlet.annotation.WebInitParam;
+import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -18,7 +20,7 @@ import java.io.IOException;
  * @author pierre.thirouin@ext.mpsa.com (Pierre Thirouin)
  */
 @WebServlet(value = {"/hello"}, initParams = {@WebInitParam(name = "param1", value = HelloWorldServlet.PARAM1_VALUE)})
-public class HelloWorldServlet  extends HttpServlet {
+public class HelloWorldServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
     public static final String CONTENT = "Hello World!";

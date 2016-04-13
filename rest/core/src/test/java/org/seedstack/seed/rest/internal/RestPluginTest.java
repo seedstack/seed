@@ -18,6 +18,7 @@ import io.nuun.kernel.api.plugin.request.ClasspathScanRequest;
 import mockit.Deencapsulation;
 import mockit.Expectations;
 import mockit.Mocked;
+import mockit.NonStrictExpectations;
 import mockit.integration.junit4.JMockit;
 import org.apache.commons.configuration.Configuration;
 import org.javatuples.Pair;
@@ -128,7 +129,7 @@ public class RestPluginTest {
         for (Pair<Specification<Class<?>>, Class<?>> specEntry : specEntries) {
             specsMap.put(specEntry.getValue0(), Lists.<Class<?>>newArrayList(specEntry.getValue1()));
         }
-        new Expectations() {{
+        new NonStrictExpectations() {{
             initContext.scannedTypesBySpecification();
             result = specsMap;
         }};

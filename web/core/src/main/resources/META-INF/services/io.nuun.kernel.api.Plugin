@@ -1,4 +1,6 @@
 org.seedstack.seed.web.internal.WebPlugin
-org.seedstack.seed.web.internal.cors.WebCorsPlugin
-org.seedstack.seed.web.internal.resources.WebResourcePlugin
 org.seedstack.seed.web.internal.servlet.WebServletPlugin
+org.seedstack.seed.web.internal.resources.WebResourcesPlugin
+org.seedstack.seed.web.internal.diagnostic.WebDiagnosticPlugin
+org.seedstack.seed.web.internal.cors.WebCORSPlugin
+org.seedstack.seed.web.internal.websocket.WebSocketPlugin

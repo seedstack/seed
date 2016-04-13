@@ -7,38 +7,37 @@
  */
 package org.seedstack.seed.web.internal.servlet;
 
-import com.google.inject.servlet.ServletModule;
-import org.seedstack.seed.web.WebServlet;
+import com.google.inject.AbstractModule;
+import com.google.inject.Scopes;
+import org.seedstack.seed.web.FilterDefinition;
+import org.seedstack.seed.web.ListenerDefinition;
+import org.seedstack.seed.web.ServletDefinition;
 
-import javax.inject.Singleton;
 import java.util.List;
 
-@WebServlet
-class WebServletModule extends ServletModule {
-    private final List<ConfiguredServlet> servlets;
-    private final List<ConfiguredFilter> filters;
+class WebServletModule extends AbstractModule {
+    private final List<FilterDefinition> filterDefinitions;
+    private final List<ServletDefinition> servletDefinitions;
+    private final List<ListenerDefinition> listenerDefinitions;
 
-    WebServletModule(List<ConfiguredServlet> servlets, List<ConfiguredFilter> filters) {
-        this.servlets = servlets;
-        this.filters = filters;
+    WebServletModule(List<FilterDefinition> filterDefinitions, List<ServletDefinition> servletDefinitions, List<ListenerDefinition> listenerDefinitions) {
+        this.filterDefinitions = filterDefinitions;
+        this.servletDefinitions = servletDefinitions;
+        this.listenerDefinitions = listenerDefinitions;
     }
 
     @Override
-    protected void configureServlets() {
-        // User filters
-        for (ConfiguredFilter configuredFilter : filters) {
-            bind(configuredFilter.getClazz()).in(Singleton.class);
-            for (String urlPattern : configuredFilter.getUrlPatterns()) {
-                filter(urlPattern).through(configuredFilter.getClazz(), configuredFilter.getInitParams());
-            }
+    protected void configure() {
+        for (FilterDefinition filterDefinition : filterDefinitions) {
+            bind(filterDefinition.getFilterClass()).in(Scopes.SINGLETON);
         }
 
-        // User servlets
-        for (ConfiguredServlet configuredServlet : servlets) {
-            bind(configuredServlet.getClazz()).in(Singleton.class);
-            for (String urlPattern : configuredServlet.getUrlPatterns()) {
-                serve(urlPattern).with(configuredServlet.getClazz(), configuredServlet.getInitParams());
-            }
+        for (ServletDefinition servletDefinition : servletDefinitions) {
+            bind(servletDefinition.getServletClass()).in(Scopes.SINGLETON);
+        }
+
+        for (ListenerDefinition listenerDefinition : listenerDefinitions) {
+            bind(listenerDefinition.getListenerClass()).in(Scopes.SINGLETON);
         }
     }
 }

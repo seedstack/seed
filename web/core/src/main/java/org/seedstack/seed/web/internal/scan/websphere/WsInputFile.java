@@ -10,26 +10,25 @@
  */
 package org.seedstack.seed.web.internal.scan.websphere;
 
+import org.reflections.vfs.Vfs;
+import org.seedstack.seed.web.internal.scan.JarEntryInputStream;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.jar.JarInputStream;
 import java.util.zip.ZipEntry;
-
-import org.reflections.vfs.Vfs;
 
 /**
  * VFS file implementation for WebSphere WSJAR scanning. Scan for directory.
  *
  * @author thierry.bouvet@mpsa.com
  */
-public class WsInputFile implements Vfs.File {
+class WsInputFile implements Vfs.File {
+    private final ZipEntry entry;
+    private final String classesPath;
+    private final JarInputStream jarInputStream;
 
-    private ZipEntry entry;
-    private String classesPath;
-
-    private JarInputStream jarInputStream;
-
-    public WsInputFile(String classesPath, ZipEntry entry, JarInputStream warfile) {
+    WsInputFile(String classesPath, ZipEntry entry, JarInputStream warfile) {
         this.entry = entry;
         this.jarInputStream = warfile;
         this.classesPath = classesPath;
@@ -48,37 +47,7 @@ public class WsInputFile implements Vfs.File {
 
     @Override
     public InputStream openInputStream() throws IOException {
-        return new InputStream() {
-            @Override
-            public int read() throws IOException {
-                return jarInputStream.read();
-            }
-
-            @Override
-            public int read(byte[] b) throws IOException {
-                return jarInputStream.read(b);
-            }
-
-            @Override
-            public int read(byte[] b, int off, int len) throws IOException {
-                return jarInputStream.read(b, off, len);
-            }
-
-            @Override
-            public long skip(long n) throws IOException {
-                return jarInputStream.skip(n);
-            }
-
-            @Override
-            public int available() throws IOException {
-                return jarInputStream.available();
-            }
-
-            @Override
-            public void close() throws IOException {
-                jarInputStream.closeEntry();
-            }
-        };
+        return new JarEntryInputStream(jarInputStream);
     }
 
 }

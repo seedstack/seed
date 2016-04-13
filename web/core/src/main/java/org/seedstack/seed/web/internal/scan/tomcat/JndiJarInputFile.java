@@ -8,6 +8,7 @@
 package org.seedstack.seed.web.internal.scan.tomcat;
 
 import org.reflections.vfs.Vfs;
+import org.seedstack.seed.web.internal.scan.JarEntryInputStream;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -41,36 +42,6 @@ class JndiJarInputFile implements Vfs.File {
 
     @Override
     public InputStream openInputStream() throws IOException {
-        return new InputStream() {
-            @Override
-            public int read() throws IOException {
-                return jarInputStream.read();
-            }
-
-            @Override
-            public int read(byte[] b) throws IOException {
-                return jarInputStream.read(b);
-            }
-
-            @Override
-            public int read(byte[] b, int off, int len) throws IOException {
-                return jarInputStream.read(b, off, len);
-            }
-
-            @Override
-            public long skip(long n) throws IOException {
-                return jarInputStream.skip(n);
-            }
-
-            @Override
-            public int available() throws IOException {
-                return jarInputStream.available();
-            }
-
-            @Override
-            public void close() throws IOException {
-                jarInputStream.closeEntry();
-            }
-        };
+        return new JarEntryInputStream(jarInputStream);
     }
 }

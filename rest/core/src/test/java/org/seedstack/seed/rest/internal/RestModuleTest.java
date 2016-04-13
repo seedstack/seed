@@ -17,10 +17,13 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.seedstack.seed.Ignore;
+import org.seedstack.seed.rest.spi.RootResource;
 
 import javax.ws.rs.Path;
+import javax.ws.rs.core.Variant;
 import javax.ws.rs.ext.Provider;
 import java.util.Collection;
+import java.util.HashMap;
 
 @RunWith(JMockit.class)
 public class RestModuleTest {
@@ -46,7 +49,7 @@ public class RestModuleTest {
     public void setUp() throws Exception {
         Collection<Class<?>> resources = Lists.newArrayList(MyResource1.class, MyResource2.class);
         Collection<Class<?>> providers = Lists.newArrayList(MyProvider1.class, MyProvider2.class);
-        underTest = new RestModule(restConfiguration, resources, providers);
+        underTest = new RestModule(restConfiguration, resources, providers, new HashMap<Variant, Class<? extends RootResource>>());
     }
 
     @Test

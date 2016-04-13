@@ -57,11 +57,11 @@ class SecurityModule extends AbstractModule {
 
         Module mainModuleToInstall = null;
         for (SecurityProvider securityProvider : securityProviders) {
-            Module mainSecurityModule = securityProvider.provideMainSecurityModule();
+            Module mainSecurityModule = securityProvider.provideMainSecurityModule(new SecurityGuiceConfigurer(securityConfigurer.getSecurityConfiguration()));
             if (mainSecurityModule != null) {
-                if (mainModuleToInstall == null) {
+                if (mainModuleToInstall == null || mainModuleToInstall instanceof DefaultSecurityModule) {
                     mainModuleToInstall = mainSecurityModule;
-                } else {
+                } else if (!(mainSecurityModule instanceof DefaultSecurityModule)) {
                     throw SeedException
                             .createNew(SecurityErrorCodes.MULTIPLE_MAIN_SECURITY_MODULES)
                             .put("first", mainModuleToInstall.getClass().getCanonicalName())
@@ -73,10 +73,6 @@ class SecurityModule extends AbstractModule {
             if (additionalSecurityModule != null) {
                 install(removeSecurityManager(additionalSecurityModule));
             }
-        }
-
-        if (mainModuleToInstall == null) {
-            mainModuleToInstall = new DefaultSecurityModule(new SecurityGuiceConfigurer(securityConfigurer.getSecurityConfiguration()));
         }
 
         install(mainModuleToInstall);
