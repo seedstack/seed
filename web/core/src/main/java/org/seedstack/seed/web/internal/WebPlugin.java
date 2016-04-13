@@ -67,7 +67,7 @@ public class WebPlugin extends AbstractPlugin {
             additionalUrls.add(ClasspathHelper.forWebInfClasses(servletContext));
         }
 
-        LOGGER.debug("{} URL(s) were determined from Web classpath", additionalUrls.size());
+        LOGGER.debug("{} additional URL(s) to scan were determined from Web classpath", additionalUrls.size());
 
         return additionalUrls;
     }
@@ -138,7 +138,7 @@ public class WebPlugin extends AbstractPlugin {
             LOGGER.trace("Registering Guice servlet filter");
             servletContextConfigurer.addFilter(buildGuiceFilterDefinition());
             for (FilterDefinition filterDefinition : filterDefinitions) {
-                LOGGER.trace("Registering servlet filter {}", filterDefinition.getFilterClass());
+                LOGGER.trace("Registering servlet filter {} with {} priority", filterDefinition.getFilterClass(), filterDefinition.getPriority());
                 servletContextConfigurer.addFilter(filterDefinition);
             }
             LOGGER.debug("Registered {} servlet filter(s)", filterDefinitions.size() + 1);
