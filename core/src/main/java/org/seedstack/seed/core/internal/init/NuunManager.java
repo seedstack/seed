@@ -11,7 +11,6 @@ import io.nuun.kernel.api.Kernel;
 import io.nuun.kernel.api.config.KernelConfiguration;
 import io.nuun.kernel.core.NuunCore;
 import io.nuun.kernel.core.internal.scanner.AbstractClasspathScanner;
-import org.reflections.Reflections;
 import org.reflections.vfs.Vfs;
 import org.seedstack.seed.core.internal.scan.ClasspathScanHandler;
 import org.seedstack.seed.core.internal.scan.FallbackUrlType;
@@ -26,16 +25,11 @@ import java.util.ServiceLoader;
 public class NuunManager {
     private static final Logger LOGGER = LoggerFactory.getLogger(NuunManager.class);
 
-    private Logger savedReflectionsLogger;
     private List<Vfs.UrlType> savedUrlTypes;
     private List<Vfs.UrlType> detectedUrlTypes;
     private boolean initialized;
 
     public synchronized void configure() {
-        // Save and disable Reflections logger
-        savedReflectionsLogger = Reflections.log;
-        Reflections.log = null;
-
         // Load Nuun and Reflections classes to force initialization of Vfs url types
         try {
             Class.forName(Vfs.class.getCanonicalName());
@@ -69,6 +63,8 @@ public class NuunManager {
         List<Vfs.UrlType> urlTypes = new ArrayList<Vfs.UrlType>(detectedUrlTypes);
         urlTypes.add(fallbackUrlType);
 
+        LOGGER.debug("Registered URL types for classpath scan: " + urlTypes);
+
         // Kernel initialization
         Vfs.setDefaultURLTypes(urlTypes);
         kernel.init();
@@ -89,9 +85,6 @@ public class NuunManager {
     }
 
     public synchronized void restore() {
-        // Restore saved Reflections logger
-        Reflections.log = savedReflectionsLogger;
-
         initialized = false;
     }
 }

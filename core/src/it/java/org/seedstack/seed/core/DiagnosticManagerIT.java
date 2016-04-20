@@ -60,13 +60,14 @@ public class DiagnosticManagerIT {
 
     @Test
     @SuppressWarnings("unchecked")
-    public void real_scanned_classpath_can_be_detected() {
+    public void seed_info_is_present() {
         Map<String, Object> diagnosticInfo = holder.diagnosticManager.getDiagnosticInfo(null);
 
         assertThat(diagnosticInfo).isNotNull();
 
-        Map<String, Object> systemInfo = (Map<String, Object>) diagnosticInfo.get("core");
-        assertThat((Set<URL>)(systemInfo.get("scanned-urls"))).isNotEmpty();
+        Map<String, Object> seedInfo = (Map<String, Object>) diagnosticInfo.get("seed");
+        assertThat((Set<URL>)(seedInfo.get("scanned-urls"))).isNotEmpty();
+        assertThat((Boolean)(seedInfo.get("color-output"))).isNotNull();
     }
 
 

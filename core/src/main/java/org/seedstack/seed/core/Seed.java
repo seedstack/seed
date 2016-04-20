@@ -71,13 +71,15 @@ public class Seed {
         synchronized (Holder.INSTANCE) {
             Holder.INSTANCE.init();
 
-            DiagnosticManager diagnosticManager = new DiagnosticManagerImpl();
+            DiagnosticManagerImpl diagnosticManager = new DiagnosticManagerImpl();
             SeedRuntime seedRuntime = SeedRuntime.builder()
                     .context(runtimeContext)
                     .diagnosticManager(diagnosticManager)
                     .colorSupported(Holder.INSTANCE.consoleManager.isColorSupported())
                     .version(Holder.INSTANCE.seedVersion)
                     .build();
+
+            diagnosticManager.setSeedRuntime(seedRuntime);
 
             // Startup message
             StringBuilder startMessage = new StringBuilder(">>> Starting Seed");
@@ -105,6 +107,7 @@ public class Seed {
                 kernel.start();
                 LoggerFactory.getLogger(Seed.class).info("Seed started");
             }
+            diagnosticManager.setScannedUrls(kernel.scannedURLs());
 
             Holder.INSTANCE.registerDiagnosticManager(kernel.name(), diagnosticManager);
 
