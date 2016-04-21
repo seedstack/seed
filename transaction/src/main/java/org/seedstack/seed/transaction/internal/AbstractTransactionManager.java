@@ -11,6 +11,10 @@ import com.google.common.base.Predicate;
 import com.google.inject.Injector;
 import com.google.inject.Key;
 import com.google.inject.name.Names;
+import org.aopalliance.intercept.MethodInterceptor;
+import org.aopalliance.intercept.MethodInvocation;
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.reflections.ReflectionUtils;
 import org.seedstack.seed.SeedException;
 import org.seedstack.seed.core.utils.SeedReflectionUtils;
 import org.seedstack.seed.transaction.Transactional;
@@ -19,12 +23,6 @@ import org.seedstack.seed.transaction.spi.TransactionHandler;
 import org.seedstack.seed.transaction.spi.TransactionManager;
 import org.seedstack.seed.transaction.spi.TransactionMetadata;
 import org.seedstack.seed.transaction.spi.TransactionMetadataResolver;
-import org.aopalliance.intercept.MethodInterceptor;
-import org.aopalliance.intercept.MethodInvocation;
-import org.apache.commons.lang.builder.EqualsBuilder;
-import org.reflections.ReflectionUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import java.lang.reflect.Method;
@@ -36,13 +34,9 @@ import java.util.Set;
  * @author adrien.lauer@mpsa.com
  */
 public abstract class AbstractTransactionManager implements TransactionManager {
-    private static final Logger LOGGER = LoggerFactory.getLogger(AbstractTransactionManager.class);
-
     private final MethodInterceptorImplementation methodInterceptorImplementation = new MethodInterceptorImplementation();
-
     @Inject
     protected Injector injector;
-
     @Inject
     private Set<TransactionMetadataResolver> transactionMetadataResolvers;
 
@@ -50,13 +44,11 @@ public abstract class AbstractTransactionManager implements TransactionManager {
         @Override
         @SuppressWarnings("unchecked")
         public Object invoke(MethodInvocation invocation) throws Throwable {
-            String logPrefix = String.format("TX[%d]", Thread.currentThread().getId());
-
-            LOGGER.debug("{}: intercepting {}#{}", logPrefix, invocation.getMethod().getDeclaringClass().getCanonicalName(), invocation.getMethod().getName());
+            TransactionLogger transactionLogger = new TransactionLogger();
+            transactionLogger.log("intercepting {}#{}", invocation.getMethod().getDeclaringClass().getCanonicalName(), invocation.getMethod().getName());
 
             TransactionMetadata transactionMetadata = readTransactionMetadata(invocation);
-
-            LOGGER.debug("{}: {}", logPrefix, transactionMetadata);
+            transactionLogger.log("{}", transactionMetadata);
 
             TransactionHandler<Object> transactionHandler;
             try {
@@ -65,9 +57,9 @@ public abstract class AbstractTransactionManager implements TransactionManager {
                 throw e.put("method", invocation.getMethod().toString());
             }
 
-            LOGGER.debug("{}: using {} transaction handler", logPrefix, transactionHandler.getClass().getCanonicalName());
+            transactionLogger.log("using {} transaction handler", transactionHandler.getClass().getCanonicalName());
 
-            return doMethodInterception(logPrefix, invocation, transactionMetadata, transactionHandler);
+            return doMethodInterception(transactionLogger, invocation, transactionMetadata, transactionHandler);
         }
     }
 
@@ -79,26 +71,39 @@ public abstract class AbstractTransactionManager implements TransactionManager {
     /**
      * This method provide the technology-specific interception behavior.
      *
-     * @param logPrefix The prefix which can be used to log statements for the current transaction.
-     * @param invocation The method interception object.
+     * @param transactionLogger   The object that must be used to log transaction progress.
+     * @param invocation          The method interception object.
      * @param transactionMetadata Metadata of the current transaction.
-     * @param transactionHandler Transaction handler for the current transacted resource.
+     * @param transactionHandler  Transaction handler for the current transacted resource.
      * @return the value of the method invocation
      * @throws Throwable if any problem occurs during interception.
      */
-    protected abstract Object doMethodInterception(String logPrefix, MethodInvocation invocation, TransactionMetadata transactionMetadata, TransactionHandler<Object> transactionHandler) throws Throwable;
+    protected abstract Object doMethodInterception(TransactionLogger transactionLogger, MethodInvocation invocation, TransactionMetadata transactionMetadata, TransactionHandler<Object> transactionHandler) throws Throwable;
 
     /**
-     * This method provides behavior for transaction error handling.
+     * This method call the wrapped transactional method.
      *
-     * @param logPrefix The prefix which can be used to log statements for the current transaction.
-     * @param exception The exception to be handled.
-     * @param transactionMetadata Metadata of the current transaction.
-     * @param currentTransaction Current transaction object.
-     * @throws Exception if the error cannot be handled.
+     * @param transactionLogger   The object that must be used to log transaction progress.
+     * @param invocation          the {@link MethodInvocation} denoting the transactional method.
+     * @param transactionMetadata the current transaction metadata.
+     * @param currentTransaction  the current transaction object if any.
+     * @return the return value of the transactional method.
+     * @throws Throwable if an exception occurs during the method invocation.
      */
+    protected Object doInvocation(TransactionLogger transactionLogger, MethodInvocation invocation, TransactionMetadata transactionMetadata, Object currentTransaction) throws Throwable {
+        Object result = null;
+        try {
+            transactionLogger.log("invocation started", transactionLogger);
+            result = invocation.proceed();
+            transactionLogger.log("invocation ended", transactionLogger);
+        } catch (Exception exception) {
+            doHandleException(transactionLogger, exception, transactionMetadata, currentTransaction);
+        }
+        return result;
+    }
+
     @SuppressWarnings("unchecked")
-    protected void doHandleException(String logPrefix, Exception exception, TransactionMetadata transactionMetadata, Object currentTransaction) throws Exception {
+    private void doHandleException(TransactionLogger transactionLogger, Exception exception, TransactionMetadata transactionMetadata, Object currentTransaction) throws Exception {
         boolean matchForRollback = false, matchForNoRollback = false;
 
         // Check for the need to rollback
@@ -123,7 +128,7 @@ public abstract class AbstractTransactionManager implements TransactionManager {
                     exceptionHandler = injector.getInstance(transactionMetadata.getExceptionHandler());
                 }
                 if (exceptionHandler != null && exceptionHandler.handleException(exception, new TransactionMetadata().mergeFrom(transactionMetadata), currentTransaction)) {
-                    LOGGER.debug("{}: transaction exception has been handled", logPrefix);
+                    transactionLogger.log("transaction exception has been handled", transactionLogger);
                 } else {
                     throw exception;
                 }
@@ -135,12 +140,7 @@ public abstract class AbstractTransactionManager implements TransactionManager {
 
     private TransactionMetadata readTransactionMetadata(MethodInvocation methodInvocation) {
         Method method = methodInvocation.getMethod();
-        Class<?> targetClass = methodInvocation.getThis().getClass();
-
-        if (targetClass.getName().contains("EnhancerByGuice")) {
-            targetClass = targetClass.getSuperclass();
-        }
-
+        Class<?> targetClass = SeedReflectionUtils.cleanProxy(methodInvocation.getThis().getClass());
         TransactionMetadata transactionMetadataDefaults = injector.getInstance(TransactionMetadata.class).defaults();
         TransactionMetadata transactionMetadata = injector.getInstance(TransactionMetadata.class).defaults();
 
