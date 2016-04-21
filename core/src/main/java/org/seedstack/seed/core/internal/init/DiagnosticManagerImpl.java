@@ -13,6 +13,7 @@ import com.google.inject.Key;
 import com.google.inject.TypeLiteral;
 import org.seedstack.seed.DiagnosticManager;
 import org.seedstack.seed.SeedException;
+import org.seedstack.seed.SeedRuntime;
 import org.seedstack.seed.core.internal.CoreErrorCode;
 import org.seedstack.seed.core.utils.SeedLoggingUtils;
 import org.seedstack.seed.spi.diagnostic.DiagnosticInfoCollector;
@@ -25,9 +26,15 @@ import java.lang.management.ManagementFactory;
 import java.lang.management.RuntimeMXBean;
 import java.lang.management.ThreadInfo;
 import java.lang.management.ThreadMXBean;
+import java.net.URL;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Implementation of the diagnostic manager.
@@ -43,6 +50,8 @@ public class DiagnosticManagerImpl implements DiagnosticManager {
 
     @Inject
     private Injector injector;
+    private Set<URL> scannedUrls;
+    private SeedRuntime seedRuntime;
 
     public DiagnosticManagerImpl() {
         String reporterClassName = System.getProperty(REPORTER_SYSTEM_PROPERTY);
@@ -77,6 +86,14 @@ public class DiagnosticManagerImpl implements DiagnosticManager {
         }
     }
 
+    public void setScannedUrls(Set<URL> scannedUrls) {
+        this.scannedUrls = scannedUrls;
+    }
+
+    public void setSeedRuntime(SeedRuntime seedRuntime) {
+        this.seedRuntime = seedRuntime;
+    }
+
     private synchronized Map<String, Object> collectAllDiagnostics(Throwable t) {
         Map<String, Object> allDiagnostics = new HashMap<String, Object>();
 
@@ -86,6 +103,7 @@ public class DiagnosticManagerImpl implements DiagnosticManager {
             allDiagnostics.put("exception", exceptionInfo);
         }
 
+        allDiagnostics.put("seed", collectSeedInfo());
         allDiagnostics.put("system", collectSystemInfo());
 
         if (injector != null) {
@@ -126,6 +144,28 @@ public class DiagnosticManagerImpl implements DiagnosticManager {
         }
     }
 
+    private Map<String, Object> collectSeedInfo() {
+        Map<String, Object> result = new HashMap<String, Object>();
+
+        if (seedRuntime != null) {
+            String version = seedRuntime.getVersion();
+            if (version != null) {
+                result.put("version", version);
+            }
+            Object context = seedRuntime.contextAs(Object.class);
+            if (context != null) {
+                result.put("context-class", context.getClass().getCanonicalName());
+            }
+            result.put("color-output", seedRuntime.isColorOutputSupported());
+        }
+
+        if (scannedUrls != null) {
+            result.put("scanned-urls", scannedUrls);
+        }
+
+        return result;
+    }
+
     private Map<String, Object> collectSystemInfo() {
         Map<String, Object> result = new HashMap<String, Object>();
 
@@ -149,7 +189,7 @@ public class DiagnosticManagerImpl implements DiagnosticManager {
         ThreadMXBean threadMXBean = ManagementFactory.getThreadMXBean();
         for (long threadId : threadMXBean.getAllThreadIds()) {
             ThreadInfo threadInfo = threadMXBean.getThreadInfo(threadId);
-            
+
             if (threadInfo != null) { // checks if the thread is not alive or it does not exist.
                 Map<String, Object> threadResults = new HashMap<String, Object>();
 

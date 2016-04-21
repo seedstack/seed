@@ -61,10 +61,15 @@ public class WebPlugin extends AbstractPlugin {
     public Set<URL> computeAdditionalClasspathScan() {
         Set<URL> additionalUrls = new HashSet<URL>();
 
-        // resource paths for WEB-INF/lib can be null when SEED run in the Undertow servlet container
-        if (servletContext != null && servletContext.getResourcePaths("/WEB-INF/lib") != null) {
-            additionalUrls.addAll(ClasspathHelper.forWebInfLib(servletContext));
-            additionalUrls.add(ClasspathHelper.forWebInfClasses(servletContext));
+        if (servletContext != null) {
+            // resource paths for WEB-INF/lib can be null when SEED run in the Undertow servlet container
+            if (servletContext.getResourcePaths("/WEB-INF/lib") != null) {
+                additionalUrls.addAll(ClasspathHelper.forWebInfLib(servletContext));
+            }
+            URL webInfClasses = ClasspathHelper.forWebInfClasses(servletContext);
+            if (webInfClasses != null) {
+                additionalUrls.add(webInfClasses);
+            }
         }
 
         LOGGER.debug("{} additional URL(s) to scan were determined from Web classpath", additionalUrls.size());

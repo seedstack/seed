@@ -13,8 +13,6 @@ import org.seedstack.seed.SeedException;
 import org.seedstack.seed.transaction.Propagation;
 import org.seedstack.seed.transaction.spi.TransactionHandler;
 import org.seedstack.seed.transaction.spi.TransactionMetadata;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import javax.naming.Context;
@@ -30,24 +28,19 @@ public class JtaTransactionManager extends AbstractTransactionManager {
     public static final String DEFAULT_USER_TRANSACTION_NAME = "java:comp/UserTransaction";
     public static final String[] FALLBACK_TRANSACTION_MANAGER_NAMES = new String[]{"java:comp/TransactionManager", "java:appserver/TransactionManager", "java:pm/TransactionManager", "java:/TransactionManager"};
     public static final String DEFAULT_TRANSACTION_SYNCHRONIZATION_REGISTRY_NAME = "java:comp/TransactionSynchronizationRegistry";
-    private static final Logger LOGGER = LoggerFactory.getLogger(JtaTransactionManager.class);
 
     @Inject
     private Context jndiContext;
-
     @Configuration(value = TransactionPlugin.TRANSACTION_PLUGIN_CONFIGURATION_PREFIX + ".jta.tx-manager-name", mandatory = false)
     private String transactionManagerName;
-
     @Configuration(value = TransactionPlugin.TRANSACTION_PLUGIN_CONFIGURATION_PREFIX + ".jta.user-tx-name", defaultValue = DEFAULT_USER_TRANSACTION_NAME)
     private String userTransactionName;
-
     protected UserTransaction userTransaction;
-
     protected TransactionManager transactionManager;
 
     @Override
-    protected Object doMethodInterception(String logPrefix, MethodInvocation invocation, TransactionMetadata transactionMetadata, TransactionHandler<Object> transactionHandler) throws Throwable {
-        initJTAObjects(logPrefix);
+    protected Object doMethodInterception(TransactionLogger transactionLogger, MethodInvocation invocation, TransactionMetadata transactionMetadata, TransactionHandler<Object> transactionHandler) throws Throwable {
+        initJTAObjects(transactionLogger);
 
         PropagationResult propagationResult;
         try {
@@ -60,7 +53,7 @@ public class JtaTransactionManager extends AbstractTransactionManager {
         try {
             if (propagationResult.isSuspendCurrentTransaction() && userTransaction.getStatus() == Status.STATUS_ACTIVE) {
                 if (transactionManager != null) {
-                    LOGGER.debug("{}: suspending current JTA transaction", logPrefix);
+                    transactionLogger.log("suspending current JTA transaction");
                     suspendedTransaction = transactionManager.suspend();
                 } else {
                     throw SeedException.createNew(TransactionErrorCode.TRANSACTION_SUSPENSION_IS_NOT_SUPPORTED);
@@ -68,17 +61,17 @@ public class JtaTransactionManager extends AbstractTransactionManager {
             }
 
             if (propagationResult.isNewTransactionNeeded()) {
-                LOGGER.debug("{}: initializing transaction handler", logPrefix);
+                transactionLogger.log("initializing transaction handler");
                 transactionHandler.doInitialize(transactionMetadata);
             }
 
             Object result = null;
             try {
                 if (propagationResult.isNewTransactionNeeded()) {
-                    LOGGER.debug("{}: beginning the JTA transaction", logPrefix);
+                    transactionLogger.log("beginning the JTA transaction");
                     userTransaction.begin();
                 } else {
-                    LOGGER.debug("{}: participating in an existing JTA transaction", logPrefix);
+                    transactionLogger.log("participating in an existing JTA transaction");
                 }
 
                 try {
@@ -87,19 +80,13 @@ public class JtaTransactionManager extends AbstractTransactionManager {
                     }
 
                     try {
-                        try {
-                            LOGGER.debug("{}: invocation started", logPrefix);
-                            result = invocation.proceed();
-                            LOGGER.debug("{}: invocation ended", logPrefix);
-                        } catch (Exception exception) {
-                            doHandleException(logPrefix, exception, transactionMetadata, userTransaction);
-                        }
+                        result = doInvocation(transactionLogger, invocation, transactionMetadata, userTransaction);
                     } catch (Throwable throwable) {
                         if (propagationResult.isNewTransactionNeeded()) {
-                            LOGGER.debug("{}: rolling back JTA transaction after invocation exception", logPrefix);
+                            transactionLogger.log("rolling back JTA transaction after invocation exception");
                             userTransaction.rollback();
                         } else if (transactionMetadata.isRollbackOnParticipationFailure()) {
-                            LOGGER.debug("{}: marking JTA transaction as rollback-only after invocation exception", logPrefix);
+                            transactionLogger.log("marking JTA transaction as rollback-only after invocation exception");
                             userTransaction.setRollbackOnly();
                         }
 
@@ -107,18 +94,18 @@ public class JtaTransactionManager extends AbstractTransactionManager {
                     }
 
                     if (propagationResult.isNewTransactionNeeded()) {
-                        LOGGER.debug("{}: committing JTA transaction", logPrefix);
+                        transactionLogger.log("committing JTA transaction");
                         userTransaction.commit();
                     }
                 } finally {
                     if (propagationResult.isNewTransactionNeeded() && userTransaction.getStatus() == Status.STATUS_ACTIVE) {
-                        LOGGER.debug("{}: rolling back JTA transaction (no commit occurred)", logPrefix);
+                        transactionLogger.log("rolling back JTA transaction (no commit occurred)");
                         userTransaction.rollback();
                     }
                 }
             } finally {
                 if (propagationResult.isNewTransactionNeeded()) {
-                    LOGGER.debug("{}: cleaning up transaction handler", logPrefix);
+                    transactionLogger.log("cleaning up transaction handler");
                     transactionHandler.doCleanup();
                 }
             }
@@ -126,15 +113,15 @@ public class JtaTransactionManager extends AbstractTransactionManager {
             return result;
         } finally {
             if (suspendedTransaction != null) {
-                LOGGER.debug("{}: resuming suspended transaction", logPrefix);
+                transactionLogger.log("resuming suspended transaction");
                 transactionManager.resume(suspendedTransaction);
             }
         }
     }
 
-    protected TransactionManager getTransactionManager(String logPrefix, UserTransaction ut) {
+    protected TransactionManager getTransactionManager(TransactionLogger transactionLogger, UserTransaction ut) {
         if (ut instanceof TransactionManager) {
-            LOGGER.debug("{}: JTA UserTransaction object [{}] implements TransactionManager", logPrefix, ut);
+            transactionLogger.log("JTA UserTransaction object [{}] implements TransactionManager", ut);
             return (TransactionManager) ut;
         }
 
@@ -149,34 +136,34 @@ public class JtaTransactionManager extends AbstractTransactionManager {
         for (String jndiName : FALLBACK_TRANSACTION_MANAGER_NAMES) {
             try {
                 TransactionManager tm = (TransactionManager) jndiContext.lookup(jndiName);
-                LOGGER.debug("{}: JTA TransactionManager found at fallback JNDI location [" + jndiName + "]", logPrefix);
+                transactionLogger.log("JTA TransactionManager found at fallback JNDI location [{}]", jndiName);
                 return tm;
             } catch (NamingException ex) {
-                LOGGER.trace(String.format("%s: no JTA TransactionManager found at fallback JNDI location [%s]", logPrefix, jndiName), ex);
+                transactionLogger.log("No JTA TransactionManager found at fallback JNDI location [{}]", jndiName, ex);
             }
         }
 
         return null;
     }
 
-    protected UserTransaction getUserTransaction(String logPrefix) throws NamingException {
+    protected UserTransaction getUserTransaction(TransactionLogger transactionLogger) throws NamingException {
         String jndiName = DEFAULT_USER_TRANSACTION_NAME;
         UserTransaction ut = (UserTransaction) jndiContext.lookup(jndiName);
-        LOGGER.debug("{}: JTA UserTransaction found at default JNDI location [" + jndiName + "]", logPrefix);
+        transactionLogger.log("JTA UserTransaction found at default JNDI location [{}]", jndiName);
         return ut;
     }
 
-    private void initJTAObjects(String logPrefix) {
+    private void initJTAObjects(TransactionLogger transactionLogger) {
         if (userTransaction == null) {
             try {
-                userTransaction = getUserTransaction(logPrefix);
+                userTransaction = getUserTransaction(transactionLogger);
             } catch (Exception e) {
                 throw SeedException.wrap(e, TransactionErrorCode.UNABLE_TO_FIND_JTA_TRANSACTION);
             }
         }
 
         if (transactionManager == null) {
-            transactionManager = getTransactionManager(logPrefix, userTransaction);
+            transactionManager = getTransactionManager(transactionLogger, userTransaction);
         }
     }
 

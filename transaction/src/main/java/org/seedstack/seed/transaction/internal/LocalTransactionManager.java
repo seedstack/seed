@@ -7,13 +7,11 @@
  */
 package org.seedstack.seed.transaction.internal;
 
+import org.aopalliance.intercept.MethodInvocation;
 import org.seedstack.seed.SeedException;
 import org.seedstack.seed.transaction.Propagation;
 import org.seedstack.seed.transaction.spi.TransactionHandler;
 import org.seedstack.seed.transaction.spi.TransactionMetadata;
-import org.aopalliance.intercept.MethodInvocation;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * This transaction manager implements local transactions behavior, i.e. transactions that cannot span on multiple
@@ -22,47 +20,39 @@ import org.slf4j.LoggerFactory;
  * @author adrien.lauer@mpsa.com
  */
 public class LocalTransactionManager extends AbstractTransactionManager {
-    private static final Logger LOGGER = LoggerFactory.getLogger(LocalTransactionManager.class);
-
     @Override
-    protected Object doMethodInterception(String logPrefix, MethodInvocation invocation, TransactionMetadata transactionMetadata, TransactionHandler<Object> transactionHandler) throws Throwable {
+    protected Object doMethodInterception(TransactionLogger transactionLogger, MethodInvocation invocation, TransactionMetadata transactionMetadata, TransactionHandler<Object> transactionHandler) throws Throwable {
         Object currentTransaction = transactionHandler.getCurrentTransaction();
         PropagationResult propagationResult = handlePropagation(transactionMetadata.getPropagation(), currentTransaction);
 
         if (propagationResult.isNewTransactionNeeded()) {
-            LOGGER.debug("{}: initializing transaction handler", logPrefix);
+            transactionLogger.log("initializing transaction handler");
             transactionHandler.doInitialize(transactionMetadata);
         }
 
         Object result = null;
         try {
             if (propagationResult.isNewTransactionNeeded()) {
-                LOGGER.debug("{}: creating a new transaction", logPrefix);
+                transactionLogger.log("creating a new transaction");
                 currentTransaction = transactionHandler.doCreateTransaction();
             } else {
-                LOGGER.debug("{}: participating in an existing transaction", logPrefix);
+                transactionLogger.log("participating in an existing transaction");
             }
 
             try {
                 if (propagationResult.isNewTransactionNeeded()) {
-                    LOGGER.debug("{}: beginning the transaction", logPrefix);
+                    transactionLogger.log("beginning the transaction");
                     transactionHandler.doBeginTransaction(currentTransaction);
                 }
 
                 try {
-                    try {
-                        LOGGER.debug("{}: invocation started", logPrefix);
-                        result = invocation.proceed();
-                        LOGGER.debug("{}: invocation ended", logPrefix);
-                    } catch (Exception exception) {
-                        doHandleException(logPrefix, exception, transactionMetadata, currentTransaction);
-                    }
+                    result = doInvocation(transactionLogger, invocation, transactionMetadata, currentTransaction);
                 } catch (Throwable throwable) {
                     if (propagationResult.isNewTransactionNeeded()) {
-                        LOGGER.debug("{}: rolling back the transaction after invocation exception", logPrefix);
+                        transactionLogger.log("rolling back the transaction after invocation exception");
                         transactionHandler.doRollbackTransaction(currentTransaction);
                     } else if (transactionMetadata.isRollbackOnParticipationFailure()) {
-                        LOGGER.debug("{}: marking the transaction as rollback-only after invocation exception", logPrefix);
+                        transactionLogger.log("marking the transaction as rollback-only after invocation exception");
                         transactionHandler.doMarkTransactionAsRollbackOnly(currentTransaction);
                     }
 
@@ -70,18 +60,18 @@ public class LocalTransactionManager extends AbstractTransactionManager {
                 }
 
                 if (propagationResult.isNewTransactionNeeded()) {
-                    LOGGER.debug("{}: committing transaction", logPrefix);
+                    transactionLogger.log("committing transaction");
                     transactionHandler.doCommitTransaction(currentTransaction);
                 }
             } finally {
                 if (propagationResult.isNewTransactionNeeded()) {
-                    LOGGER.debug("{}: releasing transaction", logPrefix);
+                    transactionLogger.log("releasing transaction");
                     transactionHandler.doReleaseTransaction(currentTransaction);
                 }
             }
         } finally {
             if (propagationResult.isNewTransactionNeeded()) {
-                LOGGER.debug("{}: cleaning up transaction handler", logPrefix);
+                transactionLogger.log("cleaning up transaction handler");
                 transactionHandler.doCleanup();
             }
         }
