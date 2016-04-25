@@ -1,3 +1,56 @@
+# Version 2.3.0 (2016-04-25)
+
+* [new] Full compatibility with Java 8.
+* [new] Interface `LifecycleListener` provides the ability to execute code upon application startup and shutdown.
+* [new] Global facade (class `Seed`) for kernel creation and disposal.
+* [new] Auto-configuration of Logback when it is in use and no `logback.xml` file exists.
+* [new] Best-effort to detect console color output in various runtime environments.
+* [new] Ability to print a custom banner upon startup by providing a `banner.txt` file in the default package.
+* [chg] Update to official Guice 4.0 (not using Sisu-Guice anymore).
+* [chg] Improve log traces on startup errors.
+* [chg] Better default log format.
+* [chg] Update parent pom to [2.4.0](https://github.com/seedstack/poms/releases/tag/v2.4.0)
+* [chg] Update `commons-configuration` to 1.10.
+* [chg] Update `commons-cli` to 1.3.1.
+* [chg] Update `shiro` to 1.2.4.
+* [chg] Update `undertow` to 1.3.19.Final.
+* [chg] Update `jodd` to 3.6.6.
+* [chg] Update `metrics` to 3.1.2.
+* [chg] Update `jersey1` to 1.19.1.
+* [chg] Update `jersey2` to 2.22.2.
+* [fix] Correctly injects `@Logging`-annotated inherited loggers.
+
+## Web
+
+* [new] Fully-injectable and interceptable servlets, filters and listeners.
+* [new] Full compatibility with asynchronous servlets and filters.
+* [new] Ability to programatically register servlets, filters and listeners.
+* [chg] WebSocket support, previously in `seed-web-websocket` module is merged into `seed-web-core` module.
+* [brk] Compatibility with Servlet 2.5 is dropped.
+* [brk] Custom Servlet annotations (`@WebServlet`, `@WebFilter` and `@WebListener`) are dropped in favor or standard ones.
+
+## Rest
+
+* [new] Full support for JAX-RS 2 asynchronous resources.
+* [new] Detection of BeanParam classes in HAL scanner.
+* [chg] Automatically prepends the servlet context path to generated HAL links.
+
+## EL
+
+* [new] Add support for Expression Language 3
+
+## Testing
+
+* [fix] Correctly take inheritance into account in expected IT exceptions
+* [chg] Update Tomcat version to 8.0.32 for Arquillian tests.
+
+# Version 2.2.1 (2016-03-22)
+
+## Rest
+
+* [new] Support configuration of Jersey 2 features. Automatically enable multipart and JSP features if detected on the classpath.
+* [new] Add multipart feature as a dependency of Jersey 2 module, enabling it by default.
+
 # Version 2.2.0 (2016-01-28)
 
 * [fix] Fix the `@Ignore` annotation which was not working anymore in version 2.1.0.
