@@ -8,8 +8,6 @@
 package org.seedstack.seed.web.internal.websocket;
 
 import com.google.inject.AbstractModule;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.Set;
 
@@ -21,7 +19,6 @@ import java.util.Set;
  *         Date: 17/12/13
  */
 class WebSocketModule extends AbstractModule {
-    private static final Logger LOGGER = LoggerFactory.getLogger(WebSocketModule.class);
     private final Set<Class<?>> serverEndpointClasses;
 
     WebSocketModule(Set<Class<?>> serverEndpointClasses) {
@@ -36,10 +33,7 @@ class WebSocketModule extends AbstractModule {
         requestStaticInjection(SeedClientEndpointConfigurator.class);
 
         for (Class<?> aClass : serverEndpointClasses) {
-            LOGGER.debug("Binding WebSocket endpoint {}", aClass);
             bind(aClass);
         }
-
-        LOGGER.info("{} WebSocket endpoint(s) bound", serverEndpointClasses.size());
     }
 }

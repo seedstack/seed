@@ -93,7 +93,7 @@ public class Jersey2Plugin extends AbstractPlugin implements WebProvider {
 
             seedServletContainer = new SeedServletContainer(resources, providers, enabledFeatures, jersey2Properties);
 
-            LOGGER.info("Jersey 2 serving JAX-RS resources on " + restConfiguration.getRestPath());
+            LOGGER.info("Jersey 2 serving JAX-RS resources on {}/*", restConfiguration.getRestPath());
         }
 
         return InitState.INITIALIZED;

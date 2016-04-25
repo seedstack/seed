@@ -72,7 +72,7 @@ public class Jersey1Plugin extends AbstractPlugin implements WebProvider {
             jersey1FilterDefinition.addMappings(new FilterDefinition.Mapping(restConfiguration.getRestPath() + "/*"));
             jersey1FilterDefinition.addInitParameters(buildInitParams(restConfiguration));
 
-            LOGGER.info("Jersey 1 serving JAX-RS resources on " + restConfiguration.getRestPath());
+            LOGGER.info("Jersey 1 serving JAX-RS resources on {}/*", restConfiguration.getRestPath());
         }
 
         return InitState.INITIALIZED;
