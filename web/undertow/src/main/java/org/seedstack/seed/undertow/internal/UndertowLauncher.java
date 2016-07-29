@@ -36,14 +36,15 @@ public class UndertowLauncher implements SeedLauncher {
         manager.deploy();
 
         ServletContextImpl servletContext = manager.getDeployment().getServletContext();
-        Kernel kernel = (Kernel) servletContext.getAttribute(ServletContextUtils.KERNEL_ATTRIBUTE_NAME);
+        Kernel kernel = ServletContextUtils.getKernel(servletContext);
 
         try {
             ServerConfig serverConfig = getUndertowPlugin(kernel).getServerConfig();
+
             undertow = new ServerFactory().createServer(serverConfig, manager);
             undertow.start();
 
-            LOGGER.info("Listening on " + serverConfig.getHost() + ":" + serverConfig.getPort());
+            LOGGER.info("Listening on {}:{}", serverConfig.getHost(), serverConfig.getPort());
         } catch (SeedException e) {
             throw e;
         } catch (Exception e) {

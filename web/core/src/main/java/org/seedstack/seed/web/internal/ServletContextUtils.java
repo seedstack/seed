@@ -23,4 +23,8 @@ public final class ServletContextUtils {
     public static Injector getInjector(ServletContext servletContext) {
         return (Injector) servletContext.getAttribute(INJECTOR_ATTRIBUTE_NAME);
     }
+
+    public static Kernel getKernel(ServletContext servletContext) {
+        return (Kernel) servletContext.getAttribute(KERNEL_ATTRIBUTE_NAME);
+    }
 }
