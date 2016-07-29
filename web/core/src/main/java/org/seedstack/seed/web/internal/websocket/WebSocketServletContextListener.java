@@ -7,13 +7,21 @@
  */
 package org.seedstack.seed.web.internal.websocket;
 
+import com.google.inject.Injector;
 import io.nuun.kernel.api.plugin.PluginException;
+import org.seedstack.seed.web.internal.ServletContextUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
+import javax.websocket.Decoder;
+import javax.websocket.Encoder;
 import javax.websocket.server.ServerContainer;
+import javax.websocket.server.ServerEndpoint;
+import javax.websocket.server.ServerEndpointConfig;
+import java.util.Arrays;
 import java.util.Set;
 
 class WebSocketServletContextListener implements ServletContextListener {
@@ -27,12 +35,21 @@ class WebSocketServletContextListener implements ServletContextListener {
 
     @Override
     public void contextInitialized(ServletContextEvent sce) {
-        ServerContainer container = (ServerContainer) sce.getServletContext().getAttribute("javax.websocket.server.ServerContainer");
+        ServletContext servletContext = sce.getServletContext();
+        Injector injector = ServletContextUtils.getInjector(servletContext);
+        ServerContainer container = (ServerContainer) servletContext.getAttribute("javax.websocket.server.ServerContainer");
         if (container != null) {
             for (Class<?> endpointClass : serverEndpointClasses) {
                 try {
-                    container.addEndpoint(endpointClass);
                     LOGGER.trace("Registering WebSocket server endpoint {}", endpointClass.getCanonicalName());
+                    ServerEndpoint serverEndpoint = endpointClass.getAnnotation(ServerEndpoint.class);
+                    ServerEndpointConfig serverEndpointConfig = ServerEndpointConfig.Builder.create(endpointClass, serverEndpoint.value())
+                            .decoders(Arrays.<Class<? extends Decoder>>asList(serverEndpoint.decoders()))
+                            .encoders(Arrays.<Class<? extends Encoder>>asList(serverEndpoint.encoders()))
+                            .subprotocols(Arrays.asList(serverEndpoint.subprotocols()))
+                            .configurator(injector.getInstance(serverEndpoint.configurator() == ServerEndpointConfig.Configurator.class ? SeedServerEndpointConfigurator.class : serverEndpoint.configurator()))
+                            .build();
+                    container.addEndpoint(serverEndpointConfig);
                 } catch (Exception e) {
                     throw new PluginException("Unable to deploy WebSocket server endpoint " + endpointClass, e);
                 }

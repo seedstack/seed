@@ -22,7 +22,7 @@ import java.util.ServiceLoader;
 import java.util.Set;
 
 class DeploymentManagerFactory {
-    static final String DEFAULT_CONTEXT_PATH = "/";
+    private static final String DEFAULT_CONTEXT_PATH = "/";
 
     DeploymentManager createDeploymentManager(Configuration bootstrapConfig) {
         String contextPath = bootstrapConfig.getString("server.context-path", DEFAULT_CONTEXT_PATH);

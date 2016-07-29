@@ -18,23 +18,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * This Configurator is used as default configurator for seed ServerEndpoints.
+ * This Configurator is used as default configurator for Seed ServerEndpoints.
  * It overrides endpoint instantiation to use Guice.
  *
  * @author pierre.thirouin@ext.mpsa.com
- *         Date: 18/12/13
+ * @author adrien.lauer@mpsa.com
  */
 public class SeedServerEndpointConfigurator extends ServerEndpointConfig.Configurator {
     @Inject
-    private static Injector injector;
-
-    /**
-     * Creates the endpoint configurator.
-     */
-    public SeedServerEndpointConfigurator() {
-        super();
-        injector.injectMembers(this);
-    }
+    private Injector injector;
 
     @Override
     public <T> T getEndpointInstance(Class<T> endpointClass) throws InstantiationException {
@@ -48,10 +40,8 @@ public class SeedServerEndpointConfigurator extends ServerEndpointConfig.Configu
                 return request;
             }
         }
-
         return "";
     }
-
 
     @Override
     public List<Extension> getNegotiatedExtensions(List<Extension> installed, List<Extension> requested) {
@@ -61,10 +51,8 @@ public class SeedServerEndpointConfigurator extends ServerEndpointConfig.Configu
                 result.add(request);
             }
         }
-
         return result;
     }
-
 
     @Override
     public boolean checkOrigin(String originHeaderValue) {

@@ -16,12 +16,15 @@ import org.junit.Test;
 import org.seedstack.seed.core.SeedMain;
 import org.seedstack.seed.spi.SeedLauncher;
 
+import static com.jayway.restassured.RestAssured.expect;
+
 /**
  * Tests an undertow server exposing a simple hello world servlet.
  *
  * @author pierre.thirouin@ext.mpsa.com (Pierre Thirouin)
  */
 public class UndertowIT {
+    private static final String BASE_URL = "localhost:9001/";
     private final SeedLauncher launcher = SeedMain.getLauncher();
 
     @Before
@@ -35,9 +38,9 @@ public class UndertowIT {
     }
 
     @Test
-    public void test_run_seed_app_with_SSL() throws InterruptedException {
+    public void test_run_seed_app_with_SSL() throws Exception {
         RestAssured.useRelaxedHTTPSValidation();
-        Response response = RestAssured.expect().statusCode(200).when().get("https://localhost:9001/hello");
+        Response response = expect().statusCode(200).when().get("https://" + BASE_URL + "hello");
         Assertions.assertThat(response.asString()).isEqualTo("Hello World! value1");
     }
 }

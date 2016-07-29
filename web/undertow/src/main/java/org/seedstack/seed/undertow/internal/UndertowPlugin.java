@@ -25,12 +25,17 @@ import java.util.Collection;
 public class UndertowPlugin extends AbstractPlugin {
 
     private static final String CONFIGURATION_PREFIX = "org.seedstack.seed.server";
-    public static final String NAME = "undertow";
+    static final String NAME = "undertow";
     private ServerConfig serverConfig;
 
     @Override
     public String name() {
-        return "undertow";
+        return NAME;
+    }
+
+    @Override
+    public Collection<Class<?>> requiredPlugins() {
+        return Lists.<Class<?>>newArrayList(ConfigurationProvider.class, SSLProvider.class);
     }
 
     @Override
@@ -41,13 +46,8 @@ public class UndertowPlugin extends AbstractPlugin {
         return InitState.INITIALIZED;
     }
 
-    public ServerConfig getServerConfig() {
+    ServerConfig getServerConfig() {
         return serverConfig;
-    }
-
-    @Override
-    public Collection<Class<?>> requiredPlugins() {
-        return Lists.<Class<?>>newArrayList(ConfigurationProvider.class, SSLProvider.class);
     }
 
 }

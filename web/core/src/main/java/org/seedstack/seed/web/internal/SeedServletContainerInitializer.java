@@ -33,6 +33,7 @@ public class SeedServletContainerInitializer implements ServletContainerInitiali
         try {
             kernel = Seed.createKernel(servletContext, buildKernelConfiguration(servletContext), true);
             servletContext.setAttribute(ServletContextUtils.KERNEL_ATTRIBUTE_NAME, kernel);
+            servletContext.setAttribute(ServletContextUtils.INJECTOR_ATTRIBUTE_NAME, kernel.objectGraph().as(Injector.class));
         } catch (SeedException e) {
             handleException(e);
             throw e;
@@ -46,7 +47,7 @@ public class SeedServletContainerInitializer implements ServletContainerInitiali
 
     @Override
     public void contextInitialized(ServletContextEvent sce) {
-        sce.getServletContext().setAttribute(ServletContextUtils.INJECTOR_ATTRIBUTE_NAME, kernel.objectGraph().as(Injector.class));
+        // nothing to do
     }
 
     @Override

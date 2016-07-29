@@ -11,7 +11,6 @@ package org.seedstack.seed.web.internal.websocket;
 import com.google.common.collect.Lists;
 import io.nuun.kernel.api.plugin.InitState;
 import io.nuun.kernel.api.plugin.context.InitContext;
-import io.nuun.kernel.api.plugin.request.BindingRequest;
 import io.nuun.kernel.api.plugin.request.ClasspathScanRequest;
 import io.nuun.kernel.core.AbstractPlugin;
 import org.seedstack.seed.SeedRuntime;
@@ -20,12 +19,12 @@ import org.seedstack.seed.web.spi.FilterDefinition;
 import org.seedstack.seed.web.spi.ListenerDefinition;
 import org.seedstack.seed.web.spi.ServletDefinition;
 import org.seedstack.seed.web.spi.WebProvider;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.servlet.ServletContext;
 import javax.websocket.ClientEndpoint;
+import javax.websocket.ClientEndpointConfig;
 import javax.websocket.server.ServerEndpoint;
+import javax.websocket.server.ServerEndpointConfig;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -38,10 +37,11 @@ import java.util.Set;
  * @author pierre.thirouin@ext.mpsa.com
  */
 public class WebSocketPlugin extends AbstractPlugin implements WebProvider {
-    private static final Logger LOGGER = LoggerFactory.getLogger(WebSocketPlugin.class);
-
     private final boolean webSocketPresent = SeedReflectionUtils.isClassPresent("javax.websocket.server.ServerEndpoint");
     private final Set<Class<?>> serverEndpointClasses = new HashSet<Class<?>>();
+    private final Set<Class<?>> clientEndpointClasses = new HashSet<Class<?>>();
+    private final Set<Class<? extends ServerEndpointConfig.Configurator>> serverConfiguratorClasses = new HashSet<Class<? extends ServerEndpointConfig.Configurator>>();
+    private final HashSet<Class<? extends ClientEndpointConfig.Configurator>> clientConfiguratorClasses = new HashSet<Class<? extends ClientEndpointConfig.Configurator>>();
     private ServletContext servletContext;
 
     @Override
@@ -57,25 +57,23 @@ public class WebSocketPlugin extends AbstractPlugin implements WebProvider {
     @Override
     public Collection<ClasspathScanRequest> classpathScanRequests() {
         if (isEnabled()) {
-            return classpathScanRequestBuilder().annotationType(ServerEndpoint.class).build();
+            return classpathScanRequestBuilder().annotationType(ServerEndpoint.class).annotationType(ClientEndpoint.class).build();
         } else {
             return super.classpathScanRequests();
         }
     }
 
     @Override
-    public Collection<BindingRequest> bindingRequests() {
-        if (isEnabled()) {
-            return bindingRequestsBuilder().annotationType(ClientEndpoint.class).build();
-        } else {
-            return super.bindingRequests();
-        }
-    }
-
-    @Override
     public InitState init(InitContext initContext) {
         if (isEnabled()) {
-            serverEndpointClasses.addAll(initContext.scannedClassesByAnnotationClass().get(ServerEndpoint.class));
+            for (Class<?> candidate : initContext.scannedClassesByAnnotationClass().get(ServerEndpoint.class)) {
+                serverConfiguratorClasses.add(candidate.getAnnotation(ServerEndpoint.class).configurator());
+                serverEndpointClasses.add(candidate);
+            }
+            for (Class<?> candidate : initContext.scannedClassesByAnnotationClass().get(ClientEndpoint.class)) {
+                clientConfiguratorClasses.add(candidate.getAnnotation(ClientEndpoint.class).configurator());
+                clientEndpointClasses.add(candidate);
+            }
         }
         return InitState.INITIALIZED;
     }
@@ -83,7 +81,7 @@ public class WebSocketPlugin extends AbstractPlugin implements WebProvider {
     @Override
     public Object nativeUnitModule() {
         if (isEnabled()) {
-            return new WebSocketModule(serverEndpointClasses);
+            return new WebSocketModule(serverEndpointClasses, serverConfiguratorClasses, clientEndpointClasses, clientConfiguratorClasses);
         } else {
             return super.nativeUnitModule();
         }
