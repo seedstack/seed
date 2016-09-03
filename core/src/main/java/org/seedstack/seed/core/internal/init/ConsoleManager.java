@@ -26,7 +26,7 @@ public class ConsoleManager {
     public synchronized void install() {
         OutputStream out = wrapOutputStream(System.out);
         OutputStream err = wrapOutputStream(System.err);
-        colorSupported = isColorSupported(out) || isColorSupported(err);
+        colorSupported = isColorSupported(out) && isColorSupported(err);
         savedOut = System.out;
         System.setOut(new PrintStream(out));
         savedErr = System.err;
@@ -48,11 +48,15 @@ public class ConsoleManager {
     }
 
     private OutputStream wrapOutputStream(final OutputStream stream) {
-        if (isIntelliJ() || isTTY() || isCygwin()) {
-            return ansiOutput(stream);
-        } else if (isWindows()) {
-            return windowsOutput(stream);
-        } else {
+        try {
+            if (isIntelliJ() || isTTY() || isCygwin()) {
+                return ansiOutput(stream);
+            } else if (isWindows()) {
+                return windowsOutput(stream);
+            } else {
+                return basicOutput(stream);
+            }
+        } catch (Exception e) {
             return basicOutput(stream);
         }
     }
