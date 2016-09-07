@@ -1,3 +1,8 @@
+# Version 2.3.1 (2016-09-07)
+
+* [chg] Annotated WebSockets are now registered programatically as it allows injection of the configurator class.
+* [fix] Catch exception thrown by the JAnsi library when used on an unsupported OS (i.e. not linux/windows/osx).  
+
 # Version 2.3.0 (2016-04-25)
 
 * [new] Full compatibility with Java 8.

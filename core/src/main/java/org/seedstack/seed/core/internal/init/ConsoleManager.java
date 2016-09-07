@@ -56,7 +56,7 @@ public class ConsoleManager {
             } else {
                 return basicOutput(stream);
             }
-        } catch (Exception e) {
+        } catch (Throwable e) {
             return basicOutput(stream);
         }
     }
