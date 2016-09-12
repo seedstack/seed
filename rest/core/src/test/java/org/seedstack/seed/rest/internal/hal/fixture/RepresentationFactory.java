@@ -25,7 +25,7 @@ public class RepresentationFactory {
 
         OrdersRepresentation orders = new OrdersRepresentation(14, 20);
 
-        List<HalRepresentation> embedded = new ArrayList<HalRepresentation>();
+        List<HalRepresentation> embedded = new ArrayList<>();
 
         embedded.add(HalBuilder.create(new OrderRepresentation(30.00f, "USD", "shipped"))
                 .self("/rest/order/123").link("basket", "/rest/baskets/98712").link("customer", "/rest/customers/7809"));

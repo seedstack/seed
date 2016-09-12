@@ -17,7 +17,6 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.Iterator;
 import java.util.jar.JarInputStream;
 import java.util.zip.ZipEntry;
 
@@ -43,40 +42,35 @@ class JndiJarInputDir implements Vfs.Dir {
 
     @Override
     public Iterable<Vfs.File> getFiles() {
-        return new Iterable<Vfs.File>() {
-            @Override
-            public Iterator<Vfs.File> iterator() {
-                return new AbstractIterator<Vfs.File>() {
-                    {
-                        try {
-                            jarInputStream = new JarInputStream(url.openConnection().getInputStream());
-                        } catch (Exception e) {
-                            SeedLoggingUtils.logWarningWithDebugDetails(LOGGER, e, "Unable to open JAR at {}, ignoring it", url.toExternalForm());
-                        }
-                    }
+        return () -> new AbstractIterator<Vfs.File>() {
+            {
+                try {
+                    jarInputStream = new JarInputStream(url.openConnection().getInputStream());
+                } catch (Exception e) {
+                    SeedLoggingUtils.logWarningWithDebugDetails(LOGGER, e, "Unable to open JAR at {}, ignoring it", url.toExternalForm());
+                }
+            }
 
-                    @Override
-                    protected Vfs.File computeNext() {
-                        if (jarInputStream == null) {
+            @Override
+            protected Vfs.File computeNext() {
+                if (jarInputStream == null) {
+                    return endOfData();
+                }
+
+                while (true) {
+                    try {
+                        ZipEntry entry = jarInputStream.getNextEntry();
+                        if (entry == null) {
                             return endOfData();
                         }
 
-                        while (true) {
-                            try {
-                                ZipEntry entry = jarInputStream.getNextEntry();
-                                if (entry == null) {
-                                    return endOfData();
-                                }
-
-                                if (!entry.isDirectory()) {
-                                    return new JndiJarInputFile(entry, jarInputStream);
-                                }
-                            } catch (IOException e) {
-                                throw SeedException.wrap(e, WebErrorCode.UNABLE_TO_SCAN_TOMCAT_JNDI_JAR);
-                            }
+                        if (!entry.isDirectory()) {
+                            return new JndiJarInputFile(entry, jarInputStream);
                         }
+                    } catch (IOException e) {
+                        throw SeedException.wrap(e, WebErrorCode.UNABLE_TO_SCAN_TOMCAT_JNDI_JAR);
                     }
-                };
+                }
             }
         };
     }

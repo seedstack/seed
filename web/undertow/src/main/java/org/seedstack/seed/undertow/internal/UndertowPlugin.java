@@ -10,23 +10,23 @@ package org.seedstack.seed.undertow.internal;
 import com.google.common.collect.Lists;
 import io.nuun.kernel.api.plugin.InitState;
 import io.nuun.kernel.api.plugin.context.InitContext;
-import io.nuun.kernel.core.AbstractPlugin;
-import org.apache.commons.configuration.Configuration;
-import org.seedstack.seed.core.spi.configuration.ConfigurationProvider;
+import org.seedstack.seed.core.internal.AbstractSeedPlugin;
 import org.seedstack.seed.crypto.spi.SSLProvider;
+import org.seedstack.seed.undertow.UndertowConfig;
+import org.seedstack.seed.web.WebConfig;
 
 import java.util.Collection;
 
 /**
- * The Undertow plugin is responsible to retrieve the undertow configuration.
+ * This plugin retrieves the Undertow Web server configuration.
  *
  * @author pierre.thirouin@ext.mpsa.com (Pierre Thirouin)
  */
-public class UndertowPlugin extends AbstractPlugin {
-
-    private static final String CONFIGURATION_PREFIX = "org.seedstack.seed.server";
+public class UndertowPlugin extends AbstractSeedPlugin {
     static final String NAME = "undertow";
-    private ServerConfig serverConfig;
+    private SSLProvider sslProvider;
+    private WebConfig.ServerConfig serverConfig;
+    private UndertowConfig undertowConfig;
 
     @Override
     public String name() {
@@ -34,20 +34,27 @@ public class UndertowPlugin extends AbstractPlugin {
     }
 
     @Override
-    public Collection<Class<?>> requiredPlugins() {
-        return Lists.<Class<?>>newArrayList(ConfigurationProvider.class, SSLProvider.class);
+    public Collection<Class<?>> dependencies() {
+        return Lists.newArrayList(SSLProvider.class);
     }
 
     @Override
-    public InitState init(InitContext initContext) {
-        Configuration serverConfig = initContext.dependency(ConfigurationProvider.class)
-                .getConfiguration().subset(CONFIGURATION_PREFIX);
-        this.serverConfig = new ServerConfigFactory().create(serverConfig, initContext.dependency(SSLProvider.class));
+    public InitState initialize(InitContext initContext) {
+        sslProvider = initContext.dependency(SSLProvider.class);
+        serverConfig = getConfiguration(WebConfig.ServerConfig.class);
+        undertowConfig = getConfiguration(UndertowConfig.class);
         return InitState.INITIALIZED;
     }
 
-    ServerConfig getServerConfig() {
+    SSLProvider getSslProvider() {
+        return sslProvider;
+    }
+
+    WebConfig.ServerConfig getServerConfig() {
         return serverConfig;
     }
 
+    UndertowConfig getUndertowConfig() {
+        return undertowConfig;
+    }
 }

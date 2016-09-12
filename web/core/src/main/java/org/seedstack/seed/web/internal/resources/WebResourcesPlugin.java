@@ -10,8 +10,8 @@ package org.seedstack.seed.web.internal.resources;
 import com.google.common.collect.Lists;
 import io.nuun.kernel.api.plugin.InitState;
 import io.nuun.kernel.api.plugin.context.InitContext;
-import io.nuun.kernel.core.AbstractPlugin;
-import org.seedstack.seed.core.spi.configuration.ConfigurationProvider;
+import org.seedstack.seed.core.internal.AbstractSeedPlugin;
+import org.seedstack.seed.web.WebConfig;
 import org.seedstack.seed.web.spi.FilterDefinition;
 import org.seedstack.seed.web.spi.ListenerDefinition;
 import org.seedstack.seed.web.spi.ServletDefinition;
@@ -19,19 +19,16 @@ import org.seedstack.seed.web.spi.WebProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Collection;
 import java.util.List;
-
-import static org.seedstack.seed.web.internal.WebPlugin.WEB_PLUGIN_PREFIX;
 
 /**
  * This plugin serves static resources under META-INF/resources with several benefits over the default servlet.
  *
  * @see WebResourcesFilter
  */
-public class WebResourcesPlugin extends AbstractPlugin implements WebProvider {
+public class WebResourcesPlugin extends AbstractSeedPlugin implements WebProvider {
     private static final Logger LOGGER = LoggerFactory.getLogger(WebResourcesPlugin.class);
-    private boolean webResourcesEnabled;
+    private WebConfig.StaticResourcesConfig staticResourcesConfig;
 
     @Override
     public String name() {
@@ -39,24 +36,14 @@ public class WebResourcesPlugin extends AbstractPlugin implements WebProvider {
     }
 
     @Override
-    public Collection<Class<?>> requiredPlugins() {
-        return Lists.<Class<?>>newArrayList(ConfigurationProvider.class);
-    }
-
-    @Override
-    public InitState init(InitContext initContext) {
-        webResourcesEnabled = initContext
-                .dependency(ConfigurationProvider.class)
-                .getConfiguration()
-                .subset(WEB_PLUGIN_PREFIX)
-                .getBoolean("resources.enabled", true);
-
+    public InitState initialize(InitContext initContext) {
+        staticResourcesConfig = getConfiguration(WebConfig.StaticResourcesConfig.class);
         return InitState.INITIALIZED;
     }
 
     @Override
     public Object nativeUnitModule() {
-        if (webResourcesEnabled) {
+        if (staticResourcesConfig.isEnabled()) {
             return new WebResourcesModule();
         } else {
             return null;
@@ -70,7 +57,7 @@ public class WebResourcesPlugin extends AbstractPlugin implements WebProvider {
 
     @Override
     public List<FilterDefinition> filters() {
-        if (webResourcesEnabled) {
+        if (staticResourcesConfig.isEnabled()) {
             LOGGER.info("Static Web resources served on /*");
 
             FilterDefinition resourcesFilter = new FilterDefinition("web-resources", WebResourcesFilter.class);

@@ -7,18 +7,15 @@
  */
 package org.seedstack.seed.cli.internal;
 
-import com.google.common.collect.Lists;
 import io.nuun.kernel.api.plugin.InitState;
 import io.nuun.kernel.api.plugin.context.InitContext;
 import io.nuun.kernel.api.plugin.request.ClasspathScanRequest;
 import io.nuun.kernel.core.AbstractPlugin;
-import org.apache.commons.configuration.Configuration;
 import org.kametic.specifications.Specification;
 import org.seedstack.seed.SeedRuntime;
 import org.seedstack.seed.cli.CliCommand;
 import org.seedstack.seed.cli.CommandLineHandler;
 import org.seedstack.seed.cli.spi.CliContext;
-import org.seedstack.seed.core.spi.configuration.ConfigurationProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,12 +35,10 @@ import static org.seedstack.seed.core.utils.BaseClassSpecifications.classIsInter
  * @author adrien.lauer@mpsa.com
  */
 public class CommandLinePlugin extends AbstractPlugin {
-    public static final String CLI_PLUGIN_PREFIX = "org.seedstack.seed.cli";
-    public static final String DEFAULT_COMMAND_CONFIG_KEY = CLI_PLUGIN_PREFIX + ".default-command";
     private static final Logger LOGGER = LoggerFactory.getLogger(CommandLinePlugin.class);
 
     private final Specification<Class<?>> cliHandlerSpec = and(ancestorImplements(CommandLineHandler.class), not(classIsInterface()), not(classIsAbstract()));
-    private final Map<String, Class<? extends CommandLineHandler>> cliHandlers = new HashMap<String, Class<? extends CommandLineHandler>>();
+    private final Map<String, Class<? extends CommandLineHandler>> cliHandlers = new HashMap<>();
 
     private CliContext cliContext;
 
@@ -53,18 +48,13 @@ public class CommandLinePlugin extends AbstractPlugin {
     }
 
     @Override
-    public Collection<ClasspathScanRequest> classpathScanRequests() {
-        return classpathScanRequestBuilder().specification(cliHandlerSpec).build();
-    }
-
-    @Override
-    public Collection<Class<?>> requiredPlugins() {
-        return Lists.<Class<?>>newArrayList(ConfigurationProvider.class);
-    }
-
-    @Override
     public void provideContainerContext(Object containerContext) {
         cliContext = ((SeedRuntime) containerContext).contextAs(CliContext.class);
+    }
+
+    @Override
+    public Collection<ClasspathScanRequest> classpathScanRequests() {
+        return classpathScanRequestBuilder().specification(cliHandlerSpec).build();
     }
 
     @Override
@@ -75,9 +65,7 @@ public class CommandLinePlugin extends AbstractPlugin {
             return InitState.INITIALIZED;
         }
 
-        Configuration cliConfiguration = initContext.dependency(ConfigurationProvider.class).getConfiguration().subset(CLI_PLUGIN_PREFIX);
         Collection<Class<?>> cliHandlerCandidates = initContext.scannedTypesBySpecification().get(cliHandlerSpec);
-
         for (Class<?> candidate : cliHandlerCandidates) {
             CliCommand cliCommand = candidate.getAnnotation(CliCommand.class);
             if (CommandLineHandler.class.isAssignableFrom(candidate) && cliCommand != null) {
@@ -85,13 +73,7 @@ public class CommandLinePlugin extends AbstractPlugin {
                 cliHandlers.put(cliCommand.value(), (Class<? extends CommandLineHandler>) candidate);
             }
         }
-
         LOGGER.debug("Detected {} CLI handler(s)", cliHandlers.size());
-
-        String defaultCommand = cliConfiguration.getString(DEFAULT_COMMAND_CONFIG_KEY);
-        if (defaultCommand != null) {
-            LOGGER.debug("Default CLI command is " + defaultCommand);
-        }
 
         return InitState.INITIALIZED;
     }

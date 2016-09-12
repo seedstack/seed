@@ -27,7 +27,7 @@ class WebDiagnosticCollector implements DiagnosticInfoCollector {
 
     @Override
     public Map<String, Object> collect() {
-        Map<String, Object> result = new HashMap<String, Object>();
+        Map<String, Object> result = new HashMap<>();
 
         if (servletContext != null) {
             result.put("version", String.format("%d.%d", servletContext.getMajorVersion(), servletContext.getMinorVersion()));
@@ -45,16 +45,16 @@ class WebDiagnosticCollector implements DiagnosticInfoCollector {
     }
 
     private Map<String, Object> buildServletList() {
-        Map<String, Object> servletMap = new HashMap<String, Object>();
+        Map<String, Object> servletMap = new HashMap<>();
         for (Map.Entry<String, ? extends ServletRegistration> servletRegistrationEntry : servletContext.getServletRegistrations().entrySet()) {
             ServletRegistration servletRegistration = servletRegistrationEntry.getValue();
-            Map<String, Object> servletRegistrationInfo = new HashMap<String, Object>();
+            Map<String, Object> servletRegistrationInfo = new HashMap<>();
 
             servletRegistrationInfo.put("class", servletRegistration.getClassName());
             servletRegistrationInfo.put("parameters", servletRegistration.getInitParameters());
             Collection<String> mappings = servletRegistration.getMappings();
             if (mappings == null) {
-                mappings = new ArrayList<String>();
+                mappings = new ArrayList<>();
             }
             servletRegistrationInfo.put("mappings", Lists.newArrayList(mappings));
 
@@ -65,21 +65,21 @@ class WebDiagnosticCollector implements DiagnosticInfoCollector {
     }
 
     private Map<String, Object> buildFilterList() {
-        Map<String, Object> filterMap = new HashMap<String, Object>();
+        Map<String, Object> filterMap = new HashMap<>();
         for (Map.Entry<String, ? extends FilterRegistration> filterRegistrationEntry : servletContext.getFilterRegistrations().entrySet()) {
             FilterRegistration filterRegistration = filterRegistrationEntry.getValue();
-            Map<String, Object> filterRegistrationInfo = new HashMap<String, Object>();
+            Map<String, Object> filterRegistrationInfo = new HashMap<>();
 
             filterRegistrationInfo.put("class", filterRegistration.getClassName());
             filterRegistrationInfo.put("parameters", filterRegistration.getInitParameters());
             Collection<String> mappings = filterRegistration.getServletNameMappings();
             if (mappings == null) {
-                mappings = new ArrayList<String>();
+                mappings = new ArrayList<>();
             }
             filterRegistrationInfo.put("servlet-name-mappings", Lists.newArrayList(mappings));
             Collection<String> patterns = filterRegistration.getUrlPatternMappings();
             if (patterns == null) {
-                patterns = new ArrayList<String>();
+                patterns = new ArrayList<>();
             }
             filterRegistrationInfo.put("url-pattern-mappings", Lists.newArrayList(patterns));
 

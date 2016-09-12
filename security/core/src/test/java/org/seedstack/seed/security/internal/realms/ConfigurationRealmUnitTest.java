@@ -7,25 +7,24 @@
  */
 package org.seedstack.seed.security.internal.realms;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import org.junit.Before;
+import org.junit.Test;
+import org.mockito.internal.util.reflection.Whitebox;
+import org.seedstack.seed.security.AuthenticationInfo;
+import org.seedstack.seed.security.AuthenticationToken;
+import org.seedstack.seed.security.IncorrectCredentialsException;
+import org.seedstack.seed.security.SecurityConfig;
+import org.seedstack.seed.security.UnknownAccountException;
+import org.seedstack.seed.security.UnsupportedTokenException;
+import org.seedstack.seed.security.UsernamePasswordToken;
+import org.seedstack.seed.security.internal.realms.ConfigurationRealm.ConfigurationUser;
+import org.seedstack.seed.security.principals.PrincipalProvider;
+import org.seedstack.seed.security.principals.Principals;
 
 import java.util.Collections;
 import java.util.Set;
 
-import org.apache.commons.configuration.PropertiesConfiguration;
-import org.junit.Before;
-import org.junit.Test;
-import org.mockito.internal.util.reflection.Whitebox;
-
-import org.seedstack.seed.security.AuthenticationInfo;
-import org.seedstack.seed.security.AuthenticationToken;
-import org.seedstack.seed.security.UsernamePasswordToken;
-import org.seedstack.seed.security.IncorrectCredentialsException;
-import org.seedstack.seed.security.UnknownAccountException;
-import org.seedstack.seed.security.UnsupportedTokenException;
-import org.seedstack.seed.security.principals.PrincipalProvider;
-import org.seedstack.seed.security.principals.Principals;
-import org.seedstack.seed.security.internal.realms.ConfigurationRealm.ConfigurationUser;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class ConfigurationRealmUnitTest {
 
@@ -98,6 +97,7 @@ public class ConfigurationRealmUnitTest {
             public Object getPrincipal() {
                 return null;
             }
+
             @Override
             public Object getCredentials() {
                 return null;
@@ -105,19 +105,19 @@ public class ConfigurationRealmUnitTest {
         };
         underTest.getAuthenticationInfo(token);
     }
-    
+
     @Test
-    public void readConfiguration_empty_props(){
-        underTest.readConfiguration(new PropertiesConfiguration());
+    public void readConfiguration_empty_props() {
+        underTest.readConfiguration(new SecurityConfig());
     }
-    
+
     @Test
-    public void readConfiguration_with_users(){
-        PropertiesConfiguration conf = new PropertiesConfiguration();
-        conf.setProperty("users.Obiwan", "yodarulez, SEED.JEDI");
-        conf.setProperty("users.Anakin", "imsodark");
-        underTest.readConfiguration(conf);
-        
+    public void readConfiguration_with_users() {
+        SecurityConfig securityConfig = new SecurityConfig()
+                .addUser("Obiwan", new SecurityConfig.UserConfig().setPassword("yodarulez").addRole("SEED.JEDI"))
+                .addUser("Anakin", new SecurityConfig.UserConfig().setPassword("imsodark"));
+
+        underTest.readConfiguration(securityConfig);
         assertThat(users).hasSize(2);
         assertThat(users).containsOnly(new ConfigurationUser("Obiwan"), new ConfigurationUser("Anakin"));
     }

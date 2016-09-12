@@ -7,18 +7,14 @@
  */
 package org.seedstack.seed.crypto.internal;
 
-/**
- * @author pierre.thirouin@ext.mpsa.com (Pierre Thirouin)
- */
-public class KeyPairConfig {
-
+class KeyPairConfig {
     private final String alias;
     private final String password;
     private final String certificateLocation;
     private final String qualifier;
     private final String keyStoreName;
 
-    public KeyPairConfig(String keyStoreName, String alias, String password, String certificateLocation, String qualifier) {
+    KeyPairConfig(String keyStoreName, String alias, String password, String certificateLocation, String qualifier) {
         this.keyStoreName = keyStoreName;
         this.alias = alias;
         this.password = password;
@@ -30,19 +26,19 @@ public class KeyPairConfig {
         return alias;
     }
 
-    public String getPassword() {
+    String getPassword() {
         return password;
     }
 
-    public String getCertificateLocation() {
+    String getCertificateLocation() {
         return certificateLocation;
     }
 
-    public String getQualifier() {
+    String getQualifier() {
         return qualifier;
     }
 
-    public String getKeyStoreName() {
+    String getKeyStoreName() {
         return keyStoreName;
     }
 }

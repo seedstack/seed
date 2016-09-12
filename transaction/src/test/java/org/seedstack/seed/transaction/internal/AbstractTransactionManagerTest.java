@@ -9,15 +9,15 @@ package org.seedstack.seed.transaction.internal;
 
 import com.google.common.collect.Sets;
 import com.google.inject.Injector;
+import org.aopalliance.intercept.MethodInvocation;
+import org.junit.Before;
+import org.junit.Test;
+import org.mockito.internal.util.reflection.Whitebox;
 import org.seedstack.seed.transaction.spi.ExceptionHandler;
 import org.seedstack.seed.transaction.spi.TransactionHandler;
 import org.seedstack.seed.transaction.spi.TransactionManager;
 import org.seedstack.seed.transaction.spi.TransactionMetadata;
 import org.seedstack.seed.transaction.spi.TransactionMetadataResolver;
-import org.aopalliance.intercept.MethodInvocation;
-import org.junit.Before;
-import org.junit.Test;
-import org.mockito.internal.util.reflection.Whitebox;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;

@@ -7,15 +7,14 @@
  */
 package org.seedstack.seed.metrics.internal;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-import javax.inject.Inject;
-
+import com.codahale.metrics.health.HealthCheckRegistry;
+import com.google.common.collect.Sets;
 import org.junit.Test;
 import org.seedstack.seed.it.AbstractSeedIT;
 
-import com.codahale.metrics.health.HealthCheckRegistry;
-import com.google.common.collect.Sets;
+import javax.inject.Inject;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class HealthCheckIT extends AbstractSeedIT {
     @Inject

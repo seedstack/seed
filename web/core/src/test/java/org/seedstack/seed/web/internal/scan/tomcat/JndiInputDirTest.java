@@ -43,18 +43,18 @@ public class JndiInputDirTest {
         DirContext bContext = mock(DirContext.class);
         DirContext aaContext = mock(DirContext.class);
 
-        when(rootContext.list("/")).thenReturn(new ListNamingEnumeration<NameClassPair>(Lists.newArrayList(new NameClassPair("A", "dummy"), new NameClassPair("B", "dummy"))));
+        when(rootContext.list("/")).thenReturn(new ListNamingEnumeration<>(Lists.newArrayList(new NameClassPair("A", "dummy"), new NameClassPair("B", "dummy"))));
         when(rootContext.lookup("A")).thenReturn(aContext);
         when(rootContext.lookup("B")).thenReturn(bContext);
 
-        when(aContext.list("/")).thenReturn(new ListNamingEnumeration<NameClassPair>(Lists.newArrayList(new NameClassPair("AA", "dummy"), new NameClassPair("AB", "dummy"))));
+        when(aContext.list("/")).thenReturn(new ListNamingEnumeration<>(Lists.newArrayList(new NameClassPair("AA", "dummy"), new NameClassPair("AB", "dummy"))));
         when(aContext.lookup("AA")).thenReturn(aaContext);
         when(aContext.lookup("AB")).thenReturn(new ResourceMock(abInputStream));
 
-        when(aaContext.list("/")).thenReturn(new ListNamingEnumeration<NameClassPair>(Lists.newArrayList(new NameClassPair("AAA", "dummy"))));
+        when(aaContext.list("/")).thenReturn(new ListNamingEnumeration<>(Lists.newArrayList(new NameClassPair("AAA", "dummy"))));
         when(aaContext.lookup("AAA")).thenReturn(new ResourceMock(aaaInputStream));
 
-        when(bContext.list("/")).thenReturn(new ListNamingEnumeration<NameClassPair>(Lists.<NameClassPair>newArrayList()));
+        when(bContext.list("/")).thenReturn(new ListNamingEnumeration<>(Lists.<NameClassPair>newArrayList()));
 
         final URLConnection goodUrlConnection = mock(URLConnection.class);
         when(goodUrlConnection.getContent()).thenReturn(rootContext);

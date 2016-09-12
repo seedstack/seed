@@ -7,15 +7,13 @@
  */
 package org.seedstack.seed.core.utils;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-
-import org.seedstack.seed.SeedException;
-
-import javassist.util.proxy.MethodFilter;
 import javassist.util.proxy.MethodHandler;
 import javassist.util.proxy.ProxyFactory;
+import org.seedstack.seed.SeedException;
 import org.seedstack.seed.core.internal.CoreErrorCode;
+
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 
 /**
  * Proxy to implement abstract class. Override methods to proxy.<br>
@@ -50,15 +48,12 @@ public class DependencyClassProxy<T> implements MethodHandler{
         try {
             ProxyFactory factory = new ProxyFactory();
             factory.setSuperclass(clazz);
-            factory.setFilter(new MethodFilter() {
-                @Override
-                public boolean isHandled(Method method) {
-                	for (Method m : methodReplacer.getClass().getDeclaredMethods()) {
-                		if ( m.getName().equals(method.getName()) )
-                			return true;
-					}
-					return false;
+            factory.setFilter(method -> {
+                for (Method m : methodReplacer.getClass().getDeclaredMethods()) {
+                    if ( m.getName().equals(method.getName()) )
+                        return true;
                 }
+                return false;
             });
             this.proxy = (T) factory.create(new Class<?>[0], new Object[0], this);
         } catch (Exception e) {

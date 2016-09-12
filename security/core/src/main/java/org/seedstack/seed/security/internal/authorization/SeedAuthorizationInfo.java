@@ -7,16 +7,15 @@
  */
 package org.seedstack.seed.security.internal.authorization;
 
+import org.apache.shiro.authz.AuthorizationInfo;
+import org.apache.shiro.authz.Permission;
+import org.seedstack.seed.security.Role;
+import org.seedstack.seed.security.Scope;
+
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
-
-import org.apache.shiro.authz.AuthorizationInfo;
-import org.apache.shiro.authz.Permission;
-
-import org.seedstack.seed.security.Role;
-import org.seedstack.seed.security.Scope;
 
 /**
  * AuthorizationInfo that keeps the Roles and Permissions from SEED api.
@@ -28,13 +27,13 @@ public class SeedAuthorizationInfo implements AuthorizationInfo {
 
     private static final long serialVersionUID = 8949548650667096378L;
 
-    private Set<Role> apiRoles = new HashSet<Role>();
+    private Set<Role> apiRoles = new HashSet<>();
 
-    private Set<String> roles = new HashSet<String>();
+    private Set<String> roles = new HashSet<>();
 
-    private Set<String> stringPermissions = new HashSet<String>();
+    private Set<String> stringPermissions = new HashSet<>();
 
-    private Set<Permission> objectPermissions = new HashSet<Permission>();
+    private Set<Permission> objectPermissions = new HashSet<>();
 
     @Override
     public Collection<String> getRoles() {

@@ -25,7 +25,13 @@ import static org.hamcrest.Matchers.not;
 public class WebResourcesAllDisabledIT extends AbstractSeedWebIT {
     @Deployment
     public static WebArchive createDeployment() {
-        return ShrinkWrap.create(WebArchive.class).addAsResource("configuration/org.seedstack.seed.web.all-disabled.properties", "META-INF/configuration/org.seedstack.seed.web.all-disabled.properties").addAsWebResource("META-INF/resources/resources/test.js", "/resources/docroot-test.js").addAsWebResource("META-INF/resources/resources/test.js.gz", "/resources/docroot-test.js.gz").addAsWebResource("META-INF/resources/resources/test.min.js", "/resources/docroot-test.min.js").addAsWebResource("META-INF/resources/resources/test.min.js.gz", "/resources/docroot-test.min.js.gz");
+        return ShrinkWrap
+                .create(WebArchive.class)
+                .addAsResource("configuration/all-disabled.yaml", "META-INF/configuration/all-disabled.yaml")
+                .addAsWebResource("META-INF/resources/resources/test.js", "/resources/docroot-test.js")
+                .addAsWebResource("META-INF/resources/resources/test.js.gz", "/resources/docroot-test.js.gz")
+                .addAsWebResource("META-INF/resources/resources/test.min.js", "/resources/docroot-test.min.js")
+                .addAsWebResource("META-INF/resources/resources/test.min.js.gz", "/resources/docroot-test.min.js.gz");
     }
 
     @Test

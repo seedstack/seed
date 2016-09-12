@@ -35,21 +35,21 @@ public class ResourceScanner {
     private static final RelSpecification METHOD_OR_CLASS_HAS_REL = new RelSpecification();
     private static final JsonHomeSpecification EXPOSE_AS_ENTRY_POINT = new JsonHomeSpecification();
 
-    private final Map<String, List<Method>> resourceByRel = new HashMap<String, List<Method>>();
-    private final Map<String, Resource> jsonHomeResources = new HashMap<String, Resource>();
-    private final Map<String, Link> halLinks = new HashMap<String, Link>();
+    private final Map<String, List<Method>> resourceByRel = new HashMap<>();
+    private final Map<String, Resource> jsonHomeResources = new HashMap<>();
+    private final Map<String, Link> halLinks = new HashMap<>();
 
-    private final RestConfiguration restConfiguration;
+    private final RestConfig restConfig;
     private final String servletContextPath;
 
     /**
      * Constructor.
      *
-     * @param restConfiguration the REST configuration object.
+     * @param restConfig the REST configuration object.
      * @param servletContext    the servlet context
      */
-    public ResourceScanner(RestConfiguration restConfiguration, ServletContext servletContext) {
-        this.restConfiguration = restConfiguration;
+    public ResourceScanner(RestConfig restConfig, ServletContext servletContext) {
+        this.restConfig = restConfig;
         this.servletContextPath = servletContext == null ? "" : servletContext.getContextPath();
     }
 
@@ -83,7 +83,7 @@ public class ResourceScanner {
     private void registerMethod(String rel, Method method) {
         List<Method> methods = resourceByRel.get(rel);
         if (methods == null) {
-            methods = new ArrayList<Method>();
+            methods = new ArrayList<>();
         }
         methods.add(method);
         resourceByRel.put(rel, methods);
@@ -111,12 +111,12 @@ public class ResourceScanner {
         for (Map.Entry<String, List<Method>> entry : resourceByRel.entrySet()) {
             // Extends the rel with baseRel
             String rel = entry.getKey();
-            String absoluteRel = UriBuilder.uri(restConfiguration.getBaseRel(), rel);
+            String absoluteRel = UriBuilder.uri(restConfig.getBaseRel(), rel);
 
             Resource resource = null;
             List<Method> methods = entry.getValue();
             for (Method method : methods) {
-                Resource currentResource = buildJsonHomeResource(restConfiguration.getBaseParam(), absoluteRel, method);
+                Resource currentResource = buildJsonHomeResource(restConfig.getBaseParam(), absoluteRel, method);
                 if (resource == null) {
                     resource = currentResource;
                 } else {
@@ -141,7 +141,7 @@ public class ResourceScanner {
 
             Hints hints = new HintScanner().findHint(method);
 
-            String absolutePath = UriBuilder.uri(servletContextPath, restConfiguration.getRestPath(), path);
+            String absolutePath = UriBuilder.uri(servletContextPath, restConfig.getPath(), path);
 
             if (isTemplated(absolutePath)) {
                 Map<String, String> pathParams = RESTReflect.findPathParams(baseParam, method);
@@ -174,7 +174,7 @@ public class ResourceScanner {
                 uriTemplateBuilder.query(queryParams.toArray(new String[queryParams.size()]));
             }
 
-            String absolutePath = UriBuilder.uri(servletContextPath, restConfiguration.getRestPath(), uriTemplateBuilder.build().getTemplate());
+            String absolutePath = UriBuilder.uri(servletContextPath, restConfig.getPath(), uriTemplateBuilder.build().getTemplate());
 
             halLinks.put(rel, new Link(absolutePath));
         }
@@ -183,7 +183,7 @@ public class ResourceScanner {
     private Set<String> findAllQueryParamsForRel(List<Method> methodsByRel) {
         // A resource correspond to one URI but one URI can correspond to multiple method
         // so we have to look on all the methods to find the query parameters
-        Set<String> queryParams = new HashSet<String>();
+        Set<String> queryParams = new HashSet<>();
         for (Method method : methodsByRel) {
             queryParams.addAll(RESTReflect.findQueryParams("", method).keySet());
         }

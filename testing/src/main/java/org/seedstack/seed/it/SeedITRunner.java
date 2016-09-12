@@ -373,7 +373,7 @@ public class SeedITRunner extends BlockJUnit4ClassRunner {
     }
 
     private Map<String, String> gatherConfiguration(FrameworkMethod frameworkMethod) {
-        Map<String, String> configuration = new HashMap<String, String>();
+        Map<String, String> configuration = new HashMap<>();
         for (ITRunnerPlugin plugin : plugins) {
             Map<String, String> pluginConfiguration = plugin.provideDefaultConfiguration(getTestClass(), frameworkMethod);
             if (pluginConfiguration != null) {

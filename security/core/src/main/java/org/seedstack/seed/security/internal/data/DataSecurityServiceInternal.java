@@ -8,12 +8,11 @@
 package org.seedstack.seed.security.internal.data;
 
 import com.google.inject.Injector;
+import org.kametic.universalvisitor.UniversalVisitor;
+import org.kametic.universalvisitor.api.Filter;
 import org.seedstack.seed.security.data.DataSecurityService;
 import org.seedstack.seed.security.internal.securityexpr.SecurityExpressionInterpreter;
 import org.seedstack.seed.security.spi.data.DataSecurityHandler;
-import org.kametic.universalvisitor.UniversalVisitor;
-import org.kametic.universalvisitor.api.Filter;
-
 
 import javax.inject.Inject;
 import java.lang.reflect.Field;

@@ -19,9 +19,9 @@ import java.util.List;
  */
 @DataSet(group="group1", name="test1")
 public class TestDataImporter implements DataImporter<TestDTO> {
-    private static List<TestDTO> data = new ArrayList<TestDTO>();
+    private static List<TestDTO> data = new ArrayList<>();
 
-    private List<TestDTO> stagingArea = new ArrayList<TestDTO>();
+    private List<TestDTO> stagingArea = new ArrayList<>();
 
     @Override
     public boolean isInitialized() {

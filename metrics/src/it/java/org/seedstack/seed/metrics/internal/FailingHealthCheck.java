@@ -7,9 +7,8 @@
  */
 package org.seedstack.seed.metrics.internal;
 
-import org.seedstack.seed.metrics.HealthChecked;
-
 import com.codahale.metrics.health.HealthCheck;
+import org.seedstack.seed.metrics.HealthChecked;
 
 @HealthChecked
 public class FailingHealthCheck extends HealthCheck {

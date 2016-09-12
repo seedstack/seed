@@ -7,13 +7,13 @@
  */
 package org.seedstack.seed.security.internal.authorization;
 
-import org.apache.commons.configuration.Configuration;
-import org.apache.commons.configuration.PropertiesConfiguration;
+import com.google.common.collect.Sets;
 import org.fest.reflect.core.Reflection;
 import org.fest.reflect.reference.TypeRef;
 import org.junit.Before;
 import org.junit.Test;
 import org.seedstack.seed.security.Role;
+import org.seedstack.seed.security.SecurityConfig;
 
 import java.util.HashSet;
 import java.util.Map;
@@ -33,7 +33,7 @@ public class ConfigurationRolePermissionResolverUnitTest {
     @Test
     public void resolvePermissionsInRole_should_return_permissions() {
         Map<String, Set<String>> rolesMap = Reflection.field("roles").ofType(new TypeRef<Map<String, Set<String>>>() {}).in(underTest).get();
-        Set<String> permissions = new HashSet<String>();
+        Set<String> permissions = new HashSet<>();
         permissions.add("bar");
         rolesMap.put("foo", permissions);
 
@@ -42,9 +42,8 @@ public class ConfigurationRolePermissionResolverUnitTest {
 
     @Test
     public void readConfiguration_should_build_roles() {
-        Configuration conf = new PropertiesConfiguration();
-        conf.addProperty("permissions.foo", "bar, foobar");
-        underTest.readConfiguration(conf);
+        SecurityConfig securityConfig = new SecurityConfig().addRolePermissions("foo", Sets.newHashSet("bar", "foobar"));
+        underTest.readConfiguration(securityConfig);
         Map<String, Set<String>> map = Reflection.field("roles").ofType(new TypeRef<Map<String, Set<String>>>() {}).in(underTest).get();
         Set<String> permissions = map.get("foo");
         assertTrue(permissions.contains("bar"));

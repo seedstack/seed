@@ -7,8 +7,8 @@
  */
 package org.seedstack.seed.shell.internal.commands;
 
-import org.seedstack.seed.spi.command.CommandDefinition;
 import org.seedstack.seed.spi.command.Command;
+import org.seedstack.seed.spi.command.CommandDefinition;
 
 @CommandDefinition(scope = "test", name = "exception", description = "Erroneous test command")
 public class ErroneousTestCommand implements Command {

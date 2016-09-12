@@ -7,10 +7,10 @@
  */
 package org.seedstack.seed.security;
 
+import org.seedstack.seed.security.principals.PrincipalProvider;
+
 import java.util.Collection;
 import java.util.Set;
-
-import org.seedstack.seed.security.principals.PrincipalProvider;
 
 /**
  * A realm is used to authenticate and retrieve authorization for a user.

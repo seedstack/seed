@@ -38,7 +38,7 @@ public class TestITRunnerPlugin implements ITRunnerPlugin {
 
     @Override
     public Map<String, String> provideDefaultConfiguration(TestClass testClass, FrameworkMethod frameworkMethod) {
-        Map<String, String> defaultConfiguration = new HashMap<String, String>();
+        Map<String, String> defaultConfiguration = new HashMap<>();
 
         defaultConfiguration.put("testKey", "testValue");
 

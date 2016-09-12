@@ -13,19 +13,22 @@ import io.undertow.UndertowOptions;
 import io.undertow.server.handlers.PathHandler;
 import io.undertow.servlet.api.DeploymentManager;
 import org.seedstack.seed.SeedException;
-import org.seedstack.seed.crypto.spi.SSLConfiguration;
+import org.seedstack.seed.crypto.spi.SSLProvider;
+import org.seedstack.seed.undertow.UndertowConfig;
+import org.seedstack.seed.web.WebConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xnio.Options;
 import org.xnio.SslClientAuthMode;
 
+import javax.net.ssl.SSLContext;
 import javax.servlet.ServletException;
+import java.util.Optional;
 
 class ServerFactory {
-
     private static final Logger LOGGER = LoggerFactory.getLogger(ServerFactory.class);
 
-    Undertow createServer(ServerConfig serverConfig, DeploymentManager manager) {
+    Undertow createServer(DeploymentManager manager, WebConfig.ServerConfig serverConfig, UndertowConfig undertowConfig, SSLProvider sslProvider) {
         PathHandler path = null;
         try {
             path = Handlers.path(Handlers.redirect(serverConfig.getContextPath()))
@@ -34,55 +37,48 @@ class ServerFactory {
             LOGGER.error(e.getMessage(), e);
         }
 
-        return configureBuilder(serverConfig)
-                .setHandler(path)
-                .build();
+        Undertow.Builder builder;
+        if (serverConfig.isHttps()) {
+            builder = createHttpsBuilder(serverConfig, sslProvider);
+        } else {
+            builder = createHttpBuilder(serverConfig);
+            builder.setServerOption(UndertowOptions.ENABLE_HTTP2, serverConfig.isHttp2());
+        }
+
+        return configureUndertow(builder, undertowConfig).setHandler(path).build();
     }
 
-    private Undertow.Builder configureBuilder(ServerConfig serverConfig) {
-        Undertow.Builder builder;
-        if (serverConfig.isHttpsEnabled()) {
-            builder = configureHttpsListener(serverConfig);
-        } else {
-            builder = configureHttpListener(serverConfig.getHost(), serverConfig.getPort());
+    private Undertow.Builder configureUndertow(Undertow.Builder builder, UndertowConfig undertowConfig) {
+        if (undertowConfig.getBufferSize() != null) {
+            builder.setBufferSize(undertowConfig.getBufferSize());
         }
-
-        if (serverConfig.getBufferSize() != null) {
-            builder.setBufferSize(serverConfig.getBufferSize());
+        if (undertowConfig.getBuffersPerRegion() != null) {
+            builder.setBuffersPerRegion(undertowConfig.getBuffersPerRegion());
         }
-        if (serverConfig.getBuffersPerRegion() != null) {
-            builder.setBuffersPerRegion(serverConfig.getBuffersPerRegion());
+        if (undertowConfig.getIoThreads() != null) {
+            builder.setIoThreads(undertowConfig.getIoThreads());
         }
-        if (serverConfig.getIoThreads() != null) {
-            builder.setIoThreads(serverConfig.getIoThreads());
+        if (undertowConfig.getWorkerThreads() != null) {
+            builder.setWorkerThreads(undertowConfig.getWorkerThreads());
         }
-        if (serverConfig.getWorkerThreads() != null) {
-            builder.setWorkerThreads(serverConfig.getWorkerThreads());
+        if (undertowConfig.getDirectBuffers() != null) {
+            builder.setDirectBuffers(undertowConfig.getDirectBuffers());
         }
-        if (serverConfig.getDirectBuffers() != null) {
-            builder.setDirectBuffers(serverConfig.getDirectBuffers());
-        }
-        builder.setServerOption(UndertowOptions.ENABLE_HTTP2, serverConfig.isHttp2Enabled());
         return builder;
     }
 
-    private Undertow.Builder configureHttpListener(String host, int port) {
-        return Undertow.builder().addHttpListener(port, host);
+    private Undertow.Builder createHttpBuilder(WebConfig.ServerConfig serverConfig) {
+        return Undertow.builder().addHttpListener(serverConfig.getPort(), serverConfig.getHost());
     }
 
-    private Undertow.Builder configureHttpsListener(ServerConfig serverConfig) {
-        SSLConfiguration ssl = serverConfig.getSSLConfiguration();
-        if (ssl == null || serverConfig.getSslContext() == null) {
-            throw SeedException.createNew(UndertowErrorCode.MISSING_SSL_CONFIGURATION);
-        }
-        try {
-
+    private Undertow.Builder createHttpsBuilder(WebConfig.ServerConfig serverConfig, SSLProvider sslProvider) {
+        Optional<SSLContext> sslContext = sslProvider.sslContext();
+        if (sslContext.isPresent()) {
             return Undertow.builder()
-                    .addHttpsListener(serverConfig.getPort(), serverConfig.getHost(), serverConfig.getSslContext())
-                    .setSocketOption(Options.SSL_CLIENT_AUTH_MODE, SslClientAuthMode.valueOf(ssl.getClientAuthMode().toString()));
-
-        } catch (Exception e) {
-            throw SeedException.wrap(e, UndertowErrorCode.UNEXPECTED_EXCEPTION);
+                    .addHttpsListener(serverConfig.getPort(), serverConfig.getHost(), sslContext.get())
+                    .setSocketOption(Options.SSL_CLIENT_AUTH_MODE, SslClientAuthMode.valueOf(sslProvider.sslConfig().getClientAuthMode().toString()));
+        } else {
+            throw SeedException.createNew(UndertowErrorCode.MISSING_SSL_CONFIGURATION);
         }
     }
 }

@@ -7,7 +7,6 @@
  */
 package org.seedstack.seed.it.internal;
 
-import com.google.common.collect.Lists;
 import com.google.common.io.Files;
 import com.google.inject.Module;
 import io.nuun.kernel.api.plugin.InitState;
@@ -16,8 +15,9 @@ import io.nuun.kernel.api.plugin.context.InitContext;
 import io.nuun.kernel.api.plugin.request.ClasspathScanRequest;
 import io.nuun.kernel.core.AbstractPlugin;
 import org.kametic.specifications.Specification;
+import org.seedstack.coffig.provider.InMemoryProvider;
 import org.seedstack.seed.SeedException;
-import org.seedstack.seed.core.internal.application.ApplicationPlugin;
+import org.seedstack.seed.SeedRuntime;
 import org.seedstack.seed.it.ITBind;
 import org.seedstack.seed.it.ITInstall;
 import org.slf4j.Logger;
@@ -26,7 +26,10 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
-import java.util.*;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * This plugin automatically enable integration tests to be managed by SEED.
@@ -41,8 +44,9 @@ public class ITPlugin extends AbstractPlugin {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ITPlugin.class);
 
-    private final Set<Class<?>> itBindClasses = new HashSet<Class<?>>();
-    private final Set<Class<? extends Module>> itInstallModules = new HashSet<Class<? extends Module>>();
+    private final Set<Class<?>> itBindClasses = new HashSet<>();
+    private final Set<Class<? extends Module>> itInstallModules = new HashSet<>();
+    private InMemoryProvider defaultConfigurationProvider;
     private File temporaryAppStorage;
     private Class<?> testClass;
 
@@ -57,20 +61,29 @@ public class ITPlugin extends AbstractPlugin {
     }
 
     @Override
+    public Collection<ClasspathScanRequest> classpathScanRequests() {
+        return classpathScanRequestBuilder().specification(itBindingSpec).specification(itInstallSpec).build();
+    }
+
+    @Override
+    public void provideContainerContext(Object containerContext) {
+        defaultConfigurationProvider = ((SeedRuntime) containerContext).getDefaultConfigurationProvider();
+    }
+
+    @Override
     @SuppressWarnings({"rawtypes", "unchecked"})
     public InitState init(InitContext initContext) {
         String itClassName = initContext.kernelParam(IT_CLASS_NAME);
-        Map<String, String> defaultConfiguration = initContext.dependency(ApplicationPlugin.class).getDefaultConfiguration();
 
         // Create temporary directory for application storage
         temporaryAppStorage = Files.createTempDir();
         LOGGER.info("Created temporary application storage directory {}", temporaryAppStorage.getAbsolutePath());
-        defaultConfiguration.put("org.seedstack.seed.core.storage", temporaryAppStorage.getAbsolutePath());
+        defaultConfigurationProvider.put("org.seedstack.seed.core.storage", temporaryAppStorage.getAbsolutePath());
 
         // Process default configuration
         for (Map.Entry<String, String> kernelParam : initContext.kernelParams().entrySet()) {
             if (kernelParam.getKey().startsWith(DEFAULT_CONFIGURATION_PREFIX)) {
-                defaultConfiguration.put(kernelParam.getKey().substring(DEFAULT_CONFIGURATION_PREFIX.length()), kernelParam.getValue());
+                defaultConfigurationProvider.put(kernelParam.getKey().substring(DEFAULT_CONFIGURATION_PREFIX.length()), kernelParam.getValue());
             }
         }
 
@@ -118,13 +131,8 @@ public class ITPlugin extends AbstractPlugin {
     }
 
     @Override
-    public Collection<ClasspathScanRequest> classpathScanRequests() {
-        return classpathScanRequestBuilder().specification(itBindingSpec).specification(itInstallSpec).build();
-    }
-
-    @Override
     public Object nativeUnitModule() {
-        Set<Module> itModules = new HashSet<Module>();
+        Set<Module> itModules = new HashSet<>();
 
         for (Class<? extends Module> klazz : itInstallModules) {
             try {
@@ -137,11 +145,6 @@ public class ITPlugin extends AbstractPlugin {
         }
 
         return new ITModule(testClass, itBindClasses, itModules);
-    }
-
-    @Override
-    public Collection<Class<?>> dependentPlugins() {
-        return Lists.<Class<?>>newArrayList(ApplicationPlugin.class);
     }
 
     private void deleteRecursively(final File file) throws IOException {

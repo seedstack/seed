@@ -16,7 +16,7 @@ import org.glassfish.jersey.server.ServerProperties;
 import org.glassfish.jersey.server.mvc.jsp.JspMvcFeature;
 import org.glassfish.jersey.servlet.ServletProperties;
 import org.seedstack.seed.core.utils.SeedReflectionUtils;
-import org.seedstack.seed.rest.internal.RestConfiguration;
+import org.seedstack.seed.rest.internal.RestConfig;
 import org.seedstack.seed.rest.internal.RestPlugin;
 import org.seedstack.seed.rest.spi.RestProvider;
 import org.seedstack.seed.web.spi.FilterDefinition;
@@ -33,7 +33,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import java.util.Set;
 
 public class Jersey2Plugin extends AbstractPlugin implements WebProvider {
@@ -57,10 +56,10 @@ public class Jersey2Plugin extends AbstractPlugin implements WebProvider {
         RestPlugin restPlugin = initContext.dependency(RestPlugin.class);
 
         if (restPlugin.isEnabled()) {
-            RestConfiguration restConfiguration = restPlugin.getConfiguration();
+            RestConfig restConfig = restPlugin.getRestConfig();
 
-            Set<Class<?>> resources = new HashSet<Class<?>>();
-            Set<Class<?>> providers = new HashSet<Class<?>>();
+            Set<Class<?>> resources = new HashSet<>();
+            Set<Class<?>> providers = new HashSet<>();
             List<RestProvider> restProviders = initContext.dependencies(RestProvider.class);
             for (RestProvider restProvider : restProviders) {
                 resources.addAll(restProvider.resources());
@@ -69,7 +68,7 @@ public class Jersey2Plugin extends AbstractPlugin implements WebProvider {
             LOGGER.debug("Detected {} JAX-RS resource(s)", resources.size());
             LOGGER.debug("Detected {} JAX-RS provider(s)", providers.size());
 
-            Set<Class<?>> enabledFeatures = new HashSet<Class<?>>();
+            Set<Class<?>> enabledFeatures = new HashSet<>();
             if (isMultipartFeaturePresent()) {
                 enabledFeatures.add(MultiPartFeature.class);
                 LOGGER.trace("Detected and enabled JAX-RS multipart feature");
@@ -78,29 +77,29 @@ public class Jersey2Plugin extends AbstractPlugin implements WebProvider {
                 enabledFeatures.add(JspMvcFeature.class);
                 LOGGER.trace("Detected and enabled JAX-RS JSP feature");
             }
-            for (Class<?> featureClass : filterClasses(restConfiguration.getFeatures())) {
+            for (Class<?> featureClass : filterClasses(restConfig.getFeatures())) {
                 enabledFeatures.add(featureClass);
                 LOGGER.trace("Enabled JAX-RS feature " + featureClass.getCanonicalName());
             }
             LOGGER.debug("Enabled {} JAX-RS feature(s)", enabledFeatures.size());
 
-            Map<String, Object> jersey2Properties = buildJerseyProperties(restConfiguration);
+            Map<String, Object> jersey2Properties = buildJerseyProperties(restConfig);
 
             jersey2filterDefinition = new FilterDefinition("jersey2", SeedServletContainer.class);
             jersey2filterDefinition.setAsyncSupported(true);
-            jersey2filterDefinition.addMappings(new FilterDefinition.Mapping(restConfiguration.getRestPath() + "/*"));
+            jersey2filterDefinition.addMappings(new FilterDefinition.Mapping(restConfig.getPath() + "/*"));
             jersey2filterDefinition.addInitParameters(buildInitParams(jersey2Properties));
 
             seedServletContainer = new SeedServletContainer(resources, providers, enabledFeatures, jersey2Properties);
 
-            LOGGER.info("Jersey 2 serving JAX-RS resources on {}/*", restConfiguration.getRestPath());
+            LOGGER.info("Jersey 2 serving JAX-RS resources on {}/*", restConfig.getPath());
         }
 
         return InitState.INITIALIZED;
     }
 
     private Set<Class<?>> filterClasses(Collection<Class<?>> classes) {
-        Set<Class<?>> result = new HashSet<Class<?>>();
+        Set<Class<?>> result = new HashSet<>();
 
         if (classes != null) {
             for (Class<?> aClass : classes) {
@@ -114,37 +113,27 @@ public class Jersey2Plugin extends AbstractPlugin implements WebProvider {
         return result;
     }
 
-    private Map<String, Object> buildJerseyProperties(RestConfiguration restConfiguration) {
-        Map<String, Object> jerseyProperties = new HashMap<String, Object>();
+    private Map<String, Object> buildJerseyProperties(RestConfig restConfig) {
+        Map<String, Object> jerseyProperties = new HashMap<>();
 
         // Default configuration values
         jerseyProperties.put(ServletProperties.FILTER_FORWARD_ON_404, true);
         jerseyProperties.put(ServerProperties.WADL_FEATURE_DISABLE, true);
 
         // User-defined configuration values
-        jerseyProperties.putAll(propertiesToMap(restConfiguration.getJerseyProperties()));
+        jerseyProperties.putAll(restConfig.getJerseyProperties());
 
         // Forced configuration values
-        jerseyProperties.put(ServletProperties.FILTER_CONTEXT_PATH, restConfiguration.getRestPath());
+        jerseyProperties.put(ServletProperties.FILTER_CONTEXT_PATH, restConfig.getPath());
         if (isJspFeaturePresent()) {
-            jerseyProperties.put(JspMvcFeature.TEMPLATE_BASE_PATH, restConfiguration.getJspPath());
+            jerseyProperties.put(JspMvcFeature.TEMPLATE_BASE_PATH, restConfig.getJspPath());
         }
 
         return jerseyProperties;
     }
 
-    private Map<String, String> propertiesToMap(Properties properties) {
-        Map<String, String> map = new HashMap<String, String>();
-
-        for (Object key : properties.keySet()) {
-            map.put(key.toString(), properties.getProperty(key.toString()));
-        }
-
-        return map;
-    }
-
     private Map<String, String> buildInitParams(Map<String, Object> jerseyProperties) {
-        Map<String, String> initParams = new HashMap<String, String>();
+        Map<String, String> initParams = new HashMap<>();
 
         // Those properties must be defined as init parameters of the filter
         if (jerseyProperties.containsKey(ServletProperties.FILTER_CONTEXT_PATH)) {

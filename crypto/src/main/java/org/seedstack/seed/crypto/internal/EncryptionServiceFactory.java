@@ -13,18 +13,21 @@
  */
 package org.seedstack.seed.crypto.internal;
 
-import org.apache.commons.configuration.Configuration;
 import org.seedstack.seed.SeedException;
-import org.seedstack.seed.core.utils.ConfigurationUtils;
 import org.seedstack.seed.core.utils.SeedReflectionUtils;
+import org.seedstack.seed.crypto.CryptoConfig;
 import org.seedstack.seed.crypto.EncryptionService;
 
-import javax.annotation.Nullable;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URL;
-import java.security.*;
+import java.security.Key;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.PublicKey;
+import java.security.UnrecoverableKeyException;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateFactory;
 
@@ -35,23 +38,19 @@ import java.security.cert.CertificateFactory;
  * @author thierry.bouvet@mpsa.com
  */
 class EncryptionServiceFactory {
+    private static final String DEFAULT_CERTIFICATE_TYPE = "X.509";
 
-    public static final String CERT = "cert";
-    public static final String CERT_FILE = "file";
-    public static final String CERT_RESOURCE = "resource";
-    public static final String DEFAULT_CERTIFICATE_TYPE = "X.509";
-
-    private final Configuration configuration;
+    private final CryptoConfig cryptoConfig;
     private final KeyStore keyStore;
 
     /**
      * Constructs an encryption service factory for a specific KeyStore.
      *
-     * @param configuration the crypto configuration
-     * @param keyStore      the KeyStore which holds the key pairs
+     * @param cryptoConfig the crypto configuration
+     * @param keyStore     the KeyStore which holds the key pairs
      */
-    EncryptionServiceFactory(Configuration configuration, KeyStore keyStore) {
-        this.configuration = configuration;
+    EncryptionServiceFactory(CryptoConfig cryptoConfig, KeyStore keyStore) {
+        this.cryptoConfig = cryptoConfig;
         if (keyStore == null) {
             throw SeedException.createNew(CryptoErrorCodes.NO_KEYSTORE_CONFIGURED);
         }
@@ -125,22 +124,25 @@ class EncryptionServiceFactory {
     }
 
     private String getCertificateLocation(String alias) {
-        String certLocation;
+        CryptoConfig.CertificateConfig certificateConfig = cryptoConfig.certificates().get(alias);
 
-        // Find the certificate location from the classpath
-        String certResource = getCertificateLocation(alias, CERT_RESOURCE);
-        if (certResource != null) {
-            URL urlResource = SeedReflectionUtils.findMostCompleteClassLoader().getResource(certResource);
-            if (urlResource == null) {
-                throw SeedException.createNew(CryptoErrorCodes.CERTIFICATE_NOT_FOUND)
-                        .put("alias", alias).put("certResource", certResource);
+        if (certificateConfig != null) {
+            // Find the certificate location from the classpath
+            String resource = certificateConfig.getResource();
+            if (resource != null) {
+                URL urlResource = SeedReflectionUtils.findMostCompleteClassLoader().getResource(resource);
+                if (urlResource == null) {
+                    throw SeedException.createNew(CryptoErrorCodes.CERTIFICATE_NOT_FOUND)
+                            .put("alias", alias).put("certResource", resource);
+                }
+                return urlResource.getFile();
+            } else {
+                // Otherwise get the file path from the configuration
+                return certificateConfig.getFile();
             }
-            certLocation = urlResource.getFile();
         } else {
-            // Otherwise get the file path from the configuration
-            certLocation = getCertificateLocation(alias, CERT_FILE);
+            return null;
         }
-        return certLocation;
     }
 
     private Certificate loadCertificateFromFile(String certLocation) {
@@ -164,15 +166,5 @@ class EncryptionServiceFactory {
             }
         }
         return certificate;
-    }
-
-    @Nullable
-    private String getCertificateLocation(String alias, String type) {
-        String locationKey = ConfigurationUtils.buildKey(CERT, alias, type);
-
-        if (configuration.containsKey(locationKey)) {
-            return configuration.getString(locationKey);
-        }
-        return null;
     }
 }

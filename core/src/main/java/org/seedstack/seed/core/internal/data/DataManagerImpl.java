@@ -7,20 +7,33 @@
  */
 package org.seedstack.seed.core.internal.data;
 
-import com.fasterxml.jackson.core.*;
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonLocation;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonToken;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.google.common.collect.Lists;
 import com.google.inject.Injector;
-import org.seedstack.seed.DataManager;
-import org.seedstack.seed.SeedException;
 import org.seedstack.seed.DataExporter;
 import org.seedstack.seed.DataImporter;
+import org.seedstack.seed.DataManager;
+import org.seedstack.seed.SeedException;
 
 import javax.inject.Inject;
-import java.io.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.nio.charset.Charset;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Implementation of the {@link DataManager}.
@@ -63,9 +76,9 @@ class DataManagerImpl implements DataManager {
             throw SeedException.createNew(DataErrorCode.NO_EXPORTER_FOUND).put(DATA_SET, group);
         }
 
-        List<DataSetMarker<Object>> allIterators = new ArrayList<DataSetMarker<Object>>();
+        List<DataSetMarker<Object>> allIterators = new ArrayList<>();
         for (DataExporterDefinition<Object> dataExporterDefinition : dataExporterDefinitions.values()) {
-            allIterators.add(new DataSetMarker<Object>(
+            allIterators.add(new DataSetMarker<>(
                     dataExporterDefinition.getGroup(),
                     dataExporterDefinition.getName(),
                     injector.getInstance(dataExporterDefinition.getDataExporterClass()).exportData()
@@ -98,12 +111,12 @@ class DataManagerImpl implements DataManager {
 
     @Override
     public void exportData(OutputStream outputStream) {
-        List<DataSetMarker<Object>> dataSets = new ArrayList<DataSetMarker<Object>>();
+        List<DataSetMarker<Object>> dataSets = new ArrayList<>();
 
         for (Map<String, DataExporterDefinition<Object>> dataExporterDefinitionMap : allDataExporters.values()) {
             for (DataExporterDefinition<Object> dataExporterDefinition : dataExporterDefinitionMap.values()) {
                 DataExporter<Object> dataExporter = injector.getInstance(dataExporterDefinition.getDataExporterClass());
-                dataSets.add(new DataSetMarker<Object>(dataExporterDefinition.getGroup(), dataExporterDefinition.getName(), dataExporter.exportData()));
+                dataSets.add(new DataSetMarker<>(dataExporterDefinition.getGroup(), dataExporterDefinition.getName(), dataExporter.exportData()));
             }
         }
 
@@ -112,7 +125,7 @@ class DataManagerImpl implements DataManager {
 
     @Override
     public void importData(InputStream inputStream, String acceptGroup, String acceptName, boolean clear) {
-        Set<DataImporter<Object>> usedDataImporters = new HashSet<DataImporter<Object>>();
+        Set<DataImporter<Object>> usedDataImporters = new HashSet<>();
 
         try {
             ParsingState state = ParsingState.START;

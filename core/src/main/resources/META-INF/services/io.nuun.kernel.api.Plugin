@@ -1,5 +1,6 @@
 org.seedstack.seed.core.internal.CorePlugin
-org.seedstack.seed.core.internal.application.ApplicationPlugin
+org.seedstack.seed.core.internal.configuration.ConfigurationPlugin
+org.seedstack.seed.core.internal.diagnostic.DiagnosticPlugin
 org.seedstack.seed.core.internal.jndi.JndiPlugin
 org.seedstack.seed.core.internal.command.impl.CommandPlugin
 org.seedstack.seed.core.internal.data.DataPlugin

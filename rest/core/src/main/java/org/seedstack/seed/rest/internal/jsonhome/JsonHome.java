@@ -56,7 +56,7 @@ import java.util.Map;
  */
 public class JsonHome {
 
-    private final Map<String, Map<String, Object>> resources = new HashMap<String, Map<String, Object>>();
+    private final Map<String, Map<String, Object>> resources = new HashMap<>();
 
     public JsonHome(Map<String, Resource> resourceMap) {
         for (Map.Entry<String, Resource> resourceEntry : resourceMap.entrySet()) {

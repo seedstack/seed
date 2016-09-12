@@ -17,8 +17,8 @@ import java.util.List;
 public class FilterDefinition extends AbstractDefinition {
     private final Class<? extends Filter> filterClass;
     private int priority = 0;
-    private List<Mapping> mappings = new ArrayList<Mapping>();
-    private List<Mapping> servletMappings = new ArrayList<Mapping>();
+    private List<Mapping> mappings = new ArrayList<>();
+    private List<Mapping> servletMappings = new ArrayList<>();
 
     public FilterDefinition(String name, Class<? extends Filter> filterClass) {
         super(name);

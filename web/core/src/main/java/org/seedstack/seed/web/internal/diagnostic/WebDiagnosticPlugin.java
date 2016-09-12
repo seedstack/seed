@@ -10,10 +10,8 @@ package org.seedstack.seed.web.internal.diagnostic;
 import com.google.common.collect.Lists;
 import io.nuun.kernel.api.plugin.InitState;
 import io.nuun.kernel.api.plugin.context.InitContext;
-import io.nuun.kernel.core.AbstractPlugin;
-import org.seedstack.seed.SeedRuntime;
-import org.seedstack.seed.core.internal.CorePlugin;
-import org.seedstack.seed.core.spi.configuration.ConfigurationProvider;
+import org.seedstack.seed.core.internal.AbstractSeedPlugin;
+import org.seedstack.seed.web.WebConfig;
 import org.seedstack.seed.web.spi.FilterDefinition;
 import org.seedstack.seed.web.spi.ListenerDefinition;
 import org.seedstack.seed.web.spi.ServletDefinition;
@@ -22,16 +20,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.servlet.ServletContext;
-import java.util.Collection;
 import java.util.List;
 
 import static org.seedstack.seed.web.internal.WebPlugin.WEB_PLUGIN_PREFIX;
 
-public class WebDiagnosticPlugin extends AbstractPlugin implements WebProvider {
+public class WebDiagnosticPlugin extends AbstractSeedPlugin implements WebProvider {
     private static final Logger LOGGER = LoggerFactory.getLogger(WebDiagnosticPlugin.class);
 
-    private ServletContext servletContext;
-    private boolean perRequestDiagnosticEnabled;
+    private WebConfig webConfig;
 
     @Override
     public String name() {
@@ -39,25 +35,12 @@ public class WebDiagnosticPlugin extends AbstractPlugin implements WebProvider {
     }
 
     @Override
-    public void provideContainerContext(Object containerContext) {
-        servletContext = ((SeedRuntime) containerContext).contextAs(ServletContext.class);
-    }
+    public InitState initialize(InitContext initContext) {
+        webConfig = getConfiguration(WebConfig.class);
 
-    @Override
-    public Collection<Class<?>> requiredPlugins() {
-        return Lists.<Class<?>>newArrayList(CorePlugin.class, ConfigurationProvider.class);
-    }
-
-    @Override
-    public InitState init(InitContext initContext) {
-        perRequestDiagnosticEnabled = initContext
-                .dependency(ConfigurationProvider.class)
-                .getConfiguration()
-                .subset(WEB_PLUGIN_PREFIX)
-                .getBoolean("request-diagnostic.enabled", false);
-
+        ServletContext servletContext = getSeedRuntime().contextAs(ServletContext.class);
         if (servletContext != null) {
-            initContext.dependency(CorePlugin.class).registerDiagnosticCollector(
+            getSeedRuntime().getDiagnosticManager().registerDiagnosticInfoCollector(
                     WEB_PLUGIN_PREFIX,
                     new WebDiagnosticCollector(servletContext)
             );
@@ -68,7 +51,7 @@ public class WebDiagnosticPlugin extends AbstractPlugin implements WebProvider {
 
     @Override
     public Object nativeUnitModule() {
-        if (perRequestDiagnosticEnabled) {
+        if (webConfig.isRequestDiagnosticEnabled()) {
             return new WebDiagnosticModule();
         } else {
             return null;
@@ -82,7 +65,7 @@ public class WebDiagnosticPlugin extends AbstractPlugin implements WebProvider {
 
     @Override
     public List<FilterDefinition> filters() {
-        if (perRequestDiagnosticEnabled) {
+        if (webConfig.isRequestDiagnosticEnabled()) {
             LOGGER.info("Per-request diagnostic enabled, a diagnostic file will be dumped for each request exception");
 
             FilterDefinition filterDefinition = new FilterDefinition("web-diagnostic", WebDiagnosticFilter.class);

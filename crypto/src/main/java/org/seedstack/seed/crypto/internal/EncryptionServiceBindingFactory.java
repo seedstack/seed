@@ -9,11 +9,11 @@ package org.seedstack.seed.crypto.internal;
 
 import com.google.inject.Key;
 import com.google.inject.name.Names;
-import org.apache.commons.configuration.Configuration;
 import org.seedstack.seed.SeedException;
-import org.seedstack.seed.spi.dependency.Maybe;
 import org.seedstack.seed.core.utils.SeedReflectionUtils;
+import org.seedstack.seed.crypto.CryptoConfig;
 import org.seedstack.seed.crypto.EncryptionService;
+import org.seedstack.seed.spi.dependency.Maybe;
 
 import javax.inject.Qualifier;
 import java.lang.annotation.Annotation;
@@ -32,21 +32,21 @@ class EncryptionServiceBindingFactory {
     /**
      * Creates the encryption service bindings.
      *
-     * @param configuration         crypto configuration
+     * @param cryptoConfig          crypto cryptoConfig
      * @param keyPairConfigurations the key pairs configurations
      * @param keyStores             the key stores instances
      * @return the map of Guice Key and EncryptionService instances.
      */
-    Map<Key<EncryptionService>, EncryptionService> createBindings(Configuration configuration, List<KeyPairConfig> keyPairConfigurations, Map<String, KeyStore> keyStores) {
-        Map<Key<EncryptionService>, EncryptionService> encryptionServices = new HashMap<Key<EncryptionService>, EncryptionService>();
-        Map<String, EncryptionServiceFactory> encryptionServiceFactories = new HashMap<String, EncryptionServiceFactory>();
+    Map<Key<EncryptionService>, EncryptionService> createBindings(CryptoConfig cryptoConfig, List<KeyPairConfig> keyPairConfigurations, Map<String, KeyStore> keyStores) {
+        Map<Key<EncryptionService>, EncryptionService> encryptionServices = new HashMap<>();
+        Map<String, EncryptionServiceFactory> encryptionServiceFactories = new HashMap<>();
 
         if (keyPairConfigurations != null && keyStores != null) {
             for (KeyPairConfig keyPairConfig : keyPairConfigurations) {
                 String keyStoreName = keyPairConfig.getKeyStoreName();
 
                 if (!encryptionServiceFactories.containsKey(keyStoreName)) {
-                    EncryptionServiceFactory factory = new EncryptionServiceFactory(configuration, keyStores.get(keyStoreName));
+                    EncryptionServiceFactory factory = new EncryptionServiceFactory(cryptoConfig, keyStores.get(keyStoreName));
                     encryptionServiceFactories.put(keyStoreName, factory);
                 }
                 EncryptionServiceFactory serviceFactory = encryptionServiceFactories.get(keyStoreName);

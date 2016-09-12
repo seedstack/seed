@@ -14,29 +14,28 @@
     <parent>
         <groupId>org.seedstack.poms</groupId>
         <artifactId>parent-internal</artifactId>
-        <version>2.4.0</version>
+        <version>3.0.0-SNAPSHOT</version>
     </parent>
 
     <groupId>org.seedstack.seed</groupId>
     <artifactId>seed</artifactId>
-    <version>2.3.1-SNAPSHOT</version>
+    <version>3.0.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <properties>
-        <poms.version>2.4.0</poms.version>
+        <poms.version>3.0.0-SNAPSHOT</poms.version>
         <nuun-kernel.version>1.0.M9</nuun-kernel.version>
-        <commons-configuration.version>1.10</commons-configuration.version>
         <commons-cli.version>1.3.1</commons-cli.version>
         <guice.version>4.0</guice.version>
         <juel.version>2.2.7</juel.version>
         <shiro.version>1.2.4</shiro.version>
         <undertow.version>1.3.23.Final</undertow.version>
-        <jodd.version>3.6.6</jodd.version>
         <metrics.version>3.1.2</metrics.version>
         <jersey.version>1.19.1</jersey.version>
         <jersey2.version>2.22.2</jersey2.version>
+        <coffig.version>1.0.0-SNAPSHOT</coffig.version>
 
-        <compatibility.version>2.1.0</compatibility.version>
+        <compatibility.skip>true</compatibility.skip>
 
         <bintray.package>seed</bintray.package>
     </properties>
@@ -104,27 +103,6 @@
                             <licenseMerge>IGNORED_LICENSE|GNU General Public License, Version 2 with the Classpath Exception</licenseMerge>
                             <licenseMerge>IGNORED_LICENSE|Eclipse Public License - v 1.0</licenseMerge>
                         </licenseMerges>
-                    </configuration>
-                </plugin>
-                <plugin>
-                    <groupId>com.github.siom79.japicmp</groupId>
-                    <artifactId>japicmp-maven-plugin</artifactId>
-                    <configuration>
-                        <parameter>
-                            <excludes>
-                                <exclude>*.internal.*</exclude>
-                                <exclude>org.seedstack.seed.web.DelegateServletContextListener</exclude>
-                                <exclude>org.seedstack.seed.web.listener.SeedServletContextListener</exclude>
-                                <exclude>org.seedstack.seed.CoreErrorCode</exclude>
-                                <exclude>org.seedstack.seed.security.spi.SecurityErrorCodes</exclude>
-                                <exclude>org.seedstack.seed.security.spi.SecurityConcern</exclude>
-                                <exclude>org.seedstack.seed.transaction.spi.TransactionConcern</exclude>
-                                <exclude>org.seedstack.seed.rest.hal.Link</exclude>
-                                <exclude>org.seedstack.seed.web.WebFilter</exclude>
-                                <exclude>org.seedstack.seed.web.WebInitParam</exclude>
-                                <exclude>org.seedstack.seed.web.WebServlet</exclude>
-                            </excludes>
-                        </parameter>
                     </configuration>
                 </plugin>
             </plugins>

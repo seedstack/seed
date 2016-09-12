@@ -7,11 +7,9 @@
  */
 package org.seedstack.seed.security;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import org.junit.Test;
 
-import org.seedstack.seed.security.UsernamePasswordToken;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class UsernamePasswordTokenTest {
 

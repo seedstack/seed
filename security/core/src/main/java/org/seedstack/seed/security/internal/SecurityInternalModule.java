@@ -13,12 +13,12 @@ import com.google.inject.Provider;
 import com.google.inject.TypeLiteral;
 import com.google.inject.multibindings.Multibinder;
 import com.google.inject.name.Names;
-import org.apache.commons.configuration.Configuration;
 import org.apache.shiro.realm.Realm;
 import org.seedstack.seed.security.PrincipalCustomizer;
 import org.seedstack.seed.security.RoleMapping;
 import org.seedstack.seed.security.RolePermissionResolver;
 import org.seedstack.seed.security.Scope;
+import org.seedstack.seed.security.SecurityConfig;
 import org.seedstack.seed.security.SecuritySupport;
 
 import javax.inject.Inject;
@@ -39,7 +39,7 @@ class SecurityInternalModule extends PrivateModule {
     @SuppressWarnings({"unchecked", "rawtypes"})
     @Override
     public void configure() {
-        bind(Configuration.class).annotatedWith(Names.named("seed-security-config")).toInstance(securityConfigurer.getSecurityConfiguration());
+        bind(SecurityConfig.class).toInstance(securityConfigurer.getSecurityConfiguration());
 
         bind(ShiroRealmAdapter.class);
 
@@ -57,12 +57,12 @@ class SecurityInternalModule extends PrivateModule {
         expose(new TypeLiteral<Set<Realm>>() {});
         expose(new TypeLiteral<Set<PrincipalCustomizer>>() {});
         expose(SecuritySupport.class);
-        expose(Configuration.class).annotatedWith(Names.named("seed-security-config"));
+        expose(SecurityConfig.class);
     }
 
     private void bindRealms() {
         Collection<RealmConfiguration> realms = securityConfigurer.getConfigurationRealms();
-        Set<Class<? extends org.seedstack.seed.security.Realm>> apiRealmClasses = new HashSet<Class<? extends org.seedstack.seed.security.Realm>>();
+        Set<Class<? extends org.seedstack.seed.security.Realm>> apiRealmClasses = new HashSet<>();
 
         for (RealmConfiguration realm : realms) {
             bind(realm.getRealmClass());
@@ -88,7 +88,7 @@ class SecurityInternalModule extends PrivateModule {
         @Override
         public Set<Realm> get() {
             if (realms == null) {
-                realms = new HashSet<Realm>();
+                realms = new HashSet<>();
                 for (Class<? extends org.seedstack.seed.security.Realm> seedRealmClass : realmClasses) {
                     org.seedstack.seed.security.Realm realmInstance = injector.getInstance(seedRealmClass);
                     ShiroRealmAdapter realmAdapter = injector.getInstance(ShiroRealmAdapter.class);

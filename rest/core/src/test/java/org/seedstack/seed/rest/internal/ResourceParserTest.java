@@ -44,7 +44,7 @@ public class ResourceParserTest {
     private Map<String, Resource> resourceMap;
     private Map<String, Link> links;
     @Mocked
-    private RestConfiguration restConfiguration;
+    private RestConfig restConfig;
     @Mocked
     private ServletContext servletContext;
 
@@ -68,18 +68,18 @@ public class ResourceParserTest {
     public void before() {
         new Expectations() {
             {
-                restConfiguration.getRestPath();
+                restConfig.getPath();
                 result = REST_PATH;
-                restConfiguration.getBaseRel();
+                restConfig.getBaseRel();
                 result = BASE_REL;
-                restConfiguration.getBaseParam();
+                restConfig.getBaseParam();
                 result = BASE_PARAM;
                 servletContext.getContextPath();
                 result = SERVLET_CONTEXT_PATH;
             }
         };
 
-        ResourceScanner resourceScanner = new ResourceScanner(restConfiguration, servletContext);
+        ResourceScanner resourceScanner = new ResourceScanner(restConfig, servletContext);
         resourceScanner.scan(Lists.<Class<?>>newArrayList(MyLinkTemplateResource.class));
         resourceMap = resourceScanner.jsonHomeResources();
         links = resourceScanner.halLinks();

@@ -11,10 +11,8 @@ import com.google.inject.TypeLiteral;
 import com.google.inject.spi.TypeEncounter;
 import com.google.inject.spi.TypeListener;
 import org.seedstack.seed.Logging;
-import org.seedstack.seed.core.utils.SeedReflectionUtils;
 import org.slf4j.Logger;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.util.HashSet;
 import java.util.Set;
@@ -27,28 +25,17 @@ import java.util.Set;
 class LoggingTypeListener implements TypeListener {
     @Override
     public <T> void hear(TypeLiteral<T> typeLiteral, TypeEncounter<T> typeEncounter) {
-        Set<Field> fields = new HashSet<Field>();
+        Set<Field> fields = new HashSet<>();
         for (Class<?> c = typeLiteral.getRawType(); c != Object.class; c = c.getSuperclass()) {
             for (Field field : c.getDeclaredFields()) {
-                if (field.getType() == Logger.class && annotationPresent(field, Logging.class)) {
+                if (field.getType() == Logger.class && field.isAnnotationPresent(Logging.class)) {
                     fields.add(field);
                 }
             }
         }
 
         if (!fields.isEmpty()) {
-            typeEncounter.register(new LoggingMembersInjector<T>(fields));
+            typeEncounter.register(new LoggingMembersInjector<>(fields));
         }
-    }
-
-
-    private boolean annotationPresent(Field field, Class<? extends Annotation> annoClass) {
-        for (Annotation anno : field.getAnnotations()) {
-            if (SeedReflectionUtils.hasAnnotationDeep(anno.annotationType(), annoClass)) {
-                return true;
-            }
-        }
-
-        return false;
     }
 }

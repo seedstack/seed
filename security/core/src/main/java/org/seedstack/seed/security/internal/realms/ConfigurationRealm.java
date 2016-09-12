@@ -7,30 +7,44 @@
  */
 package org.seedstack.seed.security.internal.realms;
 
-import java.util.*;
-
-import javax.inject.Inject;
-import javax.inject.Named;
-
-import org.apache.commons.configuration.Configuration;
-import org.seedstack.seed.security.*;
+import org.seedstack.seed.security.AuthenticationException;
+import org.seedstack.seed.security.AuthenticationInfo;
+import org.seedstack.seed.security.AuthenticationToken;
+import org.seedstack.seed.security.IncorrectCredentialsException;
+import org.seedstack.seed.security.Realm;
+import org.seedstack.seed.security.RoleMapping;
+import org.seedstack.seed.security.RolePermissionResolver;
+import org.seedstack.seed.security.SecurityConfig;
+import org.seedstack.seed.security.UnknownAccountException;
+import org.seedstack.seed.security.UnsupportedTokenException;
+import org.seedstack.seed.security.UsernamePasswordToken;
 import org.seedstack.seed.security.principals.PrincipalProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.inject.Inject;
+import javax.inject.Named;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
 /**
  * A realm that authentifies users and gives authorities with a configuration file.
- * 
+ *
  * @author yves.dautremay@mpsa.com
  */
 public class ConfigurationRealm implements Realm {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ConfigurationRealm.class);
 
-    /** props section suffix */
+    /**
+     * props section suffix
+     */
     public static final String USER_SECTION_NAME = "users";
 
-    private final Set<ConfigurationUser> users = new HashSet<ConfigurationUser>();
+    private final Set<ConfigurationUser> users = new HashSet<>();
 
     private RoleMapping roleMapping;
 
@@ -61,37 +75,19 @@ public class ConfigurationRealm implements Realm {
         return new AuthenticationInfo(userNamePasswordToken.getUsername(), userNamePasswordToken.getPassword());
     }
 
-    /**
-     * Reads the configuration props to initialize authorized users and their rights.
-     * 
-     * @param securityConfiguration the configuration concerning security
-     */
     @Inject
-    public void readConfiguration(@Named("seed-security-config") Configuration securityConfiguration) {
-        Configuration usersConfig = securityConfiguration.subset(USER_SECTION_NAME);
-        if (usersConfig.isEmpty()) {
+    void readConfiguration(SecurityConfig securityConfig) {
+        if (securityConfig.getUsers().isEmpty()) {
             LOGGER.warn("{} defined, but the configuration defines no user", getClass().getSimpleName());
-            return;
-        }
-        users.clear();
-        processUsersConfiguration(usersConfig);
-    }
-
-    private void processUsersConfiguration(Configuration usersConfiguration) {
-        Iterator<String> keys = usersConfiguration.getKeys();
-        while (keys.hasNext()) {
-            String userName = keys.next();
-            ConfigurationUser user = new ConfigurationUser(userName);
-            String[] values = usersConfiguration.getStringArray(userName);
-            if (values.length == 0) {
-                user.password = "";
-            } else {
-                user.password = values[0];
-                for (int i = 1; i < values.length; i++) {
-                    user.roles.add(values[i]);
-                }
+        } else {
+            users.clear();
+            for (Map.Entry<String, SecurityConfig.UserConfig> entry : securityConfig.getUsers().entrySet()) {
+                ConfigurationUser user = new ConfigurationUser(entry.getKey());
+                SecurityConfig.UserConfig userConfig = entry.getValue();
+                user.password = userConfig.getPassword();
+                user.roles.addAll(userConfig.getRoles());
+                users.add(user);
             }
-            users.add(user);
         }
     }
 
@@ -107,7 +103,7 @@ public class ConfigurationRealm implements Realm {
 
     /**
      * Setter roleMapping
-     * 
+     *
      * @param roleMapping the role mapping
      */
     @Inject
@@ -117,7 +113,7 @@ public class ConfigurationRealm implements Realm {
 
     /**
      * Setter rolePermissionResolver
-     * 
+     *
      * @param rolePermissionResolver the rolePermissionResolver
      */
     @Inject
@@ -141,14 +137,14 @@ public class ConfigurationRealm implements Realm {
 
     /**
      * Class to represent a user from the configuration. In the file, key is the name, first value is the password, following values are the roles.
-     * 
+     *
      * @author yves.dautremay@mpsa.com
      */
     static class ConfigurationUser {
 
         private final String username;
 
-        private final Set<String> roles = new HashSet<String>();
+        private final Set<String> roles = new HashSet<>();
 
         private String password;
 

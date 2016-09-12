@@ -10,10 +10,10 @@ package org.seedstack.seed.el.internal;
 import io.nuun.kernel.api.plugin.InitState;
 import io.nuun.kernel.api.plugin.context.InitContext;
 import io.nuun.kernel.api.plugin.request.ClasspathScanRequest;
-import io.nuun.kernel.core.AbstractPlugin;
 import net.jodah.typetools.TypeResolver;
 import org.kametic.specifications.Specification;
 import org.seedstack.seed.SeedException;
+import org.seedstack.seed.core.internal.AbstractSeedPlugin;
 import org.seedstack.seed.core.utils.SeedReflectionUtils;
 import org.seedstack.seed.el.spi.ELHandler;
 import org.seedstack.seed.spi.dependency.Maybe;
@@ -30,7 +30,7 @@ import java.util.Map;
  * @author pierre.thirouin@ext.mpsa.com
  * @author adrien.lauer@mpsa.com
  */
-public class ELPlugin extends AbstractPlugin {
+public class ELPlugin extends AbstractSeedPlugin {
     private static final Logger LOGGER = LoggerFactory.getLogger(ELPlugin.class);
     private static final Maybe<Class<Object>> EL_MAYBE = SeedReflectionUtils.forName("javax.el.Expression");
     static final Maybe<Class<ELContext>> EL3_MAYBE = SeedReflectionUtils.forName("javax.el.StandardELContext");
@@ -51,9 +51,9 @@ public class ELPlugin extends AbstractPlugin {
 
     @SuppressWarnings("unchecked")
     @Override
-    public InitState init(InitContext initContext) {
+    public InitState initialize(InitContext initContext) {
         if (EL_MAYBE.isPresent()) {
-            Map<Class<? extends Annotation>, Class<ELHandler>> elMap = new HashMap<Class<? extends Annotation>, Class<ELHandler>>();
+            Map<Class<? extends Annotation>, Class<ELHandler>> elMap = new HashMap<>();
 
             // Scan all the ExpressionLanguageHandler
             Map<Specification, Collection<Class<?>>> scannedTypesBySpecification = initContext.scannedTypesBySpecification();

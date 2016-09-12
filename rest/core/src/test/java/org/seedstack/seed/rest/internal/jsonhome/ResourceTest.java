@@ -75,7 +75,7 @@ public class ResourceTest {
 
     @Test(expected = SeedException.class)
     public void resources_cannot_have_different_href2() {
-        Resource newResource = new Resource(REL, "http://example.org/catalogs/{id}", new HashMap<String, String>(), new HashMap<String, String>(), hints);
+        Resource newResource = new Resource(REL, "http://example.org/catalogs/{id}", new HashMap<>(), new HashMap<>(), hints);
         resource.merge(newResource);
     }
 }

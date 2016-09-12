@@ -7,24 +7,22 @@
  */
 package org.seedstack.seed.crypto.internal;
 
-import jodd.util.collection.ArrayEnumeration;
 import mockit.Expectations;
 import mockit.MockUp;
 import mockit.Mocked;
-import org.apache.commons.configuration.Configuration;
 import org.junit.Before;
 import org.junit.Test;
+import org.seedstack.seed.crypto.CryptoConfig;
 
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.security.KeyStore;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Vector;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.seedstack.seed.core.utils.ConfigurationUtils.buildKey;
-import static org.seedstack.seed.crypto.internal.CryptoPlugin.ALIAS;
-import static org.seedstack.seed.crypto.internal.CryptoPlugin.KEYSTORE;
 
 /**
  * @author pierre.thirouin@ext.mpsa.com (Pierre Thirouin)
@@ -41,9 +39,8 @@ public class KeyPairConfigFactoryTest {
 
     @Mocked
     private KeyStore keyStore;
-
     @Mocked
-    private Configuration configuration;
+    private CryptoConfig configuration;
 
     private KeyPairConfigFactory underTest;
 
@@ -83,12 +80,13 @@ public class KeyPairConfigFactoryTest {
 
         new Expectations() {
             {
-                configuration.getString(buildKey(KEYSTORE, KEY_STORE_NAME, ALIAS, ALIAS_NAME_1, CryptoPlugin.PASSWORD));
-                result = PASSWORD;
-                configuration.getString(buildKey(KEYSTORE, KEY_STORE_NAME, ALIAS, ALIAS_NAME_2, CryptoPlugin.PASSWORD));
-                result = PASSWORD;
-                configuration.getString(buildKey(KEYSTORE, KEY_STORE_NAME, ALIAS, ALIAS_NAME_2, CryptoPlugin.QUALIFIER));
-                result = ALIAS_QUALIFIER;
+                configuration.keyStores();
+                result = new HashMap<String, CryptoConfig.KeyStoreConfig>() {{
+                    put(KEY_STORE_NAME, new CryptoConfig.KeyStoreConfig()
+                            .addAlias(ALIAS_NAME_1, new CryptoConfig.KeyStoreConfig.AliasConfig().setPassword(PASSWORD))
+                            .addAlias(ALIAS_NAME_2, new CryptoConfig.KeyStoreConfig.AliasConfig().setPassword(PASSWORD).setQualifier(ALIAS_QUALIFIER)
+                            ));
+                }};
             }
         };
 
@@ -117,10 +115,12 @@ public class KeyPairConfigFactoryTest {
 
         new Expectations() {
             {
-                configuration.getString(buildKey(CryptoPlugin.CERT, ALIAS_NAME_1, CryptoPlugin.CERT_FILE));
-                result = PATH_TO_CERT;
-                configuration.getString(buildKey(CryptoPlugin.CERT, ALIAS_NAME_2, CryptoPlugin.CERT_RESOURCE));
-                result = CERT_RESOURCE;
+                configuration.certificates();
+                result = new HashMap<String, CryptoConfig.CertificateConfig>() {{
+                    put(ALIAS_NAME_1, new CryptoConfig.CertificateConfig().setFile(PATH_TO_CERT));
+                    put(ALIAS_NAME_2, new CryptoConfig.CertificateConfig().setResource(CERT_RESOURCE));
+                }};
+
                 url.getFile();
                 result = CERT_RESOURCE;
             }
@@ -135,7 +135,10 @@ public class KeyPairConfigFactoryTest {
     private void prepareTwoAliases() throws Exception {
         new Expectations() {
             {
-                Enumeration<String> aliases = new ArrayEnumeration<String>(new String[]{ALIAS_NAME_1, ALIAS_NAME_2});
+                Enumeration<String> aliases = new Vector<String>() {{
+                    add(ALIAS_NAME_1);
+                    add(ALIAS_NAME_2);
+                }}.elements();
                 keyStore.aliases();
                 result = aliases;
             }

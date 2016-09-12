@@ -8,14 +8,15 @@
 package org.seedstack.seed.security.internal;
 
 import io.nuun.kernel.api.plugin.context.InitContext;
-import org.apache.commons.configuration.Configuration;
 import org.junit.Before;
 import org.junit.Test;
-import org.seedstack.seed.core.internal.application.ApplicationPlugin;
-import org.seedstack.seed.core.spi.configuration.ConfigurationProvider;
+import org.seedstack.coffig.Coffig;
+import org.seedstack.seed.Application;
 import org.seedstack.seed.el.internal.ELPlugin;
 import org.seedstack.seed.security.Realm;
+import org.seedstack.seed.security.SecurityConfig;
 import org.seedstack.seed.security.internal.realms.ConfigurationRealm;
+import org.seedstack.seed.spi.config.ApplicationProvider;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -39,7 +40,7 @@ public class SecurityProviderTest {
     @Test
     public void verify_dependencies() {
         Collection<Class<?>> plugins = underTest.requiredPlugins();
-        assertTrue(plugins.contains(ConfigurationProvider.class));
+        assertTrue(plugins.contains(ApplicationProvider.class));
     }
 
     @Test
@@ -50,19 +51,23 @@ public class SecurityProviderTest {
     @SuppressWarnings({ "rawtypes", "unchecked" })
     InitContext buildCoherentInitContext() {
         InitContext initContext = mock(InitContext.class);
+        Application application = mock(Application.class);
+        when(application.getConfiguration()).thenReturn(Coffig.builder().build());
 
-        Map<Class<?>, Collection<Class<?>>> types = new HashMap<Class<?>, Collection<Class<?>>>();
-        Collection<Class<?>> realms = new ArrayList<Class<?>>();
+        Map<Class<?>, Collection<Class<?>>> types = new HashMap<>();
+        Collection<Class<?>> realms = new ArrayList<>();
         realms.add(ConfigurationRealm.class);
         types.put(Realm.class, realms);
         when(initContext.scannedSubTypesByAncestorClass()).thenReturn(types);
 
-        ApplicationPlugin appPlugin = mock(ApplicationPlugin.class);
+        ApplicationProvider applicationProvider = mock(ApplicationProvider.class);
         ELPlugin elPlugin = mock(ELPlugin.class);
         when(elPlugin.isDisabled()).thenReturn(false);
-        Configuration conf = mock(Configuration.class);
-        when(initContext.dependency(ConfigurationProvider.class)).thenReturn(appPlugin);
-        when(appPlugin.getConfiguration()).thenReturn(conf);
+        SecurityConfig securityConfig = mock(SecurityConfig.class);
+        when(initContext.dependency(ApplicationProvider.class)).thenReturn(applicationProvider);
+        Coffig coffig = mock(Coffig.class);
+        when(coffig.get(SecurityConfig.class)).thenReturn(securityConfig);
+        when(initContext.dependency(ApplicationProvider.class)).thenReturn(() -> application);
         when(initContext.dependency(ELPlugin.class)).thenReturn(elPlugin);
 
         return initContext;

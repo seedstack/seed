@@ -7,13 +7,13 @@
  */
 package org.seedstack.seed.el.internal;
 
+import org.assertj.core.api.Assertions;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.seedstack.seed.SeedException;
 import org.seedstack.seed.el.internal.fixtureFailing.Foo;
 import org.seedstack.seed.el.internal.fixtures.SomeRepresentation;
 import org.seedstack.seed.it.SeedITRunner;
-import org.assertj.core.api.Assertions;
-import org.junit.Test;
-import org.junit.runner.RunWith;
 
 import javax.inject.Inject;
 

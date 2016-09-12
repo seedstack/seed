@@ -7,11 +7,10 @@
  */
 package org.seedstack.seed.metrics.internal;
 
-import javax.inject.Named;
-
+import com.codahale.metrics.health.HealthCheck;
 import org.seedstack.seed.metrics.HealthChecked;
 
-import com.codahale.metrics.health.HealthCheck;
+import javax.inject.Named;
 
 @HealthChecked(name="SuccessfulHealthCheck")
 @Named(value="SuccessfulHealthCheck")

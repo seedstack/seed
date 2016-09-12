@@ -7,10 +7,10 @@
  */
 package org.seedstack.seed.transaction.internal;
 
+import org.junit.Test;
 import org.seedstack.seed.SeedException;
 import org.seedstack.seed.transaction.spi.TransactionManager;
 import org.seedstack.seed.transaction.spi.TransactionMetadata;
-import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;

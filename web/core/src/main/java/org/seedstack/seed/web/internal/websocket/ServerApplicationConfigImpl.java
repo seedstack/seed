@@ -22,11 +22,11 @@ import java.util.Set;
 public class ServerApplicationConfigImpl implements ServerApplicationConfig {
     @Override
     public Set<ServerEndpointConfig> getEndpointConfigs(Set<Class<? extends Endpoint>> endpointClasses) {
-        return new HashSet<ServerEndpointConfig>();
+        return new HashSet<>();
     }
 
     @Override
     public Set<Class<?>> getAnnotatedEndpointClasses(Set<Class<?>> scanned) {
-        return new HashSet<Class<?>>();
+        return new HashSet<>();
     }
 }

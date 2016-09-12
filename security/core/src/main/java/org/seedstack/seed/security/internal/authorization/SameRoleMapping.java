@@ -7,13 +7,13 @@
  */
 package org.seedstack.seed.security.internal.authorization;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
-
 import org.seedstack.seed.security.Role;
 import org.seedstack.seed.security.RoleMapping;
 import org.seedstack.seed.security.principals.PrincipalProvider;
+
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * RoleMapping that returns Roles which names are the realm data;
@@ -25,7 +25,7 @@ public class SameRoleMapping implements RoleMapping {
 
 	@Override
 	public Set<Role> resolveRoles(Set<String> realmData, Collection<PrincipalProvider<?>> principalProviders) {
-		Set<Role> roles = new HashSet<Role>();
+		Set<Role> roles = new HashSet<>();
 		for (String realmDatum : realmData) {
 			Role role = new Role(realmDatum);
 			roles.add(role);

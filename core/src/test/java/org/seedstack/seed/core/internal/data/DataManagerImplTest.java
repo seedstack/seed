@@ -12,7 +12,12 @@ import com.google.inject.Injector;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.internal.util.reflection.Whitebox;
-import org.seedstack.seed.core.fixtures.*;
+import org.seedstack.seed.core.fixtures.TestDTO;
+import org.seedstack.seed.core.fixtures.TestDTO2;
+import org.seedstack.seed.core.fixtures.TestDataExporter;
+import org.seedstack.seed.core.fixtures.TestDataExporter2;
+import org.seedstack.seed.core.fixtures.TestDataImporter;
+import org.seedstack.seed.core.fixtures.TestDataImporter2;
 import org.skyscreamer.jsonassert.JSONAssert;
 
 import java.io.ByteArrayInputStream;
@@ -89,8 +94,8 @@ public class DataManagerImplTest {
     private DataManagerImpl createDataManager() {
         DataManagerImpl yamlDataService = new DataManagerImpl();
         Whitebox.setInternalState(yamlDataService, "injector", mockInjector());
-        Whitebox.setInternalState(yamlDataService, "allDataExporters", ImmutableMap.of("group1", ImmutableMap.of("test1", new DataExporterDefinition<TestDTO>("test1", "group1", TestDTO.class, TestDataExporter.class), "test2", new DataExporterDefinition<TestDTO2>("test2", "group1", TestDTO2.class, TestDataExporter2.class))));
-        Whitebox.setInternalState(yamlDataService, "allDataImporters", ImmutableMap.of("group1", ImmutableMap.of("test1", new DataImporterDefinition<TestDTO>("test1", "group1", TestDTO.class, TestDataImporter.class), "test2", new DataImporterDefinition<TestDTO2>("test2", "group1", TestDTO2.class, TestDataImporter2.class))));
+        Whitebox.setInternalState(yamlDataService, "allDataExporters", ImmutableMap.of("group1", ImmutableMap.of("test1", new DataExporterDefinition<>("test1", "group1", TestDTO.class, TestDataExporter.class), "test2", new DataExporterDefinition<>("test2", "group1", TestDTO2.class, TestDataExporter2.class))));
+        Whitebox.setInternalState(yamlDataService, "allDataImporters", ImmutableMap.of("group1", ImmutableMap.of("test1", new DataImporterDefinition<>("test1", "group1", TestDTO.class, TestDataImporter.class), "test2", new DataImporterDefinition<>("test2", "group1", TestDTO2.class, TestDataImporter2.class))));
         return yamlDataService;
     }
 

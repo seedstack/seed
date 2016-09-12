@@ -14,7 +14,7 @@ import io.nuun.kernel.api.plugin.context.InitContext;
 import io.nuun.kernel.api.plugin.request.ClasspathScanRequest;
 import io.nuun.kernel.core.AbstractPlugin;
 import org.seedstack.seed.rest.ResourceFiltering;
-import org.seedstack.seed.rest.internal.RestConfiguration;
+import org.seedstack.seed.rest.internal.RestConfig;
 import org.seedstack.seed.rest.internal.RestPlugin;
 import org.seedstack.seed.web.spi.FilterDefinition;
 import org.seedstack.seed.web.spi.ListenerDefinition;
@@ -29,7 +29,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import java.util.Set;
 
 /**
@@ -64,15 +63,15 @@ public class Jersey1Plugin extends AbstractPlugin implements WebProvider {
         RestPlugin restPlugin = initContext.dependency(RestPlugin.class);
 
         if (restPlugin.isEnabled()) {
-            RestConfiguration restConfiguration = restPlugin.getConfiguration();
+            RestConfig restConfig = restPlugin.getRestConfig();
 
             jersey1Module = new Jersey1Module(scanResourceFilterFactories(initContext));
 
             jersey1FilterDefinition = new FilterDefinition("jersey1", SeedContainer.class);
-            jersey1FilterDefinition.addMappings(new FilterDefinition.Mapping(restConfiguration.getRestPath() + "/*"));
-            jersey1FilterDefinition.addInitParameters(buildInitParams(restConfiguration));
+            jersey1FilterDefinition.addMappings(new FilterDefinition.Mapping(restConfig.getPath() + "/*"));
+            jersey1FilterDefinition.addInitParameters(buildInitParams(restConfig));
 
-            LOGGER.info("Jersey 1 serving JAX-RS resources on {}/*", restConfiguration.getRestPath());
+            LOGGER.info("Jersey 1 serving JAX-RS resources on {}/*", restConfig.getPath());
         }
 
         return InitState.INITIALIZED;
@@ -80,7 +79,7 @@ public class Jersey1Plugin extends AbstractPlugin implements WebProvider {
 
     private Set<Class<? extends ResourceFilterFactory>> scanResourceFilterFactories(InitContext initContext) {
         Map<Class<? extends Annotation>, Collection<Class<?>>> scannedClassesByAnnotationClass = initContext.scannedClassesByAnnotationClass();
-        Set<Class<? extends ResourceFilterFactory>> resourceFilterFactories = new HashSet<Class<? extends ResourceFilterFactory>>();
+        Set<Class<? extends ResourceFilterFactory>> resourceFilterFactories = new HashSet<>();
         Collection<Class<?>> resourceFilterFactoryClasses = scannedClassesByAnnotationClass.get(ResourceFiltering.class);
 
         if (resourceFilterFactoryClasses != null) {
@@ -94,8 +93,8 @@ public class Jersey1Plugin extends AbstractPlugin implements WebProvider {
         return resourceFilterFactories;
     }
 
-    private Map<String, String> buildInitParams(RestConfiguration restConfiguration) {
-        Map<String, String> initParams = new HashMap<String, String>();
+    private Map<String, String> buildInitParams(RestConfig restConfig) {
+        Map<String, String> initParams = new HashMap<>();
 
         // Default configuration values
         initParams.put("com.sun.jersey.api.json.POJOMappingFeature", "true");
@@ -103,23 +102,13 @@ public class Jersey1Plugin extends AbstractPlugin implements WebProvider {
         initParams.put("com.sun.jersey.config.feature.DisableWADL", "true");
 
         // User configuration values
-        initParams.putAll(propertiesToMap(restConfiguration.getJerseyProperties()));
+        initParams.putAll(restConfig.getJerseyProperties());
 
         // Forced configuration values
-        initParams.put("com.sun.jersey.config.property.JSPTemplatesBasePath", restConfiguration.getJspPath());
-        initParams.put("com.sun.jersey.config.feature.FilterContextPath", restConfiguration.getRestPath());
+        initParams.put("com.sun.jersey.config.property.JSPTemplatesBasePath", restConfig.getJspPath());
+        initParams.put("com.sun.jersey.config.feature.FilterContextPath", restConfig.getPath());
 
         return initParams;
-    }
-
-    private Map<String, String> propertiesToMap(Properties properties) {
-        Map<String, String> map = new HashMap<String, String>();
-
-        for (Object key : properties.keySet()) {
-            map.put(key.toString(), properties.getProperty(key.toString()));
-        }
-
-        return map;
     }
 
     @Override

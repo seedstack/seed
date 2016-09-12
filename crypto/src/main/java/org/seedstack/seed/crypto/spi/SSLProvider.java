@@ -8,8 +8,10 @@
 package org.seedstack.seed.crypto.spi;
 
 import io.nuun.kernel.api.annotations.Facet;
+import org.seedstack.seed.crypto.CryptoConfig;
 
 import javax.net.ssl.SSLContext;
+import java.util.Optional;
 
 /**
  * Provides access to the application SSL configuration.
@@ -24,12 +26,12 @@ public interface SSLProvider {
      *
      * @return an SSL context, or null before the init phase
      */
-    SSLContext sslContext();
+    Optional<SSLContext> sslContext();
 
     /**
-     * Provides the {@link SSLConfiguration} after the init phase.
+     * Provides the {@link CryptoConfig.SSLConfig} after the init phase.
      *
      * @return the SSL configuration, or null before the init phase
      */
-    SSLConfiguration sslConfig();
+    CryptoConfig.SSLConfig sslConfig();
 }

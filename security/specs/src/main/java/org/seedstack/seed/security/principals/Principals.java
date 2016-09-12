@@ -106,7 +106,7 @@ public final class Principals {
     @SuppressWarnings("unchecked")
     public static <T extends Serializable> Collection<PrincipalProvider<T>> getPrincipalsByType(Collection<PrincipalProvider<?>> principalProviders,
             Class<T> principalClass) {
-        Collection<PrincipalProvider<T>> principals = new ArrayList<PrincipalProvider<T>>();
+        Collection<PrincipalProvider<T>> principals = new ArrayList<>();
         for (PrincipalProvider<?> principal : principalProviders) {
             for (Type principalInterface : principal.getClass().getGenericInterfaces()) {
                 if (principalInterface instanceof ParameterizedType) {
@@ -165,7 +165,7 @@ public final class Principals {
      * @return the simple principals
      */
     public static Collection<SimplePrincipalProvider> getSimplePrincipals(Collection<PrincipalProvider<?>> principalProviders) {
-        Collection<SimplePrincipalProvider> principals = new ArrayList<SimplePrincipalProvider>();
+        Collection<SimplePrincipalProvider> principals = new ArrayList<>();
         for (PrincipalProvider<?> principal : principalProviders) {
             if (principal instanceof SimplePrincipalProvider) {
                 principals.add((SimplePrincipalProvider) principal);

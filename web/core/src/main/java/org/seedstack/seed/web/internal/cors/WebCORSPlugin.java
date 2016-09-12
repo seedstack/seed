@@ -11,10 +11,8 @@ import com.google.common.collect.Lists;
 import com.thetransactioncompany.cors.CORSFilter;
 import io.nuun.kernel.api.plugin.InitState;
 import io.nuun.kernel.api.plugin.context.InitContext;
-import io.nuun.kernel.core.AbstractPlugin;
-import org.apache.commons.configuration.Configuration;
-import org.seedstack.seed.core.spi.configuration.ConfigurationProvider;
-import org.seedstack.seed.core.utils.SeedConfigurationUtils;
+import org.seedstack.seed.core.internal.AbstractSeedPlugin;
+import org.seedstack.seed.web.WebConfig;
 import org.seedstack.seed.web.spi.FilterDefinition;
 import org.seedstack.seed.web.spi.ListenerDefinition;
 import org.seedstack.seed.web.spi.ServletDefinition;
@@ -22,19 +20,14 @@ import org.seedstack.seed.web.spi.WebProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 
-import static org.seedstack.seed.web.internal.WebPlugin.WEB_PLUGIN_PREFIX;
-
-public class WebCORSPlugin extends AbstractPlugin implements WebProvider {
+public class WebCORSPlugin extends AbstractSeedPlugin implements WebProvider {
     private static final Logger LOGGER = LoggerFactory.getLogger(WebCORSPlugin.class);
 
-    private String corsMapping;
-    private Map<String, String> corsParameters;
+    private WebConfig.CORSConfig corsConfig;
 
     @Override
     public String name() {
@@ -42,29 +35,14 @@ public class WebCORSPlugin extends AbstractPlugin implements WebProvider {
     }
 
     @Override
-    public Collection<Class<?>> requiredPlugins() {
-        return Lists.<Class<?>>newArrayList(ConfigurationProvider.class);
-    }
-
-    @Override
-    public InitState init(InitContext initContext) {
-        Configuration webConfiguration = initContext.dependency(ConfigurationProvider.class).getConfiguration().subset(WEB_PLUGIN_PREFIX);
-
-        if (webConfiguration.getBoolean("cors.enabled", false)) {
-            corsMapping = webConfiguration.getString("cors.url-mapping", "/*");
-            corsParameters = new HashMap<String, String>();
-            Properties corsProperties = SeedConfigurationUtils.buildPropertiesFromConfiguration(webConfiguration, "cors.property");
-            for (Object key : corsProperties.keySet()) {
-                corsParameters.put("cors." + key.toString(), corsProperties.getProperty(key.toString()));
-            }
-        }
-
+    protected InitState initialize(InitContext initContext) {
+        corsConfig = getConfiguration(WebConfig.CORSConfig.class);
         return InitState.INITIALIZED;
     }
 
     @Override
     public Object nativeUnitModule() {
-        if (corsMapping != null) {
+        if (corsConfig.isEnabled()) {
             return new WebCORSModule();
         } else {
             return null;
@@ -78,18 +56,26 @@ public class WebCORSPlugin extends AbstractPlugin implements WebProvider {
 
     @Override
     public List<FilterDefinition> filters() {
-        if (corsMapping != null) {
-            LOGGER.info("CORS support enabled on {}", corsMapping);
+        if (corsConfig.isEnabled()) {
+            LOGGER.info("CORS support enabled on {}", corsConfig.getMapping());
 
             FilterDefinition filterDefinition = new FilterDefinition("web-cors", CORSFilter.class);
             filterDefinition.setPriority(1000);
             filterDefinition.setAsyncSupported(true);
-            filterDefinition.addInitParameters(corsParameters);
-            filterDefinition.addMappings(new FilterDefinition.Mapping("/*"));
+            filterDefinition.addInitParameters(buildCorsParameters());
+            filterDefinition.addMappings(new FilterDefinition.Mapping(corsConfig.getMapping()));
             return Lists.newArrayList(filterDefinition);
         } else {
             return null;
         }
+    }
+
+    private Map<String, String> buildCorsParameters() {
+        Map<String, String> corsParameters = new HashMap<>();
+        for (Map.Entry<String, String> entry : corsConfig.getProperties().entrySet()) {
+            corsParameters.put("cors." + entry.getKey(), entry.getValue());
+        }
+        return corsParameters;
     }
 
     @Override

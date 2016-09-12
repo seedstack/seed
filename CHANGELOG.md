@@ -1,3 +1,8 @@
+# Version 3.3.0 (2016-?-?)
+
+* [brk] `storage` configuration lookup has been removed.
+* [brk] `password` configuration lookup has been removed.
+
 # Version 2.3.1 (2016-09-07)
 
 * [chg] Annotated WebSockets are now registered programatically as it allows injection of the configurator class.

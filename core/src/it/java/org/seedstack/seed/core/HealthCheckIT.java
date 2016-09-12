@@ -10,7 +10,11 @@ package org.seedstack.seed.core;
 import com.codahale.metrics.health.HealthCheck;
 import com.codahale.metrics.health.HealthCheck.Result;
 import com.codahale.metrics.health.HealthCheckRegistry;
-import com.google.inject.*;
+import com.google.inject.AbstractModule;
+import com.google.inject.Injector;
+import com.google.inject.Key;
+import com.google.inject.Module;
+import com.google.inject.TypeLiteral;
 import io.nuun.kernel.api.Kernel;
 import org.assertj.core.api.Assertions;
 import org.junit.AfterClass;
@@ -28,24 +32,19 @@ public class HealthCheckIT {
     private static Kernel kernel;
     private Injector injector;
 
-	private static final String MY_HEALTHCHECK = "my-healthcheck";
+    private static final String MY_HEALTHCHECK = "my-healthcheck";
 
     public static class MyHealthCheck {
 
-		@Inject
-    	Maybe<HealthcheckProvider> healthCheckProvider;
-    	
-    	public void start(){
-    		if (healthCheckProvider.isPresent()) {
-    			DependencyClassProxy<HealthCheck> healthCheck = new DependencyClassProxy<HealthCheck>(HealthCheck.class, new HealthCheckMethodReplacer() {
-    				@Override
-    				public Result check() {
-    					return Result.healthy();
-    				}
-    			});
-    			healthCheckProvider.get().register(MY_HEALTHCHECK, healthCheck.getProxy());
-    		}
-    	}
+        @Inject
+        Maybe<HealthcheckProvider> healthCheckProvider;
+
+        public void start() {
+            if (healthCheckProvider.isPresent()) {
+                DependencyClassProxy<HealthCheck> healthCheck = new DependencyClassProxy<>(HealthCheck.class, (HealthCheckMethodReplacer) Result::healthy);
+                healthCheckProvider.get().register(MY_HEALTHCHECK, healthCheck.getProxy());
+            }
+        }
     }
 
     @BeforeClass
@@ -71,16 +70,17 @@ public class HealthCheckIT {
         injector = kernel.objectGraph().as(Injector.class).createChildInjector(
                 aggregationModule);
     }
-    
-	@Test
-	public void test() {
-		MyHealthCheck myHealthCheck = injector.getInstance(MyHealthCheck.class);
-		myHealthCheck.start();
-        Maybe<HealthcheckProvider> provider = injector.getInstance(Key.get(new TypeLiteral<Maybe<HealthcheckProvider>>(){}));
+
+    @Test
+    public void test() {
+        MyHealthCheck myHealthCheck = injector.getInstance(MyHealthCheck.class);
+        myHealthCheck.start();
+        Maybe<HealthcheckProvider> provider = injector.getInstance(Key.get(new TypeLiteral<Maybe<HealthcheckProvider>>() {
+        }));
         Assertions.assertThat(provider.isPresent()).isTrue();
         HealthCheckRegistry registry = provider.get().getHealthCheckRegistry();
         Assertions.assertThat(registry.getNames().contains(MY_HEALTHCHECK)).isTrue();
         Assertions.assertThat(registry.runHealthCheck(MY_HEALTHCHECK)).isEqualTo(Result.healthy());
-	}
+    }
 
 }

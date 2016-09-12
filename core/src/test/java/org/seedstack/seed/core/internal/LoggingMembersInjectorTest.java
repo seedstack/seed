@@ -30,9 +30,9 @@ public class LoggingMembersInjectorTest {
 
     @Test
     public void injectMembersTest() throws Exception {
-        Set<Field> fields = new HashSet<Field>();
+        Set<Field> fields = new HashSet<>();
         fields.add(this.getClass().getDeclaredField("log1"));
-        LoggingMembersInjector<LoggingMembersInjectorTest> loggingMembersInjector1 = new LoggingMembersInjector<LoggingMembersInjectorTest>(fields);
+        LoggingMembersInjector<LoggingMembersInjectorTest> loggingMembersInjector1 = new LoggingMembersInjector<>(fields);
         loggingMembersInjector1.injectMembers(this);
 
         Assertions.assertThat(logger).isNotNull();

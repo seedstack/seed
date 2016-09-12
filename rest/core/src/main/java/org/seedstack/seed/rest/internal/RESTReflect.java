@@ -112,7 +112,7 @@ class RESTReflect {
      * @return the map of parameter URI by parameter name
      */
     static Map<String, String> findPathParams(String baseParam, Method method) {
-        Map<String, String> hrefVars = new HashMap<String, String>();
+        Map<String, String> hrefVars = new HashMap<>();
         for (Annotation[] paramAnnotations : method.getParameterAnnotations()) {
             for (Annotation paramAnnotation : paramAnnotations) {
                 if (paramAnnotation.annotationType().equals(PathParam.class)) {
@@ -132,7 +132,7 @@ class RESTReflect {
      * @return the map of parameter URI by parameter name
      */
     static Map<String, String> findQueryParams(String baseParam, Method method) {
-        Map<String, String> hrefVars = new HashMap<String, String>();
+        Map<String, String> hrefVars = new HashMap<>();
         Annotation[][] parameterAnnotations = method.getParameterAnnotations();
         for (int i = 0; i < parameterAnnotations.length; i++) {
             Annotation[] paramAnnotations = parameterAnnotations[i];
@@ -145,7 +145,7 @@ class RESTReflect {
     }
 
     private static Map<String, String> findQueryParamOnParameter(String baseParam, Class<?> parameterClass, Annotation paramAnnotation) {
-        Map<String, String> hrefVars = new HashMap<String, String>();
+        Map<String, String> hrefVars = new HashMap<>();
         if (paramAnnotation.annotationType().equals(QueryParam.class)) {
             String varName = ((QueryParam) paramAnnotation).value();
             addHrefVar(baseParam, hrefVars, varName);
@@ -160,7 +160,7 @@ class RESTReflect {
     }
 
     private static Map<String, String> findQueryParamOnFields(String baseParam, Class<?> aClass) {
-        Map<String, String> hrefVars = new HashMap<String, String>();
+        Map<String, String> hrefVars = new HashMap<>();
         for (Field field : aClass.getDeclaredFields()) {
             if (field.getAnnotation(QueryParam.class) != null) {
                 addHrefVar(baseParam, hrefVars, field.getName());

@@ -10,14 +10,13 @@
  */
 package org.seedstack.seed.web.internal.scan.websphere;
 
-import java.util.jar.JarInputStream;
-import java.util.zip.ZipEntry;
-
 import mockit.Mock;
 import mockit.MockUp;
-
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
+
+import java.util.jar.JarInputStream;
+import java.util.zip.ZipEntry;
 
 public class WsInputFileTest {
 

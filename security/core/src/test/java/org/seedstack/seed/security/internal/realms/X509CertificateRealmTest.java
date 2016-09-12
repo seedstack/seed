@@ -9,7 +9,13 @@ package org.seedstack.seed.security.internal.realms;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.seedstack.seed.security.*;
+import org.seedstack.seed.security.AuthenticationInfo;
+import org.seedstack.seed.security.AuthenticationToken;
+import org.seedstack.seed.security.IncorrectCredentialsException;
+import org.seedstack.seed.security.RoleMapping;
+import org.seedstack.seed.security.RolePermissionResolver;
+import org.seedstack.seed.security.UnsupportedTokenException;
+import org.seedstack.seed.security.X509CertificateToken;
 import org.seedstack.seed.security.principals.PrincipalProvider;
 import org.seedstack.seed.security.principals.Principals;
 import org.seedstack.seed.security.principals.X509CertificatePrincipalProvider;
@@ -99,7 +105,7 @@ public class X509CertificateRealmTest {
         certificates[1] = x509Certificate2;
         
         X509CertificatePrincipalProvider x509CertificatePp = new X509CertificatePrincipalProvider(certificates);
-        Collection<PrincipalProvider<?>> list = new ArrayList<PrincipalProvider<?>>();
+        Collection<PrincipalProvider<?>> list = new ArrayList<>();
         list.add(x509CertificatePp);
         Set<String> roles = underTest.getRealmRoles(Principals.identityPrincipal("uid"), list);
         

@@ -49,7 +49,7 @@ class ShiroRealmAdapter extends AuthorizingRealm {
     protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principals) {
         SeedAuthorizationInfo authzInfo = new SeedAuthorizationInfo();
         PrincipalProvider<?> idPrincipal = (PrincipalProvider<?>) principals.getPrimaryPrincipal();
-        Collection<PrincipalProvider<?>> principalProviders = new ArrayList<PrincipalProvider<?>>();
+        Collection<PrincipalProvider<?>> principalProviders = new ArrayList<>();
         principalProviders.add(idPrincipal);
         for (Object principal : principals) {
             if (principal instanceof PrincipalProvider) {

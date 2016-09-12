@@ -12,8 +12,8 @@ import com.google.inject.multibindings.Multibinder;
 import io.nuun.kernel.api.plugin.InitState;
 import io.nuun.kernel.api.plugin.context.InitContext;
 import io.nuun.kernel.api.plugin.request.ClasspathScanRequest;
-import io.nuun.kernel.core.AbstractPlugin;
 import org.seedstack.seed.LifecycleListener;
+import org.seedstack.seed.core.internal.AbstractSeedPlugin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,9 +22,9 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-public class LifecyclePlugin extends AbstractPlugin implements LifecycleListenerScanner {
+public class LifecyclePlugin extends AbstractSeedPlugin implements LifecycleListenerScanner {
     private static final Logger LOGGER = LoggerFactory.getLogger(LifecyclePlugin.class);
-    private final Set<Class<? extends LifecycleListener>> lifecycleListenerClasses = new HashSet<Class<? extends LifecycleListener>>();
+    private final Set<Class<? extends LifecycleListener>> lifecycleListenerClasses = new HashSet<>();
 
     @Override
     public String name() {
@@ -38,7 +38,7 @@ public class LifecyclePlugin extends AbstractPlugin implements LifecycleListener
 
     @SuppressWarnings("unchecked")
     @Override
-    public InitState init(InitContext initContext) {
+    public InitState initialize(InitContext initContext) {
         for (Class<?> candidate : initContext.scannedSubTypesByParentClass().get(LifecycleListener.class)) {
             if (LifecycleListener.class.isAssignableFrom(candidate)) {
                 lifecycleListenerClasses.add((Class<? extends LifecycleListener>) candidate);

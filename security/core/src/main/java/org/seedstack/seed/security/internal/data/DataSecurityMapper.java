@@ -8,13 +8,13 @@
 package org.seedstack.seed.security.internal.data;
 
 import com.google.inject.Injector;
+import org.kametic.universalvisitor.api.Mapper;
+import org.kametic.universalvisitor.api.Node;
 import org.seedstack.seed.SeedException;
 import org.seedstack.seed.security.internal.SecurityErrorCodes;
 import org.seedstack.seed.security.internal.securityexpr.SecurityExpressionInterpreter;
 import org.seedstack.seed.security.spi.data.DataObfuscationHandler;
 import org.seedstack.seed.security.spi.data.DataSecurityHandler;
-import org.kametic.universalvisitor.api.Mapper;
-import org.kametic.universalvisitor.api.Node;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
@@ -34,7 +34,7 @@ class DataSecurityMapper implements Mapper<Void> {
 
 	private Injector injector;
 	
-	private static Map<Class<?>,Object> nulls = new HashMap<Class<?>, Object>();
+	private static Map<Class<?>,Object> nulls = new HashMap<>();
 	
 	DataSecurityMapper(
 			Map< Object ,DataSecurityHandler<?>> securityHandlers ,

@@ -10,18 +10,17 @@
  */
 package org.seedstack.seed.web.internal.scan.websphere;
 
+import mockit.Mocked;
+import mockit.Verifications;
+import org.assertj.core.api.Assertions;
+import org.junit.Test;
+import org.reflections.vfs.Vfs;
+
 import java.io.IOException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLStreamHandler;
 import java.util.List;
-
-import mockit.Mocked;
-import mockit.Verifications;
-
-import org.assertj.core.api.Assertions;
-import org.junit.Test;
-import org.reflections.vfs.Vfs;
 
 public class WebsphereClasspathScanHandlerTest {
 

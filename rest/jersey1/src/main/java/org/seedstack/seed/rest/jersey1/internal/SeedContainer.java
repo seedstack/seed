@@ -28,7 +28,7 @@ class SeedContainer extends GuiceContainer {
     private static final long serialVersionUID = 1L;
 
     private final List<ResourceFilterFactory> resourceFilterFactories;
-    private final List<Class<?>> providers = new ArrayList<Class<?>>();
+    private final List<Class<?>> providers = new ArrayList<>();
 
     @SuppressWarnings("all")
     @Inject

@@ -11,7 +11,12 @@ import org.seedstack.seed.SeedException;
 import org.seedstack.seed.rest.internal.RestErrorCode;
 
 import java.net.URI;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * Defines the hints representation as defined by the
@@ -22,23 +27,23 @@ import java.util.*;
  */
 public class Hints {
 
-    private List<String> allow = new ArrayList<String>();
+    private List<String> allow = new ArrayList<>();
 
-    private Map<String, Object> formats = new TreeMap<String, Object>();
+    private Map<String, Object> formats = new TreeMap<>();
 
-    private List<String> acceptPath = new ArrayList<String>();
+    private List<String> acceptPath = new ArrayList<>();
 
-    private List<String> acceptPost = new ArrayList<String>();
+    private List<String> acceptPost = new ArrayList<>();
 
-    private List<String> acceptRanges = new ArrayList<String>();
+    private List<String> acceptRanges = new ArrayList<>();
 
-    private List<String> acceptPrefer = new ArrayList<String>();
+    private List<String> acceptPrefer = new ArrayList<>();
 
     private URI docs;
 
-    private List<String> preconditionReq = new ArrayList<String>();
+    private List<String> preconditionReq = new ArrayList<>();
 
-    private List<AuthorizationRequired> authReq = new ArrayList<AuthorizationRequired>();
+    private List<AuthorizationRequired> authReq = new ArrayList<>();
 
     private Status status;
 
@@ -192,7 +197,7 @@ public class Hints {
     }
 
     public Map<String, Object> toRepresentation() {
-        HashMap<String, Object> repr = new HashMap<String, Object>();
+        HashMap<String, Object> repr = new HashMap<>();
         addOptional(repr, "allow", allow);
         addOptional(repr, "formats", formats);
         addOptional(repr, "accept-patch", acceptPath);

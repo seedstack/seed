@@ -60,7 +60,7 @@ class GaugeListener implements TypeListener {
             if (gaugeAnnotation != null) {
                 if (method.getParameterTypes().length == 0) {
                     final String metricName = determineName(gaugeAnnotation, klass, method);
-                    encounter.register(new GaugeInjectionListener<I>(metricRegistry,
+                    encounter.register(new GaugeInjectionListener<>(metricRegistry,
                             metricName,
                             method));
                 } else {
@@ -73,7 +73,7 @@ class GaugeListener implements TypeListener {
             if (cachedGaugeAnnotation != null) {
                 if (method.getParameterTypes().length == 0) {
                     final String metricName = determineName(cachedGaugeAnnotation, klass, method);
-                    encounter.register(new CachedGaugeInjectionListener<I>(metricRegistry,
+                    encounter.register(new CachedGaugeInjectionListener<>(metricRegistry,
                             metricName,
                             method,
                             cachedGaugeAnnotation.timeout(),

@@ -14,14 +14,14 @@ import javax.inject.Inject;
 import java.util.HashMap;
 import java.util.Map;
 
-@DiagnosticDomain("test")
+@DiagnosticDomain("it-collector")
 public class TestDiagnosticCollector implements DiagnosticInfoCollector {
     @Inject
     Service1 service1;
 
     @Override
     public Map<String, Object> collect() {
-        Map<String, Object> result = new HashMap<String, Object>();
+        Map<String, Object> result = new HashMap<>();
         result.put("service", service1.toString());
         return result;
     }

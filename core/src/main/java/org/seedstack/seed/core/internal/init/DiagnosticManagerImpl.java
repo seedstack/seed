@@ -8,12 +8,8 @@
 package org.seedstack.seed.core.internal.init;
 
 import com.google.common.collect.Maps;
-import com.google.inject.Injector;
-import com.google.inject.Key;
-import com.google.inject.TypeLiteral;
 import org.seedstack.seed.DiagnosticManager;
 import org.seedstack.seed.SeedException;
-import org.seedstack.seed.SeedRuntime;
 import org.seedstack.seed.core.internal.CoreErrorCode;
 import org.seedstack.seed.core.utils.SeedLoggingUtils;
 import org.seedstack.seed.spi.diagnostic.DiagnosticInfoCollector;
@@ -21,12 +17,10 @@ import org.seedstack.seed.spi.diagnostic.DiagnosticReporter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.inject.Inject;
 import java.lang.management.ManagementFactory;
 import java.lang.management.RuntimeMXBean;
 import java.lang.management.ThreadInfo;
 import java.lang.management.ThreadMXBean;
-import java.net.URL;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -34,7 +28,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 /**
  * Implementation of the diagnostic manager.
@@ -46,12 +41,8 @@ public class DiagnosticManagerImpl implements DiagnosticManager {
     private static final Logger LOGGER = LoggerFactory.getLogger(DiagnosticManagerImpl.class);
     private static final DateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss.SSS");
 
+    private final ConcurrentMap<String, DiagnosticInfoCollector> diagnosticCollectors = new ConcurrentHashMap<>();
     private final DiagnosticReporter diagnosticReporter;
-
-    @Inject
-    private Injector injector;
-    private Set<URL> scannedUrls;
-    private SeedRuntime seedRuntime;
 
     public DiagnosticManagerImpl() {
         String reporterClassName = System.getProperty(REPORTER_SYSTEM_PROPERTY);
@@ -86,33 +77,24 @@ public class DiagnosticManagerImpl implements DiagnosticManager {
         }
     }
 
-    public void setScannedUrls(Set<URL> scannedUrls) {
-        this.scannedUrls = scannedUrls;
-    }
-
-    public void setSeedRuntime(SeedRuntime seedRuntime) {
-        this.seedRuntime = seedRuntime;
+    @Override
+    public void registerDiagnosticInfoCollector(String domain, DiagnosticInfoCollector diagnosticInfoCollector) {
+        diagnosticCollectors.put(domain, diagnosticInfoCollector);
     }
 
     private synchronized Map<String, Object> collectAllDiagnostics(Throwable t) {
-        Map<String, Object> allDiagnostics = new HashMap<String, Object>();
+        Map<String, Object> allDiagnostics = new HashMap<>();
 
         if (t != null) {
-            Map<String, Object> exceptionInfo = new HashMap<String, Object>();
+            Map<String, Object> exceptionInfo = new HashMap<>();
             buildExceptionInfo(exceptionInfo, t);
             allDiagnostics.put("exception", exceptionInfo);
         }
 
-        allDiagnostics.put("seed", collectSeedInfo());
         allDiagnostics.put("system", collectSystemInfo());
 
-        if (injector != null) {
-            Map<String, DiagnosticInfoCollector> detectedDiagnosticInfoCollectors = injector.getInstance(Key.get(new TypeLiteral<Map<String, DiagnosticInfoCollector>>() {
-            }));
-
-            for (Map.Entry<String, DiagnosticInfoCollector> diagnosticInfoCollectorEntry : detectedDiagnosticInfoCollectors.entrySet()) {
-                allDiagnostics.put(diagnosticInfoCollectorEntry.getKey(), diagnosticInfoCollectorEntry.getValue().collect());
-            }
+        for (Map.Entry<String, DiagnosticInfoCollector> diagnosticInfoCollectorEntry : diagnosticCollectors.entrySet()) {
+            allDiagnostics.put(diagnosticInfoCollectorEntry.getKey(), diagnosticInfoCollectorEntry.getValue().collect());
         }
 
         return allDiagnostics;
@@ -122,7 +104,7 @@ public class DiagnosticManagerImpl implements DiagnosticManager {
         exceptionInfo.put("class", t.getClass().getCanonicalName());
         exceptionInfo.put("message", t.getMessage());
 
-        List<String> stackTraceList = new ArrayList<String>();
+        List<String> stackTraceList = new ArrayList<>();
         for (StackTraceElement stackTraceElement : t.getStackTrace()) {
             stackTraceList.add(stackTraceElement.toString());
         }
@@ -135,7 +117,7 @@ public class DiagnosticManagerImpl implements DiagnosticManager {
         } else {
             Throwable cause = t.getCause();
             if (cause != null) {
-                Map<String, Object> causeInfo = new HashMap<String, Object>();
+                Map<String, Object> causeInfo = new HashMap<>();
                 buildExceptionInfo(causeInfo, cause);
 
                 // only recurse when it is not a SEED exception
@@ -144,30 +126,8 @@ public class DiagnosticManagerImpl implements DiagnosticManager {
         }
     }
 
-    private Map<String, Object> collectSeedInfo() {
-        Map<String, Object> result = new HashMap<String, Object>();
-
-        if (seedRuntime != null) {
-            String version = seedRuntime.getVersion();
-            if (version != null) {
-                result.put("version", version);
-            }
-            Object context = seedRuntime.contextAs(Object.class);
-            if (context != null) {
-                result.put("context-class", context.getClass().getCanonicalName());
-            }
-            result.put("color-output", seedRuntime.isColorOutputSupported());
-        }
-
-        if (scannedUrls != null) {
-            result.put("scanned-urls", scannedUrls);
-        }
-
-        return result;
-    }
-
     private Map<String, Object> collectSystemInfo() {
-        Map<String, Object> result = new HashMap<String, Object>();
+        Map<String, Object> result = new HashMap<>();
 
         result.put("diagnostic-time", DATE_FORMAT.format(new Date()));
         result.put("properties", buildSystemPropertiesList());
@@ -185,13 +145,13 @@ public class DiagnosticManagerImpl implements DiagnosticManager {
     }
 
     private Map<Long, Object> buildThreadList() {
-        Map<Long, Object> results = new HashMap<Long, Object>();
+        Map<Long, Object> results = new HashMap<>();
         ThreadMXBean threadMXBean = ManagementFactory.getThreadMXBean();
         for (long threadId : threadMXBean.getAllThreadIds()) {
             ThreadInfo threadInfo = threadMXBean.getThreadInfo(threadId);
 
             if (threadInfo != null) { // checks if the thread is not alive or it does not exist.
-                Map<String, Object> threadResults = new HashMap<String, Object>();
+                Map<String, Object> threadResults = new HashMap<>();
 
                 threadResults.put("name", threadInfo.getThreadName());
                 threadResults.put("cpu", threadMXBean.getThreadCpuTime(threadId));
@@ -216,7 +176,7 @@ public class DiagnosticManagerImpl implements DiagnosticManager {
     }
 
     private Map<String, Long> buildMemoryInfo(Runtime runtime) {
-        Map<String, Long> results = new HashMap<String, Long>();
+        Map<String, Long> results = new HashMap<>();
 
         results.put("total", runtime.totalMemory());
         results.put("used", runtime.totalMemory() - runtime.freeMemory());

@@ -12,8 +12,7 @@ import com.google.common.collect.Lists;
 import io.nuun.kernel.api.plugin.InitState;
 import io.nuun.kernel.api.plugin.context.InitContext;
 import io.nuun.kernel.api.plugin.request.ClasspathScanRequest;
-import io.nuun.kernel.core.AbstractPlugin;
-import org.seedstack.seed.SeedRuntime;
+import org.seedstack.seed.core.internal.AbstractSeedPlugin;
 import org.seedstack.seed.core.utils.SeedReflectionUtils;
 import org.seedstack.seed.web.spi.FilterDefinition;
 import org.seedstack.seed.web.spi.ListenerDefinition;
@@ -36,12 +35,12 @@ import java.util.Set;
  *
  * @author pierre.thirouin@ext.mpsa.com
  */
-public class WebSocketPlugin extends AbstractPlugin implements WebProvider {
+public class WebSocketPlugin extends AbstractSeedPlugin implements WebProvider {
     private final boolean webSocketPresent = SeedReflectionUtils.isClassPresent("javax.websocket.server.ServerEndpoint");
-    private final Set<Class<?>> serverEndpointClasses = new HashSet<Class<?>>();
-    private final Set<Class<?>> clientEndpointClasses = new HashSet<Class<?>>();
-    private final Set<Class<? extends ServerEndpointConfig.Configurator>> serverConfiguratorClasses = new HashSet<Class<? extends ServerEndpointConfig.Configurator>>();
-    private final HashSet<Class<? extends ClientEndpointConfig.Configurator>> clientConfiguratorClasses = new HashSet<Class<? extends ClientEndpointConfig.Configurator>>();
+    private final Set<Class<?>> serverEndpointClasses = new HashSet<>();
+    private final Set<Class<?>> clientEndpointClasses = new HashSet<>();
+    private final Set<Class<? extends ServerEndpointConfig.Configurator>> serverConfiguratorClasses = new HashSet<>();
+    private final HashSet<Class<? extends ClientEndpointConfig.Configurator>> clientConfiguratorClasses = new HashSet<>();
     private ServletContext servletContext;
 
     @Override
@@ -50,8 +49,8 @@ public class WebSocketPlugin extends AbstractPlugin implements WebProvider {
     }
 
     @Override
-    public void provideContainerContext(Object containerContext) {
-        servletContext = ((SeedRuntime) containerContext).contextAs(ServletContext.class);
+    public void setup() {
+        servletContext = getSeedRuntime().contextAs(ServletContext.class);
     }
 
     @Override
@@ -64,7 +63,7 @@ public class WebSocketPlugin extends AbstractPlugin implements WebProvider {
     }
 
     @Override
-    public InitState init(InitContext initContext) {
+    public InitState initialize(InitContext initContext) {
         if (isEnabled()) {
             for (Class<?> candidate : initContext.scannedClassesByAnnotationClass().get(ServerEndpoint.class)) {
                 serverConfiguratorClasses.add(candidate.getAnnotation(ServerEndpoint.class).configurator());

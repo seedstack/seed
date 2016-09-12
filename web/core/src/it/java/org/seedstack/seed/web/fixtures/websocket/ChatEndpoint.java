@@ -18,7 +18,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 @ServerEndpoint(value = "/chat")
 public class ChatEndpoint {
-    private final Map<Session, MessageHandler> messageHandlers = new ConcurrentHashMap<Session, MessageHandler>();
+    private final Map<Session, MessageHandler> messageHandlers = new ConcurrentHashMap<>();
     @Inject
     private ChatRoom chatRoom;
 

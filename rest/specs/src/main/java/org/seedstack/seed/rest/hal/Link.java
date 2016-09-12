@@ -32,7 +32,7 @@ public class Link {
     private String title;
     private String hrefLang;
     // this map must only contain strings to allow clean copy
-    private Map<String, Object> hrefVars = new HashMap<String, Object>();
+    private Map<String, Object> hrefVars = new HashMap<>();
 
     /**
      * Default constructor required by Jackson.
@@ -63,7 +63,7 @@ public class Link {
         this.profile = link.profile;
         this.title = link.title;
         this.hrefLang = link.hrefLang;
-        this.hrefVars = new HashMap<String, Object>(link.hrefVars);
+        this.hrefVars = new HashMap<>(link.hrefVars);
     }
 
     /**

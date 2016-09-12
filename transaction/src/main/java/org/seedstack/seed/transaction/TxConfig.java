@@ -1,0 +1,39 @@
+/**
+ * Copyright (c) 2013-2016, The SeedStack authors <http://seedstack.org>
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+package org.seedstack.seed.transaction;
+
+import org.seedstack.coffig.Config;
+import org.seedstack.coffig.SingleValue;
+import org.seedstack.seed.transaction.internal.LocalTransactionManager;
+import org.seedstack.seed.transaction.spi.TransactionHandler;
+import org.seedstack.seed.transaction.spi.TransactionManager;
+
+@Config("tx")
+public class TxConfig {
+    @SingleValue
+    private Class<? extends TransactionManager> manager = LocalTransactionManager.class;
+    private Class<? extends TransactionHandler<?>> defaultHandler;
+
+    public Class<? extends TransactionManager> getManager() {
+        return manager;
+    }
+
+    public TxConfig setManager(Class<? extends TransactionManager> manager) {
+        this.manager = manager != null ? manager : LocalTransactionManager.class;
+        return this;
+    }
+
+    public Class<? extends TransactionHandler<?>> getDefaultHandler() {
+        return defaultHandler;
+    }
+
+    public TxConfig setDefaultHandler(Class<? extends TransactionHandler<?>> defaultHandler) {
+        this.defaultHandler = defaultHandler;
+        return this;
+    }
+}

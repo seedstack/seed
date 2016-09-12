@@ -7,17 +7,18 @@
  */
 package org.seedstack.seed.core.internal.data;
 
-import com.google.common.collect.Lists;
 import io.nuun.kernel.api.plugin.InitState;
 import io.nuun.kernel.api.plugin.context.Context;
 import io.nuun.kernel.api.plugin.context.InitContext;
 import io.nuun.kernel.api.plugin.request.ClasspathScanRequest;
-import io.nuun.kernel.core.AbstractPlugin;
-import org.apache.commons.configuration.Configuration;
 import org.kametic.specifications.Specification;
-import org.seedstack.seed.*;
-import org.seedstack.seed.core.internal.CorePlugin;
-import org.seedstack.seed.core.spi.configuration.ConfigurationProvider;
+import org.seedstack.seed.DataConfig;
+import org.seedstack.seed.DataExporter;
+import org.seedstack.seed.DataImporter;
+import org.seedstack.seed.DataManager;
+import org.seedstack.seed.DataSet;
+import org.seedstack.seed.SeedException;
+import org.seedstack.seed.core.internal.AbstractSeedPlugin;
 import org.seedstack.seed.core.utils.SeedReflectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,14 +37,14 @@ import java.util.Map;
  *
  * @author pierre.thirouin@ext.mpsa.com
  */
-public class DataPlugin extends AbstractPlugin {
+public class DataPlugin extends AbstractSeedPlugin {
     private static final Logger LOGGER = LoggerFactory.getLogger(DataPlugin.class);
 
     private final Specification<Class<?>> dataExporterSpecification = and(classImplements(DataExporter.class), classAnnotatedWith(DataSet.class));
     private final Specification<Class<?>> dataImporterSpecification = and(classImplements(DataImporter.class), classAnnotatedWith(DataSet.class));
 
-    private final Map<String, Map<String, DataExporterDefinition<Object>>> allDataExporters = new HashMap<String, Map<String, DataExporterDefinition<Object>>>();
-    private final Map<String, Map<String, DataImporterDefinition<Object>>> allDataImporters = new HashMap<String, Map<String, DataImporterDefinition<Object>>>();
+    private final Map<String, Map<String, DataExporterDefinition<Object>>> allDataExporters = new HashMap<>();
+    private final Map<String, Map<String, DataImporterDefinition<Object>>> allDataImporters = new HashMap<>();
 
     private boolean loadInitializationData;
     private boolean forceInitializationData;
@@ -63,16 +64,16 @@ public class DataPlugin extends AbstractPlugin {
 
     @SuppressWarnings("unchecked")
     @Override
-    public InitState init(InitContext initContext) {
-        Configuration configuration = initContext.dependency(ConfigurationProvider.class)
-                .getConfiguration().subset(CorePlugin.CORE_PLUGIN_PREFIX);
+    public InitState initialize(InitContext initContext) {
+        DataConfig dataConfig = getConfiguration(DataConfig.class);
 
-        String dataInitializationMode = configuration.getString("data-initialization", "auto");
-        if ("auto".equals(dataInitializationMode)) {
-            loadInitializationData = true;
-        } else if ("force".equals(dataInitializationMode)) {
-            loadInitializationData = true;
-            forceInitializationData = true;
+        switch (dataConfig.getImportMode()) {
+            case FORCE:
+                forceInitializationData = true;
+                // falls through
+            case AUTO:
+                loadInitializationData = true;
+                break;
         }
 
         Collection<Class<?>> scannedDataExporterClasses = initContext.scannedTypesBySpecification().get(dataExporterSpecification);
@@ -81,7 +82,7 @@ public class DataPlugin extends AbstractPlugin {
                 DataSet dataSet = scannedDataExporterClass.getAnnotation(DataSet.class);
                 Map<String, DataExporterDefinition<Object>> nameDataExporterDefinitionMap = allDataExporters.get(dataSet.group());
                 if (nameDataExporterDefinitionMap == null) {
-                    nameDataExporterDefinitionMap = new HashMap<String, DataExporterDefinition<Object>>();
+                    nameDataExporterDefinitionMap = new HashMap<>();
                 }
 
                 Class exportedClass = getTypeParameter(scannedDataExporterClass, DataExporter.class);
@@ -102,7 +103,7 @@ public class DataPlugin extends AbstractPlugin {
                 DataSet dataSet = scannedDataImporterClass.getAnnotation(DataSet.class);
                 Map<String, DataImporterDefinition<Object>> nameDataImporterDefinitionMap = allDataImporters.get(dataSet.group());
                 if (nameDataImporterDefinitionMap == null) {
-                    nameDataImporterDefinitionMap = new HashMap<String, DataImporterDefinition<Object>>();
+                    nameDataImporterDefinitionMap = new HashMap<>();
                 }
 
                 Class actualType = getTypeParameter(scannedDataImporterClass, DataImporter.class);
@@ -160,11 +161,6 @@ public class DataPlugin extends AbstractPlugin {
             }
         }
         return actualType;
-    }
-
-    @Override
-    public Collection<Class<?>> requiredPlugins() {
-        return Lists.<Class<?>>newArrayList(ConfigurationProvider.class);
     }
 
     @Override

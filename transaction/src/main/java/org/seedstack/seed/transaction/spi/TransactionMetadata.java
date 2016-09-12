@@ -36,7 +36,7 @@ public class TransactionMetadata {
     private Class<? extends TransactionHandler> handler;
     private Class<? extends ExceptionHandler> exceptionHandler;
     private String resource;
-    private Map<String, Object> metadata = new HashMap<String, Object>();
+    private Map<String, Object> metadata = new HashMap<>();
 
     /**
      * Get the propagation of the associated transaction.

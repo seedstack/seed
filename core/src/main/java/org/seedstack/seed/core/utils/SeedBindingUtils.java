@@ -11,15 +11,20 @@ import com.google.common.reflect.TypeToken;
 import com.google.inject.Key;
 import com.google.inject.TypeLiteral;
 import com.google.inject.util.Types;
-import org.seedstack.seed.SeedException;
 import javassist.Modifier;
+import org.seedstack.seed.SeedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Qualifier;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Class with various utility methods for java types.
@@ -77,8 +82,8 @@ public final class SeedBindingUtils {
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
     public static Map<Key<?>, Class<?>> resolveBindingDefinitions(Class<?> injecteeClass, Class<?> firstImplClass, Class<?>... restImplClasses) {
-        Map<Key<?>, Class<?>> typeLiterals = new HashMap<Key<?>, Class<?>>();
-        List<Class<?>> subClasses = new ArrayList<Class<?>>();
+        Map<Key<?>, Class<?>> typeLiterals = new HashMap<>();
+        List<Class<?>> subClasses = new ArrayList<>();
 
         if (firstImplClass != null) {
             subClasses.add(firstImplClass);
@@ -128,7 +133,7 @@ public final class SeedBindingUtils {
         if (implClasses != null && !implClasses.isEmpty()) {
             return resolveBindingDefinitions(injecteeClass, null, implClasses.toArray(new Class<?>[implClasses.size()]));
         }
-        return new HashMap<Key<?>, Class<?>>();
+        return new HashMap<>();
     }
 
 

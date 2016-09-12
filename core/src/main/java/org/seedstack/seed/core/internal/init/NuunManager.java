@@ -19,7 +19,9 @@ import org.slf4j.LoggerFactory;
 
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.ServiceLoader;
 
 public class NuunManager {
@@ -42,7 +44,7 @@ public class NuunManager {
         savedUrlTypes = Vfs.getDefaultUrlTypes();
 
         // Find all classpath scan handlers and add their Vfs url types
-        List<Vfs.UrlType> urlTypes = new ArrayList<Vfs.UrlType>();
+        List<Vfs.UrlType> urlTypes = new ArrayList<>();
         for (ClasspathScanHandler classpathScanHandler : ServiceLoader.load(ClasspathScanHandler.class)) {
             LOGGER.trace("Adding classpath handler {}", classpathScanHandler.getClass().getCanonicalName());
             urlTypes.addAll(classpathScanHandler.urlTypes());
@@ -52,7 +54,7 @@ public class NuunManager {
         initialized = true;
     }
 
-    public synchronized Kernel initKernel(KernelConfiguration kernelConfiguration) {
+    public synchronized Kernel initKernel(KernelConfiguration kernelConfiguration, DiagnosticManagerImpl diagnosticManager) {
         if (!initialized) {
             throw new IllegalStateException("Nuun is not initialized, cannot initialize a kernel");
         }
@@ -60,7 +62,7 @@ public class NuunManager {
         // Kernel instantiation
         Kernel kernel = NuunCore.createKernel(kernelConfiguration);
         FallbackUrlType fallbackUrlType = new FallbackUrlType();
-        List<Vfs.UrlType> urlTypes = new ArrayList<Vfs.UrlType>(detectedUrlTypes);
+        List<Vfs.UrlType> urlTypes = new ArrayList<>(detectedUrlTypes);
         urlTypes.add(fallbackUrlType);
 
         LOGGER.debug("Registered URL types for classpath scan: " + urlTypes);
@@ -80,6 +82,12 @@ public class NuunManager {
                 }
             }
         }
+
+        diagnosticManager.registerDiagnosticInfoCollector("nuun", () -> {
+            Map<String, Object> result = new HashMap<>();
+            result.put("scanned-urls", kernel.scannedURLs());
+            return result;
+        });
 
         return kernel;
     }

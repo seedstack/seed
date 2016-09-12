@@ -7,13 +7,13 @@
  */
 package org.seedstack.seed.web;
 
-import org.seedstack.seed.it.AbstractSeedWebIT;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.test.api.ArquillianResource;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Test;
+import org.seedstack.seed.it.AbstractSeedWebIT;
 
 import java.net.URL;
 
@@ -25,7 +25,14 @@ import static org.hamcrest.Matchers.not;
 public class WebResourcesGzipDisabledIT extends AbstractSeedWebIT {
     @Deployment
     public static WebArchive createDeployment() {
-        return ShrinkWrap.create(WebArchive.class).addAsResource("configuration/org.seedstack.seed.web.gzip-disabled.properties", "META-INF/configuration/org.seedstack.seed.web.gzip-disabled.properties").addAsWebResource("META-INF/resources/resources/test.js", "/resources/docroot-test.js").addAsWebResource("META-INF/resources/resources/test.js.gz", "/resources/docroot-test.js.gz").addAsWebResource("META-INF/resources/resources/test.min.js", "/resources/docroot-test.min.js").addAsWebResource("META-INF/resources/resources/test.min.js.gz", "/resources/docroot-test.min.js.gz").addAsWebResource("META-INF/resources/resources/test2.js", "/resources/docroot-test2.js");
+        return ShrinkWrap
+                .create(WebArchive.class)
+                .addAsResource("configuration/gzip-disabled.yaml", "META-INF/configuration/gzip-disabled.yaml")
+                .addAsWebResource("META-INF/resources/resources/test.js", "/resources/docroot-test.js")
+                .addAsWebResource("META-INF/resources/resources/test.js.gz", "/resources/docroot-test.js.gz")
+                .addAsWebResource("META-INF/resources/resources/test.min.js", "/resources/docroot-test.min.js")
+                .addAsWebResource("META-INF/resources/resources/test.min.js.gz", "/resources/docroot-test.min.js.gz")
+                .addAsWebResource("META-INF/resources/resources/test2.js", "/resources/docroot-test2.js");
     }
 
     @Test

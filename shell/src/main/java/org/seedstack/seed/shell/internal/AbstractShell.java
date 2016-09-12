@@ -63,15 +63,15 @@ abstract class AbstractShell implements org.apache.sshd.server.Command, Runnable
 
     protected List<Command> createCommandActions(String line) {
         if (Strings.isNullOrEmpty(line)) {
-            return new ArrayList<Command>();
+            return new ArrayList<>();
         }
 
-        List<Command> commands = new ArrayList<Command>();
+        List<Command> commands = new ArrayList<>();
 
         Scanner scanner = new Scanner(new StringReader(line));
 
         String qualifiedName = null;
-        List<String> args = new ArrayList<String>();
+        List<String> args = new ArrayList<>();
 
         while (scanner.hasNext()) {
             if (qualifiedName == null) {
@@ -89,7 +89,7 @@ abstract class AbstractShell implements org.apache.sshd.server.Command, Runnable
                         commands.add(createCommandAction(qualifiedName, args));
 
                         qualifiedName = null;
-                        args = new ArrayList<String>();
+                        args = new ArrayList<>();
                     } else {
                         // if it's a quoted string, unquote it
                         if (arg.startsWith("\"")) {
@@ -145,7 +145,7 @@ abstract class AbstractShell implements org.apache.sshd.server.Command, Runnable
             throw SeedException.wrap(e, ShellErrorCode.OPTIONS_SYNTAX_ERROR);
         }
 
-        Map<String, String> optionValues = new HashMap<String, String>();
+        Map<String, String> optionValues = new HashMap<>();
         for (Option option : cmd.getOptions()) {
             optionValues.put(option.getOpt(), option.getValue());
         }
