@@ -22,7 +22,6 @@
     <modules>
         <module>specs</module>
         <module>core</module>
-        <module>jersey1</module>
         <module>jersey2</module>
     </modules>
 </project>
