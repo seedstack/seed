@@ -1,7 +1,11 @@
 # Version 3.3.0 (2016-?-?)
 
-* [brk] `storage` configuration lookup has been removed.
-* [brk] `password` configuration lookup has been removed.
+* [new] New configuration system based on [Coffig library](https://github.com/seedstack/coffig).
+* [brk] Java 8 is now required.
+* [brk] Classic configuration system based on props has been removed.
+* [brk] Configuration keys have been shortened and renamed.
+* [brk] The `password` configuration lookup has been replaced by the `$decrypt` configuration function.
+* [brk] Jersey 1 implementation of JAX-RS has been removed.
 
 # Version 2.3.1 (2016-09-07)
 
