@@ -17,7 +17,7 @@ import io.nuun.kernel.core.AbstractPlugin;
 import org.kametic.specifications.Specification;
 import org.seedstack.coffig.provider.InMemoryProvider;
 import org.seedstack.seed.SeedException;
-import org.seedstack.seed.SeedRuntime;
+import org.seedstack.seed.core.SeedRuntime;
 import org.seedstack.seed.it.ITBind;
 import org.seedstack.seed.it.ITInstall;
 import org.slf4j.Logger;
@@ -67,7 +67,7 @@ public class ITPlugin extends AbstractPlugin {
 
     @Override
     public void provideContainerContext(Object containerContext) {
-        defaultConfigurationProvider = ((SeedRuntime) containerContext).getDefaultConfigurationProvider();
+        defaultConfigurationProvider = ((SeedRuntime) containerContext).getDefaultConfiguration();
     }
 
     @Override

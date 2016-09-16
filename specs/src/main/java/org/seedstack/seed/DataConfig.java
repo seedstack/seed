@@ -9,6 +9,8 @@ package org.seedstack.seed;
 
 import org.seedstack.coffig.Config;
 
+import javax.validation.constraints.NotNull;
+
 @Config("data")
 public class DataConfig {
     public enum ImportMode {
@@ -17,6 +19,7 @@ public class DataConfig {
         DISABLED
     }
 
+    @NotNull
     private ImportMode importMode = ImportMode.AUTO;
 
     public ImportMode getImportMode() {

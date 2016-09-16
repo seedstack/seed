@@ -7,8 +7,11 @@
  */
 package org.seedstack.seed.core.internal.configuration;
 
+import com.google.common.base.Joiner;
 import com.google.inject.MembersInjector;
 import org.seedstack.coffig.Coffig;
+import org.seedstack.coffig.node.ArrayNode;
+import org.seedstack.coffig.node.ValueNode;
 import org.seedstack.seed.Configuration;
 import org.seedstack.seed.SeedException;
 import org.seedstack.seed.core.internal.CoreErrorCode;
@@ -45,18 +48,28 @@ class ConfigurationMembersInjector<T> implements MembersInjector<T> {
                 } else {
                     String[] defaultValue = configuration.defaultValue();
                     if (defaultValue.length > 0) {
-                        field.set(t, defaultValue[0]);
+                        field.set(t, mapValue(defaultValue, field.getType()));
                     } else if (configuration.mandatory()) {
                         throw SeedException.createNew(CoreErrorCode.MISSING_CONFIGURATION_KEY)
-                                .put("key", configuration.value());
+                                .put("key", Joiner.on(".").join(configuration.value()));
                     }
                 }
             } catch (Exception e) {
                 throw SeedException.wrap(e, CoreErrorCode.UNABLE_TO_INJECT_CONFIGURATION_VALUE)
                         .put("class", field.getDeclaringClass().getCanonicalName())
                         .put("field", field.getName())
-                        .put("key", configuration.value());
+                        .put("key", Joiner.on(".").join(configuration.value()));
             }
+        }
+    }
+
+    private Object mapValue(String[] value, Class<?> type) {
+        if (value.length > 1) {
+            return coffig.getMapper().map(new ArrayNode(value), type);
+        } else if (value.length == 1) {
+            return coffig.getMapper().map(new ValueNode(value[0]), type);
+        } else {
+            return null;
         }
     }
 

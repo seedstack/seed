@@ -15,7 +15,6 @@ import org.junit.Test;
 import org.mockito.internal.util.reflection.Whitebox;
 import org.seedstack.coffig.Coffig;
 import org.seedstack.seed.Application;
-import org.seedstack.seed.SeedRuntime;
 import org.seedstack.seed.core.internal.init.DiagnosticManagerImpl;
 import org.seedstack.seed.spi.config.ApplicationProvider;
 import org.seedstack.seed.spi.diagnostic.DiagnosticDomain;
@@ -49,9 +48,7 @@ public class DiagnosticPluginTest {
     @Before
     public void before() {
         diagnosticPlugin = new DiagnosticPlugin();
-        SeedRuntime seedRuntime = mock(SeedRuntime.class);
-        when(seedRuntime.getDiagnosticManager()).thenReturn(new DiagnosticManagerImpl());
-        Whitebox.setInternalState(diagnosticPlugin, "seedRuntime", seedRuntime);
+        Whitebox.setInternalState(diagnosticPlugin, "diagnosticManager", new DiagnosticManagerImpl());
     }
 
     @Test

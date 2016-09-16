@@ -7,7 +7,7 @@
 #
 
 basePackages: some.other.pkg
-logs: WARN
+logs: INFO
 jndi:
   additionalContexts:
     test1: /jndi-test1.properties
@@ -20,3 +20,6 @@ someEnum: FOO
 someShorts: [ 2, 3, 4 ]
 anInt: 5
 empty:
+someObject:
+  property1: value
+  property2: [ 5, 6, 7 ]

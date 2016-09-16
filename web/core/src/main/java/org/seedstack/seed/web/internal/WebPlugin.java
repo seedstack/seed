@@ -14,6 +14,7 @@ import io.nuun.kernel.api.plugin.InitState;
 import io.nuun.kernel.api.plugin.context.Context;
 import io.nuun.kernel.api.plugin.context.InitContext;
 import org.reflections.util.ClasspathHelper;
+import org.seedstack.seed.core.SeedRuntime;
 import org.seedstack.seed.core.internal.AbstractSeedPlugin;
 import org.seedstack.seed.web.spi.FilterDefinition;
 import org.seedstack.seed.web.spi.ListenerDefinition;
@@ -51,8 +52,8 @@ public class WebPlugin extends AbstractSeedPlugin {
     }
 
     @Override
-    protected void setup() {
-        servletContext = getSeedRuntime().contextAs(ServletContext.class);
+    protected void setup(SeedRuntime seedRuntime) {
+        servletContext = seedRuntime.contextAs(ServletContext.class);
     }
 
     @Override

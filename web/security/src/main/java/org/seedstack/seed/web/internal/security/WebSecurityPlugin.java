@@ -14,6 +14,7 @@ import io.nuun.kernel.api.plugin.PluginException;
 import io.nuun.kernel.api.plugin.context.InitContext;
 import io.nuun.kernel.api.plugin.request.ClasspathScanRequest;
 import org.apache.shiro.guice.web.GuiceShiroFilter;
+import org.seedstack.seed.core.SeedRuntime;
 import org.seedstack.seed.core.internal.AbstractSeedPlugin;
 import org.seedstack.seed.core.internal.configuration.ConfigurationPlugin;
 import org.seedstack.seed.security.internal.SecurityGuiceConfigurer;
@@ -48,8 +49,8 @@ public class WebSecurityPlugin extends AbstractSeedPlugin implements SecurityPro
     }
 
     @Override
-    public void setup() {
-        servletContext = getSeedRuntime().contextAs(ServletContext.class);
+    public void setup(SeedRuntime seedRuntime) {
+        servletContext = seedRuntime.contextAs(ServletContext.class);
     }
 
     @Override

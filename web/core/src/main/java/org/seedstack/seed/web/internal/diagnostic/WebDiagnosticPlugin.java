@@ -10,6 +10,8 @@ package org.seedstack.seed.web.internal.diagnostic;
 import com.google.common.collect.Lists;
 import io.nuun.kernel.api.plugin.InitState;
 import io.nuun.kernel.api.plugin.context.InitContext;
+import org.seedstack.seed.DiagnosticManager;
+import org.seedstack.seed.core.SeedRuntime;
 import org.seedstack.seed.core.internal.AbstractSeedPlugin;
 import org.seedstack.seed.web.WebConfig;
 import org.seedstack.seed.web.spi.FilterDefinition;
@@ -26,7 +28,8 @@ import static org.seedstack.seed.web.internal.WebPlugin.WEB_PLUGIN_PREFIX;
 
 public class WebDiagnosticPlugin extends AbstractSeedPlugin implements WebProvider {
     private static final Logger LOGGER = LoggerFactory.getLogger(WebDiagnosticPlugin.class);
-
+    private DiagnosticManager diagnosticManager;
+    private ServletContext servletContext;
     private WebConfig webConfig;
 
     @Override
@@ -35,12 +38,17 @@ public class WebDiagnosticPlugin extends AbstractSeedPlugin implements WebProvid
     }
 
     @Override
+    protected void setup(SeedRuntime seedRuntime) {
+        diagnosticManager = seedRuntime.getDiagnosticManager();
+        servletContext = seedRuntime.contextAs(ServletContext.class);
+    }
+
+    @Override
     public InitState initialize(InitContext initContext) {
         webConfig = getConfiguration(WebConfig.class);
 
-        ServletContext servletContext = getSeedRuntime().contextAs(ServletContext.class);
         if (servletContext != null) {
-            getSeedRuntime().getDiagnosticManager().registerDiagnosticInfoCollector(
+            diagnosticManager.registerDiagnosticInfoCollector(
                     WEB_PLUGIN_PREFIX,
                     new WebDiagnosticCollector(servletContext)
             );

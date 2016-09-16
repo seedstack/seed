@@ -27,7 +27,7 @@ public @interface Configuration {
     /**
      * The configuration property name.
      */
-    String value();
+    String[] value() default {};
 
     /**
      * If the configuration property is mandatory.
