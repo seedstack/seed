@@ -12,7 +12,7 @@ import io.nuun.kernel.api.plugin.context.InitContext;
 import io.nuun.kernel.api.plugin.request.ClasspathScanRequest;
 import io.nuun.kernel.core.AbstractPlugin;
 import org.kametic.specifications.Specification;
-import org.seedstack.seed.SeedRuntime;
+import org.seedstack.seed.core.SeedRuntime;
 import org.seedstack.seed.cli.CliCommand;
 import org.seedstack.seed.cli.CommandLineHandler;
 import org.seedstack.seed.cli.spi.CliContext;

@@ -12,6 +12,7 @@ import com.google.common.collect.Lists;
 import io.nuun.kernel.api.plugin.InitState;
 import io.nuun.kernel.api.plugin.context.InitContext;
 import io.nuun.kernel.api.plugin.request.ClasspathScanRequest;
+import org.seedstack.seed.core.SeedRuntime;
 import org.seedstack.seed.core.internal.AbstractSeedPlugin;
 import org.seedstack.seed.core.utils.SeedReflectionUtils;
 import org.seedstack.seed.web.spi.FilterDefinition;
@@ -49,8 +50,8 @@ public class WebSocketPlugin extends AbstractSeedPlugin implements WebProvider {
     }
 
     @Override
-    public void setup() {
-        servletContext = getSeedRuntime().contextAs(ServletContext.class);
+    public void setup(SeedRuntime seedRuntime) {
+        servletContext = seedRuntime.contextAs(ServletContext.class);
     }
 
     @Override

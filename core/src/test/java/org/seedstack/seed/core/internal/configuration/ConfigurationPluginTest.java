@@ -13,7 +13,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.internal.util.reflection.Whitebox;
 import org.seedstack.coffig.Coffig;
-import org.seedstack.coffig.provider.PrioritizedProvider;
 import org.seedstack.seed.core.internal.init.DiagnosticManagerImpl;
 
 import java.util.ArrayList;

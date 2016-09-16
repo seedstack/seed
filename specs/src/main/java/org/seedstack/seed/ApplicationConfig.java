@@ -10,14 +10,22 @@ package org.seedstack.seed;
 import org.seedstack.coffig.Config;
 import org.seedstack.coffig.SingleValue;
 
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.io.File;
 import java.util.UUID;
 
 @Config("application")
 public class ApplicationConfig {
     @SingleValue
+    @NotNull
+    @Size(min = 1)
     private String id = UUID.randomUUID().toString();
+    @NotNull
+    @Size(min = 1)
     private String name = id;
+    @NotNull
+    @Size(min = 1)
     private String version = "1.0.0";
     private File storage;
 
@@ -25,16 +33,36 @@ public class ApplicationConfig {
         return id;
     }
 
+    public ApplicationConfig setId(String id) {
+        this.id = id;
+        return this;
+    }
+
     public String getName() {
         return name;
+    }
+
+    public ApplicationConfig setName(String name) {
+        this.name = name;
+        return this;
     }
 
     public String getVersion() {
         return version;
     }
 
+    public ApplicationConfig setVersion(String version) {
+        this.version = version;
+        return this;
+    }
+
     public File getStorage() {
         return storage;
+    }
+
+    public ApplicationConfig setStorage(File storage) {
+        this.storage = storage;
+        return this;
     }
 
     public boolean isStorageEnabled() {

@@ -9,27 +9,23 @@ package org.seedstack.seed;
 
 import org.seedstack.coffig.Config;
 
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
 @Config
 public class CoreConfig {
-    private Set<String> basePackages;
-
-    public CoreConfig() {
-        setBasePackages(new HashSet<>());
-    }
+    @NotNull
+    private Set<String> basePackages = new HashSet<>();
 
     public Set<String> getBasePackages() {
         return Collections.unmodifiableSet(basePackages);
     }
 
-    public void setBasePackages(Set<String> basePackages) {
-        this.basePackages = new HashSet<>(basePackages);
-    }
-
-    public void addBasePackage(String basePackage) {
+    public CoreConfig addBasePackage(String basePackage) {
         basePackages.add(basePackage);
+        return this;
     }
 }

@@ -25,10 +25,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.kametic.specifications.Specification;
 import org.seedstack.coffig.Coffig;
-import org.seedstack.coffig.provider.PrioritizedProvider;
 import org.seedstack.seed.Application;
 import org.seedstack.seed.Ignore;
-import org.seedstack.seed.SeedRuntime;
+import org.seedstack.seed.core.SeedRuntime;
+import org.seedstack.seed.core.internal.configuration.PrioritizedProvider;
 import org.seedstack.seed.core.internal.init.DiagnosticManagerImpl;
 import org.seedstack.seed.spi.config.ApplicationProvider;
 

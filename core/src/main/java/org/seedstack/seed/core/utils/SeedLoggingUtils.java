@@ -27,8 +27,8 @@ public final class SeedLoggingUtils {
      * @param values  the values associated with the message.
      */
     public static void logWarningWithDebugDetails(Logger logger, Throwable t, String message, Object... values) {
-        logger.warn(message, values);
-        logger.debug("Details of the previous error below", t);
+        logger.warn(String.format("%s (details at debug level)", message), values);
+        logger.debug("Stacktrace of the preceding warning", t);
     }
 
 }

@@ -16,6 +16,7 @@ import io.nuun.kernel.api.plugin.InitState;
 import io.nuun.kernel.api.plugin.context.InitContext;
 import io.nuun.kernel.api.plugin.request.ClasspathScanRequest;
 import org.kametic.specifications.Specification;
+import org.seedstack.seed.core.SeedRuntime;
 import org.seedstack.seed.core.internal.AbstractSeedPlugin;
 import org.seedstack.seed.rest.RelRegistry;
 import org.seedstack.seed.rest.internal.exceptionmapper.AuthenticationExceptionMapper;
@@ -61,8 +62,8 @@ public class RestPlugin extends AbstractSeedPlugin implements RestProvider {
     }
 
     @Override
-    protected void setup() {
-        servletContext = getSeedRuntime().contextAs(ServletContext.class);
+    protected void setup(SeedRuntime seedRuntime) {
+        servletContext = seedRuntime.contextAs(ServletContext.class);
     }
 
     @Override

@@ -31,7 +31,7 @@ public class NuunManager {
     private List<Vfs.UrlType> detectedUrlTypes;
     private boolean initialized;
 
-    public synchronized void configure() {
+    public synchronized void init() {
         // Load Nuun and Reflections classes to force initialization of Vfs url types
         try {
             Class.forName(Vfs.class.getCanonicalName());
@@ -90,9 +90,5 @@ public class NuunManager {
         });
 
         return kernel;
-    }
-
-    public synchronized void restore() {
-        initialized = false;
     }
 }

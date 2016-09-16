@@ -13,9 +13,8 @@ import io.nuun.kernel.api.plugin.context.InitContext;
 import io.nuun.kernel.core.AbstractPlugin;
 import org.seedstack.coffig.Coffig;
 import org.seedstack.seed.Application;
-import org.seedstack.seed.DiagnosticManager;
-import org.seedstack.seed.SeedRuntime;
 import org.seedstack.seed.core.Seed;
+import org.seedstack.seed.core.SeedRuntime;
 import org.seedstack.seed.spi.config.ApplicationProvider;
 
 import java.util.ArrayList;
@@ -24,12 +23,10 @@ import java.util.List;
 
 public abstract class AbstractSeedPlugin extends AbstractPlugin {
     private Application application;
-    private SeedRuntime seedRuntime;
 
     @Override
     public final void provideContainerContext(Object containerContext) {
-        seedRuntime = ((SeedRuntime) containerContext);
-        setup();
+        setup(((SeedRuntime) containerContext));
     }
 
     @Override
@@ -45,7 +42,7 @@ public abstract class AbstractSeedPlugin extends AbstractPlugin {
         return initialize(initContext);
     }
 
-    protected void setup() {
+    protected void setup(SeedRuntime seedRuntime) {
     }
 
     protected InitState initialize(InitContext initContext) {
@@ -56,19 +53,8 @@ public abstract class AbstractSeedPlugin extends AbstractPlugin {
         return Lists.newArrayList();
     }
 
-    protected DiagnosticManager getDiagnosticManager() {
-        return getSeedRuntime().getDiagnosticManager();
-    }
-
     protected Coffig getBaseConfiguration() {
         return Seed.baseConfiguration();
-    }
-
-    protected SeedRuntime getSeedRuntime() {
-        if (seedRuntime == null) {
-            throw new IllegalStateException("Seed runtime is not yet available");
-        }
-        return seedRuntime;
     }
 
     protected Application getApplication() {

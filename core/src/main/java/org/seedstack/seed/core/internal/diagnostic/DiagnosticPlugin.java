@@ -11,6 +11,8 @@ import io.nuun.kernel.api.plugin.InitState;
 import io.nuun.kernel.api.plugin.context.Context;
 import io.nuun.kernel.api.plugin.context.InitContext;
 import io.nuun.kernel.api.plugin.request.ClasspathScanRequest;
+import org.seedstack.seed.DiagnosticManager;
+import org.seedstack.seed.core.SeedRuntime;
 import org.seedstack.seed.core.internal.AbstractSeedPlugin;
 import org.seedstack.seed.spi.diagnostic.DiagnosticDomain;
 import org.seedstack.seed.spi.diagnostic.DiagnosticInfoCollector;
@@ -30,12 +32,18 @@ import java.util.Map;
 public class DiagnosticPlugin extends AbstractSeedPlugin {
     private static final Logger LOGGER = LoggerFactory.getLogger(DiagnosticPlugin.class);
     private final Map<String, Class<? extends DiagnosticInfoCollector>> diagnosticInfoCollectorClasses = new HashMap<>();
+    private DiagnosticManager diagnosticManager;
     @Inject
     private Map<String, DiagnosticInfoCollector> diagnosticInfoCollectors;
 
     @Override
     public String name() {
         return "diagnostic";
+    }
+
+    @Override
+    protected void setup(SeedRuntime seedRuntime) {
+        diagnosticManager = seedRuntime.getDiagnosticManager();
     }
 
     @Override
@@ -65,13 +73,13 @@ public class DiagnosticPlugin extends AbstractSeedPlugin {
 
     @Override
     public Object nativeUnitModule() {
-        return new DiagnosticModule(getDiagnosticManager(), diagnosticInfoCollectorClasses);
+        return new DiagnosticModule(diagnosticManager, diagnosticInfoCollectorClasses);
     }
 
     @Override
     public void start(Context context) {
         for (Map.Entry<String, DiagnosticInfoCollector> entry : diagnosticInfoCollectors.entrySet()) {
-            getDiagnosticManager().registerDiagnosticInfoCollector(entry.getKey(), entry.getValue());
+            diagnosticManager.registerDiagnosticInfoCollector(entry.getKey(), entry.getValue());
         }
     }
 }

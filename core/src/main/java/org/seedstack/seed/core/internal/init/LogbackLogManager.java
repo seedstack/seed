@@ -17,19 +17,20 @@ import ch.qos.logback.classic.util.ContextInitializer;
 import ch.qos.logback.core.ConsoleAppender;
 import ch.qos.logback.core.joran.spi.JoranException;
 import ch.qos.logback.core.joran.util.ConfigurationWatchListUtil;
-import org.seedstack.coffig.Coffig;
 import org.seedstack.seed.LogConfig;
+import org.seedstack.seed.spi.log.LogManager;
 import org.slf4j.LoggerFactory;
 
-public class LogbackManager {
+public class LogbackLogManager implements LogManager {
     private final LoggerContext context = (LoggerContext) LoggerFactory.getILoggerFactory();
-    private final LogConfig logConfig;
 
-    public LogbackManager(Coffig coffig) {
-        logConfig = coffig.get(LogConfig.class);
+    public LogbackLogManager() {
+        context.getLogger("org.jboss.logging").setLevel(Level.ERROR);
+        context.getLogger("org.hibernate.validator").setLevel(Level.ERROR);
     }
 
-    public synchronized void configure() {
+    @Override
+    public synchronized void init(LogConfig logConfig) {
         context.reset();
         if (!context.isStarted()) {
             context.start();
@@ -66,11 +67,12 @@ public class LogbackManager {
             nuunLogger.setLevel(Level.WARN);
 
             Logger rootLogger = context.getLogger(Logger.ROOT_LOGGER_NAME);
-            rootLogger.setLevel(Level.toLevel(logConfig.getLevel()));
+            rootLogger.setLevel(Level.valueOf(logConfig.getLevel().name()));
             rootLogger.addAppender(logConsoleAppender);
         }
     }
 
+    @Override
     public synchronized void close() {
         context.stop();
     }

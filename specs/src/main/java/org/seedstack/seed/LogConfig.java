@@ -10,12 +10,19 @@ package org.seedstack.seed;
 import org.seedstack.coffig.Config;
 import org.seedstack.coffig.SingleValue;
 
+import javax.validation.constraints.NotNull;
+
 @Config("logs")
 public class LogConfig {
     @SingleValue
-    private String level = "INFO";
+    @NotNull
+    private Level level = Level.INFO;
 
-    public String getLevel() {
+    public Level getLevel() {
         return level;
+    }
+
+    public enum Level {
+        ERROR, WARN, INFO, DEBUG, TRACE
     }
 }
