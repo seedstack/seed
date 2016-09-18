@@ -7,7 +7,6 @@
  */
 package org.seedstack.seed.core.internal.configuration;
 
-import com.google.common.base.Joiner;
 import io.nuun.kernel.api.plugin.InitState;
 import io.nuun.kernel.api.plugin.context.InitContext;
 import io.nuun.kernel.api.plugin.request.ClasspathScanRequest;
@@ -20,12 +19,18 @@ import org.seedstack.seed.core.internal.AbstractSeedTool;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.MissingResourceException;
+import java.util.ResourceBundle;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 public class ConfigurationTool extends AbstractSeedTool {
     private Node root = new Node("", CoreConfig.class);
-    private Set<String> conflictingPaths = new HashSet<>();
-    private Set<String> ignoredPaths = new HashSet<>();
 
     @Override
     public String toolName() {
@@ -88,6 +93,9 @@ public class ConfigurationTool extends AbstractSeedTool {
             if (Modifier.isStatic(field.getModifiers())) {
                 continue;
             }
+            if (field.getType().isAnnotationPresent(Config.class)) {
+                continue;
+            }
             PropertyInfo propertyInfo = new PropertyInfo();
             Config configAnnotation = field.getAnnotation(Config.class);
             String name = configAnnotation != null ? configAnnotation.value() : field.getName();
@@ -115,24 +123,19 @@ public class ConfigurationTool extends AbstractSeedTool {
     }
 
     private void buildTree(Class<?> aClass) {
-        List<String> path = new ArrayList<>();
         String[] fullPath = getPath(aClass);
         Node current = root;
-        for (String part : fullPath) {
-            path.add(part);
-            String joinedPath = Joiner.on(".").join(path);
+        for (int i = 0; i < fullPath.length; i++) {
+            String part = fullPath[i];
             if (!part.isEmpty()) {
                 Node child = current.children.get(part);
                 if (child != null) {
                     current = child;
                 } else {
-                    if (current.children.put(part, current = new Node(part, aClass)) != null) {
-                        conflictingPaths.add(joinedPath);
-                    }
+                    current.children.put(part, current = new Node(part));
                 }
-            } else {
-                if (!joinedPath.isEmpty()) {
-                    ignoredPaths.add(joinedPath);
+                if (i == fullPath.length - 1) {
+                    current.configClass = aClass;
                 }
             }
         }
@@ -155,8 +158,12 @@ public class ConfigurationTool extends AbstractSeedTool {
 
     private static class Node implements Comparable<Node> {
         private final String name;
-        private final Class<?> configClass;
         private final SortedMap<String, Node> children = new TreeMap<>();
+        private Class<?> configClass;
+
+        private Node(String name) {
+            this.name = name;
+        }
 
         private Node(String name, Class<?> configClass) {
             this.name = name;

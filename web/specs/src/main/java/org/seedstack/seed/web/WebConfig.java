@@ -22,6 +22,7 @@ public class WebConfig {
     private boolean requestDiagnostic;
     private StaticResourcesConfig staticResources = new StaticResourcesConfig();
     private CORSConfig cors = new CORSConfig();
+    private ServerConfig serverConfig = new ServerConfig();
 
     public boolean isRequestDiagnosticEnabled() {
         return requestDiagnostic;
@@ -33,6 +34,10 @@ public class WebConfig {
 
     public CORSConfig CORS() {
         return cors;
+    }
+
+    public ServerConfig serverConfig() {
+        return serverConfig;
     }
 
     @Config("cors")
