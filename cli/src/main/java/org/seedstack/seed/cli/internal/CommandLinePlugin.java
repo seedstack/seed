@@ -12,6 +12,7 @@ import io.nuun.kernel.api.plugin.context.InitContext;
 import io.nuun.kernel.api.plugin.request.ClasspathScanRequest;
 import io.nuun.kernel.core.AbstractPlugin;
 import org.kametic.specifications.Specification;
+import org.seedstack.seed.cli.CliLauncher;
 import org.seedstack.seed.core.SeedRuntime;
 import org.seedstack.seed.cli.CliCommand;
 import org.seedstack.seed.cli.CommandLineHandler;
@@ -29,7 +30,7 @@ import static org.seedstack.seed.core.utils.BaseClassSpecifications.classIsInter
 
 /**
  * This plugin enables to run {@link CommandLineHandler} through
- * {@link org.seedstack.seed.cli.SeedRunner}.
+ * {@link CliLauncher}.
  *
  * @author epo.jemba@ext.mpsa.com
  * @author adrien.lauer@mpsa.com

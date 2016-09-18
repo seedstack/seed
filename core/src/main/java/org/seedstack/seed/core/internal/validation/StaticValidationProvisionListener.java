@@ -8,7 +8,6 @@
 package org.seedstack.seed.core.internal.validation;
 
 import com.google.inject.spi.ProvisionListener;
-import org.seedstack.seed.core.VerboseConstraintViolationException;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.ValidatorFactory;

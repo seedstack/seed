@@ -19,11 +19,7 @@ import org.seedstack.coffig.provider.SystemPropertyProvider;
 import org.seedstack.seed.DiagnosticManager;
 import org.seedstack.seed.LogConfig;
 import org.seedstack.seed.core.internal.configuration.PrioritizedProvider;
-import org.seedstack.seed.core.internal.init.ConsoleManager;
-import org.seedstack.seed.core.internal.init.DiagnosticManagerImpl;
-import org.seedstack.seed.core.internal.init.LogbackLogManager;
-import org.seedstack.seed.core.internal.init.NoOpLogManager;
-import org.seedstack.seed.core.internal.init.NuunManager;
+import org.seedstack.seed.core.internal.init.*;
 import org.seedstack.seed.core.utils.SeedLoggingUtils;
 import org.seedstack.seed.core.utils.SeedReflectionUtils;
 import org.seedstack.seed.spi.log.LogManager;
@@ -64,6 +60,7 @@ public class Seed {
     }
 
     private volatile static boolean initialized;
+    private volatile static boolean noLogs;
 
     private final ConcurrentMap<String, DiagnosticManager> diagnosticManagers = new ConcurrentHashMap<>();
     private final Coffig baseConfiguration;
@@ -72,7 +69,8 @@ public class Seed {
     private final LogManager logManager;
     private final NuunManager nuunManager;
 
-    static {
+    // no direct instantiation allowed
+    private Seed() {
         try {
             java.util.logging.LogManager.getLogManager().reset();
             SLF4JBridgeHandler.removeHandlersForRootLogger();
@@ -80,17 +78,16 @@ public class Seed {
         } catch (Exception e) {
             SeedLoggingUtils.logWarningWithDebugDetails(LOGGER, e, "Unable to redirect JUL loggers to SLF4J");
         }
-    }
 
-    // no direct instantiation allowed
-    private Seed() {
         consoleManager = new ConsoleManager();
         consoleManager.install();
 
         logManager = buildLogManager();
         validatorFactory = buildValidatorFactory();
         baseConfiguration = buildBaseConfiguration();
-        logManager.init(baseConfiguration.get(LogConfig.class));
+        if (!noLogs) {
+            logManager.init(baseConfiguration.get(LogConfig.class));
+        }
 
         nuunManager = new NuunManager();
         nuunManager.init();
@@ -105,6 +102,10 @@ public class Seed {
             Holder.INSTANCE.validatorFactory.close();
             SLF4JBridgeHandler.uninstall();
         }
+    }
+
+    public static void disableLogs() {
+        noLogs = true;
     }
 
     public static Kernel createKernel() {

@@ -7,9 +7,11 @@
  */
 package org.seedstack.seed.core;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import org.seedstack.seed.SeedException;
 import org.seedstack.seed.core.internal.CoreErrorCode;
+import org.seedstack.seed.core.internal.ToolLauncher;
 import org.seedstack.seed.spi.SeedLauncher;
 
 import java.util.List;
@@ -27,13 +29,21 @@ import java.util.ServiceLoader;
  */
 public class SeedMain {
     public static void main(String[] args) {
-        final SeedLauncher seedLauncher = getLauncher();
+        String toolName = System.getProperty("tool");
+        SeedLauncher seedLauncher;
+
+        if (!Strings.isNullOrEmpty(toolName)) {
+            seedLauncher = getToolLauncher(toolName);
+        } else {
+            seedLauncher = getLauncher();
+        }
 
         Runtime.getRuntime().addShutdownHook(new Thread() {
             @Override
             public void run() {
                 try {
                     seedLauncher.shutdown();
+                    Seed.close();
                 } catch (Throwable t) {
                     handleThrowable(t);
                 }
@@ -58,6 +68,10 @@ public class SeedMain {
         }
 
         return entryPointServices.get(0);
+    }
+
+    public static SeedLauncher getToolLauncher(String toolName) {
+        return new ToolLauncher(toolName);
     }
 
     private static void handleThrowable(Throwable throwable) {

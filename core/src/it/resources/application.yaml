@@ -7,7 +7,7 @@
 #
 
 basePackages: some.other.pkg
-logs: INFO
+logs: WARN
 jndi:
   additionalContexts:
     test1: /jndi-test1.properties

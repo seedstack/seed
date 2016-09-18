@@ -1,11 +1,14 @@
 # Version 3.3.0 (2016-?-?)
 
 * [new] New configuration system based on [Coffig library](https://github.com/seedstack/coffig).
+* [new] Tooling support allows to launch tools from the command-line (-Dtool=<toolName>) or from the SeedStack maven plugin.
+* [new] Add `config` tool which dumps the current configuration options for the application.
 * [brk] Java 8 is now required.
 * [brk] Classic configuration system based on props has been removed.
 * [brk] Configuration keys have been shortened and renamed.
 * [brk] The `password` configuration lookup has been replaced by the `$decrypt` configuration function.
 * [brk] Jersey 1 implementation of JAX-RS has been removed.
+* [brk] Class `org.seedstack.seed.cli.SeedRunner` was renamed to `org.seedstack.seed.cli.CliLauncher` and its main method has been removed (use `org.seedstack.seed.core.SeedMain` instead).
 
 # Version 2.3.1 (2016-09-07)
 

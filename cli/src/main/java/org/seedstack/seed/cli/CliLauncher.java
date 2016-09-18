@@ -14,12 +14,7 @@ import com.google.inject.Key;
 import com.google.inject.name.Names;
 import io.nuun.kernel.api.Kernel;
 import io.nuun.kernel.api.config.KernelConfiguration;
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.CommandLineParser;
-import org.apache.commons.cli.DefaultParser;
-import org.apache.commons.cli.Option;
-import org.apache.commons.cli.Options;
-import org.apache.commons.cli.ParseException;
+import org.apache.commons.cli.*;
 import org.seedstack.seed.Application;
 import org.seedstack.seed.SeedException;
 import org.seedstack.seed.cli.internal.CliErrorCode;
@@ -45,8 +40,8 @@ import java.util.concurrent.Callable;
  * @author epo.jemba@ext.mpsa.com
  * @author adrien.lauer@mpsa.com
  */
-public class SeedRunner implements SeedLauncher {
-    private static final Logger LOGGER = LoggerFactory.getLogger(SeedRunner.class);
+public class CliLauncher implements SeedLauncher {
+    private static final Logger LOGGER = LoggerFactory.getLogger(CliLauncher.class);
 
     @Override
     public void launch(String[] args) throws Exception {
@@ -57,19 +52,7 @@ public class SeedRunner implements SeedLauncher {
 
     @Override
     public void shutdown() throws Exception {
-        // nothing to do as we already exited with System.exit()
-    }
-
-    /**
-     * Deprecated main method to run Seed CLI applications. Use {@link SeedMain#main(String[])} instead.
-     *
-     * @param args the command line arguments.
-     * @deprecated
-     */
-    @Deprecated
-    public static void main(String[] args) throws Exception {
-        System.err.println("This entry point is deprecated, use " + SeedMain.class.getCanonicalName() + " instead");
-        SeedMain.main(args);
+        // nothing to do here
     }
 
     /**

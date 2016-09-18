@@ -105,7 +105,10 @@ public class ConfigurationIT {
 
         try {
             Holder holder = getHolder(kernel);
-            assertThat(holder.application.getConfiguration().get(String.class, "env.JAVA_HOME")).isEqualTo(System.getenv("JAVA_HOME"));
+            String java_home = System.getenv("JAVA_HOME");
+            if (java_home != null) {
+                assertThat(holder.application.getConfiguration().get(String.class, "env.JAVA_HOME")).isEqualTo(java_home);
+            }
         } finally {
             Seed.disposeKernel(kernel);
         }
