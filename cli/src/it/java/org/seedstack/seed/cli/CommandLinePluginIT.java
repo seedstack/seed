@@ -14,7 +14,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class CommandLinePluginIT {
     @Test
     public void test() throws Exception {
-        SeedRunner.execute(new String[]{"-a", "-b", "babar", "zob", "-P", "key1=value1", "-Pkey2=value2", "-A", "5,6,7,8,5,4,5,6", "-C"});
+        CliLauncher.execute(new String[]{"-a", "-b", "babar", "zob", "-P", "key1=value1", "-Pkey2=value2", "-A", "5,6,7,8,5,4,5,6", "-C"});
         assertThat(SampleCommandLineHandler.called).isTrue();
         assertThat(UnusedCommandLineHandler.called).isFalse();
     }

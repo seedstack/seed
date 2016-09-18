@@ -17,9 +17,9 @@ import org.seedstack.coffig.provider.CompositeProvider;
 import org.seedstack.coffig.provider.JacksonProvider;
 import org.seedstack.coffig.spi.ConfigurationProvider;
 import org.seedstack.seed.Application;
+import org.seedstack.seed.CoreConfig;
 import org.seedstack.seed.DiagnosticManager;
 import org.seedstack.seed.SeedException;
-import org.seedstack.seed.CoreConfig;
 import org.seedstack.seed.core.Seed;
 import org.seedstack.seed.core.SeedRuntime;
 import org.seedstack.seed.core.internal.CoreErrorCode;
@@ -28,11 +28,7 @@ import org.seedstack.seed.spi.config.ApplicationProvider;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.Collection;
-import java.util.Enumeration;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**

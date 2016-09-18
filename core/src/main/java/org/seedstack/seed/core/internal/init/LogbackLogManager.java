@@ -25,8 +25,7 @@ public class LogbackLogManager implements LogManager {
     private final LoggerContext context = (LoggerContext) LoggerFactory.getILoggerFactory();
 
     public LogbackLogManager() {
-        context.getLogger("org.jboss.logging").setLevel(Level.ERROR);
-        context.getLogger("org.hibernate.validator").setLevel(Level.ERROR);
+        context.getLogger(Logger.ROOT_LOGGER_NAME).setLevel(Level.OFF);
     }
 
     @Override

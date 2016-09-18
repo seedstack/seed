@@ -14,7 +14,7 @@ import org.seedstack.coffig.Config;
  *
  * @author pierre.thirouin@ext.mpsa.com (Pierre Thirouin)
  */
-@Config("server.undertow")
+@Config("web.server.undertow")
 public class UndertowConfig {
     private Integer bufferSize;
     private Integer buffersPerRegion;
