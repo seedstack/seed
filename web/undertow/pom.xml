@@ -27,11 +27,6 @@
         </dependency>
         <dependency>
             <groupId>org.seedstack.seed</groupId>
-            <artifactId>seed-crypto</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.seedstack.seed</groupId>
             <artifactId>seed-web-core</artifactId>
             <version>${project.version}</version>
         </dependency>
