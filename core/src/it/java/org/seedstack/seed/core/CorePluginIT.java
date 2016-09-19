@@ -7,15 +7,11 @@
  */
 package org.seedstack.seed.core;
 
-import com.google.inject.AbstractModule;
 import com.google.inject.ConfigurationException;
 import com.google.inject.Injector;
-import com.google.inject.Module;
-import io.nuun.kernel.api.Kernel;
 import org.assertj.core.api.Assertions;
-import org.junit.AfterClass;
 import org.junit.Before;
-import org.junit.BeforeClass;
+import org.junit.Rule;
 import org.junit.Test;
 import org.seedstack.seed.Logging;
 import org.seedstack.seed.core.fixtures.Service1;
@@ -29,18 +25,9 @@ import javax.annotation.Nullable;
 import javax.inject.Inject;
 
 public class CorePluginIT {
-    private static Kernel kernel;
+    @Rule
+    public SeedITRule rule = new SeedITRule(this);
     private Injector injector;
-
-    @BeforeClass
-    public static void beforeClass() {
-        kernel = Seed.createKernel();
-    }
-
-    @AfterClass
-    public static void afterClass() {
-        Seed.disposeKernel(kernel);
-    }
 
     static class LoggerHolder {
         private static final Logger logger = LoggerFactory.getLogger(LoggerHolder.class);
@@ -49,17 +36,17 @@ public class CorePluginIT {
         protected Logger logger1;
     }
 
-    static class SubLoggerHolder1 extends LoggerHolder {
+    private static class SubLoggerHolder1 extends LoggerHolder {
         @Logging
         private Logger logger2;
     }
 
-    static class SubLoggerHolder2 extends LoggerHolder {
+    private static class SubLoggerHolder2 extends LoggerHolder {
         @Logging
         private Logger logger2;
     }
 
-    static class HolderNominal {
+    private static class HolderNominal {
         @Inject
         Service1 s1;
         @Inject
@@ -69,26 +56,21 @@ public class CorePluginIT {
         ForeignClass foreignClass;
     }
 
-    static class HolderException {
+    private static class HolderException {
         @Inject
         Service2 s2;
     }
 
     @Before
     public void before() {
-
-        Module aggregationModule = new AbstractModule() {
-
-            @Override
-            protected void configure() {
-                bind(HolderNominal.class);
-                bind(LoggerHolder.class);
-                bind(SubLoggerHolder1.class);
-                bind(SubLoggerHolder2.class);
-            }
-        };
-        injector = kernel.objectGraph().as(Injector.class).createChildInjector(
-                aggregationModule);
+        injector = rule.getKernel().objectGraph().as(Injector.class).createChildInjector(
+                binder -> {
+                    binder.bind(HolderNominal.class);
+                    binder.bind(LoggerHolder.class);
+                    binder.bind(SubLoggerHolder1.class);
+                    binder.bind(SubLoggerHolder2.class);
+                }
+        );
     }
 
     @Test

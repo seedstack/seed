@@ -30,6 +30,7 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 
 public class ConfigurationTool extends AbstractSeedTool {
+    private static final String INDENTATION = "  ";
     private Node root = new Node("", CoreConfig.class);
 
     @Override
@@ -66,7 +67,7 @@ public class ConfigurationTool extends AbstractSeedTool {
 
         for (PropertyInfo propertyInfo : buildPropertyInfo(node.configClass)) {
             ansi
-                    .a(leftPadding).a("\t")
+                    .a(leftPadding).a("  ")
                     .fgBright(Ansi.Color.CYAN).a(propertyInfo.singleValue ? "+" : "").a(propertyInfo.name).reset()
                     .a("(")
                     .fgBright(Ansi.Color.MAGENTA).a(propertyInfo.type).reset()
@@ -76,7 +77,7 @@ public class ConfigurationTool extends AbstractSeedTool {
         }
 
         for (Node child : node.children.values()) {
-            printTree(child, leftPadding + "\t", ansi);
+            printTree(child, leftPadding + INDENTATION, ansi);
         }
     }
 

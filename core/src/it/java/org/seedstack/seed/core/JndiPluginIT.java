@@ -7,14 +7,11 @@
  */
 package org.seedstack.seed.core;
 
-import com.google.inject.AbstractModule;
 import com.google.inject.Injector;
 import com.google.inject.Module;
-import io.nuun.kernel.api.Kernel;
 import org.assertj.core.api.Assertions;
-import org.junit.AfterClass;
 import org.junit.Before;
-import org.junit.BeforeClass;
+import org.junit.Rule;
 import org.junit.Test;
 import org.seedstack.seed.FromContext;
 import org.seedstack.seed.core.fixtures.Service1;
@@ -26,30 +23,24 @@ import javax.naming.Context;
 import javax.naming.NamingException;
 
 public class JndiPluginIT {
-	static Kernel kernel;
-    Injector injector;
-
-	@BeforeClass
-	public static void beforeClass() throws Exception {
-		kernel = Seed.createKernel();
-	}
-
-    @AfterClass
-    public static void afterClass() {
-        Seed.disposeKernel(kernel);
-    }
+    @Rule
+    public SeedITRule rule = new SeedITRule(this);
+    private Injector injector;
 
     static class Holder {
         @Inject
         Context defaultCtx;
 
-        @Inject @Named("defaultContext")
+        @Inject
+        @Named("defaultContext")
         Context defaultCtxViaName;
 
-        @Inject @Named("test1")
+        @Inject
+        @Named("test1")
         Context ctx1;
 
-        @Inject @Named("test2")
+        @Inject
+        @Named("test2")
         Context ctx2;
 
         @Resource(name = "org.seedstack.seed.core.fixtures.Service/Service1")
@@ -62,38 +53,29 @@ public class JndiPluginIT {
 
     @Before
     public void before() {
-        Module aggregationModule = new AbstractModule() {
-
-            @Override
-            protected void configure() {
-                bind(Holder.class);
-            }
-        };
-
-        injector = kernel.objectGraph().as(Injector.class).createChildInjector(aggregationModule);
+        injector = rule.getKernel().objectGraph().as(Injector.class).createChildInjector((Module) binder -> binder.bind(Holder.class));
     }
 
-
-	@Test
-	public void jndi_context_injection_is_working() throws Exception {
+    @Test
+    public void jndi_context_injection_is_working() throws Exception {
         Holder holder = injector.getInstance(Holder.class);
         Assertions.assertThat(holder.defaultCtx).isNotNull();
         Assertions.assertThat(holder.defaultCtxViaName).isNotNull();
         Assertions.assertThat(holder.ctx1).isNotNull();
         Assertions.assertThat(holder.ctx2).isNotNull();
         Assertions.assertThat(holder.defaultCtx).isSameAs(holder.defaultCtxViaName);
-	}
+    }
 
     @Test
     public void jndi_context_lookup_is_working() throws NamingException {
-        Service1 service1 = (Service1)injector.getInstance(Holder.class).ctx1.lookup("org.seedstack.seed.core.fixtures.Service1");
+        Service1 service1 = (Service1) injector.getInstance(Holder.class).ctx1.lookup("org.seedstack.seed.core.fixtures.Service1");
         Assertions.assertThat(service1).isNotNull();
     }
 
     @Test
     public void jndi_context_named_lookup_is_working() throws NamingException {
-        Service1 service1ByClassAndName = (Service1)injector.getInstance(Holder.class).ctx1.lookup("org.seedstack.seed.core.fixtures.Service/Service1");
-        Service1 service1ByClass = (Service1)injector.getInstance(Holder.class).ctx1.lookup("org.seedstack.seed.core.fixtures.Service1");
+        Service1 service1ByClassAndName = (Service1) injector.getInstance(Holder.class).ctx1.lookup("org.seedstack.seed.core.fixtures.Service/Service1");
+        Service1 service1ByClass = (Service1) injector.getInstance(Holder.class).ctx1.lookup("org.seedstack.seed.core.fixtures.Service1");
 
         Assertions.assertThat(service1ByClassAndName).isNotNull();
         Assertions.assertThat(service1ByClassAndName).isSameAs(service1ByClass);

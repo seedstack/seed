@@ -9,21 +9,20 @@ package org.seedstack.seed.core;
 
 import com.google.inject.ConfigurationException;
 import com.google.inject.Injector;
-import io.nuun.kernel.api.Kernel;
 import org.assertj.core.api.Assertions;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
+import org.junit.Rule;
 import org.junit.Test;
 
-import static io.nuun.kernel.core.NuunCore.newKernelConfiguration;
+import javax.inject.Inject;
 
 /**
  * @author Pierre THIROUIN (pierre.thirouin@ext.inetpsa.com)
  */
 public class IgnoreIT {
-
-    private static Kernel kernel;
-    private static Injector injector;
+    @Rule
+    public SeedITRule rule = new SeedITRule(this);
+    @Inject
+    private Injector injector;
 
     @org.seedstack.seed.Ignore
     @Scan
@@ -37,12 +36,6 @@ public class IgnoreIT {
     @interface Scan {
     }
 
-    @BeforeClass
-    public static void setUp() throws Exception {
-        kernel = Seed.createKernel(null, newKernelConfiguration().withoutSpiPluginsLoader().addPlugin(IgnorePlugin.class), true);
-        injector = kernel.objectGraph().as(Injector.class);
-    }
-
     @Test
     public void testScanWorks() throws Exception {
         ScannedClass instance = injector.getInstance(ScannedClass.class);
@@ -52,10 +45,5 @@ public class IgnoreIT {
     @Test(expected = ConfigurationException.class)
     public void testIgnoreFeature() throws Exception {
         injector.getInstance(IgnoredClass.class);
-    }
-
-    @AfterClass
-    public static void tearDown() throws Exception {
-        Seed.disposeKernel(kernel);
     }
 }

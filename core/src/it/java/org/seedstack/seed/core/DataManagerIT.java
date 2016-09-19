@@ -7,12 +7,8 @@
  */
 package org.seedstack.seed.core;
 
-import com.google.inject.AbstractModule;
-import com.google.inject.Injector;
-import io.nuun.kernel.api.Kernel;
 import org.assertj.core.api.Assertions;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
+import org.junit.Rule;
 import org.junit.Test;
 import org.seedstack.seed.DataManager;
 import org.seedstack.seed.core.fixtures.TestDataImporter;
@@ -30,33 +26,30 @@ import static org.assertj.core.api.Assertions.assertThat;
  *         Date: 12/03/14
  */
 public class DataManagerIT {
-    private static Kernel kernel;
-    private static Holder holder;
+    @Rule
+    public SeedITRule rule = new SeedITRule(this);
 
-    static class Holder {
-        @Inject
-        DataManager dataManager;
-    }
+    @Inject
+    DataManager dataManager;
 
     @Test
     public void data_manager_is_injected() {
-        Assertions.assertThat(holder).isNotNull();
-        Assertions.assertThat(holder.dataManager).isNotNull();
+        Assertions.assertThat(dataManager).isNotNull();
     }
 
     @Test
     public void data_are_exported_correctly() {
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         ByteArrayOutputStream byteArrayOutputStream2 = new ByteArrayOutputStream();
-        holder.dataManager.exportData(byteArrayOutputStream, "group1");
-        holder.dataManager.exportData(byteArrayOutputStream2);
+        dataManager.exportData(byteArrayOutputStream, "group1");
+        dataManager.exportData(byteArrayOutputStream2);
 
         assertThat(byteArrayOutputStream.toByteArray()).isEqualTo(byteArrayOutputStream2.toByteArray());
     }
 
     @Test
     public void data_are_imported_correctly() throws Exception {
-        holder.dataManager.importData(SeedReflectionUtils.findMostCompleteClassLoader(DataManagerIT.class).getResourceAsStream("test_data.json"), null, null, true);
+        dataManager.importData(SeedReflectionUtils.findMostCompleteClassLoader(DataManagerIT.class).getResourceAsStream("test_data.json"), null, null, true);
 
         assertThat(TestDataImporter.getData().size()).isEqualTo(2);
 
@@ -78,21 +71,5 @@ public class DataManagerIT {
 
         assertThat(TestDataImporter3.getData().get(0).getFirstName()).isEqualTo("toto2");
         assertThat(TestDataImporter3.getData().get(0).getLastName()).isEqualTo("titi2");
-    }
-
-    @BeforeClass
-    public static void setup() {
-        kernel = Seed.createKernel();
-        holder = kernel.objectGraph().as(Injector.class).createChildInjector(new AbstractModule() {
-            @Override
-            protected void configure() {
-                bind(Holder.class);
-            }
-        }).getInstance(Holder.class);
-    }
-
-    @AfterClass
-    public static void teardown() {
-        Seed.disposeKernel(kernel);
     }
 }

@@ -45,7 +45,6 @@
         <module>specs</module>
         <module>core</module>
         <module>testing</module>
-        <module>crypto</module>
         <module>el</module>
         <module>security</module>
         <module>web</module>

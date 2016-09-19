@@ -15,11 +15,9 @@ import com.google.inject.Injector;
 import com.google.inject.Key;
 import com.google.inject.Module;
 import com.google.inject.TypeLiteral;
-import io.nuun.kernel.api.Kernel;
 import org.assertj.core.api.Assertions;
-import org.junit.AfterClass;
 import org.junit.Before;
-import org.junit.BeforeClass;
+import org.junit.Rule;
 import org.junit.Test;
 import org.seedstack.seed.core.internal.metrics.HealthCheckMethodReplacer;
 import org.seedstack.seed.core.internal.metrics.HealthcheckProvider;
@@ -29,17 +27,17 @@ import org.seedstack.seed.spi.dependency.Maybe;
 import javax.inject.Inject;
 
 public class HealthCheckIT {
-    private static Kernel kernel;
+    private static final String MY_HEALTHCHECK = "my-healthcheck";
+    @Rule
+    public SeedITRule rule = new SeedITRule(this);
+    @Inject
     private Injector injector;
 
-    private static final String MY_HEALTHCHECK = "my-healthcheck";
-
-    public static class MyHealthCheck {
-
+    private static class MyHealthCheck {
         @Inject
-        Maybe<HealthcheckProvider> healthCheckProvider;
+        private Maybe<HealthcheckProvider> healthCheckProvider;
 
-        public void start() {
+        void start() {
             if (healthCheckProvider.isPresent()) {
                 DependencyClassProxy<HealthCheck> healthCheck = new DependencyClassProxy<>(HealthCheck.class, (HealthCheckMethodReplacer) Result::healthy);
                 healthCheckProvider.get().register(MY_HEALTHCHECK, healthCheck.getProxy());
@@ -47,28 +45,15 @@ public class HealthCheckIT {
         }
     }
 
-    @BeforeClass
-    public static void beforeClass() {
-        kernel = Seed.createKernel();
-    }
-
-    @AfterClass
-    public static void afterClass() {
-        Seed.disposeKernel(kernel);
-    }
-
     @Before
     public void before() {
-
         Module aggregationModule = new AbstractModule() {
-
             @Override
             protected void configure() {
                 bind(MyHealthCheck.class);
             }
         };
-        injector = kernel.objectGraph().as(Injector.class).createChildInjector(
-                aggregationModule);
+        injector = rule.getKernel().objectGraph().as(Injector.class).createChildInjector(aggregationModule);
     }
 
     @Test

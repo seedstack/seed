@@ -10,16 +10,13 @@ package org.seedstack.seed.core;
 import com.codahale.metrics.Counter;
 import com.codahale.metrics.Gauge;
 import com.codahale.metrics.MetricRegistry;
-import com.google.inject.AbstractModule;
 import com.google.inject.Injector;
 import com.google.inject.Key;
 import com.google.inject.Module;
 import com.google.inject.TypeLiteral;
-import io.nuun.kernel.api.Kernel;
 import org.assertj.core.api.Assertions;
-import org.junit.AfterClass;
 import org.junit.Before;
-import org.junit.BeforeClass;
+import org.junit.Rule;
 import org.junit.Test;
 import org.seedstack.seed.core.internal.metrics.MetricsProvider;
 import org.seedstack.seed.core.utils.DependencyProxy;
@@ -29,68 +26,50 @@ import org.seedstack.seed.spi.dependency.Maybe;
 import javax.inject.Inject;
 
 public class MetricsIT {
-    private static Kernel kernel;
+    @Rule
+    public SeedITRule rule = new SeedITRule(this);
     private Injector injector;
 
-    public static class MyObjectWithMetrics {
+    private static class MyObjectWithMetrics {
+        private static final long GAUGE_VALUE = 4L;
+        static final String NEW_GAUGE = "new-gauge";
+        static final String NEW_METRIC = "new-metric";
+        @Inject
+        Maybe<MetricsProvider> metricsProvider;
 
-    	private static final long GAUGE_VALUE = 4L;
-		public static final String NEW_GAUGE = "new-gauge";
-    	public  static final String NEW_METRIC = "new-metric";
-    	@Inject
-    	Maybe<MetricsProvider> metricsProvider;
-    	
-    	public void start(){
-    		if (metricsProvider.isPresent()) {
-    			final Counter c = new Counter();
-    			metricsProvider.get().register(NEW_METRIC, () -> c);
-    			c.inc();
-    			
-    			DependencyProxy<Gauge<Long>> gauge = new DependencyProxy<>(new Class[]{Gauge.class}, new ProxyMethodReplacer() {
+        void start() {
+            if (metricsProvider.isPresent()) {
+                final Counter c = new Counter();
+                metricsProvider.get().register(NEW_METRIC, () -> c);
+                c.inc();
+
+                DependencyProxy<Gauge<Long>> gauge = new DependencyProxy<>(new Class[]{Gauge.class}, new ProxyMethodReplacer() {
                     @SuppressWarnings("unused")
                     public Long getValue() {
                         return GAUGE_VALUE;
                     }
                 });
-    			
-    	        metricsProvider.get().register(NEW_GAUGE,gauge.getProxy());
 
-    		}
-    	}
-    }
+                metricsProvider.get().register(NEW_GAUGE, gauge.getProxy());
 
-    @BeforeClass
-    public static void beforeClass() {
-        kernel = Seed.createKernel();
-    }
-
-    @AfterClass
-    public static void afterClass() {
-        Seed.disposeKernel(kernel);
+            }
+        }
     }
 
     @Before
     public void before() {
-
-        Module aggregationModule = new AbstractModule() {
-
-            @Override
-            protected void configure() {
-                bind(MyObjectWithMetrics.class);
-            }
-        };
-        injector = kernel.objectGraph().as(Injector.class).createChildInjector(
-                aggregationModule);
+        injector = rule.getKernel().objectGraph().as(Injector.class).createChildInjector((Module) binder -> binder.bind(MyObjectWithMetrics.class));
     }
-    
-	/**
-	 * Test metrics are added if metrics is in the classpath
-	 */
-	@Test
-	public void test() {
+
+    /**
+     * Test metrics are added if metrics is in the classpath
+     */
+    @Test
+    public void test() {
         MyObjectWithMetrics o = injector.getInstance(MyObjectWithMetrics.class);
         o.start();
-        Maybe<MetricsProvider> provider = injector.getInstance(Key.get(new TypeLiteral<Maybe<MetricsProvider>>(){}));
+        Maybe<MetricsProvider> provider = injector.getInstance(Key.get(new TypeLiteral<Maybe<MetricsProvider>>() {
+        }));
         Assertions.assertThat(provider.isPresent()).isTrue();
         MetricRegistry metricRegistry = provider.get().getMetricRegistry();
         Assertions.assertThat(metricRegistry.counter(MyObjectWithMetrics.NEW_METRIC)).isNotNull();
@@ -98,9 +77,9 @@ public class MetricsIT {
         Assertions.assertThat(c.getCount()).isEqualTo(1);
         Assertions.assertThat(metricRegistry.getGauges().containsKey(MyObjectWithMetrics.NEW_GAUGE)).isNotNull();
         @SuppressWarnings("unchecked")
-		Gauge<Long> gauge = metricRegistry.getGauges().get(MyObjectWithMetrics.NEW_GAUGE);
+        Gauge<Long> gauge = metricRegistry.getGauges().get(MyObjectWithMetrics.NEW_GAUGE);
         Assertions.assertThat(gauge.getValue()).isEqualTo(MyObjectWithMetrics.GAUGE_VALUE);
 
-	}
+    }
 
 }

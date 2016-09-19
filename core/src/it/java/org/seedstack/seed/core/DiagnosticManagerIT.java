@@ -7,11 +7,7 @@
  */
 package org.seedstack.seed.core;
 
-import com.google.inject.AbstractModule;
-import com.google.inject.Injector;
-import io.nuun.kernel.api.Kernel;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
+import org.junit.Rule;
 import org.junit.Test;
 import org.seedstack.seed.DiagnosticManager;
 import org.seedstack.seed.ErrorCode;
@@ -26,24 +22,21 @@ import java.util.Set;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class DiagnosticManagerIT {
-    private static Kernel kernel;
-    private static Holder holder;
+    @Rule
+    public SeedITRule rule = new SeedITRule(this);
 
-    static class Holder {
-        @Inject
-        DiagnosticManager diagnosticManager;
-    }
+    @Inject
+    DiagnosticManager diagnosticManager;
 
     @Test
     public void diagnostic_manager_is_injected() {
-        assertThat(holder).isNotNull();
-        assertThat(holder.diagnosticManager).isNotNull();
+        assertThat(diagnosticManager).isNotNull();
     }
 
     @Test
     @SuppressWarnings("unchecked")
     public void diagnostic_system_information_is_present() {
-        Map<String, Object> diagnosticInfo = holder.diagnosticManager.getDiagnosticInfo(null);
+        Map<String, Object> diagnosticInfo = diagnosticManager.getDiagnosticInfo(null);
 
         assertThat(diagnosticInfo).isNotNull();
         Map<String, Object> systemInfo = (Map<String, Object>) diagnosticInfo.get("system");
@@ -61,7 +54,7 @@ public class DiagnosticManagerIT {
     @Test
     @SuppressWarnings("unchecked")
     public void nuun_info_is_present() {
-        Map<String, Object> diagnosticInfo = holder.diagnosticManager.getDiagnosticInfo(null);
+        Map<String, Object> diagnosticInfo = diagnosticManager.getDiagnosticInfo(null);
 
         assertThat(diagnosticInfo).isNotNull();
 
@@ -72,7 +65,7 @@ public class DiagnosticManagerIT {
     @Test
     @SuppressWarnings("unchecked")
     public void seed_info_is_present() {
-        Map<String, Object> diagnosticInfo = holder.diagnosticManager.getDiagnosticInfo(null);
+        Map<String, Object> diagnosticInfo = diagnosticManager.getDiagnosticInfo(null);
 
         assertThat(diagnosticInfo).isNotNull();
 
@@ -85,7 +78,7 @@ public class DiagnosticManagerIT {
     @SuppressWarnings("unchecked")
     public void diagnostic_exception_information_is_present() {
         SeedException seedException = SeedException.createNew(TestErrorCode.TEST_CODE);
-        Map<String, Object> diagnosticInfo = holder.diagnosticManager.getDiagnosticInfo(seedException);
+        Map<String, Object> diagnosticInfo = diagnosticManager.getDiagnosticInfo(seedException);
 
         assertThat(diagnosticInfo).isNotNull();
 
@@ -101,7 +94,7 @@ public class DiagnosticManagerIT {
     @Test
     @SuppressWarnings("unchecked")
     public void diagnostic_application_information_is_present() {
-        Map<String, Object> diagnosticInfo = holder.diagnosticManager.getDiagnosticInfo(null);
+        Map<String, Object> diagnosticInfo = diagnosticManager.getDiagnosticInfo(null);
 
         assertThat(diagnosticInfo).isNotNull();
         Map<String, Object> coreInfo = (Map<String, Object>) diagnosticInfo.get("core");
@@ -117,29 +110,13 @@ public class DiagnosticManagerIT {
     @Test
     @SuppressWarnings("unchecked")
     public void diagnostic_information_from_scanned_collectors_is_present() {
-        Map<String, Object> diagnosticInfo = holder.diagnosticManager.getDiagnosticInfo(null);
+        Map<String, Object> diagnosticInfo = diagnosticManager.getDiagnosticInfo(null);
 
         assertThat(diagnosticInfo).isNotNull();
         Map<String, Object> testInfo = (Map<String, Object>) diagnosticInfo.get("it-collector");
 
         assertThat(testInfo).isNotNull();
         assertThat(testInfo.get("service")).isNotNull();
-    }
-
-    @BeforeClass
-    public static void setup() {
-        kernel = Seed.createKernel();
-        holder = kernel.objectGraph().as(Injector.class).createChildInjector(new AbstractModule() {
-            @Override
-            protected void configure() {
-                bind(Holder.class);
-            }
-        }).getInstance(Holder.class);
-    }
-
-    @AfterClass
-    public static void teardown() {
-        Seed.disposeKernel(kernel);
     }
 
     private enum TestErrorCode implements ErrorCode {

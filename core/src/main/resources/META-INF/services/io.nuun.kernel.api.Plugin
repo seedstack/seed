@@ -6,3 +6,4 @@ org.seedstack.seed.core.internal.command.impl.CommandPlugin
 org.seedstack.seed.core.internal.data.DataPlugin
 org.seedstack.seed.core.internal.lifecycle.LifecyclePlugin
 org.seedstack.seed.core.internal.validation.ValidationPlugin
+org.seedstack.seed.core.internal.crypto.CryptoPlugin
