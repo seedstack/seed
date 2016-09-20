@@ -40,7 +40,7 @@ class SecurityConfigurer {
     private final SecurityConfig securityConfig;
     private final Map<Class<?>, Collection<Class<?>>> securityClasses;
     private final Collection<Class<? extends PrincipalCustomizer<?>>> principalCustomizerClasses;
-    private Collection<RealmConfiguration> configurationRealms;
+    private final Collection<RealmConfiguration> configurationRealms = new ArrayList<>();
 
     SecurityConfigurer(SecurityConfig securityConfig, Map<Class<?>, Collection<Class<?>>> securityClasses,
                        Collection<Class<? extends PrincipalCustomizer<?>>> principalCustomizerClasses) {
@@ -50,6 +50,7 @@ class SecurityConfigurer {
         if (CollectionUtils.isEmpty(securityClasses.get(Realm.class))) {
             throw new IllegalArgumentException("No realm class provided !");
         }
+        buildRealms();
     }
 
     Collection<Class<? extends PrincipalCustomizer<?>>> getPrincipalCustomizers() {
@@ -60,9 +61,6 @@ class SecurityConfigurer {
     }
 
     Collection<RealmConfiguration> getConfigurationRealms() {
-        if (configurationRealms == null) {
-            buildRealms();
-        }
         return Collections.unmodifiableCollection(configurationRealms);
     }
 
@@ -72,30 +70,26 @@ class SecurityConfigurer {
 
     @SuppressWarnings("unchecked")
     private void buildRealms() {
-        configurationRealms = new ArrayList<>();
-
         if (securityConfig.getRealms().isEmpty()) {
             RealmConfiguration confRealm = new RealmConfiguration(DEFAULT_REALM.getSimpleName(), DEFAULT_REALM);
+            confRealm.setRolePermissionResolverClass(findRolePermissionResolver(null, confRealm));
+            confRealm.setRoleMappingClass(findRoleMapping(null, confRealm));
             configurationRealms.add(confRealm);
         } else {
-            for (String realmName : securityConfig.getRealms().keySet()) {
-                Class<? extends Realm> realmClass = (Class<? extends Realm>) findClass(realmName, securityClasses.get(Realm.class));
+            for (SecurityConfig.RealmConfig realmConfig : securityConfig.getRealms()) {
+                Class<? extends Realm> realmClass = (Class<? extends Realm>) findClass(realmConfig.getName(), securityClasses.get(Realm.class));
                 if (realmClass == null) {
-                    throw new IllegalArgumentException("Unknown realm defined in property " + REALMS_KEY + " : " + realmName);
+                    throw new IllegalArgumentException("Unknown realm defined in property " + REALMS_KEY + " : " + realmConfig.getName());
                 }
-                RealmConfiguration confRealm = new RealmConfiguration(realmName, realmClass);
+                RealmConfiguration confRealm = new RealmConfiguration(realmConfig.getName(), realmClass);
+                confRealm.setRolePermissionResolverClass(findRolePermissionResolver(realmConfig, confRealm));
+                confRealm.setRoleMappingClass(findRoleMapping(realmConfig, confRealm));
                 configurationRealms.add(confRealm);
             }
         }
-
-        for (RealmConfiguration confRealm : configurationRealms) {
-            confRealm.setRolePermissionResolverClass(findRolePermissionResolver(confRealm));
-            confRealm.setRoleMappingClass(findRoleMapping(confRealm));
-        }
     }
 
-    private Class<? extends RolePermissionResolver> findRolePermissionResolver(RealmConfiguration realm) {
-        SecurityConfig.RealmConfig realmConfig = securityConfig.getRealms().get(realm.getName());
+    private Class<? extends RolePermissionResolver> findRolePermissionResolver(SecurityConfig.RealmConfig realmConfig, RealmConfiguration realm) {
         if (realmConfig == null || realmConfig.getPermissionResolver() == null) {
             if (securityConfig.getPermissions().isEmpty()) {
                 return DEFAULT_ROLE_PERMISSION_RESOLVER;
@@ -105,8 +99,7 @@ class SecurityConfigurer {
         return findRealmComponent(realm.getName(), realmConfig.getPermissionResolver(), RolePermissionResolver.class);
     }
 
-    private Class<? extends RoleMapping> findRoleMapping(RealmConfiguration realm) {
-        SecurityConfig.RealmConfig realmConfig = securityConfig.getRealms().get(realm.getName());
+    private Class<? extends RoleMapping> findRoleMapping(SecurityConfig.RealmConfig realmConfig, RealmConfiguration realm) {
         if (realmConfig == null || realmConfig.getRoleMapper() == null) {
             if (securityConfig.getRoles().isEmpty()) {
                 return DEFAULT_ROLE_MAPPING;

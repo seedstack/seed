@@ -44,15 +44,15 @@ public class WebConfig {
     public static class CORSConfig {
         @SingleValue
         private boolean enabled;
-        private String mapping = "/*";
+        private String path = "/*";
         private Map<String, String> properties = new HashMap<>();
 
         public boolean isEnabled() {
             return enabled;
         }
 
-        public String getMapping() {
-            return mapping;
+        public String getPath() {
+            return path;
         }
 
         public Map<String, String> getProperties() {
@@ -96,6 +96,7 @@ public class WebConfig {
             return cache;
         }
 
+        @Config("cache")
         public static class CacheConfig {
             private static final int DEFAULT_CACHE_MAX_SIZE = 8192;
             private static final int DEFAULT_CACHE_CONCURRENCY = 32;

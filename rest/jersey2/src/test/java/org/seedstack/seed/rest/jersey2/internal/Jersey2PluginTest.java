@@ -15,7 +15,7 @@ import mockit.StrictExpectations;
 import mockit.integration.junit4.JMockit;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.seedstack.seed.rest.internal.RestConfig;
+import org.seedstack.seed.rest.RestConfig;
 import org.seedstack.seed.rest.internal.RestPlugin;
 import org.seedstack.seed.rest.spi.RestProvider;
 import org.seedstack.seed.web.internal.WebPlugin;

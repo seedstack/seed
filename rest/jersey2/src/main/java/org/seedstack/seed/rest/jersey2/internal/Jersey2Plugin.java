@@ -16,7 +16,7 @@ import org.glassfish.jersey.server.ServerProperties;
 import org.glassfish.jersey.server.mvc.jsp.JspMvcFeature;
 import org.glassfish.jersey.servlet.ServletProperties;
 import org.seedstack.seed.core.utils.SeedReflectionUtils;
-import org.seedstack.seed.rest.internal.RestConfig;
+import org.seedstack.seed.rest.RestConfig;
 import org.seedstack.seed.rest.internal.RestPlugin;
 import org.seedstack.seed.rest.spi.RestProvider;
 import org.seedstack.seed.web.spi.FilterDefinition;

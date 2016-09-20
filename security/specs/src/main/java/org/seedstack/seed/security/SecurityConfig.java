@@ -10,16 +10,18 @@ package org.seedstack.seed.security;
 import org.seedstack.coffig.Config;
 import org.seedstack.coffig.SingleValue;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 @Config("security")
 public class SecurityConfig {
     private SessionsConfig sessions = new SessionsConfig();
-    private Map<String, RealmConfig> realms = new HashMap<>();
+    private List<RealmConfig> realms = new ArrayList<>();
     private Map<String, UserConfig> users = new HashMap<>();
     private Map<String, Set<String>> roles = new HashMap<>();
     private Map<String, Set<String>> permissions = new HashMap<>();
@@ -28,12 +30,12 @@ public class SecurityConfig {
         return sessions;
     }
 
-    public Map<String, RealmConfig> getRealms() {
-        return Collections.unmodifiableMap(realms);
+    public List<RealmConfig> getRealms() {
+        return Collections.unmodifiableList(realms);
     }
 
-    public SecurityConfig addRealm(String name, RealmConfig realmConfig) {
-        realms.put(name, realmConfig);
+    public SecurityConfig addRealm(RealmConfig realmConfig) {
+        realms.add(realmConfig);
         return this;
     }
 
@@ -65,8 +67,19 @@ public class SecurityConfig {
     }
 
     public static class RealmConfig {
+        @SingleValue
+        private String name;
         private String roleMapper;
         private String permissionResolver;
+
+        public String getName() {
+            return name;
+        }
+
+        public RealmConfig setName(String name) {
+            this.name = name;
+            return this;
+        }
 
         public String getRoleMapper() {
             return roleMapper;
@@ -131,7 +144,7 @@ public class SecurityConfig {
         }
 
         public SessionsConfig setTimeout(long timeout) {
-            this.timeout = timeout;
+            this.timeout = timeout * 1000;
             return this;
         }
     }

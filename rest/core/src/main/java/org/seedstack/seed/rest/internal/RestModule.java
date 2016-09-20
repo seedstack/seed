@@ -11,6 +11,7 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Scopes;
 import com.google.inject.multibindings.MapBinder;
 import com.google.inject.name.Names;
+import org.seedstack.seed.rest.RestConfig;
 import org.seedstack.seed.rest.spi.RootResource;
 
 import javax.ws.rs.core.Variant;

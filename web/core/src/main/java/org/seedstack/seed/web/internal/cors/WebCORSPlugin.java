@@ -57,13 +57,13 @@ public class WebCORSPlugin extends AbstractSeedPlugin implements WebProvider {
     @Override
     public List<FilterDefinition> filters() {
         if (corsConfig.isEnabled()) {
-            LOGGER.info("CORS support enabled on {}", corsConfig.getMapping());
+            LOGGER.info("CORS support enabled on {}", corsConfig.getPath());
 
             FilterDefinition filterDefinition = new FilterDefinition("web-cors", CORSFilter.class);
             filterDefinition.setPriority(1000);
             filterDefinition.setAsyncSupported(true);
             filterDefinition.addInitParameters(buildCorsParameters());
-            filterDefinition.addMappings(new FilterDefinition.Mapping(corsConfig.getMapping()));
+            filterDefinition.addMappings(new FilterDefinition.Mapping(corsConfig.getPath()));
             return Lists.newArrayList(filterDefinition);
         } else {
             return null;

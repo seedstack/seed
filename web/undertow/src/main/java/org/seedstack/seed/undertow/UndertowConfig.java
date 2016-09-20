@@ -9,6 +9,8 @@ package org.seedstack.seed.undertow;
 
 import org.seedstack.coffig.Config;
 
+import java.util.Optional;
+
 /**
  * This class holds the properties used to configure undertow.
  *
@@ -16,49 +18,49 @@ import org.seedstack.coffig.Config;
  */
 @Config("web.server.undertow")
 public class UndertowConfig {
-    private Integer bufferSize;
-    private Integer buffersPerRegion;
-    private Integer ioThreads;
-    private Integer workerThreads;
-    private Boolean directBuffers;
+    private Optional<Integer> bufferSize = Optional.empty();
+    private Optional<Integer> buffersPerRegion = Optional.empty();
+    private Optional<Integer> ioThreads = Optional.empty();
+    private Optional<Integer> workerThreads = Optional.empty();
+    private Optional<Boolean> directBuffers = Optional.empty();
 
-    public Integer getBufferSize() {
+    public Optional<Integer> getBufferSize() {
         return bufferSize;
     }
 
     public void setBufferSize(Integer bufferSize) {
-        this.bufferSize = bufferSize;
+        this.bufferSize = Optional.of(bufferSize);
     }
 
-    public Integer getBuffersPerRegion() {
+    public Optional<Integer> getBuffersPerRegion() {
         return buffersPerRegion;
     }
 
     public void setBuffersPerRegion(Integer buffersPerRegion) {
-        this.buffersPerRegion = buffersPerRegion;
+        this.buffersPerRegion = Optional.of(buffersPerRegion);
     }
 
-    public Integer getIoThreads() {
+    public Optional<Integer> getIoThreads() {
         return ioThreads;
     }
 
     public void setIoThreads(Integer ioThreads) {
-        this.ioThreads = ioThreads;
+        this.ioThreads = Optional.of(ioThreads);
     }
 
-    public Integer getWorkerThreads() {
+    public Optional<Integer> getWorkerThreads() {
         return workerThreads;
     }
 
     public void setWorkerThreads(Integer workerThreads) {
-        this.workerThreads = workerThreads;
+        this.workerThreads = Optional.of(workerThreads);
     }
 
-    public Boolean getDirectBuffers() {
+    public Optional<Boolean> getDirectBuffers() {
         return directBuffers;
     }
 
     public void setDirectBuffers(Boolean directBuffers) {
-        this.directBuffers = directBuffers;
+        this.directBuffers = Optional.of(directBuffers);
     }
 }

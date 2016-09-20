@@ -19,6 +19,7 @@ import org.kametic.specifications.Specification;
 import org.seedstack.seed.core.SeedRuntime;
 import org.seedstack.seed.core.internal.AbstractSeedPlugin;
 import org.seedstack.seed.rest.RelRegistry;
+import org.seedstack.seed.rest.RestConfig;
 import org.seedstack.seed.rest.internal.exceptionmapper.AuthenticationExceptionMapper;
 import org.seedstack.seed.rest.internal.exceptionmapper.AuthorizationExceptionMapper;
 import org.seedstack.seed.rest.internal.exceptionmapper.InternalErrorExceptionMapper;
