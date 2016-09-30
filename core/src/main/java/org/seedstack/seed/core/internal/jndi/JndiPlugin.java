@@ -10,7 +10,7 @@ package org.seedstack.seed.core.internal.jndi;
 import io.nuun.kernel.api.plugin.InitState;
 import io.nuun.kernel.api.plugin.context.InitContext;
 import org.seedstack.seed.JndiConfig;
-import org.seedstack.seed.SeedException;
+import org.seedstack.shed.exception.SeedException;
 import org.seedstack.seed.core.internal.AbstractSeedPlugin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

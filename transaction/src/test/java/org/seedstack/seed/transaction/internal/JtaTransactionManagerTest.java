@@ -9,7 +9,7 @@ package org.seedstack.seed.transaction.internal;
 
 import org.junit.Test;
 import org.mockito.internal.util.reflection.Whitebox;
-import org.seedstack.seed.SeedException;
+import org.seedstack.shed.exception.SeedException;
 import org.seedstack.seed.transaction.spi.TransactionManager;
 import org.seedstack.seed.transaction.spi.TransactionMetadata;
 

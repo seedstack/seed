@@ -14,7 +14,7 @@ import mockit.Expectations;
 import mockit.Mocked;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
-import org.seedstack.seed.SeedException;
+import org.seedstack.shed.exception.SeedException;
 import org.seedstack.seed.crypto.CryptoConfig;
 import org.seedstack.seed.crypto.EncryptionService;
 import org.seedstack.seed.core.internal.crypto.fixtures.AliasQualifier;

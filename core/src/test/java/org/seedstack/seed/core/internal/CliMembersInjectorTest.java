@@ -22,17 +22,17 @@ import java.util.Set;
  *
  * @author redouane.loulou@ext.mpsa.com
  */
-public class LoggingMembersInjectorTest {
+public class CliMembersInjectorTest {
     private Logger log1;
 
-    private final static Logger logger = LoggerFactory.getLogger(LoggingMembersInjectorTest.class);
+    private final static Logger logger = LoggerFactory.getLogger(CliMembersInjectorTest.class);
 
 
     @Test
     public void injectMembersTest() throws Exception {
         Set<Field> fields = new HashSet<>();
         fields.add(this.getClass().getDeclaredField("log1"));
-        LoggingMembersInjector<LoggingMembersInjectorTest> loggingMembersInjector1 = new LoggingMembersInjector<>(fields);
+        LoggingMembersInjector<CliMembersInjectorTest> loggingMembersInjector1 = new LoggingMembersInjector<>(fields);
         loggingMembersInjector1.injectMembers(this);
 
         Assertions.assertThat(logger).isNotNull();

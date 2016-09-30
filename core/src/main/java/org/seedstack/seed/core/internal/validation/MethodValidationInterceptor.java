@@ -9,7 +9,7 @@ package org.seedstack.seed.core.internal.validation;
 
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
-import org.seedstack.seed.SeedException;
+import org.seedstack.shed.exception.SeedException;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.ValidatorFactory;

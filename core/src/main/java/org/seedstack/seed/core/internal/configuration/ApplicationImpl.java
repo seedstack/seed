@@ -10,7 +10,7 @@ package org.seedstack.seed.core.internal.configuration;
 import org.seedstack.coffig.Coffig;
 import org.seedstack.seed.Application;
 import org.seedstack.seed.ApplicationConfig;
-import org.seedstack.seed.SeedException;
+import org.seedstack.shed.exception.SeedException;
 import org.seedstack.seed.core.internal.CoreErrorCode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,13 +24,13 @@ import java.io.File;
  */
 class ApplicationImpl implements Application {
     private static final Logger LOGGER = LoggerFactory.getLogger(ApplicationImpl.class);
-    private final Coffig configuration;
     private final ApplicationConfig applicationConfig;
+    private final Coffig configuration;
     private final File storageDirectory;
 
-    ApplicationImpl(Coffig configuration) {
+    ApplicationImpl(ApplicationConfig applicationConfig, Coffig configuration) {
+        this.applicationConfig = applicationConfig;
         this.configuration = configuration;
-        this.applicationConfig = configuration.get(ApplicationConfig.class);
 
         LOGGER.info("Application info: {} v{}", applicationConfig.getName(), applicationConfig.getVersion());
 

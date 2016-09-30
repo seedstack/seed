@@ -10,7 +10,7 @@ package org.seedstack.seed.el.internal;
 import com.google.inject.Injector;
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
-import org.seedstack.seed.SeedException;
+import org.seedstack.shed.exception.SeedException;
 import org.seedstack.seed.el.ELContextBuilder;
 import org.seedstack.seed.el.ELService;
 import org.seedstack.seed.el.spi.ELHandler;

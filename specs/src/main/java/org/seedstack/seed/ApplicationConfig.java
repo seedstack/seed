@@ -13,10 +13,15 @@ import org.seedstack.coffig.SingleValue;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.io.File;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
 @Config("application")
 public class ApplicationConfig {
+    @NotNull
+    private Set<String> basePackages = new HashSet<>();
     @SingleValue
     @NotNull
     @Size(min = 1)
@@ -67,5 +72,14 @@ public class ApplicationConfig {
 
     public boolean isStorageEnabled() {
         return storage != null;
+    }
+
+    public Set<String> getBasePackages() {
+        return Collections.unmodifiableSet(basePackages);
+    }
+
+    public ApplicationConfig addBasePackage(String basePackage) {
+        this.basePackages.add(basePackage);
+        return this;
     }
 }

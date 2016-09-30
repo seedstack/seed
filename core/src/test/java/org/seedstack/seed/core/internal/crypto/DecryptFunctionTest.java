@@ -19,7 +19,7 @@ import mockit.Mocked;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.seedstack.coffig.Coffig;
-import org.seedstack.seed.SeedException;
+import org.seedstack.shed.exception.SeedException;
 import org.seedstack.seed.core.internal.crypto.DecryptFunction;
 import org.seedstack.seed.core.internal.crypto.EncryptionServiceFactory;
 import org.seedstack.seed.core.internal.crypto.KeyStoreLoader;

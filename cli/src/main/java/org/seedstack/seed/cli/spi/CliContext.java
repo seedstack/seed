@@ -12,7 +12,7 @@ package org.seedstack.seed.cli.spi;
  *
  * @author adrien.lauer@mpsa.com
  */
-public class CliContext {
+public class CliContext implements org.seedstack.seed.cli.CliContext {
 
     private final String[] args;
 

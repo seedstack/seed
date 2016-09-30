@@ -16,7 +16,7 @@ import org.junit.Test;
 import org.seedstack.seed.Application;
 import org.seedstack.seed.DiagnosticManager;
 import org.seedstack.seed.spi.dependency.DependencyProvider;
-import org.seedstack.seed.spi.dependency.Maybe;
+import org.seedstack.shed.reflect.Maybe;
 
 import java.util.ArrayList;
 import java.util.Collection;

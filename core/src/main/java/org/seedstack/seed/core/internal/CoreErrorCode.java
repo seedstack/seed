@@ -7,7 +7,7 @@
  */
 package org.seedstack.seed.core.internal;
 
-import org.seedstack.seed.ErrorCode;
+import org.seedstack.shed.exception.ErrorCode;
 
 public enum CoreErrorCode implements ErrorCode {
     UNABLE_TO_INSTANTIATE_MODULE,

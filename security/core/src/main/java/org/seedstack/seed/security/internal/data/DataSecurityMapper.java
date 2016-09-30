@@ -10,7 +10,7 @@ package org.seedstack.seed.security.internal.data;
 import com.google.inject.Injector;
 import org.kametic.universalvisitor.api.Mapper;
 import org.kametic.universalvisitor.api.Node;
-import org.seedstack.seed.SeedException;
+import org.seedstack.shed.exception.SeedException;
 import org.seedstack.seed.security.internal.SecurityErrorCodes;
 import org.seedstack.seed.security.internal.securityexpr.SecurityExpressionInterpreter;
 import org.seedstack.seed.security.spi.data.DataObfuscationHandler;

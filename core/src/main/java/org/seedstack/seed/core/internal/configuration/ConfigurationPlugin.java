@@ -17,9 +17,9 @@ import org.seedstack.coffig.provider.CompositeProvider;
 import org.seedstack.coffig.provider.JacksonProvider;
 import org.seedstack.coffig.spi.ConfigurationProvider;
 import org.seedstack.seed.Application;
-import org.seedstack.seed.CoreConfig;
+import org.seedstack.seed.ApplicationConfig;
 import org.seedstack.seed.DiagnosticManager;
-import org.seedstack.seed.SeedException;
+import org.seedstack.shed.exception.SeedException;
 import org.seedstack.seed.core.Seed;
 import org.seedstack.seed.core.SeedRuntime;
 import org.seedstack.seed.core.internal.CoreErrorCode;
@@ -28,7 +28,11 @@ import org.seedstack.seed.spi.config.ApplicationProvider;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.*;
+import java.util.Collection;
+import java.util.Enumeration;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -44,6 +48,7 @@ public class ConfigurationPlugin extends AbstractPlugin implements ApplicationPr
 
     private Coffig configuration;
     private DiagnosticManager diagnosticManager;
+    private ApplicationConfig applicationConfig;
     private Application application;
 
     @Override
@@ -60,8 +65,8 @@ public class ConfigurationPlugin extends AbstractPlugin implements ApplicationPr
 
     @Override
     public String pluginPackageRoot() {
-        CoreConfig coreConfig = configuration.get(CoreConfig.class);
-        Set<String> basePackages = new HashSet<>(coreConfig.getBasePackages());
+        applicationConfig = configuration.get(ApplicationConfig.class);
+        Set<String> basePackages = new HashSet<>(applicationConfig.getBasePackages());
         basePackages.add(CONFIGURATION_PACKAGE);
         return String.join(",", basePackages);
     }
@@ -79,7 +84,7 @@ public class ConfigurationPlugin extends AbstractPlugin implements ApplicationPr
     public InitState init(InitContext initContext) {
         detectConfigurationFiles(initContext);
 
-        application = new ApplicationImpl(configuration);
+        application = new ApplicationImpl(applicationConfig, configuration);
         diagnosticManager.registerDiagnosticInfoCollector("core", new ConfigurationDiagnosticCollector(application));
 
         return InitState.INITIALIZED;

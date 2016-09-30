@@ -13,6 +13,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.internal.util.reflection.Whitebox;
 import org.seedstack.coffig.Coffig;
+import org.seedstack.seed.ApplicationConfig;
 import org.seedstack.seed.core.internal.init.DiagnosticManagerImpl;
 
 import java.util.ArrayList;
@@ -32,6 +33,7 @@ public class ConfigurationPluginTest {
         configurationPlugin = new ConfigurationPlugin();
         Coffig coffig = Coffig.builder().withProviders(new PrioritizedProvider()).build();
         Whitebox.setInternalState(configurationPlugin, "configuration", coffig);
+        Whitebox.setInternalState(configurationPlugin, "applicationConfig", new ApplicationConfig());
         Whitebox.setInternalState(configurationPlugin, "diagnosticManager", new DiagnosticManagerImpl());
     }
 

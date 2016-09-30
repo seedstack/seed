@@ -12,7 +12,7 @@ import com.google.inject.Key;
 import com.google.inject.TypeLiteral;
 import com.google.inject.util.Types;
 import javassist.Modifier;
-import org.seedstack.seed.SeedException;
+import org.seedstack.shed.exception.SeedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

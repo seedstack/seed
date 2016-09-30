@@ -19,10 +19,10 @@ import org.junit.Test;
 import org.seedstack.coffig.Coffig;
 import org.seedstack.seed.Application;
 import org.seedstack.seed.Install;
-import org.seedstack.seed.SeedException;
+import org.seedstack.shed.exception.SeedException;
 import org.seedstack.seed.spi.config.ApplicationProvider;
 import org.seedstack.seed.spi.dependency.DependencyProvider;
-import org.seedstack.seed.spi.dependency.Maybe;
+import org.seedstack.shed.reflect.Maybe;
 
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;

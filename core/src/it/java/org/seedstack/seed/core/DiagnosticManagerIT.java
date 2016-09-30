@@ -10,8 +10,8 @@ package org.seedstack.seed.core;
 import org.junit.Rule;
 import org.junit.Test;
 import org.seedstack.seed.DiagnosticManager;
-import org.seedstack.seed.ErrorCode;
-import org.seedstack.seed.SeedException;
+import org.seedstack.shed.exception.ErrorCode;
+import org.seedstack.shed.exception.SeedException;
 
 import javax.inject.Inject;
 import java.net.URL;

@@ -16,7 +16,7 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.sshd.server.ExitCallback;
 import org.seedstack.seed.CommandRegistry;
-import org.seedstack.seed.SeedException;
+import org.seedstack.shed.exception.SeedException;
 import org.seedstack.seed.spi.command.Command;
 
 import javax.inject.Inject;

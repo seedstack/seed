@@ -7,7 +7,7 @@
  */
 package org.seedstack.seed.it.internal;
 
-import org.seedstack.seed.ErrorCode;
+import org.seedstack.shed.exception.ErrorCode;
 
 /**
  * Enumerates all IT error codes.

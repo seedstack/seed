@@ -18,7 +18,7 @@ import org.apache.shiro.util.ThreadContext;
 import org.apache.sshd.server.Environment;
 import org.fusesource.jansi.Ansi;
 import org.seedstack.seed.Application;
-import org.seedstack.seed.SeedException;
+import org.seedstack.shed.exception.SeedException;
 import org.seedstack.seed.spi.command.Command;
 import org.seedstack.seed.spi.command.PrettyCommand;
 import org.slf4j.Logger;

@@ -10,8 +10,8 @@ package org.seedstack.seed.core.utils;
 import com.google.inject.ConfigurationException;
 import com.google.inject.Injector;
 import org.kametic.specifications.Specification;
-import org.seedstack.seed.ErrorCode;
-import org.seedstack.seed.SeedException;
+import org.seedstack.shed.exception.ErrorCode;
+import org.seedstack.shed.exception.SeedException;
 
 import javax.inject.Inject;
 
@@ -106,10 +106,10 @@ public final class SeedCheckUtils {
 
         for (int i = 0; i < properties.length; i = i + 2) {
             String key = properties[i];
-            String value = properties[i+1];
+            String value = properties[i + 1];
             seedException.put(key, value);
         }
 
-        seedException.thenThrows();
+        throw seedException;
     }
 }

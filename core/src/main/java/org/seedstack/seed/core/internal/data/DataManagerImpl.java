@@ -19,7 +19,7 @@ import com.google.inject.Injector;
 import org.seedstack.seed.DataExporter;
 import org.seedstack.seed.DataImporter;
 import org.seedstack.seed.DataManager;
-import org.seedstack.seed.SeedException;
+import org.seedstack.shed.exception.SeedException;
 
 import javax.inject.Inject;
 import java.io.IOException;

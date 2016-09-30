@@ -7,7 +7,7 @@
  */
 package org.seedstack.seed.web.internal.security;
 
-import org.seedstack.seed.SeedException;
+import org.seedstack.shed.exception.SeedException;
 import org.seedstack.seed.web.WebConfig;
 import org.seedstack.seed.web.spi.AntiXsrfService;
 

@@ -9,7 +9,7 @@ package org.seedstack.seed.transaction.spi;
 
 import javassist.util.proxy.MethodHandler;
 import javassist.util.proxy.ProxyFactory;
-import org.seedstack.seed.SeedException;
+import org.seedstack.shed.exception.SeedException;
 import org.seedstack.seed.transaction.internal.TransactionErrorCode;
 
 import java.lang.reflect.InvocationTargetException;

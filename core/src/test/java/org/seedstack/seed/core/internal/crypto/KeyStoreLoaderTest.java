@@ -8,7 +8,7 @@
 package org.seedstack.seed.core.internal.crypto;
 
 import org.junit.Test;
-import org.seedstack.seed.SeedException;
+import org.seedstack.shed.exception.SeedException;
 import org.seedstack.seed.core.internal.crypto.CryptoErrorCodes;
 import org.seedstack.seed.core.internal.crypto.KeyStoreLoader;
 import org.seedstack.seed.crypto.CryptoConfig;

@@ -7,7 +7,7 @@
  */
 package org.seedstack.seed.el;
 
-import org.seedstack.seed.SeedException;
+import org.seedstack.shed.exception.SeedException;
 
 import javax.el.ELContext;
 import javax.el.MethodExpression;

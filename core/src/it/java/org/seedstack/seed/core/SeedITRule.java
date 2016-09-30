@@ -9,6 +9,7 @@ package org.seedstack.seed.core;
 
 import com.google.inject.Injector;
 import io.nuun.kernel.api.Kernel;
+import io.nuun.kernel.api.config.KernelConfiguration;
 import mockit.Mock;
 import mockit.MockUp;
 import org.junit.Rule;
@@ -27,12 +28,18 @@ import java.util.Map;
  * @author thierry.bouvet@mpsa.com
  */
 public class SeedITRule implements TestRule {
-    private Object target;
+    private final Object target;
+    private final Object context;
     private Kernel kernel;
 
-    public SeedITRule(Object target) {
-        super();
+    public SeedITRule(Object target, Object context) {
         this.target = target;
+        this.context = context;
+    }
+
+    public SeedITRule(Object target) {
+        this.target = target;
+        this.context = null;
     }
 
     @Override
@@ -68,7 +75,7 @@ public class SeedITRule implements TestRule {
             }
 
             private void startKernel() {
-                kernel = Seed.createKernel();
+                kernel = Seed.createKernel(context, null, true);
                 kernel.objectGraph().as(Injector.class).injectMembers(target);
             }
 

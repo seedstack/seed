@@ -12,10 +12,10 @@ import io.nuun.kernel.api.plugin.InitState;
 import io.nuun.kernel.api.plugin.context.InitContext;
 import io.nuun.kernel.api.plugin.request.ClasspathScanRequest;
 import org.seedstack.seed.Install;
-import org.seedstack.seed.SeedException;
+import org.seedstack.shed.exception.SeedException;
 import org.seedstack.seed.core.utils.SeedReflectionUtils;
 import org.seedstack.seed.spi.dependency.DependencyProvider;
-import org.seedstack.seed.spi.dependency.Maybe;
+import org.seedstack.shed.reflect.Maybe;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

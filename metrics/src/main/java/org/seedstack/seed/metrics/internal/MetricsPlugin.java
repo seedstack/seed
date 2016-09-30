@@ -16,11 +16,11 @@ import io.nuun.kernel.api.plugin.context.Context;
 import io.nuun.kernel.api.plugin.context.InitContext;
 import io.nuun.kernel.api.plugin.request.ClasspathScanRequest;
 import io.nuun.kernel.core.AbstractPlugin;
-import org.seedstack.seed.SeedException;
+import org.seedstack.shed.exception.SeedException;
 import org.seedstack.seed.core.internal.CorePlugin;
 import org.seedstack.seed.core.internal.metrics.HealthcheckProvider;
 import org.seedstack.seed.core.internal.metrics.MetricsProvider;
-import org.seedstack.seed.spi.dependency.Maybe;
+import org.seedstack.shed.reflect.Maybe;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

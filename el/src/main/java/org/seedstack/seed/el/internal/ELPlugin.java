@@ -12,11 +12,11 @@ import io.nuun.kernel.api.plugin.context.InitContext;
 import io.nuun.kernel.api.plugin.request.ClasspathScanRequest;
 import net.jodah.typetools.TypeResolver;
 import org.kametic.specifications.Specification;
-import org.seedstack.seed.SeedException;
+import org.seedstack.shed.exception.SeedException;
 import org.seedstack.seed.core.internal.AbstractSeedPlugin;
 import org.seedstack.seed.core.utils.SeedReflectionUtils;
 import org.seedstack.seed.el.spi.ELHandler;
-import org.seedstack.seed.spi.dependency.Maybe;
+import org.seedstack.shed.reflect.Maybe;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

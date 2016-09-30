@@ -7,8 +7,12 @@
  */
 package org.seedstack.seed.core.internal;
 
-import io.nuun.kernel.api.plugin.context.Context;
+import com.google.common.collect.Lists;
+import org.seedstack.seed.core.internal.cli.CliPlugin;
+import org.seedstack.seed.core.internal.configuration.ConfigurationPlugin;
 import org.seedstack.seed.spi.SeedTool;
+
+import java.util.Collection;
 
 public abstract class AbstractSeedTool extends AbstractSeedPlugin implements SeedTool {
     @Override
@@ -17,13 +21,8 @@ public abstract class AbstractSeedTool extends AbstractSeedPlugin implements See
     }
 
     @Override
-    public void start(Context context) {
-        throw new IllegalStateException("A tool plugin cannot be started");
-    }
-
-    @Override
-    public void stop() {
-        throw new IllegalStateException("A tool plugin cannot be stopped");
+    public Collection<Class<?>> pluginsToLoad() {
+        return Lists.newArrayList(CorePlugin.class, ConfigurationPlugin.class, CliPlugin.class);
     }
 
     public abstract String toolName();

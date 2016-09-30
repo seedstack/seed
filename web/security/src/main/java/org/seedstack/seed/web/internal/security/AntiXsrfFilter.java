@@ -8,7 +8,7 @@
 package org.seedstack.seed.web.internal.security;
 
 import org.apache.shiro.web.servlet.AdviceFilter;
-import org.seedstack.seed.SeedException;
+import org.seedstack.shed.exception.SeedException;
 import org.seedstack.seed.web.spi.AntiXsrfService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

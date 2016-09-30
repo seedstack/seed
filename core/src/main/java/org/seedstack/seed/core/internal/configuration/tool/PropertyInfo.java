@@ -13,44 +13,62 @@ class PropertyInfo {
     private String shortDescription;
     private String longDescription;
     private boolean singleValue;
+    private boolean mandatory;
+    private Object defaultValue;
 
-    public String getName() {
+    String getName() {
         return name;
     }
 
-    public void setName(String name) {
+    void setName(String name) {
         this.name = name;
     }
 
-    public String getType() {
+    String getType() {
         return type;
     }
 
-    public void setType(String type) {
+    void setType(String type) {
         this.type = type;
     }
 
-    public String getShortDescription() {
+    String getShortDescription() {
         return shortDescription;
     }
 
-    public void setShortDescription(String shortDescription) {
+    void setShortDescription(String shortDescription) {
         this.shortDescription = shortDescription;
     }
 
-    public String getLongDescription() {
+    String getLongDescription() {
         return longDescription;
     }
 
-    public void setLongDescription(String longDescription) {
+    void setLongDescription(String longDescription) {
         this.longDescription = longDescription;
     }
 
-    public boolean isSingleValue() {
+    boolean isSingleValue() {
         return singleValue;
     }
 
-    public void setSingleValue(boolean singleValue) {
+    void setSingleValue(boolean singleValue) {
         this.singleValue = singleValue;
+    }
+
+    boolean isMandatory() {
+        return mandatory;
+    }
+
+    void setMandatory(boolean mandatory) {
+        this.mandatory = mandatory;
+    }
+
+    Object getDefaultValue() {
+        return defaultValue;
+    }
+
+    void setDefaultValue(Object defaultValue) {
+        this.defaultValue = defaultValue;
     }
 }

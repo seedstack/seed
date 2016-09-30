@@ -7,7 +7,7 @@
  */
 package org.seedstack.seed.core.internal.crypto;
 
-import org.seedstack.seed.SeedException;
+import org.seedstack.shed.exception.SeedException;
 
 import javax.net.ssl.KeyManager;
 import javax.net.ssl.KeyManagerFactory;
