@@ -26,14 +26,14 @@
             <version>${nuun-kernel.version}</version>
         </dependency>
         <dependency>
+            <groupId>org.seedstack.shed</groupId>
+            <artifactId>shed</artifactId>
+            <version>${shed.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.seedstack.coffig</groupId>
             <artifactId>coffig</artifactId>
             <version>${coffig.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>javax.annotation</groupId>
-            <artifactId>javax.annotation-api</artifactId>
-            <version>1.2</version>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
@@ -41,40 +41,28 @@
             <version>${slf4j.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.seedstack.shed</groupId>
-            <artifactId>shed</artifactId>
-            <version>${shed.version}</version>
+            <groupId>javax.annotation</groupId>
+            <artifactId>javax.annotation-api</artifactId>
+            <version>${javax.annotation.version}</version>
         </dependency>
+        <dependency>
+            <groupId>aopalliance</groupId>
+            <artifactId>aopalliance</artifactId>
+            <version>${aopalliance.version}</version>
+        </dependency>
+
+        <!-- Provided dependencies -->
         <dependency>
             <groupId>javax.validation</groupId>
             <artifactId>validation-api</artifactId>
-            <version>1.1.0.Final</version>
+            <version>${javax.validation.version}</version>
             <scope>provided</scope>
         </dependency>
-
         <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>${junit.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.assertj</groupId>
-            <artifactId>assertj-core</artifactId>
-            <version>${assertj.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-classic</artifactId>
-            <version>${logback.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>io.nuun</groupId>
-            <artifactId>kernel-core</artifactId>
-            <version>${nuun-kernel.version}</version>
-            <scope>test</scope>
+            <groupId>javax.el</groupId>
+            <artifactId>javax.el-api</artifactId>
+            <version>${javax.el.version}</version>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 </project>

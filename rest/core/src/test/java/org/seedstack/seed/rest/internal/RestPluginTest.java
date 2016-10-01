@@ -20,7 +20,6 @@ import mockit.Expectations;
 import mockit.Mocked;
 import mockit.NonStrictExpectations;
 import mockit.integration.junit4.JMockit;
-import org.javatuples.Pair;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.kametic.specifications.Specification;
@@ -133,7 +132,7 @@ public class RestPluginTest {
     private void givenSpecifications(Pair<Specification<Class<?>>, Class<?>>... specEntries) {
         final Map<Specification, Collection<Class<?>>> specsMap = new HashMap<>();
         for (Pair<Specification<Class<?>>, Class<?>> specEntry : specEntries) {
-            specsMap.put(specEntry.getValue0(), Lists.<Class<?>>newArrayList(specEntry.getValue1()));
+            specsMap.put(specEntry.getValue0(), Lists.newArrayList(specEntry.getValue1()));
         }
         new NonStrictExpectations() {{
             initContext.scannedTypesBySpecification();
@@ -152,5 +151,23 @@ public class RestPluginTest {
                 result = Coffig.builder().build();
             }
         };
+    }
+
+    public class Pair<T1, T2> {
+        private final T1 t1;
+        private final T2 t2;
+
+        public Pair(T1 t1, T2 t2) {
+            this.t1 = t1;
+            this.t2 = t2;
+        }
+
+        public T1 getValue0() {
+            return t1;
+        }
+
+        public T2 getValue1() {
+            return t2;
+        }
     }
 }

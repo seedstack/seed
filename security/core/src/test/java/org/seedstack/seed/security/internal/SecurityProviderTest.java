@@ -12,7 +12,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.seedstack.coffig.Coffig;
 import org.seedstack.seed.Application;
-import org.seedstack.seed.el.internal.ELPlugin;
+import org.seedstack.seed.core.internal.el.ELPlugin;
 import org.seedstack.seed.security.Realm;
 import org.seedstack.seed.security.SecurityConfig;
 import org.seedstack.seed.security.internal.realms.ConfigurationRealm;
@@ -62,7 +62,7 @@ public class SecurityProviderTest {
 
         ApplicationProvider applicationProvider = mock(ApplicationProvider.class);
         ELPlugin elPlugin = mock(ELPlugin.class);
-        when(elPlugin.isDisabled()).thenReturn(false);
+        when(elPlugin.isEnabled()).thenReturn(true);
         SecurityConfig securityConfig = mock(SecurityConfig.class);
         when(initContext.dependency(ApplicationProvider.class)).thenReturn(applicationProvider);
         Coffig coffig = mock(Coffig.class);

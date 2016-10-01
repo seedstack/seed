@@ -12,9 +12,8 @@ import io.nuun.kernel.api.plugin.InitState;
 import io.nuun.kernel.api.plugin.context.InitContext;
 import io.nuun.kernel.api.plugin.request.BindingRequest;
 import io.nuun.kernel.api.plugin.request.ClasspathScanRequest;
-import org.seedstack.shed.exception.SeedException;
 import org.seedstack.seed.core.internal.AbstractSeedPlugin;
-import org.seedstack.seed.el.internal.ELPlugin;
+import org.seedstack.seed.core.internal.el.ELPlugin;
 import org.seedstack.seed.security.PrincipalCustomizer;
 import org.seedstack.seed.security.Realm;
 import org.seedstack.seed.security.RoleMapping;
@@ -24,6 +23,7 @@ import org.seedstack.seed.security.SecurityConfig;
 import org.seedstack.seed.security.spi.SecurityScope;
 import org.seedstack.seed.security.spi.data.DataObfuscationHandler;
 import org.seedstack.seed.security.spi.data.DataSecurityHandler;
+import org.seedstack.shed.exception.SeedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,7 +47,7 @@ public class SecurityPlugin extends AbstractSeedPlugin {
     private final Set<SecurityProvider> securityProviders = new HashSet<>();
     private final Set<Class<? extends DataSecurityHandler<?>>> dataSecurityHandlers = new HashSet<>();
     private SecurityConfigurer securityConfigurer;
-    private boolean elDisabled;
+    private boolean elEnabled;
 
     @Override
     public String name() {
@@ -86,10 +86,10 @@ public class SecurityPlugin extends AbstractSeedPlugin {
         configureScopes(scannedClasses.get(Scope.class));
         configureDataSecurityHandlers(scannedClasses.get(DataSecurityHandler.class));
         securityProviders.addAll(initContext.dependencies(SecurityProvider.class));
-        elDisabled = initContext.dependency(ELPlugin.class).isDisabled();
+        elEnabled = initContext.dependency(ELPlugin.class).isEnabled();
         securityConfigurer = new SecurityConfigurer(securityConfig, scannedClasses, principalCustomizerClasses);
 
-        if (elDisabled) {
+        if (!elEnabled) {
             LOGGER.info("No Java EL support, data security is disabled");
         }
 
@@ -143,7 +143,7 @@ public class SecurityPlugin extends AbstractSeedPlugin {
                 securityConfigurer,
                 scopeClasses,
                 dataSecurityHandlers,
-                elDisabled,
+                elEnabled,
                 securityProviders
         );
     }

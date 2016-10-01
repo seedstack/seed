@@ -8,3 +8,5 @@ org.seedstack.seed.core.internal.lifecycle.LifecyclePlugin
 org.seedstack.seed.core.internal.validation.ValidationPlugin
 org.seedstack.seed.core.internal.crypto.CryptoPlugin
 org.seedstack.seed.core.internal.cli.CliPlugin
+org.seedstack.seed.core.internal.el.ELPlugin
+org.seedstack.seed.core.internal.transaction.TransactionPlugin

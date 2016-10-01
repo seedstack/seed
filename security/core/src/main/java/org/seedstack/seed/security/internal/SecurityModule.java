@@ -16,11 +16,11 @@ import com.google.inject.spi.Element;
 import com.google.inject.spi.Elements;
 import com.google.inject.spi.PrivateElements;
 import org.apache.shiro.mgt.SecurityManager;
-import org.seedstack.shed.exception.SeedException;
 import org.seedstack.seed.security.Scope;
 import org.seedstack.seed.security.internal.data.DataSecurityModule;
 import org.seedstack.seed.security.internal.securityexpr.SecurityExpressionModule;
 import org.seedstack.seed.security.spi.data.DataSecurityHandler;
+import org.seedstack.shed.exception.SeedException;
 
 import java.util.Collection;
 import java.util.List;
@@ -32,16 +32,16 @@ class SecurityModule extends AbstractModule {
 
     private final Map<String, Class<? extends Scope>> scopeClasses;
     private final SecurityConfigurer securityConfigurer;
-    private final boolean elDisabled;
+    private final boolean elEnabled;
     private final Collection<Class<? extends DataSecurityHandler<?>>> dataSecurityHandlers;
     private final Collection<SecurityProvider> securityProviders;
 
 
-    SecurityModule(SecurityConfigurer securityConfigurer, Map<String, Class<? extends Scope>> scopeClasses, Collection<Class<? extends DataSecurityHandler<?>>> dataSecurityHandlers, boolean elDisabled, Collection<SecurityProvider> securityProviders) {
+    SecurityModule(SecurityConfigurer securityConfigurer, Map<String, Class<? extends Scope>> scopeClasses, Collection<Class<? extends DataSecurityHandler<?>>> dataSecurityHandlers, boolean elEnabled, Collection<SecurityProvider> securityProviders) {
         this.securityConfigurer = securityConfigurer;
         this.scopeClasses = scopeClasses;
         this.dataSecurityHandlers = dataSecurityHandlers;
-        this.elDisabled = elDisabled;
+        this.elEnabled = elEnabled;
         this.securityProviders = securityProviders;
     }
 
@@ -50,7 +50,7 @@ class SecurityModule extends AbstractModule {
         install(new SecurityInternalModule(securityConfigurer, scopeClasses));
         install(new SecurityAopModule());
 
-        if (!elDisabled) {
+        if (elEnabled) {
             install(new SecurityExpressionModule());
             install(new DataSecurityModule(dataSecurityHandlers));
         }

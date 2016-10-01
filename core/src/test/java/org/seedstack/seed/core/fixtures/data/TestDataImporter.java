@@ -5,11 +5,10 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-package org.seedstack.seed.core.fixtures;
+package org.seedstack.seed.core.fixtures.data;
 
 import org.seedstack.seed.DataImporter;
 import org.seedstack.seed.DataSet;
-import org.seedstack.seed.core.fixtures.data.TestDTO2;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,19 +17,19 @@ import java.util.List;
  * @author pierre.thirouin@ext.mpsa.com
  *         Date: 12/03/14
  */
-@DataSet(group="group2", name="test1")
-public class TestDataImporter3 implements DataImporter<TestDTO2> {
-    private static List<TestDTO2> data = new ArrayList<>();
+@DataSet(group="group1", name="test1")
+public class TestDataImporter implements DataImporter<TestDTO> {
+    private static List<TestDTO> data = new ArrayList<>();
 
-    private List<TestDTO2> stagingArea = new ArrayList<>();
+    private List<TestDTO> stagingArea = new ArrayList<>();
 
     @Override
     public boolean isInitialized() {
-        return false;
+        return true;
     }
 
     @Override
-    public void importData(TestDTO2 data) {
+    public void importData(TestDTO data) {
         stagingArea.add(data);
     }
 
@@ -49,7 +48,7 @@ public class TestDataImporter3 implements DataImporter<TestDTO2> {
         stagingArea.clear();
     }
 
-    public static List<TestDTO2> getData() {
+    public static List<TestDTO> getData() {
         return data;
     }
 }

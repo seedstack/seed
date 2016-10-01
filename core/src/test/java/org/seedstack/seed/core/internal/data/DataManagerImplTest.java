@@ -12,12 +12,12 @@ import com.google.inject.Injector;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.internal.util.reflection.Whitebox;
-import org.seedstack.seed.core.fixtures.TestDTO;
-import org.seedstack.seed.core.fixtures.TestDTO2;
-import org.seedstack.seed.core.fixtures.TestDataExporter;
-import org.seedstack.seed.core.fixtures.TestDataExporter2;
-import org.seedstack.seed.core.fixtures.TestDataImporter;
-import org.seedstack.seed.core.fixtures.TestDataImporter2;
+import org.seedstack.seed.core.fixtures.data.TestDTO;
+import org.seedstack.seed.core.fixtures.data.TestDTO2;
+import org.seedstack.seed.core.fixtures.data.TestDataExporter;
+import org.seedstack.seed.core.fixtures.data.TestDataExporter2;
+import org.seedstack.seed.core.fixtures.data.TestDataImporter;
+import org.seedstack.seed.core.fixtures.data.TestDataImporter2;
 import org.skyscreamer.jsonassert.JSONAssert;
 
 import java.io.ByteArrayInputStream;
