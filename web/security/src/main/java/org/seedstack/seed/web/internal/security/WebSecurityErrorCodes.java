@@ -7,7 +7,7 @@
  */
 package org.seedstack.seed.web.internal.security;
 
-import org.seedstack.seed.ErrorCode;
+import org.seedstack.shed.exception.ErrorCode;
 
 enum WebSecurityErrorCodes implements ErrorCode {
     UNABLE_TO_APPLY_XSRF_PROTECTION,

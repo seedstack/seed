@@ -14,7 +14,7 @@ import com.codahale.metrics.Metric;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
 import com.google.inject.MembersInjector;
-import org.seedstack.seed.SeedException;
+import org.seedstack.shed.exception.SeedException;
 
 import java.lang.reflect.Field;
 

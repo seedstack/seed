@@ -7,20 +7,27 @@
  */
 package org.seedstack.seed.spi;
 
+import org.seedstack.seed.cli.CliContext;
+
 /**
  * Describes a tool execution context.
  *
  * @author adrien.lauer@mpsa.com
  */
-public class ToolContext {
-
+public class ToolContext implements CliContext {
+    private final String toolName;
     private final String[] args;
 
-    public ToolContext(String[] args) {
+    public ToolContext(String toolName, String[] args) {
+        this.toolName = toolName;
         this.args = args;
     }
 
     public String[] getArgs() {
         return args;
+    }
+
+    public String getToolName() {
+        return toolName;
     }
 }

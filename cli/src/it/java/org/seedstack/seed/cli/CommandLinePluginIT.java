@@ -8,6 +8,7 @@
 package org.seedstack.seed.cli;
 
 import org.junit.Test;
+import org.seedstack.seed.cli.internal.CliLauncher;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

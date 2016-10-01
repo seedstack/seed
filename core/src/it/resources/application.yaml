@@ -6,13 +6,14 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 #
 
-basePackages: some.other.pkg
 logs: WARN
+application:
+  id: seed-it
+  basePackages: some.other.pkg
 jndi:
   additionalContexts:
     test1: /jndi-test1.properties
     test2: /jndi-test2.properties
-application: seed-it
 secret1: "**I am ${person${index1}}**"
 person1: Alice
 index1: 1

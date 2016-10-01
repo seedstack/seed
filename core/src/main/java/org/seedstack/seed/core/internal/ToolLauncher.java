@@ -10,8 +10,9 @@ package org.seedstack.seed.core.internal;
 import com.google.common.collect.Lists;
 import io.nuun.kernel.api.Kernel;
 import io.nuun.kernel.api.Plugin;
+import io.nuun.kernel.api.config.KernelConfiguration;
 import io.nuun.kernel.core.NuunCore;
-import org.seedstack.seed.SeedException;
+import org.seedstack.shed.exception.SeedException;
 import org.seedstack.seed.core.Seed;
 import org.seedstack.seed.spi.SeedLauncher;
 import org.seedstack.seed.spi.SeedTool;
@@ -21,14 +22,15 @@ import java.util.ServiceLoader;
 
 public class ToolLauncher implements SeedLauncher {
     private final String toolName;
+    private Kernel kernel;
 
     public ToolLauncher(String toolName) {
         this.toolName = toolName;
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public void launch(String[] args) throws Exception {
+        // no logs wanted for tools
         Seed.disableLogs();
 
         SeedTool seedTool = null;
@@ -44,15 +46,24 @@ public class ToolLauncher implements SeedLauncher {
         if (seedTool == null) {
             throw SeedException.createNew(CoreErrorCode.TOOL_NOT_FOUND).put("toolName", toolName);
         } else if (seedTool instanceof AbstractSeedTool) {
-            Kernel kernel = Seed.createKernel(new ToolContext(args), NuunCore.newKernelConfiguration().addPlugin((Class<? extends Plugin>) seedTool.getClass()), false);
+            kernel = Seed.createKernel(new ToolContext(toolName, args), buildKernelConfiguration(seedTool), true);
             System.exit(((SeedTool) kernel.plugins().get(((AbstractSeedTool) seedTool).name())).call());
         } else {
             throw SeedException.createNew(CoreErrorCode.INVALID_TOOL).put("toolName", toolName).put("toolClass", seedTool.getClass());
         }
     }
 
+    @SuppressWarnings("unchecked")
+    private KernelConfiguration buildKernelConfiguration(SeedTool seedTool) {
+        KernelConfiguration kernelConfiguration = NuunCore.newKernelConfiguration()
+                .withoutSpiPluginsLoader()
+                .addPlugin((Class<? extends Plugin>) seedTool.getClass());
+        seedTool.pluginsToLoad().forEach(pluginClass -> kernelConfiguration.addPlugin((Class<? extends Plugin>) pluginClass));
+        return kernelConfiguration;
+    }
+
     @Override
     public void shutdown() throws Exception {
-        // nothing to do here
+        Seed.disposeKernel(kernel);
     }
 }

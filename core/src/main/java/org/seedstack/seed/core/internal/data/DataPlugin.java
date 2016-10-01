@@ -17,7 +17,7 @@ import org.seedstack.seed.DataExporter;
 import org.seedstack.seed.DataImporter;
 import org.seedstack.seed.DataManager;
 import org.seedstack.seed.DataSet;
-import org.seedstack.seed.SeedException;
+import org.seedstack.shed.exception.SeedException;
 import org.seedstack.seed.core.internal.AbstractSeedPlugin;
 import org.seedstack.seed.core.utils.SeedReflectionUtils;
 import org.slf4j.Logger;

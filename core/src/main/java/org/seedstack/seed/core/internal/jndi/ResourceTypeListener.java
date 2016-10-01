@@ -11,7 +11,7 @@ import com.google.inject.TypeLiteral;
 import com.google.inject.spi.TypeEncounter;
 import com.google.inject.spi.TypeListener;
 import org.seedstack.seed.FromContext;
-import org.seedstack.seed.SeedException;
+import org.seedstack.shed.exception.SeedException;
 
 import javax.annotation.Resource;
 import javax.naming.Context;

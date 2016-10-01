@@ -19,7 +19,7 @@ import mockit.Verifications;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.reflections.vfs.Vfs;
-import org.seedstack.seed.SeedException;
+import org.seedstack.shed.exception.SeedException;
 
 import java.io.IOException;
 import java.io.InputStream;

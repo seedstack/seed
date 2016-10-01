@@ -16,7 +16,7 @@ import io.nuun.kernel.api.plugin.request.ClasspathScanRequest;
 import io.nuun.kernel.core.AbstractPlugin;
 import org.kametic.specifications.Specification;
 import org.seedstack.coffig.provider.InMemoryProvider;
-import org.seedstack.seed.SeedException;
+import org.seedstack.shed.exception.SeedException;
 import org.seedstack.seed.core.SeedRuntime;
 import org.seedstack.seed.it.ITBind;
 import org.seedstack.seed.it.ITInstall;

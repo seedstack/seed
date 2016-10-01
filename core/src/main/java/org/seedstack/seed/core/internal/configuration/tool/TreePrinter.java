@@ -19,33 +19,59 @@ class TreePrinter {
         this.node = node;
     }
 
-    void print(PrintStream printStream) {
+    void printTree(PrintStream stream) {
         Ansi ansi = Ansi.ansi();
+
+        ansi
+                .a("Configuration options")
+                .newline()
+                .a("---------------------")
+                .newline();
+
         printTree(node, "", ansi);
-        printStream.println(ansi.toString());
+
+        ansi
+                .newline()
+                .a("(*) mandatory property")
+                .newline()
+                .a("(~) default property")
+                .newline();
+
+        stream.print(ansi.toString());
     }
 
     private void printTree(Node node, String leftPadding, Ansi ansi) {
-        if (!node.getName().isEmpty()) {
+        if (!node.isRootNode()) {
             ansi
                     .a(leftPadding)
                     .fg(Ansi.Color.YELLOW).a(node.getName()).reset()
                     .newline();
-        }
 
-        for (PropertyInfo propertyInfo : node.getPropertyInfo()) {
-            ansi
-                    .a(leftPadding).a(leftPadding)
-                    .fgBright(Ansi.Color.CYAN).a(propertyInfo.isSingleValue() ? "+" : "").a(propertyInfo.getName()).reset()
-                    .a("(")
-                    .fgBright(Ansi.Color.MAGENTA).a(propertyInfo.getType()).reset()
-                    .a(")")
-                    .a(propertyInfo.getShortDescription())
-                    .newline();
+            for (PropertyInfo propertyInfo : node.getPropertyInfo()) {
+                printProperty(propertyInfo, leftPadding, ansi);
+            }
         }
 
         for (Node child : node.getChildren()) {
-            printTree(child, leftPadding + INDENTATION, ansi);
+            printTree(child, leftPadding + (node.isRootNode() ? "" : INDENTATION), ansi);
         }
+    }
+
+    private void printProperty(PropertyInfo propertyInfo, String leftPadding, Ansi ansi) {
+        ansi
+                .a(leftPadding)
+                .a(INDENTATION)
+                .fgBright(Ansi.Color.BLUE)
+                .a(propertyInfo.isSingleValue() ? "~" : "")
+                .a(propertyInfo.isMandatory() ? "*" : "")
+                .a(propertyInfo.getName())
+                .reset()
+                .a(":")
+                .fgBright(Ansi.Color.MAGENTA)
+                .a(propertyInfo.getType())
+                .reset()
+                .a(" ")
+                .a(propertyInfo.getShortDescription())
+                .newline();
     }
 }

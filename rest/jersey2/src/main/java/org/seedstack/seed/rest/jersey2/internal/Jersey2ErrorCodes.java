@@ -7,7 +7,7 @@
  */
 package org.seedstack.seed.rest.jersey2.internal;
 
-import org.seedstack.seed.ErrorCode;
+import org.seedstack.shed.exception.ErrorCode;
 
 /**
  * @author pierre.thirouin@ext.mpsa.com (Pierre Thirouin)

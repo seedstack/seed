@@ -9,7 +9,7 @@ package org.seedstack.seed.core.internal.init;
 
 import com.google.common.collect.Maps;
 import org.seedstack.seed.DiagnosticManager;
-import org.seedstack.seed.SeedException;
+import org.seedstack.shed.exception.SeedException;
 import org.seedstack.seed.core.internal.CoreErrorCode;
 import org.seedstack.seed.core.utils.SeedLoggingUtils;
 import org.seedstack.seed.spi.diagnostic.DiagnosticInfoCollector;

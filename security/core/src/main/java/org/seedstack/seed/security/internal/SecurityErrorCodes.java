@@ -7,7 +7,7 @@
  */
 package org.seedstack.seed.security.internal;
 
-import org.seedstack.seed.ErrorCode;
+import org.seedstack.shed.exception.ErrorCode;
 
 /**
  * @author epo.jemba@ext.mpsa.com

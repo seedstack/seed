@@ -14,7 +14,7 @@ import java.lang.annotation.Target;
 
 
 /**
- * This annotation marks a {@link CommandLineHandler} as a CLI command.
+ * This annotation marks a class as a CLI command.
  *
  * @author adrien.lauer@mpsa.com
  */

@@ -21,7 +21,7 @@ import org.junit.Test;
 import org.seedstack.seed.core.internal.metrics.MetricsProvider;
 import org.seedstack.seed.core.utils.DependencyProxy;
 import org.seedstack.seed.core.utils.ProxyMethodReplacer;
-import org.seedstack.seed.spi.dependency.Maybe;
+import org.seedstack.shed.reflect.Maybe;
 
 import javax.inject.Inject;
 

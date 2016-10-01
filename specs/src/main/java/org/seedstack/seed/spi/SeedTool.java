@@ -7,8 +7,11 @@
  */
 package org.seedstack.seed.spi;
 
+import java.util.Collection;
 import java.util.concurrent.Callable;
 
 public interface SeedTool extends Callable<Integer> {
     String toolName();
+
+    Collection<Class<?>> pluginsToLoad();
 }

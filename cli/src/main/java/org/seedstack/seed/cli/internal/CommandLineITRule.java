@@ -13,8 +13,7 @@ import io.nuun.kernel.api.config.KernelConfiguration;
 import org.junit.rules.MethodRule;
 import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.Statement;
-import org.seedstack.seed.SeedException;
-import org.seedstack.seed.cli.CliLauncher;
+import org.seedstack.shed.exception.SeedException;
 import org.seedstack.seed.cli.WithCommandLine;
 import org.seedstack.seed.it.ITBind;
 import org.seedstack.seed.it.spi.KernelRule;
@@ -43,7 +42,7 @@ public class CommandLineITRule implements MethodRule, KernelRule {
 
                 if (annotation != null) {
                     String[] args = annotation.args();
-                    int returnCode = CliLauncher.execute(args, new CommandLineITCallable(target, statement, annotation.command(), args), kernelConfiguration);
+                    int returnCode = CliLauncher.execute(args, new CommandLineITCallable(target, statement, annotation.command()), kernelConfiguration);
                     assertThat(returnCode).as("Exit code returned by SeedRunner").isEqualTo(annotation.expectedExitCode());
                 }
 
@@ -68,8 +67,8 @@ public class CommandLineITRule implements MethodRule, KernelRule {
         @Inject
         private Injector injector;
 
-        private CommandLineITCallable(Object target, Statement statement, String command, String[] args) {
-            super(command, args);
+        private CommandLineITCallable(Object target, Statement statement, String command) {
+            super(command);
             this.target = target;
             this.statement = statement;
         }

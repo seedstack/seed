@@ -12,8 +12,8 @@ import com.google.common.collect.Lists;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.reflections.ReflectionUtils;
-import org.seedstack.seed.SeedException;
-import org.seedstack.seed.spi.dependency.Maybe;
+import org.seedstack.shed.exception.SeedException;
+import org.seedstack.shed.reflect.Maybe;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
@@ -148,19 +148,19 @@ public final class SeedReflectionUtils {
     }
 
     /**
-     * Check if the class clazz has the annotation annotationClass up in the hierarchy.
+     * Check if the element is annotated or meta-annotated with the annotationClass.
      *
-     * @param clazz           The class to search from.
-     * @param annotationClass The annotation class to search.
+     * @param annotatedElement The class to search from.
+     * @param annotationClass  The annotation class to search.
      * @return true if annotation is present, false otherwise.
      */
-    public static boolean hasAnnotationDeep(Class<?> clazz, Class<? extends Annotation> annotationClass) {
+    public static boolean hasAnnotationDeep(AnnotatedElement annotatedElement, Class<? extends Annotation> annotationClass) {
 
-        if (clazz.equals(annotationClass)) {
+        if (annotatedElement.equals(annotationClass)) {
             return true;
         }
 
-        for (Annotation anno : clazz.getAnnotations()) {
+        for (Annotation anno : annotatedElement.getAnnotations()) {
             Class<? extends Annotation> annoClass = anno.annotationType();
             if (!annoClass.getPackage().getName().startsWith(JAVA_LANG) && hasAnnotationDeep(annoClass, annotationClass)) {
                 return true;

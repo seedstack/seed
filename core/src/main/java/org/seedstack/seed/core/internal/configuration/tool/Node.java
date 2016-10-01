@@ -10,14 +10,18 @@ package org.seedstack.seed.core.internal.configuration.tool;
 import org.seedstack.coffig.Config;
 import org.seedstack.coffig.SingleValue;
 import org.seedstack.coffig.util.Utils;
+import org.seedstack.seed.core.utils.SeedReflectionUtils;
 
+import javax.validation.constraints.NotNull;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 import java.util.SortedMap;
@@ -25,11 +29,19 @@ import java.util.TreeMap;
 
 class Node implements Comparable<Node> {
     private final String name;
+    private final Class<?> configClass;
+    private final Class<?> outermostClass;
+    private final String[] path;
+    private final Map<String, PropertyInfo> propertyInfo;
     private final SortedMap<String, Node> children = new TreeMap<>();
-    private Class<?> configClass;
-    private Class<?> outermostClass;
-    private String[] path;
-    private PropertyInfo[] propertyInfo;
+
+    Node() {
+        this.name = "";
+        this.configClass = null;
+        this.outermostClass = null;
+        this.path = null;
+        this.propertyInfo = new HashMap<>();
+    }
 
     Node(Class<?> configClass) {
         this.configClass = configClass;
@@ -51,8 +63,7 @@ class Node implements Comparable<Node> {
         this.outermostClass = previousClass;
         this.path = path.toArray(new String[path.size()]);
         this.name = this.path[this.path.length - 1];
-        List<PropertyInfo> propertyInfo = buildPropertyInfo();
-        this.propertyInfo = propertyInfo.toArray(new PropertyInfo[propertyInfo.size()]);
+        this.propertyInfo = buildPropertyInfo();
     }
 
     String getName() {
@@ -75,12 +86,32 @@ class Node implements Comparable<Node> {
         return Collections.unmodifiableCollection(children.values());
     }
 
-    public PropertyInfo[] getPropertyInfo() {
-        return propertyInfo;
+    Collection<PropertyInfo> getPropertyInfo() {
+        return propertyInfo.values();
+    }
+
+    PropertyInfo getPropertyInfo(String name) {
+        return propertyInfo.get(name);
+    }
+
+    boolean isRootNode() {
+        return configClass == null;
     }
 
     public String toString() {
         return String.join(".", (CharSequence[]) path);
+    }
+
+    Node find(String... path) {
+        if (path.length == 0) {
+            return this;
+        }
+        for (Node node : children.values()) {
+            if (path[0].equals(node.name)) {
+                return node.find(Arrays.copyOfRange(path, 1, path.length));
+            }
+        }
+        return null;
     }
 
     @Override
@@ -109,12 +140,20 @@ class Node implements Comparable<Node> {
         return 0;
     }
 
-    private List<PropertyInfo> buildPropertyInfo() {
-        List<PropertyInfo> result = new ArrayList<>();
+    private Map<String, PropertyInfo> buildPropertyInfo() {
+        Map<String, PropertyInfo> result = new HashMap<>();
+
         ResourceBundle bundle = null;
         try {
             bundle = ResourceBundle.getBundle(outermostClass.getName());
         } catch (MissingResourceException e) {
+            // ignore
+        }
+
+        Object defaultInstance = null;
+        try {
+            defaultInstance = Utils.instantiateDefault(configClass);
+        } catch (Exception e) {
             // ignore
         }
 
@@ -125,6 +164,7 @@ class Node implements Comparable<Node> {
             if (field.getType().isAnnotationPresent(Config.class)) {
                 continue;
             }
+
             PropertyInfo propertyInfo = new PropertyInfo();
             Config configAnnotation = field.getAnnotation(Config.class);
             String name;
@@ -133,14 +173,23 @@ class Node implements Comparable<Node> {
             } else {
                 name = field.getName();
             }
+            field.setAccessible(true);
 
             propertyInfo.setName(name);
-            propertyInfo.setShortDescription(" " + getMessage(bundle, "", buildKey(name)));
-            propertyInfo.setLongDescription(getMessage(bundle, propertyInfo.getShortDescription(), buildKey(name, "long")));
+            propertyInfo.setShortDescription(getMessage(bundle, "No description.", buildKey(name)));
+            propertyInfo.setLongDescription(getMessage(bundle, null, buildKey(name, "long")));
             propertyInfo.setType(Utils.getSimpleTypeName(field.getGenericType()));
             propertyInfo.setSingleValue(field.isAnnotationPresent(SingleValue.class));
+            if (defaultInstance != null) {
+                try {
+                    propertyInfo.setDefaultValue(field.get(defaultInstance));
+                } catch (IllegalAccessException e) {
+                    // ignore
+                }
+            }
+            propertyInfo.setMandatory(propertyInfo.getDefaultValue() == null && SeedReflectionUtils.hasAnnotationDeep(field, NotNull.class));
 
-            result.add(propertyInfo);
+            result.put(name, propertyInfo);
         }
 
         return result;

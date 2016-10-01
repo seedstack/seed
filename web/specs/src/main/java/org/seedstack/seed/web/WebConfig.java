@@ -62,7 +62,7 @@ public class WebConfig {
 
     @Config("static")
     public static class StaticResourcesConfig {
-        private static final int DEFAULT_BUFFER_SIZE = 65536;
+        private static final int DEFAULT_BUFFER_SIZE = 65535;
 
         @SingleValue
         private boolean enabled = true;

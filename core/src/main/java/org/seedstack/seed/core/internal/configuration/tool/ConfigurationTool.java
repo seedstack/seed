@@ -11,16 +11,21 @@ import io.nuun.kernel.api.plugin.InitState;
 import io.nuun.kernel.api.plugin.context.InitContext;
 import io.nuun.kernel.api.plugin.request.ClasspathScanRequest;
 import org.seedstack.coffig.Config;
-import org.seedstack.seed.CoreConfig;
+import org.seedstack.seed.cli.CliArgs;
 import org.seedstack.seed.core.internal.AbstractSeedTool;
+import org.seedstack.seed.core.internal.configuration.ConfigErrorCode;
+import org.seedstack.shed.exception.SeedException;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
 public class ConfigurationTool extends AbstractSeedTool {
-    private final Node root = new Node(CoreConfig.class);
+    private final Node root = new Node();
+    @CliArgs
+    private String[] args;
 
     @Override
     public String toolName() {
@@ -45,8 +50,31 @@ public class ConfigurationTool extends AbstractSeedTool {
 
     @Override
     public Integer call() throws Exception {
-        new TreePrinter(root).print(System.out);
+        if (args != null && args.length > 0) {
+            String[] path = String.join(".", (CharSequence[]) args).split("\\.");
+            Node node = root.find(path);
+            if (node == null) {
+                info(path);
+            } else {
+                new TreePrinter(node).printTree(System.out);
+            }
+        } else {
+            new TreePrinter(root).printTree(System.out);
+        }
         return 0;
+    }
+
+    private void info(String[] path) {
+        Node node = root.find(Arrays.copyOfRange(path, 0, path.length - 1));
+        if (node == null) {
+            throw SeedException.createNew(ConfigErrorCode.INVALID_CONFIG_PATH).put("path", path);
+        } else {
+            PropertyInfo propertyInfo = node.getPropertyInfo(path[path.length - 1]);
+            if (propertyInfo == null) {
+                throw SeedException.createNew(ConfigErrorCode.INVALID_CONFIG_PROPERTY).put("property", path[path.length - 1]);
+            }
+            new DetailPrinter(node).printDetail(System.out, propertyInfo);
+        }
     }
 
     private void buildTree(Node node) {

@@ -9,7 +9,7 @@ package org.seedstack.seed.core;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
-import org.seedstack.seed.SeedException;
+import org.seedstack.shed.exception.SeedException;
 import org.seedstack.seed.core.internal.CoreErrorCode;
 import org.seedstack.seed.core.internal.ToolLauncher;
 import org.seedstack.seed.spi.SeedLauncher;
