@@ -63,7 +63,7 @@ public class ELPlugin extends AbstractSeedPlugin {
                 Class<Annotation> typeParameterClass = (Class<Annotation>) TypeResolver.resolveRawArguments(ELHandler.class, (Class<ELHandler>) elHandlerClass)[0];
                 // transform this type parameters in a map of annotation, ExpressionHandler
                 if (elMap.get(typeParameterClass) != null) {
-                    throw SeedException.createNew(ELErrorCode.EL_ANNOTATION_IS_ALREADY_BIND)
+                    throw SeedException.createNew(ExpressionLanguageErrorCode.EL_ANNOTATION_IS_ALREADY_BIND)
                             .put("annotation", typeParameterClass.getSimpleName())
                             .put("handler", elHandlerClass);
                 }

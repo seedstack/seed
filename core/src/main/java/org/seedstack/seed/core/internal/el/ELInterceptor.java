@@ -84,11 +84,11 @@ class ELInterceptor implements MethodInterceptor {
             el = (String) methodValue.invoke(method.getAnnotation(this.annotationClass));
 
         } catch (NoSuchMethodException e) {
-            throw SeedException.wrap(e, ELErrorCode.NO_METHOD_VALUE_AVAILABLE).put("annotation", this.annotationClass);
+            throw SeedException.wrap(e, ExpressionLanguageErrorCode.NO_METHOD_VALUE_AVAILABLE).put("annotation", this.annotationClass);
         } catch (InvocationTargetException e) {
-            throw SeedException.wrap(e, ELErrorCode.NO_METHOD_VALUE_AVAILABLE).put("annotation", this.annotationClass);
+            throw SeedException.wrap(e, ExpressionLanguageErrorCode.NO_METHOD_VALUE_AVAILABLE).put("annotation", this.annotationClass);
         } catch (IllegalAccessException e) {
-            throw SeedException.wrap(e, ELErrorCode.NO_METHOD_VALUE_AVAILABLE).put("annotation", this.annotationClass);
+            throw SeedException.wrap(e, ExpressionLanguageErrorCode.NO_METHOD_VALUE_AVAILABLE).put("annotation", this.annotationClass);
         }
 
         return el;

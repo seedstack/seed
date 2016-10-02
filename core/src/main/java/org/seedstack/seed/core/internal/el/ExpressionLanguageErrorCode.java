@@ -9,7 +9,7 @@ package org.seedstack.seed.core.internal.el;
 
 import org.seedstack.shed.exception.ErrorCode;
 
-enum ELErrorCode implements ErrorCode {
+enum ExpressionLanguageErrorCode implements ErrorCode {
     NO_METHOD_VALUE_AVAILABLE,
     PROPERTY_NOT_FOUND,
     EL_EXCEPTION,

@@ -118,9 +118,9 @@ class ELServiceInternal implements ELService {
             try {
                 value = valueExpression.getValue(context);
             } catch (PropertyNotFoundException e) {
-                throw SeedException.wrap(e, ELErrorCode.PROPERTY_NOT_FOUND).put("el", el);
+                throw SeedException.wrap(e, ExpressionLanguageErrorCode.PROPERTY_NOT_FOUND).put("el", el);
             } catch (ELException e) {
-                throw SeedException.wrap(e, ELErrorCode.EL_EXCEPTION).put("el", el);
+                throw SeedException.wrap(e, ExpressionLanguageErrorCode.EL_EXCEPTION).put("el", el);
             }
             return value;
         }
@@ -131,9 +131,9 @@ class ELServiceInternal implements ELService {
             try {
                 value = methodExpression.invoke(context, args);
             } catch (PropertyNotFoundException e) {
-                throw SeedException.wrap(e, ELErrorCode.PROPERTY_NOT_FOUND).put("el", el);
+                throw SeedException.wrap(e, ExpressionLanguageErrorCode.PROPERTY_NOT_FOUND).put("el", el);
             } catch (ELException e) {
-                throw SeedException.wrap(e, ELErrorCode.EL_EXCEPTION).put("el", el);
+                throw SeedException.wrap(e, ExpressionLanguageErrorCode.EL_EXCEPTION).put("el", el);
             }
             return value;
         }

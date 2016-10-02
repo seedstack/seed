@@ -42,7 +42,7 @@ class CliTypeListener implements TypeListener {
             if (cliCommand == null) {
                 cliCommand = c.getAnnotation(CliCommand.class);
             } else {
-                throw SeedException.createNew(CliErrorCode.CONFLICTING_COMMAND_ANNOTATIONS).put("className", c.getCanonicalName());
+                throw SeedException.createNew(CliErrorCode.CONFLICTING_COMMAND_ANNOTATIONS).put("class", c.getCanonicalName());
             }
             Arrays.stream(c.getDeclaredFields()).filter(this::isCandidate).forEach(fields::add);
         }

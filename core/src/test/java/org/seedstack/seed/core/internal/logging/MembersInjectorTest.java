@@ -5,11 +5,10 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-package org.seedstack.seed.core.internal;
+package org.seedstack.seed.core.internal.logging;
 
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
-import org.seedstack.seed.core.internal.logging.LoggingMembersInjector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,17 +22,16 @@ import java.util.Set;
  *
  * @author redouane.loulou@ext.mpsa.com
  */
-public class CliMembersInjectorTest {
+public class MembersInjectorTest {
     private Logger log1;
 
-    private final static Logger logger = LoggerFactory.getLogger(CliMembersInjectorTest.class);
-
+    private final static Logger logger = LoggerFactory.getLogger(MembersInjectorTest.class);
 
     @Test
     public void injectMembersTest() throws Exception {
         Set<Field> fields = new HashSet<>();
         fields.add(this.getClass().getDeclaredField("log1"));
-        LoggingMembersInjector<CliMembersInjectorTest> loggingMembersInjector1 = new LoggingMembersInjector<>(fields);
+        LoggingMembersInjector<MembersInjectorTest> loggingMembersInjector1 = new LoggingMembersInjector<>(fields);
         loggingMembersInjector1.injectMembers(this);
 
         Assertions.assertThat(logger).isNotNull();

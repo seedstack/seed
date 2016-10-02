@@ -68,7 +68,11 @@ class CliMembersInjector<T> implements MembersInjector<T> {
 
                 if (value != null) {
                     if (cliOption.valueCount() != -1 && cliOption.valueCount() != value.length) {
-                        throw SeedException.createNew(CliErrorCode.WRONG_NUMBER_OF_OPTION_ARGUMENTS).put("command", commandName);
+                        throw SeedException.createNew(CliErrorCode.WRONG_NUMBER_OF_OPTION_ARGUMENTS)
+                                .put("command", commandName)
+                                .put("option", cliOption.name())
+                                .put("given", value.length)
+                                .put("required", cliOption.valueCount());
                     }
 
                     try {
@@ -83,10 +87,16 @@ class CliMembersInjector<T> implements MembersInjector<T> {
                         } else if (Map.class.isAssignableFrom(fieldType)) {
                             field.set(toInject, buildOptionArgumentMap(cliOption.name(), value));
                         } else {
-                            throw SeedException.createNew(CliErrorCode.UNSUPPORTED_OPTION_FIELD_TYPE).put("command", commandName).put("fieldType", fieldType.getCanonicalName());
+                            throw SeedException.createNew(CliErrorCode.UNSUPPORTED_OPTION_FIELD_TYPE)
+                                    .put("command", commandName)
+                                    .put("option", cliOption.name())
+                                    .put("fieldType", fieldType.getCanonicalName());
                         }
                     } catch (IllegalAccessException e) {
-                        throw SeedException.wrap(e, CliErrorCode.UNABLE_TO_INJECT_OPTION).put("command", commandName).put("option", cliOption.name());
+                        throw SeedException.wrap(e, CliErrorCode.UNABLE_TO_INJECT_OPTION)
+                                .put("command", commandName)
+                                .put("option", cliOption.name())
+                                .put("field", field.getName());
                     }
                 }
             } else {
@@ -94,7 +104,10 @@ class CliMembersInjector<T> implements MembersInjector<T> {
                     field.setAccessible(true);
                     field.set(toInject, commandLine.hasOption(cliOption.name()));
                 } catch (IllegalAccessException e) {
-                    throw SeedException.wrap(e, CliErrorCode.UNABLE_TO_INJECT_OPTION).put("command", commandName).put("option", cliOption.name());
+                    throw SeedException.wrap(e, CliErrorCode.UNABLE_TO_INJECT_OPTION)
+                            .put("command", commandName)
+                            .put("option", cliOption.name())
+                            .put("field", field.getName());
                 }
             }
         }
@@ -106,13 +119,18 @@ class CliMembersInjector<T> implements MembersInjector<T> {
 
         if (argsField != null) {
             if (commandLine.getArgs().length < mandatoryArgsCount) {
-                throw SeedException.createNew(CliErrorCode.MISSING_ARGUMENTS).put("command", commandName).put("required", mandatoryArgsCount).put("given", commandLine.getArgs().length);
+                throw SeedException.createNew(CliErrorCode.MISSING_ARGUMENTS)
+                        .put("command", commandName)
+                        .put("required", mandatoryArgsCount)
+                        .put("given", commandLine.getArgs().length);
             } else {
                 argsField.setAccessible(true);
                 try {
                     argsField.set(object, commandLine.getArgs());
                 } catch (IllegalAccessException e) {
-                    throw SeedException.createNew(CliErrorCode.UNABLE_TO_INJECT_ARGUMENTS).put("command", commandName);
+                    throw SeedException.createNew(CliErrorCode.UNABLE_TO_INJECT_ARGUMENTS)
+                            .put("command", commandName)
+                            .put("field", argsField.getName());
                 }
             }
         }
@@ -139,7 +157,9 @@ class CliMembersInjector<T> implements MembersInjector<T> {
                 optionArgumentsMap.put(optionArguments[i], optionArguments[i + 1]);
             }
         } else {
-            throw SeedException.createNew(CliErrorCode.ODD_NUMBER_OF_OPTION_ARGUMENTS).put("command", commandName).put("option", optionName);
+            throw SeedException.createNew(CliErrorCode.ODD_NUMBER_OF_OPTION_ARGUMENTS)
+                    .put("command", commandName)
+                    .put("option", optionName);
         }
 
         return optionArgumentsMap;

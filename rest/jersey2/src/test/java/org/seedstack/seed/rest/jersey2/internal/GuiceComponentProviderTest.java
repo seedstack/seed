@@ -97,7 +97,6 @@ public class GuiceComponentProviderTest {
             fail();
         } catch (SeedException e) {
             assertThat(e.getErrorCode()).isEqualTo(Jersey2ErrorCodes.MISSING_SERVLET_CONTEXT);
-            assertThat(e.getDescription()).isEqualTo("Jersey was not able to provide the ServletContext.");
         }
     }
 
@@ -116,7 +115,6 @@ public class GuiceComponentProviderTest {
             fail();
         } catch (SeedException e) {
             assertThat(e.getErrorCode()).isEqualTo(Jersey2ErrorCodes.MISSING_INJECTOR);
-            assertThat(e.getDescription()).isEqualTo("The ServletContext doesn't contains the Guice Injector.");
         }
     }
 
