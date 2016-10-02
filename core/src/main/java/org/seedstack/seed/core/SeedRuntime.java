@@ -13,7 +13,7 @@ import org.seedstack.coffig.provider.CompositeProvider;
 import org.seedstack.coffig.provider.InMemoryProvider;
 import org.seedstack.seed.DiagnosticManager;
 import org.seedstack.seed.core.internal.configuration.PrioritizedProvider;
-import org.seedstack.seed.core.internal.init.ConsoleManager;
+import org.seedstack.seed.core.internal.ConsoleManager;
 import org.seedstack.seed.spi.diagnostic.DiagnosticInfoCollector;
 
 import javax.validation.ValidatorFactory;

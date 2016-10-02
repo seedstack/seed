@@ -14,7 +14,7 @@ import org.junit.Test;
 import org.mockito.internal.util.reflection.Whitebox;
 import org.seedstack.coffig.Coffig;
 import org.seedstack.seed.ApplicationConfig;
-import org.seedstack.seed.core.internal.init.DiagnosticManagerImpl;
+import org.seedstack.seed.core.internal.diagnostic.DiagnosticManagerImpl;
 
 import java.util.ArrayList;
 import java.util.Collection;

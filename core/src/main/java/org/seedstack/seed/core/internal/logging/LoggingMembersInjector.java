@@ -5,9 +5,10 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-package org.seedstack.seed.core.internal;
+package org.seedstack.seed.core.internal.logging;
 
 import com.google.inject.MembersInjector;
+import org.seedstack.seed.core.internal.CoreErrorCode;
 import org.seedstack.shed.exception.SeedException;
 import org.slf4j.LoggerFactory;
 

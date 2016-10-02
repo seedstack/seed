@@ -5,13 +5,14 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-package org.seedstack.seed.core.internal.init;
+package org.seedstack.seed.core.internal;
 
 import io.nuun.kernel.api.Kernel;
 import io.nuun.kernel.api.config.KernelConfiguration;
 import io.nuun.kernel.core.NuunCore;
 import io.nuun.kernel.core.internal.scanner.AbstractClasspathScanner;
 import org.reflections.vfs.Vfs;
+import org.seedstack.seed.core.internal.diagnostic.DiagnosticManagerImpl;
 import org.seedstack.seed.core.internal.scan.ClasspathScanHandler;
 import org.seedstack.seed.core.internal.scan.FallbackUrlType;
 import org.slf4j.Logger;

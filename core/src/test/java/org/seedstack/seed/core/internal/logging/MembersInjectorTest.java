@@ -9,6 +9,7 @@ package org.seedstack.seed.core.internal;
 
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
+import org.seedstack.seed.core.internal.logging.LoggingMembersInjector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

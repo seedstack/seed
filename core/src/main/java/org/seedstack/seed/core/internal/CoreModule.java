@@ -10,7 +10,6 @@ package org.seedstack.seed.core.internal;
 import com.google.inject.AbstractModule;
 import com.google.inject.Module;
 import com.google.inject.TypeLiteral;
-import com.google.inject.matcher.Matchers;
 import com.google.inject.util.Types;
 import org.seedstack.seed.core.utils.SeedCheckUtils;
 import org.seedstack.seed.spi.dependency.DependencyProvider;
@@ -33,9 +32,6 @@ class CoreModule extends AbstractModule {
     protected void configure() {
         // Static utils
         requestStaticInjection(SeedCheckUtils.class);
-
-        // Logging
-        bindListener(Matchers.any(), new LoggingTypeListener());
 
         // Install detected modules
         subModules.forEach(this::install);

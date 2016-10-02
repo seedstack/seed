@@ -5,15 +5,15 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-package org.seedstack.seed.core.internal.init;
+package org.seedstack.seed.core.internal.diagnostic;
 
 import com.google.common.collect.Maps;
 import org.seedstack.seed.DiagnosticManager;
-import org.seedstack.shed.exception.SeedException;
 import org.seedstack.seed.core.internal.CoreErrorCode;
 import org.seedstack.seed.core.utils.SeedLoggingUtils;
 import org.seedstack.seed.spi.diagnostic.DiagnosticInfoCollector;
 import org.seedstack.seed.spi.diagnostic.DiagnosticReporter;
+import org.seedstack.shed.exception.SeedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,7 +37,7 @@ import java.util.concurrent.ConcurrentMap;
  * @author adrien.lauer@mpsa.com
  */
 public class DiagnosticManagerImpl implements DiagnosticManager {
-    public static final String REPORTER_SYSTEM_PROPERTY = "org.seedstack.seed.diagnostic.reporter";
+    private static final String REPORTER_SYSTEM_PROPERTY = "diagnostic";
     private static final Logger LOGGER = LoggerFactory.getLogger(DiagnosticManagerImpl.class);
     private static final DateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss.SSS");
 

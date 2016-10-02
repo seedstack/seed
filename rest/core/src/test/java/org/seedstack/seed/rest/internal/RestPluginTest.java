@@ -28,7 +28,7 @@ import org.seedstack.seed.Application;
 import org.seedstack.seed.Ignore;
 import org.seedstack.seed.core.SeedRuntime;
 import org.seedstack.seed.core.internal.configuration.PrioritizedProvider;
-import org.seedstack.seed.core.internal.init.DiagnosticManagerImpl;
+import org.seedstack.seed.core.internal.diagnostic.DiagnosticManagerImpl;
 import org.seedstack.seed.spi.config.ApplicationProvider;
 
 import javax.servlet.ServletContext;
