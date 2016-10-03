@@ -68,10 +68,8 @@ class PBKDF2HashingService implements HashingService {
             PBEKeySpec spec = new PBEKeySpec(password, salt, PBKDF2_ITERATIONS, HASH_BYTE_SIZE * 8);
             SecretKeyFactory skf = SecretKeyFactory.getInstance(PBKDF2_ALGORITHM);
             return skf.generateSecret(spec).getEncoded();
-        } catch (NoSuchAlgorithmException e) {
-            throw SeedException.wrap(e, CryptoErrorCodes.UNEXPECTED_EXCEPTION);
-        } catch (InvalidKeySpecException e) {
-            throw SeedException.wrap(e, CryptoErrorCodes.UNEXPECTED_EXCEPTION);
+        } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
+            throw SeedException.wrap(e, CryptoErrorCode.UNEXPECTED_EXCEPTION);
         }
     }
 

@@ -9,9 +9,10 @@ package org.seedstack.seed.core.internal.transaction;
 
 import org.junit.Test;
 import org.mockito.internal.util.reflection.Whitebox;
-import org.seedstack.shed.exception.SeedException;
+import org.seedstack.seed.transaction.TransactionConfig;
 import org.seedstack.seed.transaction.spi.TransactionManager;
 import org.seedstack.seed.transaction.spi.TransactionMetadata;
+import org.seedstack.shed.exception.SeedException;
 
 import javax.naming.Context;
 import javax.transaction.Status;
@@ -47,11 +48,12 @@ public class JtaTransactionManagerTest extends AbstractTransactionManagerTest {
         transactionManager = new TransactionManagerMock(userTransaction);
 
         Context jndiContext = mock(Context.class);
-        when(jndiContext.lookup(JtaTransactionManager.DEFAULT_USER_TRANSACTION_NAME)).thenReturn(userTransaction);
-        when(jndiContext.lookup(JtaTransactionManager.FALLBACK_TRANSACTION_MANAGER_NAMES[0])).thenReturn(transactionManager);
+        when(jndiContext.lookup("java:comp/UserTransaction")).thenReturn(userTransaction);
+        when(jndiContext.lookup("java:comp/TransactionManager")).thenReturn(transactionManager);
 
         JtaTransactionManager jtaTransactionManager = new JtaTransactionManager();
         Whitebox.setInternalState(jtaTransactionManager, "jndiContext", jndiContext);
+        Whitebox.setInternalState(jtaTransactionManager, "jtaConfig", new TransactionConfig.JtaConfig());
 
         return jtaTransactionManager;
     }

@@ -9,10 +9,11 @@ package org.seedstack.seed.core.internal.transaction;
 
 import org.aopalliance.intercept.MethodInvocation;
 import org.seedstack.seed.Configuration;
-import org.seedstack.shed.exception.SeedException;
 import org.seedstack.seed.transaction.Propagation;
+import org.seedstack.seed.transaction.TransactionConfig;
 import org.seedstack.seed.transaction.spi.TransactionHandler;
 import org.seedstack.seed.transaction.spi.TransactionMetadata;
+import org.seedstack.shed.exception.SeedException;
 
 import javax.inject.Inject;
 import javax.naming.Context;
@@ -29,16 +30,12 @@ import javax.transaction.UserTransaction;
  * @author adrien.lauer@mpsa.com
  */
 public class JtaTransactionManager extends AbstractTransactionManager {
-    public static final String DEFAULT_USER_TRANSACTION_NAME = "java:comp/UserTransaction";
-    public static final String[] FALLBACK_TRANSACTION_MANAGER_NAMES = new String[]{"java:comp/TransactionManager", "java:appserver/TransactionManager", "java:pm/TransactionManager", "java:/TransactionManager"};
-    public static final String DEFAULT_TRANSACTION_SYNCHRONIZATION_REGISTRY_NAME = "java:comp/TransactionSynchronizationRegistry";
+    private static final String[] AUTODETECT_TRANSACTION_MANAGER_NAMES = new String[]{"java:comp/TransactionManager", "java:appserver/TransactionManager", "java:pm/TransactionManager", "java:/TransactionManager"};
 
     @Inject
     private Context jndiContext;
-    @Configuration(value = TransactionPlugin.TRANSACTION_PLUGIN_CONFIGURATION_PREFIX + ".jta.tx-manager-name", mandatory = false)
-    private String transactionManagerName;
-    @Configuration(value = TransactionPlugin.TRANSACTION_PLUGIN_CONFIGURATION_PREFIX + ".jta.user-tx-name", defaultValue = DEFAULT_USER_TRANSACTION_NAME)
-    private String userTransactionName;
+    @Configuration
+    private TransactionConfig.JtaConfig jtaConfig;
     protected UserTransaction userTransaction;
     protected TransactionManager transactionManager;
 
@@ -129,21 +126,21 @@ public class JtaTransactionManager extends AbstractTransactionManager {
             return (TransactionManager) ut;
         }
 
-        if (transactionManagerName != null) {
+        if (jtaConfig.getTxManagerName() != null) {
             try {
-                return (TransactionManager) jndiContext.lookup(transactionManagerName);
+                return (TransactionManager) jndiContext.lookup(jtaConfig.getTxManagerName());
             } catch (NamingException e) {
                 throw SeedException.wrap(e, TransactionErrorCode.UNABLE_TO_FIND_JTA_TRANSACTION_MANAGER);
             }
         }
 
-        for (String jndiName : FALLBACK_TRANSACTION_MANAGER_NAMES) {
+        for (String jndiName : AUTODETECT_TRANSACTION_MANAGER_NAMES) {
             try {
                 TransactionManager tm = (TransactionManager) jndiContext.lookup(jndiName);
-                transactionLogger.log("JTA TransactionManager found at fallback JNDI location [{}]", jndiName);
+                transactionLogger.log("JTA TransactionManager found at JNDI location [{}]", jndiName);
                 return tm;
             } catch (NamingException ex) {
-                transactionLogger.log("No JTA TransactionManager found at fallback JNDI location [{}]", jndiName, ex);
+                transactionLogger.log("No JTA TransactionManager found at JNDI location [{}]", jndiName, ex);
             }
         }
 
@@ -151,7 +148,7 @@ public class JtaTransactionManager extends AbstractTransactionManager {
     }
 
     protected UserTransaction getUserTransaction(TransactionLogger transactionLogger) throws NamingException {
-        String jndiName = DEFAULT_USER_TRANSACTION_NAME;
+        String jndiName = jtaConfig.getUserTxName();
         UserTransaction ut = (UserTransaction) jndiContext.lookup(jndiName);
         transactionLogger.log("JTA UserTransaction found at default JNDI location [{}]", jndiName);
         return ut;

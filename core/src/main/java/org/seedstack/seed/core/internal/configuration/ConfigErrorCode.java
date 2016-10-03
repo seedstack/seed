@@ -10,5 +10,5 @@ package org.seedstack.seed.core.internal.configuration;
 import org.seedstack.shed.exception.ErrorCode;
 
 public enum ConfigErrorCode implements ErrorCode {
-    MISSING_NODE_PATH, INVALID_CONFIG_PATH, INVALID_CONFIG_PROPERTY
+    INVALID_CONFIG_PATH, INVALID_CONFIG_PROPERTY
 }

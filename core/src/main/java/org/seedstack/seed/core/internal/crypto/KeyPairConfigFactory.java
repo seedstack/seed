@@ -38,7 +38,7 @@ class KeyPairConfigFactory {
                 keyPairConfigs.add(keyPairConfig);
             }
         } catch (KeyStoreException e) {
-            throw SeedException.wrap(e, CryptoErrorCodes.UNEXPECTED_EXCEPTION);
+            throw SeedException.wrap(e, CryptoErrorCode.UNEXPECTED_EXCEPTION);
         }
         return keyPairConfigs;
     }
@@ -59,7 +59,7 @@ class KeyPairConfigFactory {
             if (certResource != null) {
                 URL urlResource = SeedReflectionUtils.findMostCompleteClassLoader().getResource(certResource);
                 if (urlResource == null) {
-                    throw SeedException.createNew(CryptoErrorCodes.CERTIFICATE_NOT_FOUND)
+                    throw SeedException.createNew(CryptoErrorCode.CERTIFICATE_NOT_FOUND)
                             .put("certificateName", certificateName).put("certResource", certResource);
                 }
                 return urlResource.getFile();

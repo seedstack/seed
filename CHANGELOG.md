@@ -9,6 +9,9 @@
 * [brk] The `password` configuration lookup has been replaced by the `$decrypt` configuration function.
 * [brk] Jersey 1 implementation of JAX-RS has been removed.
 * [brk] Class `org.seedstack.seed.cli.SeedRunner` was renamed to `org.seedstack.seed.cli.CliLauncher` and its main method has been removed (use `org.seedstack.seed.core.SeedMain` instead).
+* [brk] The `transaction`, `el` and `crypto` modules are merged into `core` module.
+* [brk] The `shell` module is now an add-on.
+* [brk] Even when only one transaction handler is present, it is no longer automatically used (an explicit resource must always be specified for the transaction).
 
 # Version 2.3.1 (2016-09-07)
 

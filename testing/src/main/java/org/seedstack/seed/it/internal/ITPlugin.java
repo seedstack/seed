@@ -140,7 +140,7 @@ public class ITPlugin extends AbstractPlugin {
                 declaredConstructor.setAccessible(true);
                 itModules.add(declaredConstructor.newInstance());
             } catch (Exception e) {
-                throw SeedException.wrap(e, ITErrorCode.UNABLE_TO_INSTANTIATE_IT_MODULE).put("module", klazz.getCanonicalName());
+                throw SeedException.wrap(e, ITErrorCode.UNABLE_TO_INSTANTIATE_IT_MODULE).put("moduleClass", klazz.getCanonicalName());
             }
         }
 

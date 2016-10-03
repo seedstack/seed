@@ -10,39 +10,26 @@
  */
 package org.seedstack.seed.core.internal.crypto;
 
-import org.seedstack.shed.exception.SeedException;
 import org.seedstack.seed.crypto.EncryptionService;
+import org.seedstack.shed.exception.SeedException;
 
 import javax.annotation.Nullable;
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
-import javax.security.cert.X509Certificate;
 import java.security.InvalidKeyException;
 import java.security.Key;
 import java.security.NoSuchAlgorithmException;
 import java.security.PublicKey;
 
-/**
- * Asymmetric crypting. It's used to encrypt and decrypt a data. Encrypt uses a {@link X509Certificate}.
- * Decrypt uses the private key stored in a KeyStore.
- *
- * @author thierry.bouvet@mpsa.com
- */
 class EncryptionServiceImpl implements EncryptionService {
-
+    private static final String CIPHER = "RSA/ECB/PKCS1PADDING";
     private final String alias;
     private final PublicKey publicKey;
     private final Key privateKey;
 
-    /**
-     * Constructs an encryption service for a given key pair.
-     *
-     * @param publicKey  the public key used to encrypt
-     * @param privateKey the private key used to decrypt
-     */
-    public EncryptionServiceImpl(String alias, @Nullable PublicKey publicKey, @Nullable Key privateKey) {
+    EncryptionServiceImpl(String alias, @Nullable PublicKey publicKey, @Nullable Key privateKey) {
         this.alias = alias;
         this.publicKey = publicKey;
         this.privateKey = privateKey;
@@ -51,17 +38,17 @@ class EncryptionServiceImpl implements EncryptionService {
     @Override
     public byte[] encrypt(byte[] toCrypt) throws InvalidKeyException {
         if (this.publicKey == null) {
-            throw SeedException.createNew(CryptoErrorCodes.MISSING_PUBLIC_KEY).put("alias", alias);
+            throw SeedException.createNew(CryptoErrorCode.MISSING_PUBLIC_KEY).put("alias", alias);
         }
-        return crypt(toCrypt, publicKey, Cipher.ENCRYPT_MODE);
+        return doEncryptionOrDecryption(toCrypt, publicKey, Cipher.ENCRYPT_MODE);
     }
 
     @Override
     public byte[] decrypt(byte[] toDecrypt) throws InvalidKeyException {
         if (this.privateKey == null) {
-            throw SeedException.createNew(CryptoErrorCodes.MISSING_PRIVATE_KEY).put("alias", alias);
+            throw SeedException.createNew(CryptoErrorCode.MISSING_PRIVATE_KEY).put("alias", alias);
         }
-        return crypt(toDecrypt, privateKey, Cipher.DECRYPT_MODE);
+        return doEncryptionOrDecryption(toDecrypt, privateKey, Cipher.DECRYPT_MODE);
     }
 
     /**
@@ -73,23 +60,19 @@ class EncryptionServiceImpl implements EncryptionService {
      * @return byte[] encrypted or decrypted
      * @throws InvalidKeyException if the given key is inappropriate for initializing this cipher. See {@link Cipher#init(int, java.security.Key)}
      */
-    private byte[] crypt(byte[] crypt, Key key, int mode) throws InvalidKeyException {
+    private byte[] doEncryptionOrDecryption(byte[] crypt, Key key, int mode) throws InvalidKeyException {
         Cipher rsaCipher;
         try {
-            rsaCipher = Cipher.getInstance("RSA/ECB/PKCS1PADDING");
-        } catch (NoSuchAlgorithmException e) {
-            throw SeedException.wrap(e, CryptoErrorCodes.ENABLE_TO_GET_CIPHER);
-        } catch (NoSuchPaddingException e) {
-            throw SeedException.wrap(e, CryptoErrorCodes.ENABLE_TO_GET_CIPHER);
+            rsaCipher = Cipher.getInstance(CIPHER);
+        } catch (NoSuchAlgorithmException | NoSuchPaddingException e) {
+            throw SeedException.wrap(e, CryptoErrorCode.UNABLE_TO_GET_CIPHER)
+                    .put("cipher", CIPHER);
         }
         rsaCipher.init(mode, key);
-
         try {
             return rsaCipher.doFinal(crypt);
-        } catch (IllegalBlockSizeException e) {
-            throw SeedException.wrap(e, CryptoErrorCodes.UNEXPECTED_EXCEPTION);
-        } catch (BadPaddingException e) {
-            throw SeedException.wrap(e, CryptoErrorCodes.UNEXPECTED_EXCEPTION);
+        } catch (IllegalBlockSizeException | BadPaddingException e) {
+            throw SeedException.wrap(e, CryptoErrorCode.UNEXPECTED_EXCEPTION);
         }
     }
 

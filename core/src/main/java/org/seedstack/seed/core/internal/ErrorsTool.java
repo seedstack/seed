@@ -8,6 +8,7 @@
 package org.seedstack.seed.core.internal;
 
 import com.google.common.base.CaseFormat;
+import com.google.common.base.Strings;
 import io.nuun.kernel.api.plugin.InitState;
 import io.nuun.kernel.api.plugin.context.InitContext;
 import io.nuun.kernel.api.plugin.request.ClasspathScanRequest;
@@ -80,7 +81,7 @@ public class ErrorsTool extends AbstractSeedTool {
 
         for (ErrorCode errorCode : errorCodes) {
             String template = getTemplate(errorCode);
-            if (all || !missing && template != null || missing && template == null) {
+            if (all || !missing && !Strings.isNullOrEmpty(template) || missing && Strings.isNullOrEmpty(template)) {
                 subAnsi
                         .a(INDENTATION)
                         .fgBright(Ansi.Color.BLUE)

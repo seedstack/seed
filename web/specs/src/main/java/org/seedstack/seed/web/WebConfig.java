@@ -32,7 +32,7 @@ public class WebConfig {
         return staticResources;
     }
 
-    public CORSConfig CORS() {
+    public CORSConfig cors() {
         return cors;
     }
 

@@ -11,7 +11,8 @@
 <included>
     <appender name="STDOUT-COLOR" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
-            <pattern>%highlight(%-5level) %yellow(%d{ISO8601}) %magenta(%thread) %cyan(%logger{15}) - %msg%n%red(%rEx)</pattern>
+            <pattern>%highlight(%-5level) %yellow(%d{ISO8601}) %magenta(%thread) %cyan(%logger{15}) - %msg%n%red(%rEx)
+            </pattern>
         </encoder>
     </appender>
 
@@ -43,6 +44,10 @@
     <logger name="com.sun.jersey.server.impl.ejb.EJBComponentProviderFactoryInitilizer" level="INFO"/>
     <logger name="com.sun.jersey.server.impl.managedbeans.ManagedBeanComponentProviderFactoryInitilizer" level="INFO"/>
     <logger name="com.sun.xml.internal.bind.v2.runtime.reflect.opt" level="INFO"/>
+
+    <!-- Tomcat loggers should be at least INFO to prevent ClassCircularityError -->
+    <logger name="org.apache.catalina" level="INFO"/>
+    <logger name="org.apache.juli" level="INFO"/>
 
     <!-- Improve performance of JUL through bridge in case of log level change -->
     <contextListener class="ch.qos.logback.classic.jul.LevelChangePropagator">

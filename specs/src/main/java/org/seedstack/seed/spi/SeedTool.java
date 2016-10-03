@@ -7,10 +7,12 @@
  */
 package org.seedstack.seed.spi;
 
+import io.nuun.kernel.api.Plugin;
+
 import java.util.Collection;
 import java.util.concurrent.Callable;
 
-public interface SeedTool extends Callable<Integer> {
+public interface SeedTool extends Callable<Integer>, Plugin {
     String toolName();
 
     Collection<Class<?>> pluginsToLoad();

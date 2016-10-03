@@ -9,8 +9,6 @@ package org.seedstack.seed.core.internal.crypto;
 
 import org.junit.Test;
 import org.seedstack.shed.exception.SeedException;
-import org.seedstack.seed.core.internal.crypto.CryptoErrorCodes;
-import org.seedstack.seed.core.internal.crypto.KeyStoreLoader;
 import org.seedstack.seed.crypto.CryptoConfig;
 
 import static org.junit.Assert.fail;
@@ -27,7 +25,7 @@ public class KeyStoreLoaderTest {
         try {
             new KeyStoreLoader().load("name", new CryptoConfig.KeyStoreConfig().setPath(PATH_TO_KEYSTORE).setPassword(PASSWORD));
         } catch (SeedException se) {
-            if (!se.getErrorCode().equals(CryptoErrorCodes.KEYSTORE_NOT_FOUND)) {
+            if (!se.getErrorCode().equals(CryptoErrorCode.KEYSTORE_NOT_FOUND)) {
                 fail();
             }
         }
@@ -38,7 +36,7 @@ public class KeyStoreLoaderTest {
         try {
             new KeyStoreLoader().load(null, new CryptoConfig.KeyStoreConfig().setPath(PATH_TO_KEYSTORE).setPassword(PASSWORD).setType("type").setProvider("provider"));
         } catch (SeedException se) {
-            if (!se.getErrorCode().equals(CryptoErrorCodes.KEYSTORE_CONFIGURATION_ERROR)) {
+            if (!se.getErrorCode().equals(CryptoErrorCode.KEYSTORE_CONFIGURATION_ERROR)) {
                 fail();
             }
         }
@@ -49,7 +47,7 @@ public class KeyStoreLoaderTest {
         try {
             new KeyStoreLoader().load("name", new CryptoConfig.KeyStoreConfig().setPassword(PASSWORD).setType("type").setProvider("provider"));
         } catch (SeedException se) {
-            if (!se.getErrorCode().equals(CryptoErrorCodes.KEYSTORE_CONFIGURATION_ERROR)) {
+            if (!se.getErrorCode().equals(CryptoErrorCode.KEYSTORE_CONFIGURATION_ERROR)) {
                 fail();
             }
         }
@@ -60,7 +58,7 @@ public class KeyStoreLoaderTest {
         try {
             new KeyStoreLoader().load("name", new CryptoConfig.KeyStoreConfig().setPath(PATH_TO_KEYSTORE).setType("type").setProvider("provider"));
         } catch (SeedException se) {
-            if (!se.getErrorCode().equals(CryptoErrorCodes.KEYSTORE_CONFIGURATION_ERROR)) {
+            if (!se.getErrorCode().equals(CryptoErrorCode.KEYSTORE_CONFIGURATION_ERROR)) {
                 fail();
             }
         }

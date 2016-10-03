@@ -17,25 +17,19 @@ import org.seedstack.seed.transaction.spi.TransactionHandler;
 import org.seedstack.seed.transaction.spi.TransactionManager;
 import org.seedstack.seed.transaction.spi.TransactionMetadata;
 import org.seedstack.seed.transaction.spi.TransactionMetadataResolver;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.Set;
 
 @TransactionConcern
 class TransactionModule extends AbstractModule {
-    private static Logger LOGGER = LoggerFactory.getLogger(TransactionModule.class);
-
     private final TransactionManager transactionManager;
     private final Class<? extends TransactionHandler> defaultTransactionHandlerClass;
     private final Set<Class<? extends TransactionMetadataResolver>> transactionMetadataResolvers;
-    private final Set<Class<? extends TransactionHandler>> registeredTransactionHandlers;
 
-    TransactionModule(TransactionManager transactionManager, Class<? extends TransactionHandler> defaultTransactionHandlerClass, Set<Class<? extends TransactionMetadataResolver>> transactionMetadataResolvers, Set<Class<? extends TransactionHandler>> registeredTransactionHandlers) {
+    TransactionModule(TransactionManager transactionManager, Class<? extends TransactionHandler> defaultTransactionHandlerClass, Set<Class<? extends TransactionMetadataResolver>> transactionMetadataResolvers) {
         this.transactionManager = transactionManager;
         this.defaultTransactionHandlerClass = defaultTransactionHandlerClass;
         this.transactionMetadataResolvers = transactionMetadataResolvers;
-        this.registeredTransactionHandlers = registeredTransactionHandlers;
     }
 
     @Override
@@ -47,20 +41,9 @@ class TransactionModule extends AbstractModule {
             transactionMetadataResolverMultibinder.addBinding().to(transactionMetadataResolver);
         }
 
-        Class<? extends TransactionHandler> resultingDefaultTransactionHandlerClass = null;
         if (defaultTransactionHandlerClass != null) {
-            resultingDefaultTransactionHandlerClass = defaultTransactionHandlerClass;
-            LOGGER.debug("Using explicitly set transaction handler {} as default", resultingDefaultTransactionHandlerClass.getCanonicalName());
-        } else if (this.registeredTransactionHandlers.size() == 1) {
-            resultingDefaultTransactionHandlerClass = this.registeredTransactionHandlers.iterator().next();
-            LOGGER.debug("Using the only available transaction handler {} as default", resultingDefaultTransactionHandlerClass.getCanonicalName());
-        } else {
-            LOGGER.debug("No default transaction handler could be determined, explicit definition of transactions will be required");
-        }
-
-        if (resultingDefaultTransactionHandlerClass != null) {
             bind(new TypeLiteral<Class<? extends TransactionHandler>>() {
-            }).annotatedWith(Names.named("default")).toInstance(resultingDefaultTransactionHandlerClass);
+            }).annotatedWith(Names.named("default")).toInstance(defaultTransactionHandlerClass);
         } else {
             bind(new TypeLiteral<Class<? extends TransactionHandler>>() {
             }).annotatedWith(Names.named("default")).toProvider(Providers.<Class<? extends TransactionHandler>>of(null));

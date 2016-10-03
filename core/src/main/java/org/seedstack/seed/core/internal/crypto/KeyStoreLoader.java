@@ -8,8 +8,8 @@
 package org.seedstack.seed.core.internal.crypto;
 
 import com.google.common.base.Strings;
-import org.seedstack.shed.exception.SeedException;
 import org.seedstack.seed.crypto.CryptoConfig;
+import org.seedstack.shed.exception.SeedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,6 +21,7 @@ import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
+import java.security.UnrecoverableKeyException;
 import java.security.cert.CertificateException;
 
 /**
@@ -34,7 +35,7 @@ class KeyStoreLoader {
     KeyStore load(String name, CryptoConfig.KeyStoreConfig ksConfig) {
         String path = ksConfig.getPath();
         if (Strings.isNullOrEmpty(name) || Strings.isNullOrEmpty(path) || Strings.isNullOrEmpty(ksConfig.getPassword())) {
-            throw SeedException.createNew(CryptoErrorCodes.KEYSTORE_CONFIGURATION_ERROR)
+            throw SeedException.createNew(CryptoErrorCode.KEYSTORE_CONFIGURATION_ERROR)
                     .put("keyName", name)
                     .put("path", path)
                     .put("password", ksConfig.getPassword());
@@ -47,7 +48,7 @@ class KeyStoreLoader {
         try {
             inputStream = new FileInputStream(path);
         } catch (FileNotFoundException e) {
-            throw SeedException.wrap(e, CryptoErrorCodes.KEYSTORE_NOT_FOUND).put("name", name).put("path", path);
+            throw SeedException.wrap(e, CryptoErrorCode.KEYSTORE_NOT_FOUND).put("name", name).put("path", path);
         }
         return inputStream;
     }
@@ -69,22 +70,27 @@ class KeyStoreLoader {
             ks.load(inputStream, ksConfig.getPassword().toCharArray());
 
         } catch (KeyStoreException e) {
-            throw SeedException.wrap(e, CryptoErrorCodes.KEYSTORE_TYPE_UNAVAILABLE)
-                    .put("ksName", name).put("type", type);
+            throw SeedException.wrap(e, CryptoErrorCode.KEYSTORE_TYPE_UNAVAILABLE)
+                    .put("ksName", name)
+                    .put("type", type);
         } catch (NoSuchProviderException e) {
-            throw SeedException.wrap(e, CryptoErrorCodes.NO_KEYSTORE_PROVIDER)
-                    .put("ksName", name).put("provider", provider);
+            throw SeedException.wrap(e, CryptoErrorCode.NO_KEYSTORE_PROVIDER)
+                    .put("ksName", name)
+                    .put("provider", provider);
         } catch (NoSuchAlgorithmException e) {
-            throw SeedException.wrap(e, CryptoErrorCodes.ALGORITHM_CANNOT_BE_FOUND);
+            throw SeedException.wrap(e, CryptoErrorCode.ALGORITHM_CANNOT_BE_FOUND)
+                    .put("ksName", name);
         } catch (CertificateException e) {
-            throw SeedException.wrap(e, CryptoErrorCodes.ENABLE_TO_LOAD_CERTIFICATE);
+            throw SeedException.wrap(e, CryptoErrorCode.UNABLE_TO_LOAD_CERTIFICATE)
+                    .put("ksName", name);
         } catch (IOException e) {
-            throw SeedException.wrap(e, CryptoErrorCodes.INCORRECT_PASSWORD);
+            throw SeedException.wrap(e, e.getCause() instanceof UnrecoverableKeyException ? CryptoErrorCode.INCORRECT_PASSWORD : CryptoErrorCode.UNEXPECTED_EXCEPTION)
+                    .put("ksName", name);
         } finally {
             try {
                 inputStream.close();
             } catch (IOException e) {
-                LOGGER.error(e.getMessage(), e);
+                LOGGER.warn("Unable to close key store input stream", e);
             }
         }
         return ks;

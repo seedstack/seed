@@ -12,6 +12,7 @@ import com.google.common.collect.Lists;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.reflections.ReflectionUtils;
+import org.seedstack.seed.core.internal.CoreErrorCode;
 import org.seedstack.shed.exception.SeedException;
 import org.seedstack.shed.reflect.Maybe;
 
@@ -262,6 +263,11 @@ public final class SeedReflectionUtils {
         // Then fallback to the system class loader
         if (classLoader == null) {
             classLoader = ClassLoader.getSystemClassLoader();
+        }
+
+        // Throws exception if no classloader was found at all
+        if (classLoader == null) {
+            throw SeedException.createNew(CoreErrorCode.UNABLE_TO_FIND_CLASSLOADER);
         }
 
         return classLoader;
@@ -522,7 +528,7 @@ public final class SeedReflectionUtils {
             field.setAccessible(true);
             return field.get(target);
         } catch (Exception e) {
-            throw SeedException.wrap(e, CoreUtilsErrorCode.GET_FIELD_VALUE_FAILED);
+            throw SeedException.wrap(e, CoreUtilsErrorCode.GET_FIELD_VALUE_FAILED).put("field", fieldName).put("class", target.getClass().getName());
         }
     }
 
@@ -539,7 +545,7 @@ public final class SeedReflectionUtils {
             field.setAccessible(true);
             field.set(target, value);
         } catch (Exception e) {
-            throw SeedException.wrap(e, CoreUtilsErrorCode.SET_FIELD_VALUE_FAILED);
+            throw SeedException.wrap(e, CoreUtilsErrorCode.SET_FIELD_VALUE_FAILED).put("field", fieldName).put("class", target.getClass().getName());
         }
     }
 

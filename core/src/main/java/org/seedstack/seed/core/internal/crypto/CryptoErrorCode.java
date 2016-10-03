@@ -14,9 +14,10 @@ import org.seedstack.shed.exception.ErrorCode;
  *
  * @author pierre.thirouin@ext.mpsa.com (Pierre Thirouin)
  */
-public enum CryptoErrorCodes implements ErrorCode {
+public enum CryptoErrorCode implements ErrorCode {
     ALGORITHM_CANNOT_BE_FOUND,
     CERTIFICATE_NOT_FOUND,
+    INCORRECT_PASSWORD,
     INVALID_QUALIFIER_ANNOTATION,
     KEYSTORE_CONFIGURATION_ERROR,
     KEYSTORE_NOT_FOUND,
@@ -24,16 +25,13 @@ public enum CryptoErrorCodes implements ErrorCode {
     MISSING_ALIAS_PASSWORD,
     MISSING_MASTER_KEYSTORE,
     MISSING_MASTER_KEY_PASSWORD,
-    MISSING_PUBLIC_KEY,
     MISSING_PRIVATE_KEY,
+    MISSING_PUBLIC_KEY,
     NO_KEYSTORE_CONFIGURED,
     NO_KEYSTORE_PROVIDER,
-    UNRECOVERABLE_KEY,
-
-    // wrapped exception error codes (don't have message/fix)
-    ENABLE_TO_GET_CIPHER,
-    ENABLE_TO_LOAD_CERTIFICATE,
-    ENABLE_TO_READ_CERTIFICATE,
-    INCORRECT_PASSWORD,
-    UNEXPECTED_EXCEPTION
+    UNABLE_TO_GET_CIPHER,
+    UNABLE_TO_LOAD_CERTIFICATE,
+    UNABLE_TO_READ_CERTIFICATE,
+    UNEXPECTED_EXCEPTION,
+    UNRECOVERABLE_KEY
 }

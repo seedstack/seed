@@ -15,7 +15,7 @@ import io.nuun.kernel.api.plugin.request.ClasspathScanRequest;
 import org.seedstack.seed.core.internal.AbstractSeedPlugin;
 import org.seedstack.seed.core.utils.SeedMatchers;
 import org.seedstack.seed.transaction.Transactional;
-import org.seedstack.seed.transaction.TxConfig;
+import org.seedstack.seed.transaction.TransactionConfig;
 import org.seedstack.seed.transaction.spi.TransactionHandler;
 import org.seedstack.seed.transaction.spi.TransactionManager;
 import org.seedstack.seed.transaction.spi.TransactionMetadataResolver;
@@ -38,13 +38,9 @@ import java.util.Set;
  * @author adrien.lauer@mpsa.com
  */
 public class TransactionPlugin extends AbstractSeedPlugin {
-    public static final String TRANSACTION_PLUGIN_CONFIGURATION_PREFIX = "org.seedstack.seed.transaction";
-    public static final Matcher<Method> TRANSACTIONAL_MATCHER = SeedMatchers.methodOrAncestorMetaAnnotatedWith(Transactional.class).and(SeedMatchers.methodNotSynthetic()).and(SeedMatchers.methodNotOfObject());
+    static final Matcher<Method> TRANSACTIONAL_MATCHER = SeedMatchers.methodOrAncestorMetaAnnotatedWith(Transactional.class).and(SeedMatchers.methodNotSynthetic()).and(SeedMatchers.methodNotOfObject());
     private static final Logger LOGGER = LoggerFactory.getLogger(TransactionPlugin.class);
-
-    private final Set<Class<? extends TransactionHandler>> registeredTransactionHandlers = new HashSet<>();
     private final Set<Class<? extends TransactionMetadataResolver>> transactionMetadataResolvers = new HashSet<>();
-
     private TransactionManager transactionManager;
     private Class<? extends TransactionHandler> defaultTransactionHandlerClass;
 
@@ -54,11 +50,15 @@ public class TransactionPlugin extends AbstractSeedPlugin {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
-    public InitState initialize(InitContext initContext) {
-        TxConfig txConfig = getConfiguration(TxConfig.class);
+    public Collection<ClasspathScanRequest> classpathScanRequests() {
+        return classpathScanRequestBuilder().subtypeOf(TransactionMetadataResolver.class).build();
+    }
 
-        Class<? extends TransactionManager> txManager = txConfig.getManager();
+    @Override
+    public InitState initialize(InitContext initContext) {
+        TransactionConfig transactionConfig = getConfiguration(TransactionConfig.class);
+
+        Class<? extends TransactionManager> txManager = transactionConfig.getManager();
         if (txManager == null) {
             txManager = LocalTransactionManager.class;
         }
@@ -67,26 +67,17 @@ public class TransactionPlugin extends AbstractSeedPlugin {
         } catch (Exception e) {
             throw new PluginException("Unable to instantiate transaction manager from class " + txManager, e);
         }
-        this.defaultTransactionHandlerClass = txConfig.getDefaultHandler();
+        this.defaultTransactionHandlerClass = transactionConfig.getDefaultHandler();
 
-
-        Collection<Class<?>> scannedTransactionMetadataResolverClasses = initContext.scannedSubTypesByParentClass().get(TransactionMetadataResolver.class);
-        if (scannedTransactionMetadataResolverClasses != null) {
-            for (Class<?> candidate : scannedTransactionMetadataResolverClasses) {
-                if (TransactionMetadataResolver.class.isAssignableFrom(candidate)) {
-                    transactionMetadataResolvers.add((Class<? extends TransactionMetadataResolver>) candidate);
+        initContext.scannedSubTypesByParentClass().get(TransactionMetadataResolver.class).stream()
+                .filter(TransactionMetadataResolver.class::isAssignableFrom)
+                .forEach(candidate -> {
+                    transactionMetadataResolvers.add(candidate.asSubclass(TransactionMetadataResolver.class));
                     LOGGER.trace("Detected transaction metadata resolver {}", candidate.getCanonicalName());
-                }
-            }
-        }
+                });
         LOGGER.debug("Detected {} transaction metadata resolver(s)", transactionMetadataResolvers.size());
 
         return InitState.INITIALIZED;
-    }
-
-    @Override
-    public Collection<ClasspathScanRequest> classpathScanRequests() {
-        return classpathScanRequestBuilder().subtypeOf(TransactionMetadataResolver.class).build();
     }
 
     @Override
@@ -94,8 +85,7 @@ public class TransactionPlugin extends AbstractSeedPlugin {
         return new TransactionModule(
                 this.transactionManager,
                 this.defaultTransactionHandlerClass,
-                this.transactionMetadataResolvers,
-                this.registeredTransactionHandlers
+                this.transactionMetadataResolvers
         );
     }
 
@@ -107,15 +97,5 @@ public class TransactionPlugin extends AbstractSeedPlugin {
      */
     public boolean isTransactional(Method method) {
         return TRANSACTIONAL_MATCHER.matches(method);
-    }
-
-    /**
-     * Register a transaction handler. Must be called by supports plugin implementing transactional behavior.
-     *
-     * @param transactionHandler the transaction handler to register.
-     */
-    public void registerTransactionHandler(Class<? extends TransactionHandler> transactionHandler) {
-        LOGGER.trace("Registered transaction handler {}", transactionHandler.getCanonicalName());
-        this.registeredTransactionHandlers.add(transactionHandler);
     }
 }

@@ -21,13 +21,14 @@ import org.seedstack.seed.core.fixtures.transaction.TransactionHandlerTestImpl;
 import org.seedstack.seed.core.fixtures.transaction.TransactionMetadataResolverTestImpl;
 import org.seedstack.seed.spi.config.ApplicationProvider;
 import org.seedstack.seed.transaction.Transactional;
-import org.seedstack.seed.transaction.TxConfig;
+import org.seedstack.seed.transaction.TransactionConfig;
 import org.seedstack.seed.transaction.spi.TransactionHandler;
 import org.seedstack.seed.transaction.spi.TransactionManager;
 import org.seedstack.seed.transaction.spi.TransactionMetadataResolver;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -128,7 +129,7 @@ public class TransactionPluginTest {
         Application application = mock(Application.class);
 
         Coffig coffig = mock(Coffig.class);
-        when(coffig.get(TxConfig.class)).thenReturn(new TxConfig().setManager(transactionManagerClass).setDefaultHandler(transactionHandlerClass));
+        when(coffig.get(TransactionConfig.class)).thenReturn(new TransactionConfig().setManager(transactionManagerClass).setDefaultHandler(transactionHandlerClass));
         when(application.getConfiguration()).thenReturn(coffig);
         when(initContext.dependency(ApplicationProvider.class)).thenReturn(() -> application);
 
@@ -145,9 +146,10 @@ public class TransactionPluginTest {
 
     private InitContext mockInitContext2(Class<? extends TransactionManager> transactionManagerClass, Collection<Class<?>> implementsTransactionHandler) {
         InitContext initContext = mockInitContext(transactionManagerClass, null);
-        Map<Class<?>, Collection<Class<?>>> mapImplementsTransactionHandler = new HashMap<>();
-        mapImplementsTransactionHandler.put(TransactionHandler.class, implementsTransactionHandler);
-        when(initContext.scannedSubTypesByParentClass()).thenReturn(mapImplementsTransactionHandler);
+        Map<Class<?>, Collection<Class<?>>> mapImplements = new HashMap<>();
+        mapImplements.put(TransactionHandler.class, implementsTransactionHandler);
+        mapImplements.put(TransactionMetadataResolver.class, Collections.emptyList());
+        when(initContext.scannedSubTypesByParentClass()).thenReturn(mapImplements);
         return initContext;
     }
 }

@@ -74,7 +74,7 @@ class EncryptionServiceBindingFactory {
         if (classMaybe.isPresent()) {
             Class<?> qualifierClass = classMaybe.get();
             if (!Annotation.class.isAssignableFrom(qualifierClass) || !qualifierClass.isAnnotationPresent(Qualifier.class)) {
-                throw SeedException.createNew(CryptoErrorCodes.INVALID_QUALIFIER_ANNOTATION).put("qualifier", qualifier);
+                throw SeedException.createNew(CryptoErrorCode.INVALID_QUALIFIER_ANNOTATION).put("qualifier", qualifier);
             }
             //noinspection unchecked
             key = Key.get(EncryptionService.class, (Class<? extends Annotation>) qualifierClass);

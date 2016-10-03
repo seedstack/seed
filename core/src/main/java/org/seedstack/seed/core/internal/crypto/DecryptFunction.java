@@ -30,7 +30,7 @@ public class DecryptFunction implements ConfigFunctionHolder {
             KeyStore keyStore = new KeyStoreLoader().load(CryptoPlugin.MASTER_KEYSTORE_NAME, masterKeyStoreConfig);
             CryptoConfig.KeyStoreConfig.AliasConfig aliasConfig = masterKeyStoreConfig.getAliases().get(CryptoPlugin.MASTER_KEY_NAME);
             if (aliasConfig == null || Strings.isNullOrEmpty(aliasConfig.getPassword())) {
-                throw SeedException.createNew(CryptoErrorCodes.MISSING_MASTER_KEY_PASSWORD);
+                throw SeedException.createNew(CryptoErrorCode.MISSING_MASTER_KEY_PASSWORD);
             }
             encryptionService = new EncryptionServiceFactory(cryptoConfig, keyStore).create(CryptoPlugin.MASTER_KEY_NAME, aliasConfig.getPassword().toCharArray());
         } else {
@@ -41,12 +41,12 @@ public class DecryptFunction implements ConfigFunctionHolder {
     @ConfigFunction
     String decrypt(String key) {
         if (encryptionService == null) {
-            throw SeedException.createNew(CryptoErrorCodes.MISSING_MASTER_KEYSTORE).put("keyPassword", "${env.KEY_PASSWD}").put("password", "${env.KS_PASSWD}");
+            throw SeedException.createNew(CryptoErrorCode.MISSING_MASTER_KEYSTORE).put("keyPassword", "${env.KEY_PASSWD}").put("password", "${env.KS_PASSWD}");
         }
         try {
             return new String(encryptionService.decrypt(DatatypeConverter.parseHexBinary(key)));
         } catch (InvalidKeyException e) {
-            throw SeedException.wrap(e, CryptoErrorCodes.UNEXPECTED_EXCEPTION);
+            throw SeedException.wrap(e, CryptoErrorCode.UNEXPECTED_EXCEPTION);
         }
     }
 }

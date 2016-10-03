@@ -36,18 +36,18 @@ class SSLLoader {
         try {
             keyManagerFactory = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
         } catch (NoSuchAlgorithmException e) {
-            throw SeedException.wrap(e, CryptoErrorCodes.ALGORITHM_CANNOT_BE_FOUND);
+            throw SeedException.wrap(e, CryptoErrorCode.ALGORITHM_CANNOT_BE_FOUND);
         }
 
         try {
             keyManagerFactory.init(keyStore, password);
             return keyManagerFactory.getKeyManagers();
         } catch (UnrecoverableKeyException e) {
-            throw SeedException.wrap(e, CryptoErrorCodes.UNRECOVERABLE_KEY);
+            throw SeedException.wrap(e, CryptoErrorCode.UNRECOVERABLE_KEY);
         } catch (NoSuchAlgorithmException e) {
-            throw SeedException.wrap(e, CryptoErrorCodes.ALGORITHM_CANNOT_BE_FOUND);
+            throw SeedException.wrap(e, CryptoErrorCode.ALGORITHM_CANNOT_BE_FOUND);
         } catch (KeyStoreException e) {
-            throw SeedException.wrap(e, CryptoErrorCodes.UNEXPECTED_EXCEPTION);
+            throw SeedException.wrap(e, CryptoErrorCode.UNEXPECTED_EXCEPTION);
         }
     }
 
@@ -62,9 +62,9 @@ class SSLLoader {
             trustManagerFactory.init(trustStore);
             return trustManagerFactory.getTrustManagers();
         } catch (NoSuchAlgorithmException e) {
-            throw SeedException.wrap(e, CryptoErrorCodes.ALGORITHM_CANNOT_BE_FOUND);
+            throw SeedException.wrap(e, CryptoErrorCode.ALGORITHM_CANNOT_BE_FOUND);
         } catch (KeyStoreException e) {
-            throw SeedException.wrap(e, CryptoErrorCodes.UNEXPECTED_EXCEPTION);
+            throw SeedException.wrap(e, CryptoErrorCode.UNEXPECTED_EXCEPTION);
         }
     }
 
@@ -85,9 +85,9 @@ class SSLLoader {
             return sslContext;
 
         } catch (NoSuchAlgorithmException e) {
-            throw SeedException.wrap(e, CryptoErrorCodes.ALGORITHM_CANNOT_BE_FOUND);
+            throw SeedException.wrap(e, CryptoErrorCode.ALGORITHM_CANNOT_BE_FOUND);
         } catch (Exception e) {
-            throw SeedException.wrap(e, CryptoErrorCodes.UNEXPECTED_EXCEPTION);
+            throw SeedException.wrap(e, CryptoErrorCode.UNEXPECTED_EXCEPTION);
         }
     }
 }

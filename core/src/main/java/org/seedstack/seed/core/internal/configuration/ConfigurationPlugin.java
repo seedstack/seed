@@ -19,12 +19,12 @@ import org.seedstack.coffig.spi.ConfigurationProvider;
 import org.seedstack.seed.Application;
 import org.seedstack.seed.ApplicationConfig;
 import org.seedstack.seed.DiagnosticManager;
-import org.seedstack.shed.exception.SeedException;
 import org.seedstack.seed.core.Seed;
 import org.seedstack.seed.core.SeedRuntime;
 import org.seedstack.seed.core.internal.CoreErrorCode;
 import org.seedstack.seed.core.utils.SeedReflectionUtils;
 import org.seedstack.seed.spi.config.ApplicationProvider;
+import org.seedstack.shed.exception.SeedException;
 
 import java.io.IOException;
 import java.net.URL;
@@ -97,10 +97,6 @@ public class ConfigurationPlugin extends AbstractPlugin implements ApplicationPr
         for (String configurationResource : retrieveConfigurationResources(initContext)) {
             try {
                 ClassLoader classLoader = SeedReflectionUtils.findMostCompleteClassLoader();
-                if (classLoader == null) {
-                    throw SeedException.createNew(CoreErrorCode.UNABLE_TO_FIND_CLASSLOADER);
-                }
-
                 Enumeration<URL> urlEnumeration = classLoader.getResources(configurationResource);
                 while (urlEnumeration.hasMoreElements()) {
                     if (isOverrideResource(configurationResource)) {

@@ -114,13 +114,11 @@ class DataSecurityMapper implements Mapper<Void> {
 		try {
 			f.setAccessible(true);
 			o = f.get(instance);
-		} catch (IllegalArgumentException e) {
-			throw SeedException.wrap(e, SecurityErrorCodes.UNEXPECTED_ERROR);
-		} catch (IllegalAccessException e) {
+		} catch (IllegalArgumentException | IllegalAccessException e) {
 			throw SeedException.wrap(e, SecurityErrorCodes.UNEXPECTED_ERROR);
 		}
 
-		return o;
+        return o;
 	}
 
 	private void writeField(Field f, Object instance , Object value) {
@@ -128,12 +126,10 @@ class DataSecurityMapper implements Mapper<Void> {
 		try {
 			f.setAccessible(true);
 			f.set(instance, value);
-		} catch (IllegalArgumentException e) {
-			throw SeedException.wrap(e, SecurityErrorCodes.UNEXPECTED_ERROR);
-		} catch (IllegalAccessException e) {
+		} catch (IllegalArgumentException | IllegalAccessException e) {
 			throw SeedException.wrap(e, SecurityErrorCodes.UNEXPECTED_ERROR);
 		}
-	}
+    }
 	
 	
 	

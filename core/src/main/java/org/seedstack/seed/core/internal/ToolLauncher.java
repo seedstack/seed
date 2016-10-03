@@ -12,11 +12,11 @@ import io.nuun.kernel.api.Kernel;
 import io.nuun.kernel.api.Plugin;
 import io.nuun.kernel.api.config.KernelConfiguration;
 import io.nuun.kernel.core.NuunCore;
-import org.seedstack.shed.exception.SeedException;
 import org.seedstack.seed.core.Seed;
 import org.seedstack.seed.spi.SeedLauncher;
 import org.seedstack.seed.spi.SeedTool;
 import org.seedstack.seed.spi.ToolContext;
+import org.seedstack.shed.exception.SeedException;
 
 import java.util.ServiceLoader;
 
@@ -45,11 +45,9 @@ public class ToolLauncher implements SeedLauncher {
         }
         if (seedTool == null) {
             throw SeedException.createNew(CoreErrorCode.TOOL_NOT_FOUND).put("toolName", toolName);
-        } else if (seedTool instanceof AbstractSeedTool) {
-            kernel = Seed.createKernel(new ToolContext(toolName, args), buildKernelConfiguration(seedTool), true);
-            System.exit(((SeedTool) kernel.plugins().get(((AbstractSeedTool) seedTool).name())).call());
         } else {
-            throw SeedException.createNew(CoreErrorCode.INVALID_TOOL).put("toolName", toolName).put("toolClass", seedTool.getClass());
+            kernel = Seed.createKernel(new ToolContext(toolName, args), buildKernelConfiguration(seedTool), true);
+            System.exit(((SeedTool) kernel.plugins().get(seedTool.name())).call());
         }
     }
 
@@ -57,7 +55,7 @@ public class ToolLauncher implements SeedLauncher {
     private KernelConfiguration buildKernelConfiguration(SeedTool seedTool) {
         KernelConfiguration kernelConfiguration = NuunCore.newKernelConfiguration()
                 .withoutSpiPluginsLoader()
-                .addPlugin((Class<? extends Plugin>) seedTool.getClass());
+                .addPlugin(seedTool.getClass());
         seedTool.pluginsToLoad().forEach(pluginClass -> kernelConfiguration.addPlugin((Class<? extends Plugin>) pluginClass));
         return kernelConfiguration;
     }

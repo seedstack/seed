@@ -13,13 +13,14 @@
  */
 package org.seedstack.seed.core.internal.crypto;
 
-import org.seedstack.shed.exception.SeedException;
 import org.seedstack.seed.core.utils.SeedReflectionUtils;
 import org.seedstack.seed.crypto.CryptoConfig;
 import org.seedstack.seed.crypto.EncryptionService;
+import org.seedstack.shed.exception.SeedException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URL;
 import java.security.Key;
@@ -38,8 +39,8 @@ import java.security.cert.CertificateFactory;
  * @author thierry.bouvet@mpsa.com
  */
 class EncryptionServiceFactory {
+    private static final Logger LOGGER = LoggerFactory.getLogger(EncryptionServiceFactory.class);
     private static final String DEFAULT_CERTIFICATE_TYPE = "X.509";
-
     private final CryptoConfig cryptoConfig;
     private final KeyStore keyStore;
 
@@ -52,7 +53,7 @@ class EncryptionServiceFactory {
     EncryptionServiceFactory(CryptoConfig cryptoConfig, KeyStore keyStore) {
         this.cryptoConfig = cryptoConfig;
         if (keyStore == null) {
-            throw SeedException.createNew(CryptoErrorCodes.NO_KEYSTORE_CONFIGURED);
+            throw SeedException.createNew(CryptoErrorCode.NO_KEYSTORE_CONFIGURED);
         }
         this.keyStore = keyStore;
     }
@@ -75,11 +76,11 @@ class EncryptionServiceFactory {
         try {
             key = this.keyStore.getKey(alias, password);
         } catch (UnrecoverableKeyException e) {
-            throw SeedException.wrap(e, CryptoErrorCodes.UNRECOVERABLE_KEY);
+            throw SeedException.wrap(e, CryptoErrorCode.UNRECOVERABLE_KEY);
         } catch (KeyStoreException e) {
-            throw SeedException.wrap(e, CryptoErrorCodes.UNEXPECTED_EXCEPTION);
+            throw SeedException.wrap(e, CryptoErrorCode.UNEXPECTED_EXCEPTION);
         } catch (NoSuchAlgorithmException e) {
-            throw SeedException.wrap(e, CryptoErrorCodes.ALGORITHM_CANNOT_BE_FOUND);
+            throw SeedException.wrap(e, CryptoErrorCode.ALGORITHM_CANNOT_BE_FOUND);
         }
 
         return new EncryptionServiceImpl(alias, pk, key);
@@ -112,7 +113,7 @@ class EncryptionServiceFactory {
             try {
                 certificate = keyStore.getCertificate(alias);
             } catch (KeyStoreException e) {
-                throw SeedException.createNew(CryptoErrorCodes.NO_KEYSTORE_CONFIGURED);
+                throw SeedException.createNew(CryptoErrorCode.NO_KEYSTORE_CONFIGURED);
             }
         }
 
@@ -132,7 +133,7 @@ class EncryptionServiceFactory {
             if (resource != null) {
                 URL urlResource = SeedReflectionUtils.findMostCompleteClassLoader().getResource(resource);
                 if (urlResource == null) {
-                    throw SeedException.createNew(CryptoErrorCodes.CERTIFICATE_NOT_FOUND)
+                    throw SeedException.createNew(CryptoErrorCode.CERTIFICATE_NOT_FOUND)
                             .put("alias", alias).put("certResource", resource);
                 }
                 return urlResource.getFile();
@@ -148,21 +149,21 @@ class EncryptionServiceFactory {
     private Certificate loadCertificateFromFile(String certLocation) {
         Certificate certificate = null;
         if (certLocation != null) {
-            FileInputStream in;
+            FileInputStream in = null;
             try {
                 in = new FileInputStream(certLocation);
-            } catch (FileNotFoundException e) {
-                throw SeedException.wrap(e, CryptoErrorCodes.ENABLE_TO_READ_CERTIFICATE);
-            }
-            try {
                 certificate = CertificateFactory.getInstance(DEFAULT_CERTIFICATE_TYPE).generateCertificate(in);
             } catch (Exception e) {
-                throw SeedException.wrap(e, CryptoErrorCodes.ENABLE_TO_READ_CERTIFICATE);
-            }
-            try {
-                in.close();
-            } catch (IOException e) {
-                throw SeedException.wrap(e, CryptoErrorCodes.ENABLE_TO_READ_CERTIFICATE);
+                throw SeedException.wrap(e, CryptoErrorCode.UNABLE_TO_READ_CERTIFICATE)
+                        .put("location", certLocation);
+            } finally {
+                try {
+                    if (in != null) {
+                        in.close();
+                    }
+                } catch (IOException e) {
+                    LOGGER.warn("Unable to close certificate input stream", e);
+                }
             }
         }
         return certificate;

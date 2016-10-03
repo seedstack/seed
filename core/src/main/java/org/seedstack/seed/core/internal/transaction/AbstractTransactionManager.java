@@ -15,7 +15,6 @@ import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.reflections.ReflectionUtils;
-import org.seedstack.shed.exception.SeedException;
 import org.seedstack.seed.core.utils.SeedReflectionUtils;
 import org.seedstack.seed.transaction.Transactional;
 import org.seedstack.seed.transaction.spi.ExceptionHandler;
@@ -23,6 +22,7 @@ import org.seedstack.seed.transaction.spi.TransactionHandler;
 import org.seedstack.seed.transaction.spi.TransactionManager;
 import org.seedstack.seed.transaction.spi.TransactionMetadata;
 import org.seedstack.seed.transaction.spi.TransactionMetadataResolver;
+import org.seedstack.shed.exception.SeedException;
 
 import javax.inject.Inject;
 import java.lang.reflect.Method;
@@ -59,7 +59,11 @@ public abstract class AbstractTransactionManager implements TransactionManager {
 
             transactionLogger.log("using {} transaction handler", transactionHandler.getClass().getCanonicalName());
 
-            return doMethodInterception(transactionLogger, invocation, transactionMetadata, transactionHandler);
+            try {
+                return doMethodInterception(transactionLogger, invocation, transactionMetadata, transactionHandler);
+            } catch (SeedException e) {
+                throw e.put("method", invocation.getMethod().toString());
+            }
         }
     }
 

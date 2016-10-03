@@ -166,7 +166,7 @@ public class SeedITRunner extends BlockJUnit4ClassRunner {
                         }
                         testRules.add(testRule);
                     } catch (Exception e) {
-                        throw SeedException.wrap(e, ITErrorCode.FAILED_TO_INSTANTIATE_TEST_RULE).put("class", testRuleClass.getCanonicalName());
+                        throw SeedException.wrap(e, ITErrorCode.FAILED_TO_INSTANTIATE_TEST_RULE).put("ruleClass", testRuleClass.getCanonicalName());
                     }
                 }
             }
@@ -188,7 +188,7 @@ public class SeedITRunner extends BlockJUnit4ClassRunner {
                         }
                         testRules.add(testRule);
                     } catch (Exception e) {
-                        throw SeedException.wrap(e, ITErrorCode.FAILED_TO_INSTANTIATE_TEST_RULE).put("class", testRuleClass.getCanonicalName());
+                        throw SeedException.wrap(e, ITErrorCode.FAILED_TO_INSTANTIATE_TEST_RULE).put("ruleClass", testRuleClass.getCanonicalName());
                     }
                 }
             }
@@ -210,7 +210,7 @@ public class SeedITRunner extends BlockJUnit4ClassRunner {
                         }
                         methodRules.add(methodRule);
                     } catch (Exception e) {
-                        throw SeedException.wrap(e, ITErrorCode.FAILED_TO_INSTANTIATE_TEST_RULE).put("class", methodRuleClass.getCanonicalName());
+                        throw SeedException.wrap(e, ITErrorCode.FAILED_TO_INSTANTIATE_TEST_RULE).put("ruleClass", methodRuleClass.getCanonicalName());
                     }
                 }
             }

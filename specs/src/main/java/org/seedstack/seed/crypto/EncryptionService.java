@@ -15,7 +15,8 @@ import javax.security.cert.X509Certificate;
 import java.security.InvalidKeyException;
 
 /**
- * Support to encrypt and decrypt a String.
+ * Service to do asymmetric encryption and decryption. Encryption uses a {@link X509Certificate}, whereas decrypt uses
+ * the private key stored in a key store.
  *
  * @author thierry.bouvet@mpsa.com
  */

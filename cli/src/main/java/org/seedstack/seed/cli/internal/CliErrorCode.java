@@ -9,12 +9,7 @@ package org.seedstack.seed.cli.internal;
 
 import org.seedstack.shed.exception.ErrorCode;
 
-/**
- * Enumerates all error codes for command line support.
- *
- * @author adrien.lauer@mpsa.com
- */
-public enum CliErrorCode implements ErrorCode {
+enum CliErrorCode implements ErrorCode {
     COMMAND_LINE_HANDLER_NOT_FOUND,
     EXCEPTION_OCCURRED_BEFORE_CLI_TEST,
     NO_COMMAND_SPECIFIED

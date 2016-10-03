@@ -10,8 +10,8 @@ package org.seedstack.seed.core.internal.el;
 import org.seedstack.shed.exception.ErrorCode;
 
 enum ExpressionLanguageErrorCode implements ErrorCode {
-    NO_METHOD_VALUE_AVAILABLE,
-    PROPERTY_NOT_FOUND,
+    EL_ANNOTATION_IS_ALREADY_BIND,
     EL_EXCEPTION,
-    EL_ANNOTATION_IS_ALREADY_BIND
+    NO_METHOD_VALUE_AVAILABLE,
+    PROPERTY_NOT_FOUND
 }

@@ -111,7 +111,7 @@ public class CryptoPlugin extends AbstractSeedPlugin implements SSLProvider {
         String aliasName = sslConfig.getAlias();
         CryptoConfig.KeyStoreConfig.AliasConfig aliasConfig = keyStoreConfig.getAliases().get(aliasName);
         if (aliasConfig == null || Strings.isNullOrEmpty(aliasConfig.getPassword())) {
-            throw SeedException.createNew(CryptoErrorCodes.MISSING_ALIAS_PASSWORD)
+            throw SeedException.createNew(CryptoErrorCode.MISSING_ALIAS_PASSWORD)
                     .put(ALIAS, aliasName)
                     .put("ksName", keyStoreName);
         }
