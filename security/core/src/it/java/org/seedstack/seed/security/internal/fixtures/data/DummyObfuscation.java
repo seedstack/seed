@@ -10,12 +10,7 @@ package org.seedstack.seed.security.internal.fixtures.data;
 
 import org.seedstack.seed.security.spi.data.DataObfuscationHandler;
 
-/**
- *
- * 
- * @author epo.jemba@ext.mpsa.com
- *
- */
+
 public class DummyObfuscation implements DataObfuscationHandler<String> {
 
 	@Override

@@ -22,9 +22,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.ext.Provider;
 import java.util.Set;
 
-/**
- * @author pierre.thirouin@ext.mpsa.com (Pierre Thirouin)
- */
+
 public class GuiceComponentProvider implements ComponentProvider {
 
     private ServiceLocator serviceLocator;

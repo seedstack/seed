@@ -41,9 +41,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
-/**
- * @author pierre.thirouin@ext.mpsa.com (Pierre Thirouin)
- */
+
 public class RestPlugin extends AbstractSeedPlugin implements RestProvider {
     static final Specification<Class<?>> resourcesSpecification = new JaxRsResourceSpecification();
     static final Specification<Class<?>> providersSpecification = new JaxRsProviderSpecification();

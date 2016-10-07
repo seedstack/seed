@@ -13,11 +13,7 @@ package org.seedstack.seed.security.spi.data;
  * We use it to secure Fields, Methods or Contructors.
  *
  * @param <A> the type of the candidate.
- * @author epo.jemba@ext.mpsa.com
- * @author pierre.thirouin@ext.mpsa.com
- *         Date: 09/07/2014
- *
- */
+ *  *  *          */
 public interface DataSecurityHandler<A> {
 	
 	/**

@@ -34,8 +34,6 @@ import java.util.List;
 
 /**
  * This plugins adds web security.
- *
- * @author yves.dautremay@mpsa.com
  */
 public class WebSecurityPlugin extends AbstractSeedPlugin implements SecurityProvider, WebProvider {
     private final Collection<Class<? extends Filter>> scannedFilters = new ArrayList<>();

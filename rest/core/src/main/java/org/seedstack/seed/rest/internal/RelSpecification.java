@@ -22,8 +22,6 @@ import java.lang.reflect.Method;
  *   <li>annotated by {@link Rel};</li>
  *   <li>If the annotated is not found on the method, the declaring class is checked.</li>
  * </ol>
- *
- * @author pierre.thirouin@ext.mpsa.com (Pierre Thirouin)
  */
 public class RelSpecification extends AbstractSpecification<Method> {
 

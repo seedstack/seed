@@ -13,10 +13,7 @@ import org.seedstack.seed.DataSet;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * @author pierre.thirouin@ext.mpsa.com
- *         Date: 12/03/14
- */
+
 @DataSet(group="group1", name="test2")
 public class TestDataImporter2 implements DataImporter<TestDTO2> {
     private static List<TestDTO2> data = new ArrayList<>();

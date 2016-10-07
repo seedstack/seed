@@ -25,8 +25,6 @@ import java.util.Set;
 
 /**
  * Implementation of the {@link CommandRegistry}.
- *
- * @author adrien.lauer@mpsa.com
  */
 class CommandRegistryImpl implements CommandRegistry {
     @Inject

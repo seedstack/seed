@@ -16,8 +16,6 @@ import java.lang.annotation.Target;
 
 /**
  * This annotation can be used on integration tests to mark a Throwable class as being expected.
- *
- * @author epo.jemba@ext.mpsa.com
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)

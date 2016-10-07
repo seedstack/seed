@@ -32,8 +32,6 @@ import java.util.Map;
 /**
  * Default implementation of {@link org.seedstack.seed.spi.diagnostic.DiagnosticReporter} that logs to a JSON
  * file in the system temporary directory (from java.io.tmpdir system property).
- *
- * @author adrien.lauer@mpsa.com
  */
 class DefaultDiagnosticReporter implements DiagnosticReporter {
     private static final DateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss.SSS");

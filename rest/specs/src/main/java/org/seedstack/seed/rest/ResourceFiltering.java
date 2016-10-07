@@ -16,8 +16,6 @@ import java.lang.annotation.Target;
 
 /**
  * This annotation marks classes that will be registered as resource filter factories.
- *
- * @author adrien.lauer@mpsa.com
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)

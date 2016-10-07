@@ -11,8 +11,6 @@ import java.security.cert.X509Certificate;
 
 /**
  * An authentication token based on certificates.
- *
- * @author yves.dautremay@mpsa.com
  */
 public class X509CertificateToken implements AuthenticationToken {
 

@@ -27,9 +27,6 @@ import java.lang.annotation.Target;
  * will be set to a map containing odd option values as keys and even option values as values. If option is
  * not present or has no value, the field will be set to an empty map.</li>
  * </ul>
- *
- * @author epo.jemba@ext.mpsa.com
- * @author adrien.lauer@mpsa.com
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.FIELD, ElementType.ANNOTATION_TYPE})

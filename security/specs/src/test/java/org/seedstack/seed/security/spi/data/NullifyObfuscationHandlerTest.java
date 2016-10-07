@@ -12,9 +12,7 @@ import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-/**
- * @author epo.jemba@ext.mpsa.com
- */
+
 public class NullifyObfuscationHandlerTest {
 
 

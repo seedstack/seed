@@ -16,8 +16,6 @@ import java.util.Collection;
 
 /**
  * Utility class to create and manipulate common principals.
- * 
- * @author yves.dautremay@mpsa.com
  */
 public final class Principals {
 

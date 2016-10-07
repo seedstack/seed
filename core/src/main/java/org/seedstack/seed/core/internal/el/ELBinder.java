@@ -38,9 +38,7 @@ import java.lang.reflect.Method;
  * By default, if no policy is given the EL will be evaluated after the method proceed.
  * </p>
  *
- * @author pierre.thirouin@ext.mpsa.com
- *         Date: 01/07/2014
- */
+ *  *          */
 public class ELBinder {
     private final Binder binder;
 

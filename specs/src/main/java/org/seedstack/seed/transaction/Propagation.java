@@ -9,8 +9,6 @@ package org.seedstack.seed.transaction;
 
 /**
  * Enumerates all possible propagations.
- *
- * @author epo.jemba@ext.mpsa.com
  */
 public enum Propagation {
 	/**

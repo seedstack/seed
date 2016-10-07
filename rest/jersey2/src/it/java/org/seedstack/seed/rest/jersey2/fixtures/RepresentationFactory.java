@@ -15,9 +15,7 @@ import org.seedstack.seed.rest.hal.HalRepresentation;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * @author pierre.thirouin@ext.mpsa.com (Pierre Thirouin)
- */
+
 public class RepresentationFactory {
 
     private final RelRegistry relRegistry;

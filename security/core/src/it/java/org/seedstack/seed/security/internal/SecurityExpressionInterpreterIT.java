@@ -16,10 +16,7 @@ import org.seedstack.seed.security.internal.securityexpr.SecurityExpressionInter
 
 import javax.inject.Inject;
 
-/**
- * @author pierre.thirouin@ext.mpsa.com
- *         Date: 29/07/2014
- */
+
 @RunWith(SeedITRunner.class)
 public class SecurityExpressionInterpreterIT {
 

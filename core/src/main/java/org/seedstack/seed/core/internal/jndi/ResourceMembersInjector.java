@@ -16,7 +16,6 @@ import java.lang.reflect.Field;
  *
  * @param <T>
  *         The type to inject.
- * @author adrien.lauer@mpsa.com
  */
 class ResourceMembersInjector<T> implements MembersInjector<T> {
     private final Field field;

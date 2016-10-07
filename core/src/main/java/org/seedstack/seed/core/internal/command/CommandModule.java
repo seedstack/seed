@@ -15,9 +15,7 @@ import org.seedstack.seed.spi.command.Command;
 
 import java.util.Map;
 
-/**
- * @author adrien.lauer@mpsa.com
- */
+
 class CommandModule extends PrivateModule {
     private final Map<String, CommandDefinition> commandDefinitions;
 

@@ -26,9 +26,7 @@ import java.util.Vector;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-/**
- * @author pierre.thirouin@ext.mpsa.com (Pierre Thirouin)
- */
+
 public class KeyPairConfigFactoryTest {
 
     public static final String KEY_STORE_NAME = "keystoreName";

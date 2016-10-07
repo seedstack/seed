@@ -22,9 +22,7 @@ import javax.ws.rs.core.Response;
 import java.lang.reflect.Method;
 import java.util.Iterator;
 
-/**
- * @author pierre.thirouin@ext.mpsa.com (Pierre Thirouin)
- */
+
 @Ignore
 public class HintScannerTest {
 

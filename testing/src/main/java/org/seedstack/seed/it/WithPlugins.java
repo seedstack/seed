@@ -20,8 +20,6 @@ import java.lang.annotation.Target;
 
 /**
  * This annotation can be used on integration tests to specify manually which plugins SEED will load.
- *
- * @author redouane.loulou@ext.mpsa.com
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)

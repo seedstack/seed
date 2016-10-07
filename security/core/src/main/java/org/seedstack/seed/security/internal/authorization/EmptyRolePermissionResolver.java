@@ -16,9 +16,6 @@ import java.util.Collections;
 
 /**
  * Simple RolePermissionResolver that provides no permission.
- * 
- * @author yves.dautremay@mpsa.com
- * 
  */
 public class EmptyRolePermissionResolver implements RolePermissionResolver {
 

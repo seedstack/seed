@@ -15,8 +15,6 @@ import org.jboss.shrinkwrap.api.spec.JavaArchive;
 
 /**
  * Arquillian AuxiliaryArchiveAppender to add SEED Arquillian support to deployed apps.
- *
- * @author adrien.lauer@mpsa.com
  */
 public class SeedArchiveAppender implements AuxiliaryArchiveAppender {
     @Override

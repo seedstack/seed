@@ -24,9 +24,7 @@ import javax.inject.Inject;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-/**
- * @author epo.jemba@ext.mpsa.com
- */
+
 @RunWith(SeedITRunner.class)
 public class DataSecurityIT {
     @Inject

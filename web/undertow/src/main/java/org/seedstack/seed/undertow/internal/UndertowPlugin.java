@@ -19,8 +19,6 @@ import java.util.Collection;
 
 /**
  * This plugin retrieves the Undertow Web server configuration.
- *
- * @author pierre.thirouin@ext.mpsa.com (Pierre Thirouin)
  */
 public class UndertowPlugin extends AbstractSeedPlugin {
     static final String NAME = "undertow";

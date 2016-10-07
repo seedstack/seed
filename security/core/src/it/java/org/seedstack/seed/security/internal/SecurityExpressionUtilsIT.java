@@ -21,13 +21,7 @@ import java.lang.reflect.Method;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-/**
- *
- * 
- * @author epo.jemba@ext.mpsa.com
- * @author pierre.thirouin@ext.mpsa.com
- *
- */
+
 @RunWith(SeedITRunner.class)
 public class SecurityExpressionUtilsIT {
 

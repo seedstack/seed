@@ -20,9 +20,6 @@ import java.util.List;
 /**
  * This Configurator is used as default configurator for Seed ServerEndpoints.
  * It overrides endpoint instantiation to use Guice.
- *
- * @author pierre.thirouin@ext.mpsa.com
- * @author adrien.lauer@mpsa.com
  */
 public class SeedServerEndpointConfigurator extends ServerEndpointConfig.Configurator {
     @Inject

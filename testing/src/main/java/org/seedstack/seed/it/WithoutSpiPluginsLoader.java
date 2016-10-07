@@ -16,8 +16,6 @@ import java.lang.annotation.Target;
 
 /**
  * This annotation can be used on integration tests to disable SEED automatic plugin loading.
- *
- * @author redouane.loulou@ext.mpsa.com
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)

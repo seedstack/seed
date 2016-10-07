@@ -13,8 +13,6 @@ package org.seedstack.seed.transaction.spi;
  * is meant to implement this behavior.
  *
  * @param <T> the class representing the transacted resource.
- * @author epo.jemba@ext.mpsa.com
- * @author adrien.lauer@mpsa.com
  */
 public interface TransactionalLink<T> {
 

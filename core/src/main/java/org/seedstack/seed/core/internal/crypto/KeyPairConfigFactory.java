@@ -18,9 +18,7 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 
-/**
- * @author pierre.thirouin@ext.mpsa.com (Pierre Thirouin)
- */
+
 class KeyPairConfigFactory {
 
     private final CryptoConfig cryptoConfig;

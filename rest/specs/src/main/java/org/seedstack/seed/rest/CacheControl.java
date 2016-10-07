@@ -14,8 +14,6 @@ import java.lang.annotation.Target;
 
 /**
  * This annotation marks a resource class or method to have a specific caching policy.
- *
- * @author adrien.lauer@mpsa.com
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.METHOD, ElementType.TYPE })

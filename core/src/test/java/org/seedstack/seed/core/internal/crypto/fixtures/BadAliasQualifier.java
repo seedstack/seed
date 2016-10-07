@@ -7,8 +7,6 @@
  */
 package org.seedstack.seed.core.internal.crypto.fixtures;
 
-/**
- * @author pierre.thirouin@ext.mpsa.com (Pierre Thirouin)
- */
+
 public interface BadAliasQualifier {
 }

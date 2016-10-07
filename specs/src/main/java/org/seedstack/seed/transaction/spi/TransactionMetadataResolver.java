@@ -12,8 +12,6 @@ import org.aopalliance.intercept.MethodInvocation;
 /**
  * This interface must be implemented by SEED transaction metadata resolvers. These are used by a transaction manager
  * to determine the current transaction behavior.
- *
- * @author adrien.lauer@mpsa.com
  */
 public interface TransactionMetadataResolver {
 

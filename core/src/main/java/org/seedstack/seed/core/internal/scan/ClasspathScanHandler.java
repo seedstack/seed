@@ -14,8 +14,6 @@ import java.util.List;
 /**
  * Implement this interface and register the implementation with the ServiceLoader API (META-INF/services) to extend
  * the classpath scanning abilities.
- *
- * @author adrien.lauer@mpsa.com
  */
 public interface ClasspathScanHandler {
     /**

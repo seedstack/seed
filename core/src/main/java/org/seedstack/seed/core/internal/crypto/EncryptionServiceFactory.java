@@ -5,12 +5,6 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-/*
- * Creation : 4 juin 2015
- */
-/**
- *
- */
 package org.seedstack.seed.core.internal.crypto;
 
 import org.seedstack.seed.core.utils.SeedReflectionUtils;
@@ -35,8 +29,6 @@ import java.security.cert.CertificateFactory;
 /**
  * Factory to create a new {@link EncryptionService} object. This factory checks the KeyStore state (connection)
  * if a KeyStore is used.
- *
- * @author thierry.bouvet@mpsa.com
  */
 class EncryptionServiceFactory {
     private static final Logger LOGGER = LoggerFactory.getLogger(EncryptionServiceFactory.class);

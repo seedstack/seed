@@ -18,9 +18,6 @@ import java.lang.annotation.Annotation;
 
 /**
  * Interceptor for annotation RequiresRoles
- * 
- * @author yves.dautremay@mpsa.com
- * 
  */
 public class RequiresRolesInterceptor implements MethodInterceptor {
 

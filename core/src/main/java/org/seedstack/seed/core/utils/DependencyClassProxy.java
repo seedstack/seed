@@ -27,8 +27,7 @@ import java.lang.reflect.Method;
  * });
  *
  * </pre>
- * @author thierry.bouvet@mpsa.com
- *
+ *  *
  * @param <T> class to proxy
  */
 public class DependencyClassProxy<T> implements MethodHandler{

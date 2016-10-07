@@ -9,12 +9,7 @@ package org.seedstack.seed.security.internal.securityexpr;
 
 import com.google.inject.AbstractModule;
 
-/**
- *
- * 
- * @author epo.jemba@ext.mpsa.com
- * @author pierre.thirouin@ext.mpsa.com
- */
+
 public class SecurityExpressionModule extends AbstractModule{
 	
 	@Override

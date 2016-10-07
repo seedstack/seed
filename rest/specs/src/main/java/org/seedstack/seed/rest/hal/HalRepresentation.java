@@ -46,8 +46,6 @@ import java.util.Map;
  *   "total": 10.20
  * }
  * </pre>
- *
- * @author pierre.thirouin@ext.mpsa.com (Pierre Thirouin)
  */
 public class HalRepresentation {
 

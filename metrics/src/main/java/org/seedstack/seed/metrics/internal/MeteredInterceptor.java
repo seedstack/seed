@@ -19,8 +19,6 @@ import java.lang.reflect.Method;
  * A method interceptor which creates a meter for the declaring class with the given name (or the
  * method's name, if none was provided), and which measures the rate at which the annotated method
  * is invoked.
- *
- * @author yves.dautremay@mpsa.com
  */
 final class MeteredInterceptor implements MethodInterceptor {
     private final Meter meter;

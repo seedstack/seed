@@ -16,9 +16,7 @@ import javax.ws.rs.core.UriBuilder;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * @author pierre.thirouin@ext.mpsa.com (Pierre Thirouin)
- */
+
 public class RepresentationFactory {
 
     public HalDefaultRepresentation createOrders() {

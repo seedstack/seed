@@ -10,9 +10,6 @@ package org.seedstack.seed.security;
 /**
  * Exception to use when the credentials provided cannot be used to authentify
  * the subject.
- * 
- * @author yves.dautremay@mpsa.com
- * 
  */
 public class IncorrectCredentialsException extends AuthenticationException {
 

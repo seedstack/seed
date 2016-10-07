@@ -9,9 +9,7 @@ package org.seedstack.seed.rest.jersey2.internal;
 
 import org.seedstack.seed.ErrorCode;
 
-/**
- * @author pierre.thirouin@ext.mpsa.com (Pierre Thirouin)
- */
+
 enum Jersey2ErrorCode implements ErrorCode {
     MISSING_INJECTOR,
     MISSING_SERVLET_CONTEXT

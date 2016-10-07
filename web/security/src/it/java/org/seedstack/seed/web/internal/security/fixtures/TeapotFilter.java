@@ -16,9 +16,6 @@ import javax.servlet.http.HttpServletResponse;
 
 /**
  * Test filters that sends response with 418 code (I'm a teapot)
- * 
- * @author yves.dautremay@mpsa.com
- * 
  */
 @SecurityFilter("teapot")
 public class TeapotFilter extends PathMatchingFilter {

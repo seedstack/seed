@@ -24,9 +24,6 @@ import java.util.Map;
  * It has the responsibility to interpret any form of secured expression.
  * <p>
  * It will be supported by an API.
- *
- * @author epo.jemba@ext.mpsa.com
- * @author pierre.thirouin@ext.mpsa.com
  */
 public class SecurityExpressionInterpreter {
 

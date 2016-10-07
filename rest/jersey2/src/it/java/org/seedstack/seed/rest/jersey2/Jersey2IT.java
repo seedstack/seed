@@ -24,9 +24,7 @@ import java.net.URL;
 import static com.jayway.restassured.RestAssured.expect;
 import static org.assertj.core.api.Assertions.assertThat;
 
-/**
- * @author pierre.thirouin@ext.mpsa.com (Pierre Thirouin)
- */
+
 public class Jersey2IT extends AbstractSeedWebIT {
 
     @ArquillianResource

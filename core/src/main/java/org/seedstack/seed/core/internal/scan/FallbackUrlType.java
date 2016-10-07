@@ -16,8 +16,6 @@ import java.util.List;
 /**
  * Handle all url types not handled before during classpath scan to quietly log them. This should be the latest handler
  * registered.
- *
- * @author adrien.lauer@mpsa.com
  */
 public class FallbackUrlType implements Vfs.UrlType {
     private List<URL> failedUrls = new ArrayList<>();

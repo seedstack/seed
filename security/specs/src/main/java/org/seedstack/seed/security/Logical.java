@@ -9,8 +9,6 @@ package org.seedstack.seed.security;
 
 /**
  * An enum to define AND and OR logical operators to use with annotations RequireRoles or RequiresPermissions
- * @author yves.dautremay@mpsa.com
- *
  */
 public enum Logical {
 

@@ -29,8 +29,6 @@ import java.util.Set;
 /**
  * Core plugin that configures base package roots and detects diagnostic collectors, dependency providers, Guice modules
  * and configuration files.
- *
- * @author adrien.lauer@mpsa.com
  */
 public class CorePlugin extends AbstractSeedPlugin {
     private static final Logger LOGGER = LoggerFactory.getLogger(CorePlugin.class);

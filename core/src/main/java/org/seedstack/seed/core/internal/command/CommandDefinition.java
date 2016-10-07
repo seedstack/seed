@@ -20,8 +20,6 @@ import java.util.List;
 
 /**
  * Holds the definition of a command.
- *
- * @author adrien.lauer@mpsa.com
  */
 class CommandDefinition implements Comparable<CommandDefinition> {
     private final org.seedstack.seed.spi.command.CommandDefinition commandDefinition;

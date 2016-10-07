@@ -18,9 +18,6 @@ import java.lang.annotation.Target;
 
 /**
  * This annotation will trigger the specified obfuscation when the expression evaluates to false.
- *
- * @author epo.jemba@ext.mpsa.com
- * @author pierre.thirouin@ext.mpsa.com
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)

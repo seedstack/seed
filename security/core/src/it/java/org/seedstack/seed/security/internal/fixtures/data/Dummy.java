@@ -10,12 +10,7 @@ package org.seedstack.seed.security.internal.fixtures.data;
 
 import org.seedstack.seed.security.data.Restriction;
 
-/**
- *
- * 
- * @author epo.jemba@ext.mpsa.com
- *
- */
+
 public class Dummy {
 	
 	

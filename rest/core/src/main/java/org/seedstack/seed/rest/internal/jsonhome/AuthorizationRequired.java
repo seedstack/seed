@@ -25,8 +25,6 @@ import java.util.List;
  *   ]
  * }
  * </pre>
- *
- * @author pierre.thirouin@ext.mpsa.com (Pierre Thirouin)
  */
 public class AuthorizationRequired {
 

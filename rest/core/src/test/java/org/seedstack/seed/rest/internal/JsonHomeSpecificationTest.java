@@ -15,9 +15,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Response;
 
-/**
- * @author pierre.thirouin@ext.mpsa.com (Pierre Thirouin)
- */
+
 public class JsonHomeSpecificationTest {
 
     private JsonHomeSpecification underTest = new JsonHomeSpecification();

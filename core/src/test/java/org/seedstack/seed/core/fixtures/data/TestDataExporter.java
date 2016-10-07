@@ -13,10 +13,7 @@ import org.seedstack.seed.DataSet;
 
 import java.util.Iterator;
 
-/**
- * @author pierre.thirouin@ext.mpsa.com
- *         Date: 12/03/14
- */
+
 @DataSet(group="group1", name="test1")
 public class TestDataExporter implements DataExporter<TestDTO> {
 

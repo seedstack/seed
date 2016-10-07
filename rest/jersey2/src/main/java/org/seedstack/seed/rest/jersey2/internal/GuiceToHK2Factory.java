@@ -13,8 +13,6 @@ import org.glassfish.hk2.api.ServiceLocator;
 
 /**
  * A generic HK2 factory backed by Guice.
- *
- * @author pierre.thirouin@ext.mpsa.com (Pierre Thirouin)
  */
 class GuiceToHK2Factory implements Factory {
 

@@ -9,8 +9,6 @@ package org.seedstack.seed.core.utils;
 
 /**
  * Provides utils method for common configuration.
- *
- * @author pierre.thirouin@ext.mpsa.com (Pierre Thirouin)
  */
 public final class ConfigurationUtils {
 

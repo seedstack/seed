@@ -12,8 +12,6 @@ import org.jboss.arquillian.test.spi.TestEnricher;
 
 /**
  * Arquillian extension to register SEED support in the container.
- *
- * @author adrien.lauer@mpsa.com
  */
 public class SeedRemoteExtension implements RemoteLoadableExtension {
     @Override

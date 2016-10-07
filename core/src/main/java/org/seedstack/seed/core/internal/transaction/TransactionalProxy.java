@@ -19,7 +19,6 @@ import java.lang.reflect.Proxy;
  * to the instance retrieved from {@link TransactionalLink}.get().
  *
  * @param <T> the type of the transactional object.
- * @author adrien.lauer@mpsa.com
  */
 public final class TransactionalProxy<T> implements InvocationHandler {
     private final TransactionalLink<T> transactionalLink;

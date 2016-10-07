@@ -19,9 +19,6 @@ import java.util.Set;
 
 /**
  * AuthorizationInfo that keeps the Roles and Permissions from SEED api.
- * 
- * @author yves.dautremay@mpsa.com
- * 
  */
 public class SeedAuthorizationInfo implements AuthorizationInfo {
 

@@ -20,8 +20,6 @@ import static com.jayway.restassured.RestAssured.expect;
 
 /**
  * Tests an undertow server exposing a simple hello world servlet.
- *
- * @author pierre.thirouin@ext.mpsa.com (Pierre Thirouin)
  */
 public class UndertowIT {
     private static final String BASE_URL = "localhost:9001/";

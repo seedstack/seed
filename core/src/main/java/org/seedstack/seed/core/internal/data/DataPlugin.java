@@ -34,8 +34,6 @@ import java.util.Map;
 
 /**
  * This plugin provides data import and export facilities.
- *
- * @author pierre.thirouin@ext.mpsa.com
  */
 public class DataPlugin extends AbstractSeedPlugin {
     private static final Logger LOGGER = LoggerFactory.getLogger(DataPlugin.class);

@@ -9,10 +9,7 @@ package org.seedstack.seed.security.internal;
 
 import org.seedstack.seed.ErrorCode;
 
-/**
- * @author epo.jemba@ext.mpsa.com
- * @author adrien.lauer@mpsa.com
- */
+
 public enum SecurityErrorCode implements ErrorCode {
     DUPLICATE_SCOPE_NAME,
     MISSING_ADEQUATE_SCOPE_CONSTRUCTOR,

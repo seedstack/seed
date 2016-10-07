@@ -24,8 +24,6 @@ import java.util.Set;
 /**
  * Guice type listener that will register any type having a field annotated with {@link org.seedstack.seed.cli.CliArgs} or
  * {@link org.seedstack.seed.cli.CliOption}.
- *
- * @author adrien.lauer@mpsa.com
  */
 class CliTypeListener implements TypeListener {
     private final CliContext cliContext;

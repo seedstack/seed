@@ -10,9 +10,7 @@ package org.seedstack.seed.rest.internal;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
 
-/**
- * @author pierre.thirouin@ext.mpsa.com (Pierre Thirouin)
- */
+
 public class UriBuilderTest {
 
     @Test

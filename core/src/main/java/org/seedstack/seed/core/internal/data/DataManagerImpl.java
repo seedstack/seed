@@ -37,9 +37,6 @@ import java.util.Set;
 
 /**
  * Implementation of the {@link DataManager}.
- *
- * @author pierre.thirouin@ext.mpsa.com
- * @author adrien.lauer@mpsa.com
  */
 class DataManagerImpl implements DataManager {
     private static final String UTF_8 = "UTF-8";

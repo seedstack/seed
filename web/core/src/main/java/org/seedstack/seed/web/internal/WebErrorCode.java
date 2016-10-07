@@ -11,8 +11,6 @@ import org.seedstack.seed.ErrorCode;
 
 /**
  * Enumerates all Web error codes.
- *
- * @author adrien.lauer@mpsa.com
  */
 public enum WebErrorCode implements ErrorCode {
     ERROR_RETRIEVING_RESOURCE,

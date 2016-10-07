@@ -16,8 +16,6 @@ import java.lang.annotation.Target;
 
 /**
  * This annotation marks ignorable elements.
- *
- * @author adrien.lauer@mpsa.com
  */
 @io.nuun.kernel.api.annotations.Ignore
 @Documented

@@ -5,12 +5,6 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-/*
- * Creation : 10 juin 2015
- */
-/**
- * 
- */
 package org.seedstack.seed.core;
 
 import com.google.common.annotations.Beta;
@@ -24,8 +18,6 @@ import java.lang.annotation.Target;
 
 /**
  * Method {@link Annotation} to launch before to start the Seed {@link Kernel}
- * 
- * @author thierry.bouvet@mpsa.com
  */
 @Beta
 @Retention(RetentionPolicy.RUNTIME)

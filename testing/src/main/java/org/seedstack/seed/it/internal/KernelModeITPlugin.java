@@ -20,8 +20,6 @@ import java.util.Map;
 
 /**
  * This IT plugin allow to change the test class kernel mode explicitly.
- *
- * @author adrien.lauer@mpsa.com
  */
 public class KernelModeITPlugin implements ITRunnerPlugin {
     @Override

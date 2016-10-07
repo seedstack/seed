@@ -14,9 +14,6 @@ import java.lang.annotation.Target;
 
 /**
  * This annotation marks a field as the args of the commandline. Type must be an array of String.
- *
- * @author epo.jemba@ext.mpsa.com
- * @author adrien.lauer@mpsa.com
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.FIELD, ElementType.ANNOTATION_TYPE})

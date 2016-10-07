@@ -24,7 +24,6 @@ import java.util.Set;
  * Guice members injector that inject logger instances.
  *
  * @param <T> The type of class to inject.
- * @author adrien.lauer@mpsa.com
  */
 class ConfigurationMembersInjector<T> implements MembersInjector<T> {
     private final Set<ConfigurableField> fields;

@@ -13,8 +13,6 @@ import java.security.cert.X509Certificate;
 /**
  * Principal provider that stores the user X509Certificates used for his
  * authentication.
- *
- * @author yves.dautremay@mpsa.com
  */
 public class X509CertificatePrincipalProvider implements PrincipalProvider<X509Certificate[]>, Serializable {
 

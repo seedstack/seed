@@ -19,9 +19,7 @@ import java.lang.reflect.Method;
 /**
  * Implementation of ELContextBuilder.
  *
- * @author pierre.thirouin@ext.mpsa.com
- *         Date: 11/07/2014
- */
+ *  *          */
 class ELContextBuilderImpl implements ELContextBuilder {
     @Inject
     private ExpressionFactory expressionFactory;

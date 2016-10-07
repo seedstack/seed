@@ -18,8 +18,6 @@ import java.lang.reflect.Method;
 
 /**
  * A listener which adds gauge injection listeners to classes with gauges.
- *
- * @author yves.dautremay@mpsa.com
  */
 class GaugeListener implements TypeListener {
     private final MetricRegistry metricRegistry;

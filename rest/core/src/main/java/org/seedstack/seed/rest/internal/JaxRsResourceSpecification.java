@@ -29,8 +29,6 @@ import static org.seedstack.seed.core.utils.BaseClassSpecifications.classIsAbstr
  * annotations defined in multiple implemented interfaces is implementation specific. <b>Note that inheritance of
  * class or interface annotations is not supported.</b>
  * </blockquote>
- *
- * @author pierre.thirouin@ext.mpsa.com (Pierre Thirouin)
  */
 public class JaxRsResourceSpecification extends AbstractSpecification<Class<?>> {
 

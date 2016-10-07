@@ -22,8 +22,6 @@ import java.util.Map;
 /**
  * This plugin enables to run SEED command line applications from integration tests. It disables the global SEED
  * kernel start to start its own kernel for each test method.
- *
- * @author adrien.lauer@mpsa.com
  */
 public class CommandLineITPlugin implements ITRunnerPlugin {
     @Override

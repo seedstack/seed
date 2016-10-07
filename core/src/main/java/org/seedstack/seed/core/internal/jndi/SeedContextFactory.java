@@ -14,8 +14,6 @@ import java.util.Hashtable;
 
 /**
  * JNDI context factory for {@link JndiContext} context.
- *
- * @author adrien.lauer@mpsa.com
  */
 public class SeedContextFactory implements InitialContextFactory {
     @Override

@@ -19,8 +19,6 @@ import java.util.Set;
 
 /**
  * Guice type listener that will register any type having a field annotated with {@link org.seedstack.seed.Configuration}.
- *
- * @author adrien.lauer@mpsa.com
  */
 class ConfigurationTypeListener implements TypeListener {
     private final Coffig configuration;

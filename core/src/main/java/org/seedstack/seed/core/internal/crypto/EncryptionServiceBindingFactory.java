@@ -24,8 +24,6 @@ import java.util.Optional;
 
 /**
  * This class prepare the EncryptionService bindings for Guice based on the configuration.
- *
- * @author pierre.thirouin@ext.mpsa.com (Pierre Thirouin)
  */
 class EncryptionServiceBindingFactory {
 

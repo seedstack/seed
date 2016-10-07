@@ -5,9 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-/*
- * Creation : 12 mars 2015
- */
+
 package org.seedstack.seed.crypto;
 
 import javax.crypto.Cipher;
@@ -17,8 +15,6 @@ import java.security.InvalidKeyException;
 /**
  * Service to do asymmetric encryption and decryption. Encryption uses a {@link X509Certificate}, whereas decrypt uses
  * the private key stored in a key store.
- *
- * @author thierry.bouvet@mpsa.com
  */
 public interface EncryptionService {
     /**

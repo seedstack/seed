@@ -20,9 +20,6 @@ import java.util.Map;
 
 /**
  * This command dumps the status of the application health checks.
- *
- * @author yves.dautremay@mpsa.com
- * @author adrien.lauer@mpsa.com
  */
 @CommandDefinition(scope = "metrics", name = "health", description = "Runs health checks and provide a complete result")
 public class HealthCommand implements PrettyCommand<Map<String, HealthCheck.Result>> {

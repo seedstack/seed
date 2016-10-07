@@ -29,9 +29,6 @@ import static org.seedstack.seed.core.utils.SeedReflectionUtils.methodsFromAnces
 
 /**
  * Configuration Unit regarding Data Security
- *
- * @author epo.jemba@ext.mpsa.com
- * @author pierre.thirouin@ext.mpsa.com
  */
 public class DataSecurityModule extends AbstractModule {
     private static final TypeLiteral<DataSecurityHandler<?>> MAP_TYPE_LITERAL = new TypeLiteral<DataSecurityHandler<?>>() {};

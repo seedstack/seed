@@ -9,12 +9,7 @@ package org.seedstack.seed.security.internal.fixtures.data;
 
 import org.seedstack.seed.security.internal.fixtures.data.MyRestriction.Todo;
 
-/**
- *
- * 
- * @author epo.jemba@ext.mpsa.com
- *
- */
+
 public class MyUnsecuredPojo {
 	
 	private String firstname;

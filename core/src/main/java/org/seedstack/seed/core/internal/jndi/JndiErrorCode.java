@@ -11,8 +11,6 @@ import org.seedstack.seed.ErrorCode;
 
 /**
  * JNDI error codes.
- *
- * @author adrien.lauer@mpsa.com
  */
 enum JndiErrorCode implements ErrorCode {
     MISSING_JNDI_PROPERTIES,

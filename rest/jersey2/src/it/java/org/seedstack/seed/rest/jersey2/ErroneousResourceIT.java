@@ -19,9 +19,7 @@ import java.net.URL;
 
 import static com.jayway.restassured.RestAssured.expect;
 
-/**
- * @author pierre.thirouin@ext.mpsa.com (Pierre Thirouin)
- */
+
 public class ErroneousResourceIT extends AbstractSeedWebIT {
 
     @ArquillianResource

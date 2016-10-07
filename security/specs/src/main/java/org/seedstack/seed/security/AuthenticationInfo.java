@@ -15,9 +15,6 @@ import java.util.Collection;
 
 /**
  * Information about an authentication : the principals and credentials.
- * 
- * @author yves.dautremay@mpsa.com
- * 
  */
 public class AuthenticationInfo {
 

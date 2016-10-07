@@ -13,8 +13,6 @@ import java.lang.reflect.Field;
 
 /**
  * Holds the definition of a command option.
- *
- * @author adrien.lauer@mpsa.com
  */
 class OptionDefinition {
     private final Option option;

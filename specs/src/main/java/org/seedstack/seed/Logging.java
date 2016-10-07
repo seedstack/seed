@@ -15,8 +15,6 @@ import java.lang.annotation.Target;
 
 /**
  * This annotation marks loggers which will be automatically injected by the SEED core plugin.
- *
- * @author adrien.lauer@mpsa.com
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)

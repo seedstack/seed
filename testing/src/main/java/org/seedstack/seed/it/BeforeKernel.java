@@ -16,8 +16,6 @@ import java.lang.annotation.Target;
 
 /**
  * This annotation can be used to specify a static method that will execute before the Kernel starts.
- *
- * @author adrien.lauer@mpsa.com
  */
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)

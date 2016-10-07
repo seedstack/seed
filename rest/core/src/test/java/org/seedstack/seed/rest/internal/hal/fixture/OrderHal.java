@@ -9,9 +9,7 @@ package org.seedstack.seed.rest.internal.hal.fixture;
 
 import org.seedstack.seed.rest.hal.HalRepresentation;
 
-/**
- * @author pierre.thirouin@ext.mpsa.com (Pierre Thirouin)
- */
+
 public class OrderHal extends HalRepresentation {
 
     private String currency;

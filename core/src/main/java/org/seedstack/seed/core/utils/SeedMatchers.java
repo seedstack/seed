@@ -15,8 +15,6 @@ import java.lang.reflect.Method;
 
 /**
  * Class with various utility Guice matchers.
- *
- * @author adrien.lauer@mpsa.com
  */
 public final class SeedMatchers {
 

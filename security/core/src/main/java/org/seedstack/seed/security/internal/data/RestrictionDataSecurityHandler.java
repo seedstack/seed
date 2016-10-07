@@ -12,10 +12,7 @@ import org.seedstack.seed.security.data.Restriction;
 import org.seedstack.seed.security.spi.data.DataObfuscationHandler;
 import org.seedstack.seed.security.spi.data.DataSecurityHandler;
 
-/**
- *
- * @author epo.jemba@ext.mpsa.com
- */
+
 class RestrictionDataSecurityHandler implements DataSecurityHandler<Restriction> {
 
 	@Override

@@ -21,8 +21,6 @@ import java.util.Map;
 
 /**
  * Guice type listener for {@link Resource} annotated fields.
- *
- * @author adrien.lauer@mpsa.com
  */
 class ResourceTypeListener implements TypeListener {
     private Map<String, Context> jndiContexts;

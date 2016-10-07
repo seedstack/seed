@@ -5,9 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-/*
- * Creation : 27 févr. 2015
- */
+
 package org.seedstack.seed.crypto;
 
 import javax.xml.bind.DatatypeConverter;
@@ -16,8 +14,6 @@ import javax.xml.bind.DatatypeConverter;
  * A Hash is the couple made of two byte arrays : one is the hashed string, the other being
  * the salt used to generate it. When comparing two hashes made with the same salt, it has to be also through the same algorithm
  * with the same parameters.
- *
- * @author yves.dautremay@mpsa.com
  */
 public class Hash {
 

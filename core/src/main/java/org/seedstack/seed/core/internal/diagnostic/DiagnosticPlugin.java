@@ -26,8 +26,6 @@ import java.util.Map;
 
 /**
  * Core plugin that detects diagnostic collectors and registers them with the diagnostic manager.
- *
- * @author adrien.lauer@mpsa.com
  */
 public class DiagnosticPlugin extends AbstractSeedPlugin {
     private static final Logger LOGGER = LoggerFactory.getLogger(DiagnosticPlugin.class);

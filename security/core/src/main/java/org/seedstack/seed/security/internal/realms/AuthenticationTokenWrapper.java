@@ -11,9 +11,6 @@ import org.apache.shiro.authc.AuthenticationToken;
 
 /**
  * A Shiro authentication token that wrap a Seed authentication token
- * 
- * @author yves.dautremay@mpsa.com
- * 
  */
 public class AuthenticationTokenWrapper implements AuthenticationToken {
 

@@ -11,8 +11,6 @@ package org.seedstack.seed.security.spi.data;
  * Interface to implement to obfuscate a data.
  *
  * @param <T> the type of data to obfuscate.
- * @author epo.jemba@ext.mpsa.com
- * @author pierre.thirouin@ext.mpsa.com
  */
 public interface DataObfuscationHandler<T> {
 

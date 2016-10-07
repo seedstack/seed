@@ -24,9 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-/**
- * @author pierre.thirouin@ext.mpsa.com (Pierre Thirouin)
- */
+
 public class EncryptionServiceBindingFactoryTest {
 
     public static final String KEY_STORE_NAME = "keyStoreName";

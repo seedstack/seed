@@ -11,9 +11,9 @@ import org.assertj.core.api.Assertions;
 import org.junit.Rule;
 import org.junit.Test;
 import org.seedstack.seed.DataManager;
+import org.seedstack.seed.core.fixtures.TestDataImporter3;
 import org.seedstack.seed.core.fixtures.data.TestDataImporter;
 import org.seedstack.seed.core.fixtures.data.TestDataImporter2;
-import org.seedstack.seed.core.fixtures.TestDataImporter3;
 import org.seedstack.seed.core.utils.SeedReflectionUtils;
 
 import javax.inject.Inject;
@@ -21,10 +21,7 @@ import java.io.ByteArrayOutputStream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-/**
- * @author pierre.thirouin@ext.mpsa.com
- *         Date: 12/03/14
- */
+
 public class DataManagerIT {
     @Rule
     public SeedITRule rule = new SeedITRule(this);

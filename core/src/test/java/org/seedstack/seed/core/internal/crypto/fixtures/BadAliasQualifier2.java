@@ -11,9 +11,7 @@ import java.lang.annotation.Retention;
 
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
-/**
- * @author pierre.thirouin@ext.mpsa.com (Pierre Thirouin)
- */
+
 @Retention(RUNTIME)
 public @interface BadAliasQualifier2 {
 }

@@ -16,8 +16,6 @@ import java.util.Set;
  * Interface used to define a mapping between the data coming from a realm and
  * the roles given to the user. The realm gives all the data so the RoleMapping
  * can apply rules considering them.
- * 
- * @author yves.dautremay@mpsa.com
  */
 public interface RoleMapping {
 

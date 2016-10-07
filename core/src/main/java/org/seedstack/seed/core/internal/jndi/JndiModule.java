@@ -17,8 +17,6 @@ import java.util.Map;
 
 /**
  * Guice module that binds the configured JNDI context.
- *
- * @author adrien.lauer@mpsa.com
  */
 class JndiModule extends AbstractModule {
     private Map<String, Context> jndiContextsToBeBound;

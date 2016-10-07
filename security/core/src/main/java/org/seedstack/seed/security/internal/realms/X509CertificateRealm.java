@@ -37,8 +37,6 @@ import java.util.Set;
 /**
  * A realm that is based on an X509Certificate to identify the user and provide his roles. This realm does not actually authentifies the user as this
  * process should be done by the JEE container.
- * 
- * @author yves.dautremay@mpsa.com
  */
 public class X509CertificateRealm implements Realm {
 

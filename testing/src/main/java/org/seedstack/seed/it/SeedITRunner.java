@@ -42,11 +42,6 @@ import java.util.ServiceLoader;
  * This runner can be used to run JUnit tests with Seed integration. Tests
  * launched with this runner will benefit from Seed features (injection, aop
  * interception, test extensions, ...).
- *
- * @author redouane.loulou@ext.mpsa.com
- * @author yves.dautremay@mpsa.com
- * @author epo.jemba@ext.mpsa.com
- * @author adrien.lauer@mpsa.com
  */
 public class SeedITRunner extends BlockJUnit4ClassRunner {
     private static final Logger LOGGER = LoggerFactory.getLogger(SeedITRunner.class);

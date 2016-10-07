@@ -9,9 +9,6 @@ package org.seedstack.seed.security;
 
 /**
  * Base class for exceptions concerning authorization failure
- * 
- * @author yves.dautremay@mpsa.com
- * 
  */
 public class AuthorizationException extends RuntimeException {
 

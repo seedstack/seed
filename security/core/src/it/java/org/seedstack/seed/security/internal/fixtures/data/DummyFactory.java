@@ -7,12 +7,7 @@
  */
 package org.seedstack.seed.security.internal.fixtures.data;
 
-/**
- *
- * 
- * @author epo.jemba@ext.mpsa.com
- *
- */
+
 public class DummyFactory {
 
 	public static Dummy create (Integer i ) {

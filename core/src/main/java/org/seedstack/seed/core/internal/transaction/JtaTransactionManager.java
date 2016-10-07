@@ -26,8 +26,6 @@ import javax.transaction.UserTransaction;
 
 /**
  * This transaction manager delegates to JTA the transactional behavior.
- *
- * @author adrien.lauer@mpsa.com
  */
 public class JtaTransactionManager extends AbstractTransactionManager {
     private static final String[] AUTODETECT_TRANSACTION_MANAGER_NAMES = new String[]{"java:comp/TransactionManager", "java:appserver/TransactionManager", "java:pm/TransactionManager", "java:/TransactionManager"};

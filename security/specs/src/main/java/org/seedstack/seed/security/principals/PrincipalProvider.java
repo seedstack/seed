@@ -14,8 +14,6 @@ import java.io.Serializable;
  * 
  * @param <T>
  *            the type of the object provided by the principal
- * @author yves.dautremay@mpsa.com
- * 
  */
 public interface PrincipalProvider<T extends Serializable> {
 

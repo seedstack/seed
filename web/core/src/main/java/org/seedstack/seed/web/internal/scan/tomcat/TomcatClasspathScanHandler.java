@@ -16,8 +16,6 @@ import java.util.List;
 
 /**
  * Provides classpath scan capabilities for Tomcat environment.
- *
- * @author adrien.lauer@mpsa.com
  */
 public class TomcatClasspathScanHandler implements ClasspathScanHandler {
     @Override

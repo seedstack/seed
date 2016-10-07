@@ -25,8 +25,6 @@ import java.util.Map;
 
 /**
  * Nuun plugin in charge of collecting all commands definitions.
- *
- * @author adrien.lauer@mpsa.com
  */
 public class CommandPlugin extends AbstractSeedPlugin {
     private static final Logger LOGGER = LoggerFactory.getLogger(CommandPlugin.class);

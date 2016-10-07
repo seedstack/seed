@@ -9,8 +9,6 @@ package org.seedstack.seed.spi.dependency;
 
 /**
  * Interface to use to discover optional dependencies.
- * @author thierry.bouvet@mpsa.com
- *
  */
 public interface DependencyProvider {
 

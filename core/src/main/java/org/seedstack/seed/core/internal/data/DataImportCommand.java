@@ -18,8 +18,6 @@ import java.io.OutputStream;
 
 /**
  * Command to import data in the application.
- *
- * @author adrien.lauer@mpsa.com
  */
 @CommandDefinition(scope = "core", name = "import", description = "Import application data")
 public class DataImportCommand implements StreamCommand {

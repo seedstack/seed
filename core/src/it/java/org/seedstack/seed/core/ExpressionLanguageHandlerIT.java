@@ -17,10 +17,7 @@ import org.seedstack.seed.core.fixtures.el.Foo;
 import org.seedstack.seed.core.fixtures.el.SomeDTO;
 import org.seedstack.seed.SeedException;
 
-/**
- * @author pierre.thirouin@ext.mpsa.com
- *         Date: 01/07/2014
- */
+
 public class ExpressionLanguageHandlerIT {
     public static String message = "";
     public static Long count = 0L;

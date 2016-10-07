@@ -11,8 +11,6 @@ import org.seedstack.seed.ErrorCode;
 
 /**
  * SEED commands error codes.
- *
- * @author adrien.lauer@mpsa.com
  */
 enum CommandErrorCode implements ErrorCode {
     ARGUMENT_INDEX_COLLISION,

@@ -17,8 +17,6 @@ import java.lang.annotation.Target;
 /**
  * Transaction method marker. If a method is marked with this annotation, transaction manager logic will be invoked
  * around the method.
- *
- * @author adrien.lauer@mpsa.com
  */
 @Target({ ElementType.METHOD, ElementType.TYPE, ElementType.ANNOTATION_TYPE })
 @Retention(RetentionPolicy.RUNTIME)

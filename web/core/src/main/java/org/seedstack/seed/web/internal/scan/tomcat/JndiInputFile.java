@@ -15,8 +15,6 @@ import java.lang.reflect.Method;
 
 /**
  * VFS file implementation for JNDI directory scanning.
- *
- * @author adrien.lauer@mpsa.com
  */
 class JndiInputFile implements Vfs.File {
     private final String path;

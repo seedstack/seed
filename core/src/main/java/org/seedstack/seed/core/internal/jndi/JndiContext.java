@@ -23,8 +23,6 @@ import java.util.Hashtable;
 
 /**
  * SEED JNDI context that can lookup for instances from the injector.
- *
- * @author adrien.lauer@mpsa.com
  */
 class JndiContext implements Context {
     public static final String THIS_CONTEXT_IS_IMMUTABLE = "This context is immutable";

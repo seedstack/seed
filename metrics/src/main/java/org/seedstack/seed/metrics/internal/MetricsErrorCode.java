@@ -11,8 +11,6 @@ import org.seedstack.seed.ErrorCode;
 
 /**
  * Enumerates error codes of metrics support.
- *
- * @author adrien.lauer@mpsa.com
  */
 public enum MetricsErrorCode implements ErrorCode {
     ERROR_ACCESSING_METRIC_FIELD,

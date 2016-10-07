@@ -10,8 +10,6 @@ package org.seedstack.seed.spi;
 /**
  * This interface defines a method that can launch a Seed application.
  * It must be declared as a {@link java.util.ServiceLoader} service in META-INF/services to be detected.
- *
- * @author adrien.lauer@gmail.com
  */
 public interface SeedLauncher {
     /**

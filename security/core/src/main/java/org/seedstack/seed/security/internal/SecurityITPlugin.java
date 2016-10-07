@@ -21,8 +21,6 @@ import java.util.Map;
 
 /**
  * IT plugin for security. Handles the WithSecurity annotation and adds the rule to connect a user.
- * 
- * @author yves.dautremay@mpsa.com
  */
 public class SecurityITPlugin implements ITRunnerPlugin {
     @Override

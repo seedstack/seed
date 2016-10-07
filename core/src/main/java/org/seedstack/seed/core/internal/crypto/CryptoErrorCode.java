@@ -11,8 +11,6 @@ import org.seedstack.seed.ErrorCode;
 
 /**
  * Cryptography error codes.
- *
- * @author pierre.thirouin@ext.mpsa.com (Pierre Thirouin)
  */
 public enum CryptoErrorCode implements ErrorCode {
     ALGORITHM_CANNOT_BE_FOUND,

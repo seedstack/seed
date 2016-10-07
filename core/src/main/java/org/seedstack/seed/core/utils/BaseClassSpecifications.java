@@ -27,9 +27,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
-/**
- * @author pierre.thirouin@ext.mpsa.com (Pierre Thirouin)
- */
+
 public class BaseClassSpecifications {
 
     private static final Logger logger = LoggerFactory.getLogger(BaseClassSpecifications.class);

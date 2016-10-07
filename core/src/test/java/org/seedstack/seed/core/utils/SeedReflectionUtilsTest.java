@@ -26,8 +26,6 @@ import java.lang.annotation.Target;
 
 /**
  * SeedReflectionUtilsTest
- *
- * @author redouane.loulou@ext.mpsa.com
  */
 public class SeedReflectionUtilsTest {
     @Retention(RetentionPolicy.RUNTIME)

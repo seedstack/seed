@@ -53,9 +53,6 @@ import java.util.Set;
  *
  * Means that subjects having the ADMIN.FR role from the realm(s) (like an LDAP directory) will be given the titi
  * local role within the FR scope only.
- *
- * @author yves.dautremay@mpsa.com
- * @author adrien.lauer@mpsa.com
  */
 public class ConfigurationRoleMapping implements RoleMapping {
 

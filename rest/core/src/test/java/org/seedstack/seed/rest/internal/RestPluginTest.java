@@ -42,9 +42,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.seedstack.seed.rest.internal.RestPlugin.providersSpecification;
 import static org.seedstack.seed.rest.internal.RestPlugin.resourcesSpecification;
 
-/**
- * @author pierre.thirouin@ext.mpsa.com (Pierre Thirouin)
- */
+
 @RunWith(JMockit.class)
 public class RestPluginTest {
     private RestPlugin underTest = new RestPlugin();

@@ -5,9 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-/*
- * Creation : 25 juin 2015
- */
+
 package org.seedstack.seed.web.internal.scan.websphere;
 
 import mockit.Mocked;

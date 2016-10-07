@@ -10,9 +10,7 @@ package org.seedstack.seed.rest.internal;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-/**
- * @author pierre.thirouin@ext.mpsa.com (Pierre Thirouin)
- */
+
 class UriBuilder {
 
     private static final Pattern JAX_RS_TEMPLATE_PARAMETERS = Pattern.compile("\\{\\s*(\\w[\\w\\.-]*)\\s*:\\s*.+?\\s*\\}");

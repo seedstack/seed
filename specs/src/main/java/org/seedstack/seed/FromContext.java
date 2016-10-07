@@ -19,8 +19,6 @@ import static java.lang.annotation.ElementType.TYPE;
 
 /**
  * This can be used to specify a named JNDI context when applied on a @Resource annotated field.
- *
- * @author adrien.lauer@mpsa.com
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)

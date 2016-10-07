@@ -18,8 +18,6 @@ import java.lang.annotation.Target;
  * This annotation is used to connect a user to the Seed security. If annotation
  * is present on the class, it will connect the provided id/pwd for each method
  * unless the method is itself annotated with a different id/pwd.
- *
- * @author yves.dautremay@mpsa.com
  */
 @Target({ ElementType.TYPE, ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)

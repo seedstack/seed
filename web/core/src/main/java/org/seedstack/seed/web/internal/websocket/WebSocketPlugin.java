@@ -33,8 +33,6 @@ import java.util.Set;
 /**
  * This plugin scan Endpoint, ClientEndpoint and ServerEndpoint defined in the JSR 356.
  * All the scanned classes will be passed to the module.
- *
- * @author pierre.thirouin@ext.mpsa.com
  */
 public class WebSocketPlugin extends AbstractSeedPlugin implements WebProvider {
     private final boolean webSocketPresent = SeedReflectionUtils.isClassPresent("javax.websocket.server.ServerEndpoint");

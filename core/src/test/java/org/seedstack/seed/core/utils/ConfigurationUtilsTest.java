@@ -10,9 +10,7 @@ package org.seedstack.seed.core.utils;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
 
-/**
- * @author pierre.thirouin@ext.mpsa.com (Pierre Thirouin)
- */
+
 public class ConfigurationUtilsTest {
 
     @Test

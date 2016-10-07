@@ -11,7 +11,6 @@ package org.seedstack.seed.spi.command;
  * This interface can be implemented by commands that are able to prettify their output object as a string.
  *
  * @param <T> The return parameter of the {@link Command#execute(Object)} method.
- * @author adrien.lauer@mpsa.com
  */
 public interface PrettyCommand<T> extends Command<T> {
     /**

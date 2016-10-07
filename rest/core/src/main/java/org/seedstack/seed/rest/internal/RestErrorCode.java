@@ -11,8 +11,6 @@ import org.seedstack.seed.ErrorCode;
 
 /**
  * Enumerate all REST support errors.
- *
- * @author adrien.lauer@mpsa.com
  */
 public enum RestErrorCode implements ErrorCode {
     CANNOT_MERGE_RESOURCES_WITH_DIFFERENT_DOC,

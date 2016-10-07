@@ -17,8 +17,6 @@ import java.lang.reflect.Method;
 
 /**
  * Arquillian TestEnricher to enable SEED injection on tests.
- *
- * @author adrien.lauer@mpsa.com
  */
 public class InjectionEnricher implements TestEnricher {
     @Inject

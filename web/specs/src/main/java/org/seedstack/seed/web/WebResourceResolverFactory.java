@@ -11,8 +11,6 @@ import javax.servlet.ServletContext;
 
 /**
  * Factory to create a {@link WebResourceResolver}.
- *
- * @author adrien.lauer@gmail.com
  */
 public interface WebResourceResolverFactory {
     /**

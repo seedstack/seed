@@ -22,7 +22,6 @@ import java.lang.reflect.Field;
  * Guice members injector that inject metric instances.
  *
  * @param <T> The type of class to inject.
- * @author adrien.lauer@mpsa.com
  */
 class MetricMembersInjector<T> implements MembersInjector<T> {
     private final MetricRegistry metricRegistry;

@@ -19,8 +19,6 @@ import java.util.Set;
 
 /**
  * LoggingMembersInjector Test
- *
- * @author redouane.loulou@ext.mpsa.com
  */
 public class MembersInjectorTest {
     private Logger log1;

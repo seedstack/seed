@@ -15,8 +15,6 @@ import java.lang.annotation.Target;
 
 /**
  * This annotation marks a class as a CLI command.
- *
- * @author adrien.lauer@mpsa.com
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE})

@@ -11,9 +11,6 @@ import org.seedstack.seed.ErrorCode;
 
 /**
  * SEED core data error codes.
- *
- * @author adrien.lauer@mpsa.com
- * @author pierre.thirouin@ext.mpsa.com
  */
 enum DataErrorCode implements ErrorCode {
     EXPORT_FAILED,

@@ -15,8 +15,6 @@ import java.util.Map;
 
 /**
  * Guice module for configuring SEED core data infrastructure.
- *
- * @author pierre.thirouin@ext.mpsa.com
  */
 class DataModule extends PrivateModule {
 

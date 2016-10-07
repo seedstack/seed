@@ -24,8 +24,6 @@ import java.util.Map;
 
 /**
  * {@link Rule} to start/stop the {@link Kernel} and to inject a {@link BeforeKernel} method.
- *
- * @author thierry.bouvet@mpsa.com
  */
 public class SeedITRule implements TestRule {
     private final Object target;

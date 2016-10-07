@@ -11,9 +11,6 @@ import java.io.Serializable;
 
 /**
  * A named principal represented as a string.
- * 
- * @author yves.dautremay@mpsa.com
- * 
  */
 public class SimplePrincipalProvider implements PrincipalProvider<String>, Serializable {
 

@@ -16,8 +16,6 @@ import org.seedstack.seed.transaction.spi.TransactionMetadata;
 /**
  * This transaction manager implements local transactions behavior, i.e. transactions that cannot span on multiple
  * resources.
- *
- * @author adrien.lauer@mpsa.com
  */
 public class LocalTransactionManager extends AbstractTransactionManager {
     @Override

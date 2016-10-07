@@ -13,9 +13,7 @@ import javax.ws.rs.HttpMethod;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 
-/**
- * @author pierre.thirouin@ext.mpsa.com (Pierre Thirouin)
- */
+
 public class HttpMethodSpecification extends AbstractSpecification<Method> {
 
     @Override

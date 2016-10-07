@@ -16,8 +16,6 @@ import java.util.Map;
 
 /**
  * Command to dump the application diagnostic information.
- *
- * @author adrien.lauer@mpsa.com
  */
 @CommandDefinition(scope = "core", name = "diag", description = "Build a diagnostic report")
 public class DiagnosticCommand implements Command<Map<String, Object>> {

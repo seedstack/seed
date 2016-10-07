@@ -16,8 +16,6 @@ import java.lang.annotation.Target;
 
 /**
  * This annotation marks modules that will be automatically installed by SEED.
- *
- * @author adrien.lauer@mpsa.com
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)

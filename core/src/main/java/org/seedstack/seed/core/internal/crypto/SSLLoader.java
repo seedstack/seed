@@ -21,8 +21,6 @@ import java.security.UnrecoverableKeyException;
 
 /**
  * This class allows to initialize various classes from the Java Cryptography Architecture.
- *
- * @author pierre.thirouin@ext.mpsa.com (Pierre Thirouin)
  */
 class SSLLoader {
 

@@ -7,10 +7,7 @@
  */
 package org.seedstack.seed.core.fixtures.el;
 
-/**
- * @author pierre.thirouin@ext.mpsa.com
- *         Date: 27/06/2014
- */
+
 public class Foo {
     private String message = "hello";
 

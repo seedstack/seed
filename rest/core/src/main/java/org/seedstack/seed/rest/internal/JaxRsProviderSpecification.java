@@ -14,9 +14,7 @@ import javax.ws.rs.ext.Provider;
 
 import static org.seedstack.seed.core.utils.BaseClassSpecifications.classAnnotatedWith;
 
-/**
- * @author pierre.thirouin@ext.mpsa.com (Pierre Thirouin)
- */
+
 public class JaxRsProviderSpecification extends AbstractSpecification<Class<?>> {
     @Override
     @SuppressWarnings("unchecked")

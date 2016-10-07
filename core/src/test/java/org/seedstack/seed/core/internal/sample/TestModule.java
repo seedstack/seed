@@ -5,9 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-/**
- * 
- */
+
 package org.seedstack.seed.core.internal.sample;
 
 import com.google.common.collect.ArrayListMultimap;
@@ -23,9 +21,6 @@ import java.util.Collection;
 
 /**
  * TestModule
- * 
- * @author redouane.loulou@ext.mpsa.com
- * 
  */
 
 public class TestModule extends AbstractSeedModule {

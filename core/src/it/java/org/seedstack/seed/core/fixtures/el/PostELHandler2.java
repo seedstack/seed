@@ -10,10 +10,7 @@ package org.seedstack.seed.core.fixtures.el;
 import org.seedstack.seed.core.ExpressionLanguageHandlerIT;
 import org.seedstack.seed.el.spi.ELHandler;
 
-/**
- * @author pierre.thirouin@ext.mpsa.com
- *         Date: 01/07/2014
- */
+
 public class PostELHandler2 implements ELHandler<PostEL> {
 
     @Override

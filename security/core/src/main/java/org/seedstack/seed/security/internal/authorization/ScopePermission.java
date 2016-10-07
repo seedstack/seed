@@ -13,9 +13,6 @@ import org.seedstack.seed.security.Scope;
 
 /**
  * Represents a permission given on a limited scope
- * 
- * @author yves.dautremay@mpsa.com
- * 
  */
 public class ScopePermission implements Permission {
 

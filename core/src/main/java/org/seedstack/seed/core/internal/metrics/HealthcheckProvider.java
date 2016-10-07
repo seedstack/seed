@@ -14,8 +14,6 @@ import org.seedstack.seed.spi.dependency.DependencyProvider;
 
 /**
  * Provider used to get a {@link HealthCheckRegistry} to register an internal {@link HealthCheck}.
- * @author thierry.bouvet@mpsa.com
- *
  */
 public class HealthcheckProvider implements DependencyProvider{
 

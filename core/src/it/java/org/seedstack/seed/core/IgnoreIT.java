@@ -15,9 +15,7 @@ import org.junit.Test;
 
 import javax.inject.Inject;
 
-/**
- * @author Pierre THIROUIN (pierre.thirouin@ext.inetpsa.com)
- */
+
 public class IgnoreIT {
     @Rule
     public SeedITRule rule = new SeedITRule(this);

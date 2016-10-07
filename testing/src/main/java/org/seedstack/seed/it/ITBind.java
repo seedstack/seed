@@ -17,8 +17,6 @@ import java.lang.annotation.Target;
 /**
  * This annotation can be used in integration tests to mark classes for automatic binding. Classes will be bound to
  * themselves.
- *
- * @author redouane.loulou@ext.mpsa.com
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)

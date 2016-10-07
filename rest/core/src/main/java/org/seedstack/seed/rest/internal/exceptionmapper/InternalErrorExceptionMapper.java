@@ -21,8 +21,6 @@ import javax.ws.rs.ext.Provider;
 /**
  * Default exception mapper for an caught exception with no exception mapper associated.
  * It returns an HTTP status 500 (internal server error).
- *
- * @author pierre.thirouin@ext.mpsa.com (Pierre Thirouin)
  */
 @Provider
 public class InternalErrorExceptionMapper implements ExceptionMapper<Exception> {

@@ -18,8 +18,6 @@ import java.io.OutputStream;
 
 /**
  * Command to export data out of the application.
- *
- * @author adrien.lauer@mpsa.com
  */
 @CommandDefinition(scope = "core", name = "export", description = "Export application data")
 public class DataExportCommand implements StreamCommand {

@@ -9,8 +9,6 @@ package org.seedstack.seed.rest.hal;
 
 /**
  * Builder allowing to create an {@link HalRepresentation}.
- *
- * @author pierre.thirouin@ext.mpsa.com (Pierre Thirouin)
  */
 public final class HalBuilder {
 

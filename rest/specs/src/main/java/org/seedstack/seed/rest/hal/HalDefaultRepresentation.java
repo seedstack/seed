@@ -9,9 +9,7 @@ package org.seedstack.seed.rest.hal;
 
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
 
-/**
- * @author pierre.thirouin@ext.mpsa.com (Pierre Thirouin)
- */
+
 public class HalDefaultRepresentation extends HalRepresentation {
 
     @JsonUnwrapped

@@ -19,8 +19,6 @@ import java.util.Set;
 
 /**
  * Guice type listener that will register any type having a field annotated with {@link Logging}.
- *
- * @author adrien.lauer@mpsa.com
  */
 class LoggingTypeListener implements TypeListener {
     @Override

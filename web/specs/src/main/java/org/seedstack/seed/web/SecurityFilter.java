@@ -15,9 +15,6 @@ import java.lang.annotation.Target;
 /**
  * Annotation used to identify a custom security filter. The value is used to
  * add it in the filter chain.
- * 
- * @author yves.dautremay@mpsa.com
- * 
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)

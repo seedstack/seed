@@ -24,8 +24,6 @@ import static org.mockito.Mockito.when;
 
 /**
  * Tests the server factory which configure an Undertow server.
- *
- * @author pierre.thirouin@ext.mpsa.com (Pierre Thirouin)
  */
 public class ServerFactoryTest {
 

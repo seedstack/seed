@@ -15,8 +15,6 @@ import javax.inject.Singleton;
 
 /**
  * Provider used to get a {@link MetricRegistry} to register an internal {@link Metric}.
- * @author thierry.bouvet@mpsa.com
- *
  */
 @Singleton
 public class MetricsProvider implements DependencyProvider {

@@ -7,10 +7,7 @@
  */
 package org.seedstack.seed.core.fixtures.data;
 
-/**
- * @author pierre.thirouin@ext.mpsa.com
- *         Date: 12/03/14
- */
+
 public class TestDTO {
 
     private String firstName;

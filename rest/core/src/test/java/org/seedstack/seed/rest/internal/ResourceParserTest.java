@@ -30,9 +30,7 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 import java.util.Map;
 
-/**
- * @author pierre.thirouin@ext.mpsa.com (Pierre Thirouin)
- */
+
 @Ignore // Tells nuun to not scan the test class
 @RunWith(JMockit.class)
 public class ResourceParserTest {

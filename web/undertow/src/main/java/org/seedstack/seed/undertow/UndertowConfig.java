@@ -13,8 +13,6 @@ import java.util.Optional;
 
 /**
  * This class holds the properties used to configure undertow.
- *
- * @author pierre.thirouin@ext.mpsa.com (Pierre Thirouin)
  */
 @Config("web.server.undertow")
 public class UndertowConfig {

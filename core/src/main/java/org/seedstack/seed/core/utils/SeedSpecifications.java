@@ -15,8 +15,6 @@ import java.lang.reflect.Modifier;
 
 /**
  * Class with various utility Nuun specifications.
- *
- * @author adrien.lauer@mpsa.com
  */
 public final class SeedSpecifications {
 

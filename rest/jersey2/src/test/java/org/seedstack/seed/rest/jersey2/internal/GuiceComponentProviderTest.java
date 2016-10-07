@@ -39,9 +39,7 @@ import javax.ws.rs.ext.Provider;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
 
-/**
- * @author pierre.thirouin@ext.mpsa.com (Pierre Thirouin)
- */
+
 @RunWith(JMockit.class)
 public class GuiceComponentProviderTest {
 

@@ -13,8 +13,6 @@ import org.seedstack.seed.DataExporter;
  * Holds the definition of a {@link DataExporter}.
  *
  * @param <T> the exported data type.
- * @author adrien.lauer@mpsa.com
- * @author pierre.thirouin@ext.mpsa.com
  */
 class DataExporterDefinition<T> {
     private final Class<? extends DataExporter<T>> dataExporterClass;

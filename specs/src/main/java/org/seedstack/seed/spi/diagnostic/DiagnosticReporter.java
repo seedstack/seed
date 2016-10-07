@@ -12,8 +12,6 @@ import java.util.Map;
 /**
  * Implement this interface to create a diagnostic reporter which will provide persistent writing of diagnostic
  * information.
- *
- * @author adrien.lauer@mpsa.com
  */
 public interface DiagnosticReporter {
     /**

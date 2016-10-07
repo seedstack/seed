@@ -18,8 +18,6 @@ import java.lang.reflect.Method;
 
 /**
  * A listener which adds method interceptors to timed methods.
- *
- * @author yves.dautremay@mpsa.com
  */
 class TimedListener implements TypeListener {
     private final MetricRegistry metricRegistry;

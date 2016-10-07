@@ -15,9 +15,7 @@ import java.lang.reflect.Method;
 /**
  * ELContextBuilder provides a DSL to build ELContext instances.
  *
- * @author pierre.thirouin@ext.mpsa.com
- *         Date: 11/07/2014
- */
+ *  *          */
 public interface ELContextBuilder {
 
     /**

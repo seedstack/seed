@@ -22,8 +22,6 @@ import java.util.zip.ZipEntry;
 
 /**
  * VFS file implementation for WebSphere WSJAR scanning. Scan for directory.
- *
- * @author thierry.bouvet@mpsa.com
  */
 class WsInputDir implements Vfs.Dir {
     private static final Logger LOGGER = LoggerFactory.getLogger(WsInputDir.class);

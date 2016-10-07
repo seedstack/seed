@@ -16,8 +16,6 @@ import java.lang.annotation.Target;
 
 /**
  * This annotation can be used in integration tests to mark modules for automatic installations.
- *
- * @author adrien.lauer@gmail.com
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)

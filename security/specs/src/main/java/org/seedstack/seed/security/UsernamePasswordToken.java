@@ -18,8 +18,6 @@ package org.seedstack.seed.security;
  * time (e.g. memory dump).  This is not good for sensitive information such as passwords. For more information, see the
  * <a href="http://java.sun.com/j2se/1.5.0/docs/guide/security/jce/JCERefGuide.html#PBEEx">Java Cryptography Extension Reference Guide</a>.</p>
  *
- * @author yves.dautremay@mpsa.com
- *
  */
 public class UsernamePasswordToken implements AuthenticationToken {
 

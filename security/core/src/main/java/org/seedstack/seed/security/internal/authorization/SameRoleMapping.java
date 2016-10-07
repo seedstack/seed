@@ -17,9 +17,6 @@ import java.util.Set;
 
 /**
  * RoleMapping that returns Roles which names are the realm data;
- * 
- * @author yves.dautremay@mpsa.com
- * 
  */
 public class SameRoleMapping implements RoleMapping {
 

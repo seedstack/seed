@@ -16,8 +16,6 @@ import java.util.List;
 
 /**
  * Provides classpath scan capabilities for Websphere environment.
- *
- * @author thierry.bouvet@mpsa.com
  */
 public class WebsphereClasspathScanHandler implements ClasspathScanHandler {
     @Override

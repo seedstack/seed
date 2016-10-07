@@ -66,11 +66,11 @@ class TreePrinter {
                 .a(propertyInfo.isMandatory() ? "*" : "")
                 .a(propertyInfo.getName())
                 .reset()
-                .a(":")
+                .a(": ")
                 .fgBright(Ansi.Color.MAGENTA)
                 .a(propertyInfo.getType())
                 .reset()
-                .a(" ")
+                .a(". ")
                 .a(propertyInfo.getShortDescription())
                 .newline();
     }

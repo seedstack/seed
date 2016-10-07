@@ -19,9 +19,6 @@ import javax.inject.Inject;
  * It is mainly a static gateway to {@link SecuritySupport}.
  * <p>
  * It is not meant to be used by projects directly.
- *
- * @author epo.jemba@ext.mpsa.com
- * @author pierre.thirouin@ext.mpsa.com
  */
 public final class SecurityExpressionUtils {
 

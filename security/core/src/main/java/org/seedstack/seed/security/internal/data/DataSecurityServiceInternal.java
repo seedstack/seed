@@ -20,9 +20,6 @@ import java.util.Map;
 
 /**
  * Implementation of the DataSecurityService with the UniversalVisitor library.
- *
- * @author epo.jemba@ext.mpsa.com
- * @author pierre.thirouin@ext.mpsa.com
  */
 class DataSecurityServiceInternal implements DataSecurityService {
 

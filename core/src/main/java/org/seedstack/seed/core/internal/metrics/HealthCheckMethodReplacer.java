@@ -13,8 +13,6 @@ import org.seedstack.seed.core.utils.ProxyMethodReplacer;
 
 /**
  * {@link ProxyMethodReplacer} for a {@link HealthCheck}.
- * @author thierry.bouvet@mpsa.com
- *
  */
 public interface HealthCheckMethodReplacer extends ProxyMethodReplacer{
 

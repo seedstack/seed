@@ -18,9 +18,6 @@ import java.lang.annotation.Annotation;
 
 /**
  * Interceptor for the annotation RequiresPermissions
- * 
- * @author yves.dautremay@mpsa.com
- * 
  */
 public class RequiresPermissionsInterceptor implements MethodInterceptor {
 

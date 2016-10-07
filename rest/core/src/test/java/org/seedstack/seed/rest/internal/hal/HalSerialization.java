@@ -16,9 +16,7 @@ import org.skyscreamer.jsonassert.JSONAssert;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
-/**
- * @author pierre.thirouin@ext.mpsa.com (Pierre Thirouin)
- */
+
 public class HalSerialization {
 
     private static final String message = "{\"currentlyProcessing\":14,\"shippedToday\":20," +

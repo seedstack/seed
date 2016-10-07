@@ -28,8 +28,6 @@ import java.util.Set;
 
 /**
  * Scans the JAX-RS resources for building JSON-HOME resources and HAL links.
- *
- * @author pierre.thirouin@ext.mpsa.com (Pierre Thirouin)
  */
 public class ResourceScanner {
 

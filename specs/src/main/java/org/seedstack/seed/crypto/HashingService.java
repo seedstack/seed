@@ -5,17 +5,13 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-/*
- * Creation : 27 févr. 2015
- */
+
 package org.seedstack.seed.crypto;
 
 /**
  * Support for creating a hash and validating passwords.
  * When creating a hash from a string or char[], a random salt will be generated and
  * given with the hash through a {@link Hash} object.
- *
- * @author yves.dautremay@mpsa.com
  */
 public interface HashingService {
 

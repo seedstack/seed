@@ -13,9 +13,7 @@ import org.seedstack.seed.crypto.CryptoConfig;
 
 import static org.junit.Assert.fail;
 
-/**
- * @author pierre.thirouin@ext.mpsa.com (Pierre Thirouin)
- */
+
 public class KeyStoreLoaderTest {
     private static final String PATH_TO_KEYSTORE = "path/to/keystore";
     private static final String PASSWORD = "password";

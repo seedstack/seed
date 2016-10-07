@@ -5,12 +5,6 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-/*
- * Creation : 10 juin 2015
- */
-/**
- * 
- */
 package org.seedstack.seed.core.internal.crypto;
 
 import com.google.inject.Binder;
@@ -29,8 +23,6 @@ import java.util.Map;
 
 /**
  * Unit test for {@link CryptoModule}
- * 
- * @author thierry.bouvet@mpsa.com
  */
 public class CryptoModuleTest {
 

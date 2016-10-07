@@ -11,10 +11,7 @@ import com.google.inject.AbstractModule;
 import org.seedstack.seed.Install;
 import org.seedstack.seed.core.internal.el.ELBinder;
 
-/**
- * @author pierre.thirouin@ext.mpsa.com
- *         Date: 01/07/2014
- */
+
 @Install
 public class MyModule extends AbstractModule {
 

@@ -14,9 +14,7 @@ import org.junit.Test;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Response;
 
-/**
- * @author pierre.thirouin@ext.mpsa.com (Pierre Thirouin)
- */
+
 @Ignore // Tells nuun to not scan the test class
 public class JaxRsResourceSpecificationTest {
 

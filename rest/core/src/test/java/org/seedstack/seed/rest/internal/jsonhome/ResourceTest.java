@@ -14,9 +14,7 @@ import org.seedstack.seed.SeedException;
 
 import java.util.HashMap;
 
-/**
- * @author pierre.thirouin@ext.mpsa.com (Pierre Thirouin)
- */
+
 public class ResourceTest {
 
     public static final String REL = "http://example.org/rel/catalog";

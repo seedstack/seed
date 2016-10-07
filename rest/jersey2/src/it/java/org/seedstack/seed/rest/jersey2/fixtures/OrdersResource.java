@@ -19,9 +19,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 
-/**
- * @author pierre.thirouin@ext.mpsa.com (Pierre Thirouin)
- */
+
 @Path("orders")
 @Rel(OrdersResource.ORDERS_REL)
 public class OrdersResource {

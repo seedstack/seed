@@ -19,9 +19,7 @@ import org.junit.runner.RunWith;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-/**
- * @author pierre.thirouin@ext.mpsa.com (Pierre Thirouin)
- */
+
 @RunWith(JMockit.class)
 public class GuiceToHK2FactoryTest {
 

@@ -17,8 +17,6 @@ import java.util.Map;
 /**
  * Defines a Link representation as described by the
  * <a href=https://tools.ietf.org/html/draft-kelly-json-hal-06#section-5>HAL specification</a>.
- *
- * @author pierre.thirouin@ext.mpsa.com (Pierre Thirouin)
  */
 @JsonInclude(JsonInclude.Include.NON_DEFAULT)
 public class Link {

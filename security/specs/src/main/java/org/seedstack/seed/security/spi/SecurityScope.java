@@ -17,8 +17,6 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 /**
  * Annotation that gives an explicit name to a Scope class. If a scope class doesn't have this annotation, its
  * simple name will be used instead.
- *
- * @author adrien.lauer@mpsa.com
  */
 @Target({TYPE, METHOD})
 @Retention(RUNTIME)

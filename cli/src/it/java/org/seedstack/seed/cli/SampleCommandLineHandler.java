@@ -11,10 +11,7 @@ import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-/**
- * @author epo.jemba@ext.mpsa.com
- * @author adrien.lauer@mpsa.com
- */
+
 @CliCommand("test")
 public class SampleCommandLineHandler implements CommandLineHandler {
     static boolean called = false;

@@ -18,8 +18,6 @@ import java.lang.annotation.Target;
 
 /**
  * This annotation can be used to manually alter kernel mode for a test class.
- *
- * @author adrien.lauer@mpsa.com
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)

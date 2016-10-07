@@ -15,9 +15,7 @@ import java.lang.annotation.Target;
 /**
  * EL executed before the annotated method.
  *
- * @author pierre.thirouin@ext.mpsa.com
- *         Date: 01/07/2014
- */
+ *  *          */
 @Target({ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)
 public @interface PreEL {

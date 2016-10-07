@@ -22,8 +22,6 @@ import java.security.cert.X509Certificate;
 
 /**
  * A security filter that extracts the certificate from the request for later use
- *
- * @author yves.dautremay@mpsa.com
  */
 class X509CertificateFilter extends AuthenticatingFilter {
 

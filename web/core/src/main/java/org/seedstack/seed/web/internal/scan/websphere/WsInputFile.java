@@ -5,9 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-/*
- * Creation : 22 juin 2015
- */
+
 package org.seedstack.seed.web.internal.scan.websphere;
 
 import org.reflections.vfs.Vfs;
@@ -20,8 +18,6 @@ import java.util.zip.ZipEntry;
 
 /**
  * VFS file implementation for WebSphere WSJAR scanning. Scan for directory.
- *
- * @author thierry.bouvet@mpsa.com
  */
 class WsInputFile implements Vfs.File {
     private final ZipEntry entry;

@@ -16,8 +16,6 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
  * Annotation that marks classes and methods which should be intercepted and checked for subject role ownership.
- *
- * @author yves.dautremay@mpsa.com
  */
 @Target({TYPE, METHOD})
 @Retention(RUNTIME)

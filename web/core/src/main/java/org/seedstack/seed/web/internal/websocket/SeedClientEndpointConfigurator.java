@@ -14,8 +14,6 @@ import javax.websocket.ClientEndpointConfig;
 
 /**
  * Endpoint configurator that makes WebSocket client endpoints injectable.
- *
- * @author pierre.thirouin@ext.mpsa.com
  */
 public class SeedClientEndpointConfigurator extends ClientEndpointConfig.Configurator {
     @Inject

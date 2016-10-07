@@ -9,8 +9,6 @@ package org.seedstack.seed.cli.spi;
 
 /**
  * Describes a command line context.
- *
- * @author adrien.lauer@mpsa.com
  */
 public class CliContext implements org.seedstack.seed.cli.CliContext {
 

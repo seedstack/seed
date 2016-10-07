@@ -24,8 +24,6 @@ import java.util.stream.Collectors;
 
 /**
  * Reads a configuration to resolve permissions of a role.
- *
- * @author yves.dautremay@mpsa.com
  */
 public class ConfigurationRolePermissionResolver implements RolePermissionResolver {
     private static final Logger LOGGER = LoggerFactory.getLogger(ConfigurationRolePermissionResolver.class);

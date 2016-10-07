@@ -17,8 +17,6 @@ import java.lang.annotation.Target;
 
 /**
  * This annotation marks commands to be registered by seed shell support.
- *
- * @author adrien.lauer@mpsa.com
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)

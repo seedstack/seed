@@ -12,8 +12,6 @@ import org.junit.runner.RunWith;
 /**
  * This class can be used as a base for integration tests that need to be recognized by SEED. Tests classes will be
  * bound by SEED on test initialization and will benefit of all SEED features (injection, aop interception, ...).
- *
- * @author redouane.loulou@ext.mpsa.com
  */
 @RunWith(SeedITRunner.class)
 public abstract class AbstractSeedIT {

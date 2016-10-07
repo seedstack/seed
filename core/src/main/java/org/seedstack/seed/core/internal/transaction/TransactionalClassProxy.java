@@ -20,7 +20,6 @@ import java.lang.reflect.Method;
  * apply them to the instance retrieved from {@link TransactionalLink}.get().
  *
  * @param <T> the type of the transactional object.
- * @author redouane.loulou@ext.mpsa.com
  */
 public class TransactionalClassProxy<T> implements MethodHandler {
     private TransactionalLink<T> transactionalLink;

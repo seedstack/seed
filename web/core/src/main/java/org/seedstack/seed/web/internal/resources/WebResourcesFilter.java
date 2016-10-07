@@ -47,8 +47,6 @@ import java.util.zip.GZIPOutputStream;
  * <li>On-the-fly gzipping of resources,</li>
  * <li>Cache friendly.</li>
  * </ul>
- *
- * @author adrien.lauer@mpsa.com
  */
 public class WebResourcesFilter implements Filter {
     private static final String HEADER_IFMODSINCE = "If-Modified-Since";

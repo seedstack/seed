@@ -21,9 +21,7 @@ import java.io.IOException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-/**
- * @author pierre.thirouin@ext.mpsa.com (Pierre Thirouin)
- */
+
 @WebServlet(value = {"/hello"}, initParams = {@WebInitParam(name = "param1", value = HelloWorldServlet.PARAM1_VALUE)})
 public class HelloWorldServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;

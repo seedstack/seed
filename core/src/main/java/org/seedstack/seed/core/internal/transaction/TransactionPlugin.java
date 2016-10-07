@@ -34,8 +34,6 @@ import java.util.Set;
  * <li>holds a registry of all transaction handlers,</li>
  * <li>provides various utilities for implementing transactional behavior.</li>
  * </ul>
- *
- * @author adrien.lauer@mpsa.com
  */
 public class TransactionPlugin extends AbstractSeedPlugin {
     static final Matcher<Method> TRANSACTIONAL_MATCHER = SeedMatchers.methodOrAncestorMetaAnnotatedWith(Transactional.class).and(SeedMatchers.methodNotSynthetic()).and(SeedMatchers.methodNotOfObject());

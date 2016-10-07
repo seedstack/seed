@@ -32,8 +32,6 @@ import java.util.Set;
 
 /**
  * This plugin provides support for the Metrics monitoring library (https://dropwizard.github.io/metrics/).
- *
- * @author yves.dautremay@mpsa.com
  */
 public class MetricsPlugin extends AbstractPlugin {
     private static final Logger LOGGER = LoggerFactory.getLogger(MetricsPlugin.class);

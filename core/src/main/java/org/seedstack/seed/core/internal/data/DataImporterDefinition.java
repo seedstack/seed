@@ -13,8 +13,6 @@ import org.seedstack.seed.DataImporter;
  * Holds the definition of a {@link DataImporter}.
  *
  * @param <T> the imported data type.
- * @author adrien.lauer@mpsa.com
- * @author pierre.thirouin@ext.mpsa.com
  */
 class DataImporterDefinition<T> {
     private final String name;

@@ -45,8 +45,6 @@ import java.util.concurrent.ConcurrentMap;
 /**
  * This class is the Seed framework entry point, which is used create and dispose kernels. It handles global
  * initialization and shutdown automatically.
- *
- * @author adrien.lauer@mpsa.com
  */
 public class Seed {
     private static final Logger LOGGER = LoggerFactory.getLogger(Seed.class);

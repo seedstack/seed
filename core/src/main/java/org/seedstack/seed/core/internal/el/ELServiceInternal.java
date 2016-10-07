@@ -23,9 +23,7 @@ import javax.inject.Inject;
 /**
  * Implementation of ELService.
  *
- * @author pierre.thirouin@ext.mpsa.com
- *         Date: 02/07/2014
- */
+ *  *          */
 class ELServiceInternal implements ELService {
     @Inject
     private ExpressionFactory expressionFactory;

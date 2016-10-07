@@ -5,9 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-/**
- *
- */
+
 package org.seedstack.seed.security.spi.data;
 
 
@@ -16,9 +14,6 @@ import java.util.Map;
 
 /**
  * This class defines the default obfuscation. Data is nullified.
- *
- * @author epo.jemba@ext.mpsa.com
- * @author pierre.thirouin@ext.mpsa.com
  */
 public class NullifyObfuscationHandler implements DataObfuscationHandler<Object> {
 

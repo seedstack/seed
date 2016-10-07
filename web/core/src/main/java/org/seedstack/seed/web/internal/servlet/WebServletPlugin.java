@@ -40,8 +40,6 @@ import java.util.Map;
 /**
  * This plugin detects {@link WebServlet}, {@link WebFilter} and {@link WebListener} annotated classes and provides their
  * corresponding definitions to {@link WebPlugin} for registration with the container.
- *
- * @author adrien.lauer@mpsa.com
  */
 public class WebServletPlugin extends AbstractSeedPlugin implements WebProvider {
     private final List<FilterDefinition> filterDefinitions = new ArrayList<>();

@@ -26,8 +26,6 @@ import java.util.Properties;
 
 /**
  * Plugin that retrieve configured JNDI contexts.
- *
- * @author adrien.lauer@mpsa.com
  */
 public class JndiPlugin extends AbstractSeedPlugin {
     private static final Logger LOGGER = LoggerFactory.getLogger(JndiPlugin.class);

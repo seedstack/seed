@@ -12,8 +12,6 @@ import java.io.OutputStream;
 
 /**
  * Add the ability to work on input, output and error streams to the the {@link Command} interface.
- *
- * @author adrien.lauer@mpsa.com
  */
 public interface StreamCommand extends Command {
 

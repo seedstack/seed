@@ -28,9 +28,6 @@ import java.util.concurrent.Callable;
 
 /**
  * This class executes {@link CommandLineHandler}s found in the classpath.
- *
- * @author epo.jemba@ext.mpsa.com
- * @author adrien.lauer@mpsa.com
  */
 public class CliLauncher implements SeedLauncher {
     private static final Logger LOGGER = LoggerFactory.getLogger(CliLauncher.class);

@@ -21,8 +21,6 @@ package org.seedstack.seed.security;
  * Often there is no need for hierarchical scopes and the provided {@link SimpleScope}
  * can be used directly. Simple scopes are not hierarchical and are just checked
  * with strict equality.
- *
- * @author yves.dautremay@mpsa.com
  */
 public interface Scope {
 

@@ -20,8 +20,6 @@ import java.io.File;
  * <li>The name of the current detected environment,</li>
  * <li>The current status of debug mode (enabled or disabled).</li>
  * </ul>
- *
- * @author adrien.lauer@mpsa.com
  */
 public interface Application {
     /**

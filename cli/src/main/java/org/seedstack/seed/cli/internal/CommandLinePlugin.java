@@ -30,9 +30,6 @@ import static org.seedstack.seed.core.utils.BaseClassSpecifications.classIsInter
 /**
  * This plugin enables to run {@link CommandLineHandler} through
  * {@link CliLauncher}.
- *
- * @author epo.jemba@ext.mpsa.com
- * @author adrien.lauer@mpsa.com
  */
 public class CommandLinePlugin extends AbstractPlugin {
     private static final Logger LOGGER = LoggerFactory.getLogger(CommandLinePlugin.class);

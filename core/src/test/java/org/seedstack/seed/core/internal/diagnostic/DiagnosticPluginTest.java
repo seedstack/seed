@@ -30,8 +30,6 @@ import static org.mockito.Mockito.when;
 
 /**
  * CorePlugin unit test
- *
- * @author redouane.loulou@ext.mpsa.com
  */
 public class DiagnosticPluginTest {
     @DiagnosticDomain("test")

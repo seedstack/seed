@@ -18,8 +18,6 @@ import java.lang.reflect.Method;
 /**
  * A method interceptor which creates a counter for the declaring class with the given name (or the
  * method's name, if none was provided), and which count the execution of the annotated method.
- *
- * @author yves.dautremay@mpsa.com
  */
 final class CountedInterceptor implements MethodInterceptor {
     private final Counter counter;

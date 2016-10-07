@@ -22,8 +22,7 @@ import java.util.TreeMap;
  * Defines the hints representation as defined by the
  * <a href="http://tools.ietf.org/html/draft-nottingham-json-home-03#section-4">IETF draft</a>.
  *
- * @author pierre.thirouin@ext.mpsa.com (Pierre Thirouin)
- * @see org.seedstack.seed.rest.internal.jsonhome.JsonHome
+ *  * @see org.seedstack.seed.rest.internal.jsonhome.JsonHome
  */
 public class Hints {
 

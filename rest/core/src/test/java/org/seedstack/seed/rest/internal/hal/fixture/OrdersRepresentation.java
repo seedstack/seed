@@ -8,8 +8,7 @@
 package org.seedstack.seed.rest.internal.hal.fixture;
 
 /**
-* @author pierre.thirouin@ext.mpsa.com (Pierre Thirouin)
-*/
+* */
 public class OrdersRepresentation {
     private int currentlyProcessing;
     private int shippedToday;

@@ -17,8 +17,6 @@ import java.util.Map;
 
 /**
  * A simple plugin for the {@link org.seedstack.seed.it.SeedITRunner} to add a Rules to the test.
- *
- * @author yves.dautremay@mpsa.com
  */
 public interface ITRunnerPlugin {
     /**

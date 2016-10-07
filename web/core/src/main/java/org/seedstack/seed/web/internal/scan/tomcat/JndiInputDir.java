@@ -28,8 +28,6 @@ import java.util.List;
 
 /**
  * VFS directory implementation for JNDI directory scanning.
- *
- * @author adrien.lauer@mpsa.com
  */
 class JndiInputDir implements Vfs.Dir {
     private static final Logger LOGGER = LoggerFactory.getLogger(JndiInputDir.class);

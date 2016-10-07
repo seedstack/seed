@@ -14,8 +14,6 @@ import java.lang.reflect.Field;
 
 /**
  * Holds the definition of a command argument.
- *
- * @author adrien.lauer@mpsa.com
  */
 class ArgumentDefinition implements Comparable<ArgumentDefinition> {
     private final Field field;

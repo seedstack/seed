@@ -13,8 +13,6 @@ import org.seedstack.seed.SeedException;
 
 /**
  * Unit test for {@link DynamicClassProxy}.
- * @author thierry.bouvet@mpsa.com
- *
  */
 public class DependencyClassProxyTest {
 

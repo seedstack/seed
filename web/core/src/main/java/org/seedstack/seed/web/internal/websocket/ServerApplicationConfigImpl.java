@@ -16,8 +16,6 @@ import java.util.Set;
 /**
  * This implementation of {@link javax.websocket.server.ServerApplicationConfig} disables automatic scanning of
  * server endpoints (already scanned by SEED).
- *
- * @author pierre.thirouin@ext.mpsa.com
  */
 public class ServerApplicationConfigImpl implements ServerApplicationConfig {
     @Override

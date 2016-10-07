@@ -17,8 +17,6 @@ import java.lang.reflect.Field;
 
 /**
  * Guice type listener that will register any type having a field annotated with {@link com.codahale.metrics.annotation.Metric}.
- *
- * @author adrien.lauer@mpsa.com
  */
 class MetricTypeListener implements TypeListener {
     private final MetricRegistry metricRegistry;

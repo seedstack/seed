@@ -13,9 +13,7 @@ import java.util.Iterator;
  * Implement this interface to create a data set exporter that will handle objects of a specific type. A data exporter
  * must be marked with a {@link DataSet} annotation to be recognized.
  *
- * @author adrien.lauer@mpsa.com
- * @author pierre.thirouin@ext.mpsa.com
- * @param <T> the type this data exporter handles.
+ *  *  * @param <T> the type this data exporter handles.
  */
 public interface DataExporter<T> {
     /**

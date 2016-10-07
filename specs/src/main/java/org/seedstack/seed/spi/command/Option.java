@@ -16,8 +16,6 @@ import java.lang.annotation.Target;
 
 /**
  * This annotation marks fields of a command to be injected with the option value set at command invocation.
- *
- * @author adrien.lauer@mpsa.com
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)

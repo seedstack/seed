@@ -16,8 +16,6 @@ import java.util.Set;
 /**
  * Represents a Role and optionnally a collection of scopes on which it is
  * given. This scope must be given to all the permissions this role grants.
- * 
- * @author yves.dautremay@mpsa.com
  */
 public class Role {
 

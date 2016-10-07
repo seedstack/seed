@@ -17,8 +17,6 @@ import javax.ws.rs.ext.Provider;
 
 /**
  * Default {@link AuthorizationException} exception mapper which returns an HTTP status 403 (forbidden).
- *
- * @author pierre.thirouin@ext.mpsa.com (Pierre Thirouin)
  */
 @Provider
 public class AuthorizationExceptionMapper implements ExceptionMapper<AuthorizationException> {

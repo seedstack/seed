@@ -13,8 +13,6 @@ import io.nuun.kernel.api.annotations.Facet;
 /**
  * A plugin to augment security in any entry point while original security
  * plugin is loaded by kernel.
- *
- * @author yves.dautremay@mpsa.com
  */
 @Facet
 public interface SecurityProvider {

@@ -11,9 +11,6 @@ import org.seedstack.seed.security.spi.SecurityScope;
 
 /**
  * A simple kind of scope that can be described as a String which matches in an all or nothing fashion (strict equality).
- *
- * @author yves.dautremay@mpsa.com
- * @author adrien.lauer@mpsa.com
  */
 @SecurityScope("scope")
 public class SimpleScope implements Scope {

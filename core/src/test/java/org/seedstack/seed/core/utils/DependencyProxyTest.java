@@ -14,8 +14,6 @@ import org.seedstack.seed.spi.dependency.DependencyProvider;
 
 /**
  * Unit test for {@link DynamicProxy}.
- * @author thierry.bouvet@mpsa.com
- *
  */
 public class DependencyProxyTest {
 

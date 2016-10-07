@@ -5,9 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-/**
- * 
- */
+
 package org.seedstack.seed.metrics;
 
 import java.lang.annotation.ElementType;
@@ -17,8 +15,6 @@ import java.lang.annotation.Target;
 
 /**
  * Annotation to create a HealthCheck with a predefined name.
- * 
- * @author thierry.bouvet@mpsa.com
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)

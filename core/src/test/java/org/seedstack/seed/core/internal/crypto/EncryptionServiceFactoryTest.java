@@ -35,8 +35,6 @@ import static org.seedstack.seed.core.utils.ConfigurationUtils.buildKey;
 
 /**
  * Unit test for {@link EncryptionServiceFactory}.
- *
- * @author thierry.bouvet@mpsa.com
  */
 public class EncryptionServiceFactoryTest {
 

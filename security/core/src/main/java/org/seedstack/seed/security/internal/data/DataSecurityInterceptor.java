@@ -22,10 +22,6 @@ import static org.seedstack.seed.core.utils.SeedReflectionUtils.methodsFromAnces
 
 /**
  * This interceptor will apply Data Security Service on the annotated parameters and/or on the return value.
- * 
- * @author epo.jemba@ext.mpsa.com
- * @author pierre.thirouin@ext.mpsa.com
- *
  */
 class DataSecurityInterceptor implements MethodInterceptor {
 

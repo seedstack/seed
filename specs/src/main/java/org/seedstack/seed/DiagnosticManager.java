@@ -13,8 +13,6 @@ import java.util.Map;
 
 /**
  * The diagnostic manager enables to access diagnostic information or write it somewhere.
- *
- * @author adrien.lauer@mpsa.com
  */
 public interface DiagnosticManager {
     /**

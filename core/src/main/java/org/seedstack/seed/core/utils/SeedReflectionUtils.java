@@ -29,10 +29,6 @@ import java.util.Set;
 
 /**
  * Class with various utility methods for reflection.
- *
- * @author epo.jemba@ext.mpsa.com
- * @author adrien.lauer@mpsa.com
- * @author pierre.thirouin@ext.mpsa.com
  */
 public final class SeedReflectionUtils {
 

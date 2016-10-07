@@ -15,8 +15,6 @@ import java.util.Optional;
 
 /**
  * Provides access to the application SSL configuration.
- *
- * @author pierre.thirouin@ext.mpsa.com (Pierre Thirouin)
  */
 @Facet
 public interface SSLProvider {

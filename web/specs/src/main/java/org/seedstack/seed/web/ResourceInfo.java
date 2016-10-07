@@ -11,8 +11,6 @@ import java.net.URL;
 
 /**
  * This immutable class holds information relative to a static web resource.
- *
- * @author adrien.lauer@mpsa.com
  */
 public class ResourceInfo {
     final private URL url;

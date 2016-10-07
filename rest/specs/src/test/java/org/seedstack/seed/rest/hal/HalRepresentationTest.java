@@ -16,9 +16,7 @@ import org.junit.Test;
 import java.io.ByteArrayOutputStream;
 import java.util.List;
 
-/**
- * @author pierre.thirouin@ext.mpsa.com (Pierre Thirouin)
- */
+
 public class HalRepresentationTest {
 
     @Test

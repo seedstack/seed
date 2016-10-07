@@ -22,8 +22,6 @@ import java.util.zip.ZipEntry;
 
 /**
  * VFS directory implementation for JNDI JAR scanning.
- *
- * @author adrien.lauer@mpsa.com
  */
 class JndiJarInputDir implements Vfs.Dir {
     private static final Logger LOGGER = LoggerFactory.getLogger(JndiJarInputDir.class);

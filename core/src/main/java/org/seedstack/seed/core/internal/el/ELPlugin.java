@@ -26,10 +26,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-/**
- * @author pierre.thirouin@ext.mpsa.com
- * @author adrien.lauer@mpsa.com
- */
+
 public class ELPlugin extends AbstractSeedPlugin {
     private static final Logger LOGGER = LoggerFactory.getLogger(ELPlugin.class);
     private static final Optional<Class<Object>> EL_MAYBE = SeedReflectionUtils.optionalOfClass("javax.el.Expression");

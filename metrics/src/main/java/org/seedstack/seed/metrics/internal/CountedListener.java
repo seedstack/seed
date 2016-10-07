@@ -18,8 +18,6 @@ import java.lang.reflect.Method;
 
 /**
  * A listener which adds method interceptors to counted methods.
- *
- * @author yves.dautremay@mpsa.com
  */
 class CountedListener implements TypeListener {
     private final MetricRegistry metricRegistry;

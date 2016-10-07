@@ -10,9 +10,7 @@ package org.seedstack.seed.rest.jersey2.fixtures;
 import org.seedstack.seed.rest.RelRegistry;
 import org.seedstack.seed.rest.hal.HalRepresentation;
 
-/**
- * @author pierre.thirouin@ext.mpsa.com (Pierre Thirouin)
- */
+
 public class OrderHal extends HalRepresentation {
 
     private String currency;

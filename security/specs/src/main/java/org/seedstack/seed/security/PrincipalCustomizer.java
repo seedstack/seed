@@ -15,7 +15,6 @@ import java.util.Collection;
  * Interface used to add principals to the one added by a realm
  *
  * @param <R> the Realm type concerned
- * @author yves.dautremay@mpsa.com
  */
 public interface PrincipalCustomizer<R extends Realm> {
 

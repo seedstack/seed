@@ -50,9 +50,6 @@ import java.util.Map;
  *   }
  * }
  * </pre>
- *
- *
- * @author pierre.thirouin@ext.mpsa.com (Pierre Thirouin)
  */
 public class JsonHome {
 

@@ -13,9 +13,7 @@ import io.nuun.kernel.core.AbstractPlugin;
 
 import java.util.Collection;
 
-/**
- * @author Pierre THIROUIN (pierre.thirouin@ext.inetpsa.com)
- */
+
 public class IgnorePlugin extends AbstractPlugin {
 
     @Override

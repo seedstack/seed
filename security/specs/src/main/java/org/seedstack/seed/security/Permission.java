@@ -18,8 +18,6 @@ package org.seedstack.seed.security;
  * <li>document:print</li>
  * <li>user:modify:user-id</li>
  * </ul>
- * 
- * @author yves.dautremay@mpsa.com
  */
 public class Permission {
 

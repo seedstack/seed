@@ -9,9 +9,7 @@ package org.seedstack.seed.core.utils;
 
 import org.seedstack.seed.ErrorCode;
 
-/**
- * @author adrien.lauer@mpsa.com
- */
+
 enum CoreUtilsErrorCode implements ErrorCode {
     CHECK_FAILED,
     DUPLICATED_KEYS_FOUND,

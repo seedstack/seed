@@ -13,8 +13,6 @@ import org.jboss.arquillian.test.spi.TestEnricher;
 
 /**
  * Arquillian extension to register SEED support in the client.
- *
- * @author adrien.lauer@mpsa.com
  */
 public class SeedClientExtension implements LoadableExtension {
     @Override

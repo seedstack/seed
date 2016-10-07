@@ -13,10 +13,7 @@ import org.seedstack.seed.cli.CommandLineHandler;
 
 import java.util.Map;
 
-/**
- * @author epo.jemba@ext.mpsa.com
- * @author adrien.lauer@mpsa.com
- */
+
 class CommandLineModule extends AbstractModule {
     private final Map<String, Class<? extends CommandLineHandler>> cliHandlers;
 

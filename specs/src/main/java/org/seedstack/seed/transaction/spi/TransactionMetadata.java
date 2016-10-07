@@ -19,8 +19,6 @@ import java.util.Map;
 
 /**
  * This class holds transaction metadata attributes.
- *
- * @author adrien.lauer@mpsa.com
  */
 public class TransactionMetadata {
     @Inject

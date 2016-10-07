@@ -11,7 +11,6 @@ package org.seedstack.seed.transaction.spi;
  * Generic exception handler to add custom behaviour on exception during transaction.
  *
  * @param <T> the transaction object type
- * @author epo.jemba@ext.mpsa.com
  */
 public interface ExceptionHandler<T> {
 

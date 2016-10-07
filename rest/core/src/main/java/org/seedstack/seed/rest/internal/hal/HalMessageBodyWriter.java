@@ -21,9 +21,7 @@ import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 
-/**
- * @author pierre.thirouin@ext.mpsa.com (Pierre Thirouin)
- */
+
 @Provider
 public class HalMessageBodyWriter implements MessageBodyWriter<HalRepresentation> {
 

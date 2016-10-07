@@ -36,9 +36,6 @@ import java.util.Set;
 /**
  * This plugin provides core security infrastructure, based on Apache Shiro
  * implementation.
- *
- * @author yves.dautremay@mpsa.com
- * @author adrien.lauer@mpsa.com
  */
 public class SecurityPlugin extends AbstractSeedPlugin {
     private static final Logger LOGGER = LoggerFactory.getLogger(SecurityPlugin.class);

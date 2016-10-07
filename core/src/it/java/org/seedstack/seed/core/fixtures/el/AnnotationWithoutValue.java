@@ -12,10 +12,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-/**
- * @author pierre.thirouin@ext.mpsa.com
- *         Date: 01/07/2014
- */
+
 @Target({ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)
 public @interface AnnotationWithoutValue {

@@ -9,8 +9,6 @@ package org.seedstack.seed.rest;
 
 /**
  * This enumeration lists all possible resource cache policies and can be used as a value of {@link CacheControl}.
- *
- * @author adrien.lauer@mpsa.com
  */
 public enum CachePolicy {
     /**

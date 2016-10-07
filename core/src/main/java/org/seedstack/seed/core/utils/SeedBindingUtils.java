@@ -28,9 +28,6 @@ import java.util.Map;
 
 /**
  * Class with various utility methods for java types.
- *
- * @author redouane.loulou@ext.mpsa.com
- * @author pierre.thirouin@ext.mpsa.com
  */
 public final class SeedBindingUtils {
 

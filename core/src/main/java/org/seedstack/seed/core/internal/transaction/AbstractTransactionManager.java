@@ -30,8 +30,6 @@ import java.util.Set;
 
 /**
  * Base class for common transaction manager behavior.
- *
- * @author adrien.lauer@mpsa.com
  */
 public abstract class AbstractTransactionManager implements TransactionManager {
     private final MethodInterceptorImplementation methodInterceptorImplementation = new MethodInterceptorImplementation();

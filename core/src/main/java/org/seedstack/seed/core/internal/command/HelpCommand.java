@@ -22,8 +22,6 @@ import java.util.TreeSet;
 /**
  * This built-in SEED command displays a list of all available commands or can display available options for a particular
  * command.
- *
- * @author adrien.lauer@mpsa.com
  */
 @org.seedstack.seed.spi.command.CommandDefinition(scope = "", name = "help", description = "Display a list of available commands or help on a specific command")
 public class HelpCommand implements Command {

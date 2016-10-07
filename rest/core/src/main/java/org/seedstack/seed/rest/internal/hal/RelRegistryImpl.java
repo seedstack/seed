@@ -13,9 +13,7 @@ import org.seedstack.seed.rest.hal.Link;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * @author pierre.thirouin@ext.mpsa.com (Pierre Thirouin)
- */
+
 public class RelRegistryImpl implements RelRegistry {
 
     private final Map<String, Link> linksByRel;

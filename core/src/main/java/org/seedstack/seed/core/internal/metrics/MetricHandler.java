@@ -11,8 +11,6 @@ import com.codahale.metrics.Metric;
 
 /**
  * Handler to create a new {@link Metric} object.
- * @author thierry.bouvet@mpsa.com
- *
  */
 public interface MetricHandler {
 

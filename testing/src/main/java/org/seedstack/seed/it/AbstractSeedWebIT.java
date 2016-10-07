@@ -12,8 +12,6 @@ import org.junit.runner.RunWith;
 
 /**
  * This class can be used as a base for integration tests that need to run in a web container.
- *
- * @author adrien.lauer@mpsa.com
  */
 @RunWith(Arquillian.class)
 public abstract class AbstractSeedWebIT {

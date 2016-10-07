@@ -5,9 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-/**
- * 
- */
+
 package org.seedstack.seed.core.internal;
 
 import com.google.common.collect.Multimap;
@@ -22,9 +20,6 @@ import java.util.Map.Entry;
 
 /**
  * This abstract module provides helper methods to address complex bindings.
- * 
- * @author redouane.loulou@ext.mpsa.com
- * @author pierre.thirouin@ext.mpsa.com
  */
 public abstract class AbstractSeedModule extends AbstractModule {
 

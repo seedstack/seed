@@ -25,8 +25,6 @@ import static org.seedstack.seed.rest.internal.UriBuilder.uri;
 /**
  * Provides a set of functions which scan HTTP methods to find various information
  * like rel, path, query parameters, etc.
- *
- * @author pierre.thirouin@ext.mpsa.com (Pierre Thirouin)
  */
 class RESTReflect {
 

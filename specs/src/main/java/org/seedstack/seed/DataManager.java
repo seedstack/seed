@@ -12,9 +12,6 @@ import java.io.OutputStream;
 
 /**
  * The data manager provides data import and export facilities.
- *
- * @author adrien.lauer@mpsa.com
- * @author pierre.thirouin@ext.mpsa.com
  */
 public interface DataManager {
     /**

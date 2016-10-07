@@ -15,10 +15,6 @@ import java.lang.annotation.Target;
 
 /**
  * This annotation marks fields which will be automatically valued by SEED, using application configuration.
- *
- * @author epo.jemba@ext.mpsa.com
- * @author adrien.lauer@mpsa.com
- * @author yves.dautremay@mpsa.com
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)

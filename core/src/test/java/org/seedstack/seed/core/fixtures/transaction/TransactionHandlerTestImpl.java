@@ -12,8 +12,6 @@ import org.seedstack.seed.transaction.spi.TransactionMetadata;
 
 /**
  * test implementation of TransactionHandler
- *
- * @author redouane.loulou@ext.mpsa.com
  */
 public class TransactionHandlerTestImpl implements TransactionHandler<Object> {
 

@@ -11,7 +11,6 @@ package org.seedstack.seed.spi.command;
  * Defines an action that can be executed by a command.
  *
  * @param <T> The return parameter of the execute method.
- * @author adrien.lauer@mpsa.com
  */
 public interface Command<T> {
     /**

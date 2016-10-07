@@ -9,9 +9,6 @@ package org.seedstack.seed.core.utils.sample.TypeResolver;
 
 import java.util.List;
 
-/**
- * @author pierre.thirouin@ext.mpsa.com
- *         Date: 23/09/2014
- */
+
 public class MyObject extends MyAbstractClass<Object, List<?>> {
 }

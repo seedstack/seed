@@ -15,8 +15,6 @@ import java.lang.reflect.Method;
 
 /**
  * Scans methods for JSON-HOME hints.
- *
- * @author pierre.thirouin@ext.mpsa.com (Pierre Thirouin)
  */
 public class HintScanner {
 

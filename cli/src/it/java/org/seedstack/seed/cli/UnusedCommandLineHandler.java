@@ -7,9 +7,7 @@
  */
 package org.seedstack.seed.cli;
 
-/**
- * @author adrien.lauer@mpsa.com
- */
+
 @CliCommand("test2")
 public class UnusedCommandLineHandler implements CommandLineHandler {
     static boolean called = false;

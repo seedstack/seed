@@ -26,8 +26,6 @@ import java.security.cert.CertificateException;
 
 /**
  * This class allows to load a KeyStore from a file. It supports any type of KeyStore or provider.
- *
- * @author pierre.thirouin@ext.mpsa.com (Pierre Thirouin)
  */
 class KeyStoreLoader {
     private static final Logger LOGGER = LoggerFactory.getLogger(KeyStoreLoader.class);

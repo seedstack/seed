@@ -18,8 +18,6 @@ import java.util.concurrent.TimeUnit;
 /**
  * An injection listener which creates a gauge for the declaring class with the given name (or the
  * method's name, if none was provided) which returns the value returned by the annotated method.
- *
- * @author yves.dautremay@mpsa.com
  */
 class CachedGaugeInjectionListener<I> implements InjectionListener<I> {
     private final MetricRegistry metricRegistry;

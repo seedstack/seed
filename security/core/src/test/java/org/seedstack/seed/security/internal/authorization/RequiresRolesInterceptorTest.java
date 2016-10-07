@@ -17,9 +17,7 @@ import org.seedstack.seed.security.SecuritySupport;
 
 import static org.mockito.Mockito.when;
 
-/**
- * @author pierre.thirouin@ext.mpsa.com (Pierre Thirouin)
- */
+
 public class RequiresRolesInterceptorTest {
 
     private RequiresRolesInterceptor underTest;

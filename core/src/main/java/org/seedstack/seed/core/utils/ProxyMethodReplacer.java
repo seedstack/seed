@@ -10,9 +10,6 @@ package org.seedstack.seed.core.utils;
 /**
  * Method replacer used by {@link DependencyProxy} or {@link DependencyClassProxy}.
  * Used to override method for a proxy.
- * 
- * @author thierry.bouvet@mpsa.com
- *
  */
 public interface ProxyMethodReplacer {
 

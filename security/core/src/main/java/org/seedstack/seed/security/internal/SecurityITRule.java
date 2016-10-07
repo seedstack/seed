@@ -22,8 +22,6 @@ import javax.inject.Inject;
 /**
  * MethodRule used to connect a user to seed security if annotation @ {@link WithUser}
  * is present on method or on target class.
- *
- * @author yves.dautremay@mpsa.com
  */
 @ITBind
 class SecurityITRule implements TestRule {

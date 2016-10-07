@@ -13,8 +13,6 @@ import java.net.URI;
  * This interface must be implemented by static Web resource resolvers. They can resolve {@link ResourceRequest}
  * in {@link ResourceInfo} and reverse resolve resource paths (i.e. a classpath resource)
  * in a corresponding URL.
- *
- * @author adrien.lauer@mpsa.com
  */
 public interface WebResourceResolver {
     /**

@@ -19,8 +19,6 @@ import java.io.File;
 
 /**
  * Implementation of the {@link Application} interface.
- *
- * @author adrien.lauer@mpsa.com
  */
 class ApplicationImpl implements Application {
     private static final Logger LOGGER = LoggerFactory.getLogger(ApplicationImpl.class);

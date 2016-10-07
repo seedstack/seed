@@ -17,8 +17,6 @@ import java.util.zip.ZipEntry;
 
 /**
  * VFS file implementation for JNDI JAR scanning.
- *
- * @author adrien.lauer@mpsa.com
  */
 class JndiJarInputFile implements Vfs.File {
     private final ZipEntry entry;

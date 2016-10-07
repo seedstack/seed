@@ -8,8 +8,7 @@
 package org.seedstack.seed.rest.jersey2.fixtures;
 
 /**
-* @author pierre.thirouin@ext.mpsa.com (Pierre Thirouin)
-*/
+* */
 public class OrderRepresentation {
     private float total;
     private String currency;

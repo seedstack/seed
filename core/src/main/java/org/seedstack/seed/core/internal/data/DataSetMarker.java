@@ -11,9 +11,6 @@ import java.util.Iterator;
 
 /**
  * Marker of a data set beginning in a exported stream.
- *
- * @author adrien.lauer@mpsa.com
- * @author pierre.thirouin@ext.mpsa.com
  */
 class DataSetMarker<T> {
     private String group;

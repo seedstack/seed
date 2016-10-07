@@ -9,8 +9,6 @@ package org.seedstack.seed.web;
 
 /**
  * This immutable class represent a request of information relative to a static Web resource.
- *
- * @author adrien.lauer@mpsa.com
  */
 public class ResourceRequest {
     final private String path;

@@ -15,8 +15,6 @@ import java.lang.annotation.Target;
 
 /**
  * This annotation marks the annotated element as secured.
- * 
- * @author epo.jemba@ext.mpsa.com
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)

@@ -37,8 +37,6 @@ import java.util.stream.Collectors;
 
 /**
  * Core plugins that detects configuration files and adds them to the global configuration object.
- *
- * @author adrien.lauer@mpsa.com
  */
 public class ConfigurationPlugin extends AbstractPlugin implements ApplicationProvider {
     private static final String CONFIGURATION_PACKAGE = "META-INF.configuration";

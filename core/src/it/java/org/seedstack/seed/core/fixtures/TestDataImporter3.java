@@ -14,10 +14,7 @@ import org.seedstack.seed.core.fixtures.data.TestDTO2;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * @author pierre.thirouin@ext.mpsa.com
- *         Date: 12/03/14
- */
+
 @DataSet(group="group2", name="test1")
 public class TestDataImporter3 implements DataImporter<TestDTO2> {
     private static List<TestDTO2> data = new ArrayList<>();

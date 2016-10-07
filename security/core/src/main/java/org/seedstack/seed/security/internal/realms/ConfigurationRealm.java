@@ -32,8 +32,6 @@ import java.util.Set;
 
 /**
  * A realm that authentifies users and gives authorities with a configuration file.
- *
- * @author yves.dautremay@mpsa.com
  */
 public class ConfigurationRealm implements Realm {
 
@@ -138,8 +136,7 @@ public class ConfigurationRealm implements Realm {
     /**
      * Class to represent a user from the configuration. In the file, key is the name, first value is the password, following values are the roles.
      *
-     * @author yves.dautremay@mpsa.com
-     */
+     *      */
     static class ConfigurationUser {
 
         private final String username;

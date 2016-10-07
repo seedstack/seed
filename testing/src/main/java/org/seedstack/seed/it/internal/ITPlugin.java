@@ -33,10 +33,6 @@ import java.util.Set;
 
 /**
  * This plugin automatically enable integration tests to be managed by SEED.
- *
- * @author redouane.loulou@ext.mpsa.com
- * @author adrien.lauer@mpsa.com
- * @author epo.jemba@ext.mpsa.com
  */
 public class ITPlugin extends AbstractPlugin {
     public static final String IT_CLASS_NAME = "org.seedstack.seed.it.class.name";

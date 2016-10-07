@@ -14,8 +14,6 @@ import java.lang.annotation.Target;
 
 /**
  * Indicates a resource's relation type.
- *
- * @author pierre.thirouin@ext.mpsa.com (Pierre Thirouin)
  */
 @Target({ElementType.METHOD, ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)

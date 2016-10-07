@@ -11,8 +11,6 @@ import java.util.concurrent.Callable;
 
 /**
  * This interface encapsulates the behaviour that will be handled by the SeedRunner.
- *
- * @author epo.jemba@ext.mpsa.com
  */
 public interface CommandLineHandler extends Callable<Integer> {
 

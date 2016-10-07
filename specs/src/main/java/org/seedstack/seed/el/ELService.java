@@ -15,8 +15,6 @@ import javax.el.ValueExpression;
 
 /**
  * The ELService provides a DSL to facilitate the evaluation of expression language.
- *
- * @author pierre.thirouin@ext.mpsa.com
  */
 public interface ELService {
 
@@ -71,8 +69,7 @@ public interface ELService {
     /**
      * This interface provides methods to add properties for the EL evaluation.
      *
-     * @author pierre.thirouin@ext.mpsa.com
-     */
+     *      */
     interface ELExpressionProvider {
 
         /**
@@ -95,8 +92,7 @@ public interface ELService {
     /**
      * This interface provides methods to evaluate a value expression.
      *
-     * @author pierre.thirouin@ext.mpsa.com
-     */
+     *      */
     interface ValueExpressionProvider {
 
         /**
@@ -117,8 +113,7 @@ public interface ELService {
     /**
      * This interface provides methods to evaluate a method expression.
      *
-     * @author pierre.thirouin@ext.mpsa.com
-     */
+     *      */
     interface MethodExpressionProvider {
 
         /**

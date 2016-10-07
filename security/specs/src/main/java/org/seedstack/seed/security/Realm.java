@@ -14,9 +14,6 @@ import java.util.Set;
 
 /**
  * A realm is used to authenticate and retrieve authorization for a user.
- * 
- * @author yves.dautremay@mpsa.com
- * 
  */
 public interface Realm {
 

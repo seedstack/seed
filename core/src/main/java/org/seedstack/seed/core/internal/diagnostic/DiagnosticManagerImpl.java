@@ -33,8 +33,6 @@ import java.util.concurrent.ConcurrentMap;
 
 /**
  * Implementation of the diagnostic manager.
- *
- * @author adrien.lauer@mpsa.com
  */
 public class DiagnosticManagerImpl implements DiagnosticManager {
     private static final String REPORTER_SYSTEM_PROPERTY = "diagnostic";

@@ -17,9 +17,6 @@ import javax.inject.Inject;
 
 /**
  * Class with various check utilities.
- *
- * @author adrien.lauer@mpsa.com
- * @author epo.jemba@ext.mpsa.com
  */
 public final class SeedCheckUtils {
     @Inject

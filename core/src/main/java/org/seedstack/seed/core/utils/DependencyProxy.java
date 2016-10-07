@@ -27,8 +27,7 @@ import java.lang.reflect.Proxy;
  * });
  *
  * </pre>
- * @author thierry.bouvet@mpsa.com
- *
+ *  *
  * @param <T> class to proxy
  */
 public class DependencyProxy<T> implements InvocationHandler{

@@ -34,8 +34,6 @@ import java.util.Set;
 
 /**
  * This plugin provides support for servlet-based Web applications.
- *
- * @author adrien.lauer@mpsa.com
  */
 public class WebPlugin extends AbstractSeedPlugin {
     public static final String WEB_PLUGIN_PREFIX = "org.seedstack.seed.web";

@@ -11,8 +11,6 @@ import org.seedstack.seed.cli.CliContext;
 
 /**
  * Describes a tool execution context.
- *
- * @author adrien.lauer@mpsa.com
  */
 public class ToolContext implements CliContext {
     private final String toolName;

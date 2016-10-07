@@ -18,8 +18,6 @@ import java.lang.reflect.Method;
 
 /**
  * A listener which adds method interceptors to metered methods.
- *
- * @author yves.dautremay@mpsa.com
  */
 class MeteredListener implements TypeListener {
     private final MetricRegistry metricRegistry;

@@ -9,8 +9,6 @@ package org.seedstack.seed.crypto.spi;
 
 /**
  * Defines the different modes for client authentication with SSL.
- *
- * @author pierre.thirouin@ext.mpsa.com (Pierre Thirouin)
  */
 public enum SSLAuthenticationMode {
     NOT_REQUESTED,

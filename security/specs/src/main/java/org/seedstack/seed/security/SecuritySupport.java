@@ -16,8 +16,6 @@ import java.util.Set;
 
 /**
  * Support for all security concerns. Retrieve connected user principals, get/check roles/permissions...
- * 
- * @author yves.dautremay@mpsa.com
  */
 public interface SecuritySupport {
 

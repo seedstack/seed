@@ -18,8 +18,6 @@ import java.util.Set;
 
 /**
  * The command registry holds all command definitions and can be used to retrieve additional information on them.
- *
- * @author adrien.lauer@mpsa.com
  */
 public interface CommandRegistry {
 

@@ -12,8 +12,6 @@ import java.util.Map;
 /**
  * Implement this interface to create a diagnostic information collector which will be used when a diagnostic
  * report is built.
- *
- * @author adrien.lauer@mpsa.com
  */
 public interface DiagnosticInfoCollector {
     /**

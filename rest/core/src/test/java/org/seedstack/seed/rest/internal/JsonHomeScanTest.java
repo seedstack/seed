@@ -33,8 +33,6 @@ import java.util.Map;
 /**
  * Tests that JAX-RS resources annotated with @Rel on method or class are
  * properly scanned.
- *
- * @author pierre.thirouin@ext.mpsa.com (Pierre Thirouin)
  */
 @Ignore // Tells nuun to not scan the test class
 @RunWith(JMockit.class)
