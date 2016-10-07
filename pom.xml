@@ -38,7 +38,7 @@
         <hibernate-validator.version>5.2.4.Final</hibernate-validator.version>
         <aopalliance.version>1.0</aopalliance.version>
 
-        <compatibility.version>2.1.0</compatibility.version>
+        <compatibility.skip>true</compatibility.skip>
 
         <bintray.package>seed</bintray.package>
     </properties>

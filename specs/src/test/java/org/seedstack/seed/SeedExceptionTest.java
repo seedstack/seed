@@ -94,8 +94,8 @@ public class SeedExceptionTest {
         String text = stringWriter.toString();
 
         assertThat(text).contains("Caused by: java.lang.RuntimeException: yop");
-        assertThat(text).contains("Caused by: org.seedstack.seed.exception.SeedException: (TOTO) Carambar mode");
-        assertThat(text).contains("org.seedstack.seed.exception.SeedException: (TOTO) Joke mode");
+        assertThat(text).contains("Caused by: org.seedstack.seed.SeedException: (TOTO) Carambar mode");
+        assertThat(text).contains("org.seedstack.seed.SeedException: (TOTO) Joke mode");
     }
 
     @Test
