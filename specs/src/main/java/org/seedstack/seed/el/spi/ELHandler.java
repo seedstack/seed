@@ -13,7 +13,7 @@ import java.lang.annotation.Annotation;
  * Implementing this interface allows to define an EL handler which will receive the results of the corresponding
  * EL expression evaluation.
  *
- *  * @param <T> the annotation from which this handler will receive evaluations.
+ * @param <T> the annotation from which this handler will receive evaluations.
  */
 public interface ELHandler<T extends Annotation> {
     /**

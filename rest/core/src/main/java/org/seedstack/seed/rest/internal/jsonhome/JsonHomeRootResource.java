@@ -20,7 +20,7 @@ import javax.ws.rs.core.UriInfo;
 /**
  * Exposes the JSON-HOME resource on the application root path.
  *
- *  * @see org.seedstack.seed.rest.internal.jsonhome.JsonHome
+ * @see org.seedstack.seed.rest.internal.jsonhome.JsonHome
  */
 public class JsonHomeRootResource implements RootResource {
     private final JsonHome jsonHome;

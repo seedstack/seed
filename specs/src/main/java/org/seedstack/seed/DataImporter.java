@@ -11,7 +11,7 @@ package org.seedstack.seed;
  * Implement this interface to create a data set importer that will handle objects of a specific type. A data importer
  * must be marked with a {@link DataSet} annotation to be recognized.
  *
- *  *  * @param <T> the type this data importer handles.
+ * @param <T> the type this data importer handles.
  */
 public interface DataImporter<T> {
     /**

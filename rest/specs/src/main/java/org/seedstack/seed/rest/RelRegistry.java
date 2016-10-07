@@ -14,7 +14,7 @@ import org.seedstack.seed.rest.hal.Link;
  * A registry which can provide href or HAL link associated to a given relation type.
  * It avoids you to duplicate href over the application.
  *
- *  * @see HalBuilder
+ * @see HalBuilder
  */
 public interface RelRegistry {
 

@@ -15,7 +15,7 @@ package org.seedstack.seed.security.data;
  * DataSecurityService is used in conjunction with {@link org.seedstack.seed.security.spi.data.DataSecurityHandler}.
  * {@link org.seedstack.seed.security.spi.data.DataSecurityHandler} will help functions developers to add behaviour on annotation.
  *
- *  * @see org.seedstack.seed.security.spi.data.DataSecurityHandler
+ * @see org.seedstack.seed.security.spi.data.DataSecurityHandler
  */
 public interface DataSecurityService {
 

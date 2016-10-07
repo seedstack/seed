@@ -21,7 +21,7 @@ import java.util.Map;
  * The JSON-HOME representation of a REST resource as defined by the
  * <a href="http://tools.ietf.org/html/draft-nottingham-json-home-03#section-3">IETF draft</a>.
  *
- *  * @see org.seedstack.seed.rest.internal.jsonhome.JsonHome
+ * @see org.seedstack.seed.rest.internal.jsonhome.JsonHome
  */
 public class Resource {
 
