@@ -7,7 +7,7 @@
  */
 package org.seedstack.seed.core.internal.transaction;
 
-import org.seedstack.shed.exception.ErrorCode;
+import org.seedstack.seed.ErrorCode;
 
 enum TransactionErrorCode implements ErrorCode {
     NO_TRANSACTION_ALLOWED_WHEN_USING_PROPAGATION_NEVER,

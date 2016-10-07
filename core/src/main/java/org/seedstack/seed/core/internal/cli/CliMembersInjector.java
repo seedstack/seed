@@ -14,7 +14,7 @@ import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
-import org.seedstack.shed.exception.SeedException;
+import org.seedstack.seed.SeedException;
 import org.seedstack.seed.cli.CliContext;
 import org.seedstack.seed.cli.CliOption;
 

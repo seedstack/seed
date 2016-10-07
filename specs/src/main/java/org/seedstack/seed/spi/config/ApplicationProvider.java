@@ -10,7 +10,14 @@ package org.seedstack.seed.spi.config;
 import io.nuun.kernel.api.annotations.Facet;
 import org.seedstack.seed.Application;
 
+/**
+ * This facet can be requested as dependency by plugins to access the application object. This is most useful to
+ * access the configuration.
+ */
 @Facet
 public interface ApplicationProvider {
+    /**
+     * @return the application object.
+     */
     Application getApplication();
 }

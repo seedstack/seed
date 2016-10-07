@@ -10,7 +10,7 @@ package org.seedstack.seed.core.internal.transaction;
 import javassist.util.proxy.MethodHandler;
 import javassist.util.proxy.ProxyFactory;
 import org.seedstack.seed.transaction.spi.TransactionalLink;
-import org.seedstack.shed.exception.SeedException;
+import org.seedstack.seed.SeedException;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;

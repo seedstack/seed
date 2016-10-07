@@ -8,7 +8,7 @@
 package org.seedstack.seed.core.internal.el;
 
 import org.apache.commons.lang.StringUtils;
-import org.seedstack.shed.exception.SeedException;
+import org.seedstack.seed.SeedException;
 import org.seedstack.seed.core.utils.SeedCheckUtils;
 import org.seedstack.seed.el.ELService;
 

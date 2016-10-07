@@ -7,7 +7,7 @@
  */
 package org.seedstack.seed.core.internal.el;
 
-import org.seedstack.shed.exception.ErrorCode;
+import org.seedstack.seed.ErrorCode;
 
 enum ExpressionLanguageErrorCode implements ErrorCode {
     EL_ANNOTATION_IS_ALREADY_BIND,

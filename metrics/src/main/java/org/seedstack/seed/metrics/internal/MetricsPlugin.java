@@ -19,8 +19,7 @@ import io.nuun.kernel.core.AbstractPlugin;
 import org.seedstack.seed.core.internal.CorePlugin;
 import org.seedstack.seed.core.internal.metrics.HealthcheckProvider;
 import org.seedstack.seed.core.internal.metrics.MetricsProvider;
-import org.seedstack.shed.exception.SeedException;
-import org.seedstack.shed.reflect.Maybe;
+import org.seedstack.seed.SeedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,6 +27,7 @@ import javax.inject.Inject;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -54,14 +54,14 @@ public class MetricsPlugin extends AbstractPlugin {
     @SuppressWarnings("unchecked")
     public InitState init(InitContext initContext) {
         CorePlugin corePlugin = initContext.dependency(CorePlugin.class);
-        Maybe<MetricsProvider> metricsProvider = corePlugin.getDependency(MetricsProvider.class);
+        Optional<MetricsProvider> metricsProvider = corePlugin.getDependency(MetricsProvider.class);
         if (!metricsProvider.isPresent()) {
             throw SeedException.createNew(MetricsErrorCode.METRICS_REGISTRY_NOT_FOUND);
         }
         metricRegistry = metricsProvider.get().getMetricRegistry();
 
-        Maybe<HealthcheckProvider> healthCheckProvider = corePlugin.getDependency(HealthcheckProvider.class);
-        if (!metricsProvider.isPresent()) {
+        Optional<HealthcheckProvider> healthCheckProvider = corePlugin.getDependency(HealthcheckProvider.class);
+        if (!healthCheckProvider.isPresent()) {
             throw SeedException.createNew(MetricsErrorCode.HEALTH_CHECK_REGISTRY_NOT_FOUND);
         }
         healthCheckRegistry = healthCheckProvider.get().getHealthCheckRegistry();

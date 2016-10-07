@@ -8,7 +8,7 @@
 package org.seedstack.seed.security.internal.authorization;
 
 import org.apache.commons.lang.StringUtils;
-import org.seedstack.shed.exception.SeedException;
+import org.seedstack.seed.SeedException;
 import org.seedstack.seed.security.Role;
 import org.seedstack.seed.security.RoleMapping;
 import org.seedstack.seed.security.Scope;

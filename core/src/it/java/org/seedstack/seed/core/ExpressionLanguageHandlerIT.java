@@ -15,7 +15,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.seedstack.seed.core.fixtures.el.Foo;
 import org.seedstack.seed.core.fixtures.el.SomeDTO;
-import org.seedstack.shed.exception.SeedException;
+import org.seedstack.seed.SeedException;
 
 /**
  * @author pierre.thirouin@ext.mpsa.com

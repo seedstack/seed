@@ -7,7 +7,7 @@
  */
 package org.seedstack.seed.rest.internal;
 
-import org.seedstack.shed.exception.ErrorCode;
+import org.seedstack.seed.ErrorCode;
 
 /**
  * Enumerate all REST support errors.

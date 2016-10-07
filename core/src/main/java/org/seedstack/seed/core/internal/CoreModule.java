@@ -13,17 +13,17 @@ import com.google.inject.TypeLiteral;
 import com.google.inject.util.Types;
 import org.seedstack.seed.core.utils.SeedCheckUtils;
 import org.seedstack.seed.spi.dependency.DependencyProvider;
-import org.seedstack.shed.reflect.Maybe;
 
 import java.util.Collection;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 
 class CoreModule extends AbstractModule {
     private final Collection<Module> subModules;
-    private final Map<Class<?>, Maybe<? extends DependencyProvider>> optionalDependencies;
+    private final Map<Class<?>, Optional<? extends DependencyProvider>> optionalDependencies;
 
-    CoreModule(Collection<Module> subModules, Map<Class<?>, Maybe<? extends DependencyProvider>> optionalDependencies) {
+    CoreModule(Collection<Module> subModules, Map<Class<?>, Optional<? extends DependencyProvider>> optionalDependencies) {
         this.subModules = subModules;
         this.optionalDependencies = optionalDependencies;
     }
@@ -37,9 +37,9 @@ class CoreModule extends AbstractModule {
         subModules.forEach(this::install);
 
         // Optional dependencies
-        for (final Entry<Class<?>, Maybe<? extends DependencyProvider>> dependency : this.optionalDependencies.entrySet()) {
+        for (final Entry<Class<?>, Optional<? extends DependencyProvider>> dependency : this.optionalDependencies.entrySet()) {
             @SuppressWarnings("unchecked")
-            TypeLiteral<Maybe<? extends DependencyProvider>> typeLiteral = (TypeLiteral<Maybe<? extends DependencyProvider>>) TypeLiteral.get(Types.newParameterizedType(Maybe.class, dependency.getKey()));
+            TypeLiteral<Optional<? extends DependencyProvider>> typeLiteral = (TypeLiteral<Optional<? extends DependencyProvider>>) TypeLiteral.get(Types.newParameterizedType(Optional.class, dependency.getKey()));
             bind(typeLiteral).toInstance(dependency.getValue());
         }
     }

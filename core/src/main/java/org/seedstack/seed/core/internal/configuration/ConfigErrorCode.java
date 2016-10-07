@@ -7,7 +7,7 @@
  */
 package org.seedstack.seed.core.internal.configuration;
 
-import org.seedstack.shed.exception.ErrorCode;
+import org.seedstack.seed.ErrorCode;
 
 public enum ConfigErrorCode implements ErrorCode {
     INVALID_CONFIG_PATH, INVALID_CONFIG_PROPERTY

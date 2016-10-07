@@ -13,7 +13,7 @@ import io.nuun.kernel.api.config.KernelConfiguration;
 import org.junit.rules.MethodRule;
 import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.Statement;
-import org.seedstack.shed.exception.SeedException;
+import org.seedstack.seed.SeedException;
 import org.seedstack.seed.cli.WithCommandLine;
 import org.seedstack.seed.it.ITBind;
 import org.seedstack.seed.it.spi.KernelRule;

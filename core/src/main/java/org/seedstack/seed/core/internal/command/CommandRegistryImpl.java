@@ -12,7 +12,7 @@ import com.google.inject.Injector;
 import com.google.inject.Key;
 import com.google.inject.name.Names;
 import org.seedstack.seed.CommandRegistry;
-import org.seedstack.shed.exception.SeedException;
+import org.seedstack.seed.SeedException;
 import org.seedstack.seed.spi.command.Argument;
 import org.seedstack.seed.spi.command.Command;
 import org.seedstack.seed.spi.command.Option;

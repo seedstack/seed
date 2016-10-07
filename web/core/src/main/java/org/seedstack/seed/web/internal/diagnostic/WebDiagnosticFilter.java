@@ -8,7 +8,7 @@
 package org.seedstack.seed.web.internal.diagnostic;
 
 import org.seedstack.seed.DiagnosticManager;
-import org.seedstack.shed.exception.SeedException;
+import org.seedstack.seed.SeedException;
 import org.seedstack.seed.web.internal.ServletContextUtils;
 import org.seedstack.seed.web.internal.WebErrorCode;
 

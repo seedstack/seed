@@ -13,23 +13,21 @@ import com.google.inject.TypeLiteral;
 import mockit.Mocked;
 import mockit.Verifications;
 import org.junit.Test;
-import org.seedstack.seed.Application;
-import org.seedstack.seed.DiagnosticManager;
 import org.seedstack.seed.spi.dependency.DependencyProvider;
-import org.seedstack.shed.reflect.Maybe;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 public class CoreModuleTest {
     @Test
-    public void testConfigure(@Mocked final Binder binder, @Mocked final DependencyProvider myProvider, @Mocked final Application application, @Mocked final DiagnosticManager diagnosticManager) {
+    public void testConfigure(@Mocked final Binder binder, @Mocked final DependencyProvider myProvider) {
         Collection<Module> subModules = new ArrayList<>();
 
-        Map<Class<?>, Maybe<? extends DependencyProvider>> optionalDependencies = new HashMap<>();
-        final Maybe<DependencyProvider> maybe = new Maybe<>(myProvider);
+        Map<Class<?>, Optional<? extends DependencyProvider>> optionalDependencies = new HashMap<>();
+        final Optional<DependencyProvider> maybe = Optional.of(myProvider);
         optionalDependencies.put(DependencyProvider.class, maybe);
 
         CoreModule module = new CoreModule(subModules, optionalDependencies);
@@ -37,7 +35,7 @@ public class CoreModuleTest {
 
         new Verifications() {
             {
-                binder.bind(new TypeLiteral<Maybe<DependencyProvider>>() {
+                binder.bind(new TypeLiteral<Optional<DependencyProvider>>() {
                 }).toInstance(maybe);
             }
         };

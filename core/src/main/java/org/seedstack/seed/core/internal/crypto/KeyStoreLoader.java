@@ -9,7 +9,7 @@ package org.seedstack.seed.core.internal.crypto;
 
 import com.google.common.base.Strings;
 import org.seedstack.seed.crypto.CryptoConfig;
-import org.seedstack.shed.exception.SeedException;
+import org.seedstack.seed.SeedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

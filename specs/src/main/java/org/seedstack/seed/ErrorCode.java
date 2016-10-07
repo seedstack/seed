@@ -5,12 +5,11 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-package org.seedstack.seed.undertow.internal;
+package org.seedstack.seed;
 
-import org.seedstack.seed.ErrorCode;
+/**
+ * Marker interface for error codes used in {@link SeedException} classes.
+ */
+public interface ErrorCode {
 
-enum UndertowErrorCode implements ErrorCode {
-    MISSING_SSL_CONFIGURATION,
-    MISSING_UNDERTOW_PLUGIN,
-    UNEXPECTED_EXCEPTION
 }

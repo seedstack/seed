@@ -15,7 +15,7 @@ import org.glassfish.jersey.internal.inject.Injections;
 import org.glassfish.jersey.server.spi.ComponentProvider;
 import org.jvnet.hk2.guice.bridge.api.GuiceBridge;
 import org.jvnet.hk2.guice.bridge.api.GuiceIntoHK2Bridge;
-import org.seedstack.shed.exception.SeedException;
+import org.seedstack.seed.SeedException;
 
 import javax.servlet.ServletContext;
 import javax.ws.rs.Path;

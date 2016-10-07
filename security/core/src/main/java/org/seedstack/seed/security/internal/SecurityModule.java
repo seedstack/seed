@@ -20,7 +20,7 @@ import org.seedstack.seed.security.Scope;
 import org.seedstack.seed.security.internal.data.DataSecurityModule;
 import org.seedstack.seed.security.internal.securityexpr.SecurityExpressionModule;
 import org.seedstack.seed.security.spi.data.DataSecurityHandler;
-import org.seedstack.shed.exception.SeedException;
+import org.seedstack.seed.SeedException;
 
 import java.util.Collection;
 import java.util.List;

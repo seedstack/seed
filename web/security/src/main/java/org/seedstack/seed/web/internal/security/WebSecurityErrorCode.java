@@ -7,7 +7,7 @@
  */
 package org.seedstack.seed.web.internal.security;
 
-import org.seedstack.shed.exception.ErrorCode;
+import org.seedstack.seed.ErrorCode;
 
 enum WebSecurityErrorCode implements ErrorCode {
     INVALID_XSRF_TOKEN,

@@ -14,7 +14,7 @@ import org.seedstack.coffig.Config;
 import org.seedstack.seed.cli.CliArgs;
 import org.seedstack.seed.core.internal.AbstractSeedTool;
 import org.seedstack.seed.core.internal.configuration.ConfigErrorCode;
-import org.seedstack.shed.exception.SeedException;
+import org.seedstack.seed.SeedException;
 
 import java.util.ArrayList;
 import java.util.Arrays;

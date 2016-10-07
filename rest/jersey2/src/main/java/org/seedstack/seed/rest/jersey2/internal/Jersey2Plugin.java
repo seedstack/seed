@@ -147,11 +147,11 @@ public class Jersey2Plugin extends AbstractPlugin implements WebProvider {
     }
 
     private boolean isJspFeaturePresent() {
-        return SeedReflectionUtils.forName("org.glassfish.jersey.server.mvc.jsp.JspMvcFeature").isPresent();
+        return SeedReflectionUtils.optionalOfClass("org.glassfish.jersey.server.mvc.jsp.JspMvcFeature").isPresent();
     }
 
     private boolean isMultipartFeaturePresent() {
-        return SeedReflectionUtils.forName("org.glassfish.jersey.media.multipart.MultiPartFeature").isPresent();
+        return SeedReflectionUtils.optionalOfClass("org.glassfish.jersey.media.multipart.MultiPartFeature").isPresent();
     }
 
     @Override

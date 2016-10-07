@@ -14,7 +14,7 @@ import io.nuun.kernel.api.plugin.context.InitContext;
 import io.nuun.kernel.api.plugin.request.ClasspathScanRequest;
 import org.fusesource.jansi.Ansi;
 import org.seedstack.seed.cli.CliOption;
-import org.seedstack.shed.exception.ErrorCode;
+import org.seedstack.seed.ErrorCode;
 
 import javax.annotation.Nullable;
 import java.io.File;

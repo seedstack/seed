@@ -12,10 +12,9 @@ import io.nuun.kernel.api.plugin.InitState;
 import io.nuun.kernel.api.plugin.context.InitContext;
 import io.nuun.kernel.api.plugin.request.ClasspathScanRequest;
 import org.seedstack.seed.Install;
-import org.seedstack.shed.exception.SeedException;
 import org.seedstack.seed.core.utils.SeedReflectionUtils;
 import org.seedstack.seed.spi.dependency.DependencyProvider;
-import org.seedstack.shed.reflect.Maybe;
+import org.seedstack.seed.SeedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,6 +23,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -36,7 +36,7 @@ public class CorePlugin extends AbstractSeedPlugin {
     private static final Logger LOGGER = LoggerFactory.getLogger(CorePlugin.class);
     private static final String SEEDSTACK_PACKAGE = "org.seedstack";
     private final Set<Class<? extends Module>> seedModules = new HashSet<>();
-    private final Map<Class<?>, Maybe<? extends DependencyProvider>> optionalDependencies = new HashMap<>();
+    private final Map<Class<?>, Optional<? extends DependencyProvider>> optionalDependencies = new HashMap<>();
 
     @Override
     public String name() {
@@ -106,27 +106,27 @@ public class CorePlugin extends AbstractSeedPlugin {
     }
 
     /**
-     * Return {@link Maybe} which contains the provider if dependency is present.
-     * Always return a {@link Maybe} instance.
+     * Return {@link Optional} which contains the provider if dependency is present.
+     * Always return a {@link Optional} instance.
      *
      * @param providerClass provider to use an optional dependency
-     * @return {@link Maybe} which contains the provider if dependency is present
+     * @return {@link Optional} which contains the provider if dependency is present
      */
     @SuppressWarnings("unchecked")
-    public <T extends DependencyProvider> Maybe<T> getDependency(Class<T> providerClass) {
+    public <T extends DependencyProvider> Optional<T> getDependency(Class<T> providerClass) {
         if (!optionalDependencies.containsKey(providerClass)) {
-            Maybe<T> maybe = new Maybe<>(null);
+            Optional<T> optionalDependency = Optional.empty();
             try {
                 T provider = providerClass.newInstance();
-                if (SeedReflectionUtils.forName(provider.getClassToCheck()).isPresent()) {
+                if (SeedReflectionUtils.optionalOfClass(provider.getClassToCheck()).isPresent()) {
                     LOGGER.debug("Found a new optional provider [{}] for [{}]", providerClass.getName(), provider.getClassToCheck());
-                    maybe = new Maybe<>(provider);
+                    optionalDependency = Optional.of(provider);
                 }
             } catch (Exception e) {
                 throw SeedException.wrap(e, CoreErrorCode.UNABLE_TO_INSTANTIATE_CLASS).put("class", providerClass.getCanonicalName());
             }
-            optionalDependencies.put(providerClass, maybe);
+            optionalDependencies.put(providerClass, optionalDependency);
         }
-        return (Maybe<T>) optionalDependencies.get(providerClass);
+        return (Optional<T>) optionalDependencies.get(providerClass);
     }
 }

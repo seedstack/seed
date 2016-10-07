@@ -22,7 +22,7 @@ import org.seedstack.seed.transaction.spi.TransactionHandler;
 import org.seedstack.seed.transaction.spi.TransactionManager;
 import org.seedstack.seed.transaction.spi.TransactionMetadata;
 import org.seedstack.seed.transaction.spi.TransactionMetadataResolver;
-import org.seedstack.shed.exception.SeedException;
+import org.seedstack.seed.SeedException;
 
 import javax.inject.Inject;
 import java.lang.reflect.Method;

@@ -9,7 +9,7 @@ package org.seedstack.seed.core.internal.lifecycle;
 
 import io.nuun.kernel.spi.KernelExtension;
 import org.seedstack.seed.LifecycleListener;
-import org.seedstack.shed.exception.SeedException;
+import org.seedstack.seed.SeedException;
 import org.seedstack.seed.core.internal.CoreErrorCode;
 
 import java.util.Collection;

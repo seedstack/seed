@@ -8,7 +8,7 @@
 package org.seedstack.seed.core.internal.command;
 
 import com.google.common.base.Strings;
-import org.seedstack.shed.exception.SeedException;
+import org.seedstack.seed.SeedException;
 import org.seedstack.seed.spi.command.Argument;
 import org.seedstack.seed.spi.command.Command;
 

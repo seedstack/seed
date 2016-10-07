@@ -10,7 +10,7 @@ package org.seedstack.seed.core.internal.cli;
 import com.google.inject.TypeLiteral;
 import com.google.inject.spi.TypeEncounter;
 import com.google.inject.spi.TypeListener;
-import org.seedstack.shed.exception.SeedException;
+import org.seedstack.seed.SeedException;
 import org.seedstack.seed.cli.CliArgs;
 import org.seedstack.seed.cli.CliCommand;
 import org.seedstack.seed.cli.CliContext;

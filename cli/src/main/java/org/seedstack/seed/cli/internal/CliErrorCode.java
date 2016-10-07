@@ -7,7 +7,7 @@
  */
 package org.seedstack.seed.cli.internal;
 
-import org.seedstack.shed.exception.ErrorCode;
+import org.seedstack.seed.ErrorCode;
 
 enum CliErrorCode implements ErrorCode {
     COMMAND_LINE_HANDLER_NOT_FOUND,

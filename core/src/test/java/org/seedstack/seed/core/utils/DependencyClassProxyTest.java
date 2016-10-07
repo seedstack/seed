@@ -9,7 +9,7 @@ package org.seedstack.seed.core.utils;
 
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
-import org.seedstack.shed.exception.SeedException;
+import org.seedstack.seed.SeedException;
 
 /**
  * Unit test for {@link DynamicClassProxy}.

@@ -21,9 +21,9 @@ import org.junit.Test;
 import org.seedstack.seed.core.internal.metrics.MetricsProvider;
 import org.seedstack.seed.core.utils.DependencyProxy;
 import org.seedstack.seed.core.utils.ProxyMethodReplacer;
-import org.seedstack.shed.reflect.Maybe;
 
 import javax.inject.Inject;
+import java.util.Optional;
 
 public class MetricsIT {
     @Rule
@@ -35,7 +35,7 @@ public class MetricsIT {
         static final String NEW_GAUGE = "new-gauge";
         static final String NEW_METRIC = "new-metric";
         @Inject
-        Maybe<MetricsProvider> metricsProvider;
+        Optional<MetricsProvider> metricsProvider;
 
         void start() {
             if (metricsProvider.isPresent()) {
@@ -68,7 +68,7 @@ public class MetricsIT {
     public void test() {
         MyObjectWithMetrics o = injector.getInstance(MyObjectWithMetrics.class);
         o.start();
-        Maybe<MetricsProvider> provider = injector.getInstance(Key.get(new TypeLiteral<Maybe<MetricsProvider>>() {
+        Optional<MetricsProvider> provider = injector.getInstance(Key.get(new TypeLiteral<Optional<MetricsProvider>>() {
         }));
         Assertions.assertThat(provider.isPresent()).isTrue();
         MetricRegistry metricRegistry = provider.get().getMetricRegistry();

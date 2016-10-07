@@ -13,7 +13,7 @@ import org.seedstack.coffig.Coffig;
 import org.seedstack.coffig.node.ArrayNode;
 import org.seedstack.coffig.node.ValueNode;
 import org.seedstack.seed.Configuration;
-import org.seedstack.shed.exception.SeedException;
+import org.seedstack.seed.SeedException;
 import org.seedstack.seed.core.internal.CoreErrorCode;
 
 import java.lang.reflect.Field;

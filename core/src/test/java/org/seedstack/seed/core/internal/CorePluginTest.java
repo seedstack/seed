@@ -19,16 +19,16 @@ import org.junit.Test;
 import org.seedstack.coffig.Coffig;
 import org.seedstack.seed.Application;
 import org.seedstack.seed.Install;
-import org.seedstack.shed.exception.SeedException;
 import org.seedstack.seed.spi.config.ApplicationProvider;
 import org.seedstack.seed.spi.dependency.DependencyProvider;
-import org.seedstack.shed.reflect.Maybe;
+import org.seedstack.seed.SeedException;
 
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 import static org.mockito.Mockito.mock;
@@ -123,9 +123,9 @@ public class CorePluginTest {
         };
         InitContext initContext = mockInitContextForCore(null, myProvider.getClass());
         corePlugin.init(initContext);
-        Maybe<?> maybe = corePlugin.getDependency(myProvider.getClass());
-        Assertions.assertThat(maybe).isNotNull();
-        Assertions.assertThat(maybe.isPresent()).isTrue();
+        Optional<?> optionalDependency = corePlugin.getDependency(myProvider.getClass());
+        Assertions.assertThat(optionalDependency).isNotNull();
+        Assertions.assertThat(optionalDependency.isPresent()).isTrue();
     }
 
     @Test
@@ -138,9 +138,9 @@ public class CorePluginTest {
         };
         InitContext initContext = mockInitContextForCore(null, myProvider.getClass());
         corePlugin.init(initContext);
-        Maybe<?> maybe = corePlugin.getDependency(myProvider.getClass());
-        Assertions.assertThat(maybe).isNotNull();
-        Assertions.assertThat(maybe.isPresent()).isFalse();
+        Optional<?> optionalDependency = corePlugin.getDependency(myProvider.getClass());
+        Assertions.assertThat(optionalDependency).isNotNull();
+        Assertions.assertThat(optionalDependency.isPresent()).isFalse();
     }
 
     @Test(expected = SeedException.class)

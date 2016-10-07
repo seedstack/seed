@@ -10,8 +10,8 @@ package org.seedstack.seed.core.utils;
 import com.google.inject.ConfigurationException;
 import com.google.inject.Injector;
 import org.kametic.specifications.Specification;
-import org.seedstack.shed.exception.ErrorCode;
-import org.seedstack.shed.exception.SeedException;
+import org.seedstack.seed.ErrorCode;
+import org.seedstack.seed.SeedException;
 
 import javax.inject.Inject;
 

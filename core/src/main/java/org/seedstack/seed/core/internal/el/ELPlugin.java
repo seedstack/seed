@@ -15,8 +15,7 @@ import org.kametic.specifications.Specification;
 import org.seedstack.seed.core.internal.AbstractSeedPlugin;
 import org.seedstack.seed.core.utils.SeedReflectionUtils;
 import org.seedstack.seed.el.spi.ELHandler;
-import org.seedstack.shed.exception.SeedException;
-import org.seedstack.shed.reflect.Maybe;
+import org.seedstack.seed.SeedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,6 +24,7 @@ import java.lang.annotation.Annotation;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * @author pierre.thirouin@ext.mpsa.com
@@ -32,8 +32,8 @@ import java.util.Map;
  */
 public class ELPlugin extends AbstractSeedPlugin {
     private static final Logger LOGGER = LoggerFactory.getLogger(ELPlugin.class);
-    private static final Maybe<Class<Object>> EL_MAYBE = SeedReflectionUtils.forName("javax.el.Expression");
-    static final Maybe<Class<ELContext>> EL3_MAYBE = SeedReflectionUtils.forName("javax.el.StandardELContext");
+    private static final Optional<Class<Object>> EL_MAYBE = SeedReflectionUtils.optionalOfClass("javax.el.Expression");
+    static final Optional<Class<ELContext>> EL3_MAYBE = SeedReflectionUtils.optionalOfClass("javax.el.StandardELContext");
 
     private final Specification<Class<?>> specificationELHandlers = classImplements(ELHandler.class);
     private ELModule elModule;

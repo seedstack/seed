@@ -7,7 +7,7 @@
  */
 package org.seedstack.seed.core.internal;
 
-import org.seedstack.shed.exception.ErrorCode;
+import org.seedstack.seed.ErrorCode;
 
 public enum CoreErrorCode implements ErrorCode {
     ERROR_DURING_LIFECYCLE_CALLBACK,

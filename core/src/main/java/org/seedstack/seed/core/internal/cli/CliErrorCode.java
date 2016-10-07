@@ -7,7 +7,7 @@
  */
 package org.seedstack.seed.core.internal.cli;
 
-import org.seedstack.shed.exception.ErrorCode;
+import org.seedstack.seed.ErrorCode;
 
 enum CliErrorCode implements ErrorCode {
     CONFLICTING_COMMAND_ANNOTATIONS,

@@ -9,7 +9,7 @@ package org.seedstack.seed.core.internal.logging;
 
 import com.google.inject.MembersInjector;
 import org.seedstack.seed.core.internal.CoreErrorCode;
-import org.seedstack.shed.exception.SeedException;
+import org.seedstack.seed.SeedException;
 import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Field;

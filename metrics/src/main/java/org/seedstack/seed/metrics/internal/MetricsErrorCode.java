@@ -7,7 +7,7 @@
  */
 package org.seedstack.seed.metrics.internal;
 
-import org.seedstack.shed.exception.ErrorCode;
+import org.seedstack.seed.ErrorCode;
 
 /**
  * Enumerates error codes of metrics support.

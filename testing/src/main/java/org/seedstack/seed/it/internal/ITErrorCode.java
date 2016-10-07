@@ -7,7 +7,7 @@
  */
 package org.seedstack.seed.it.internal;
 
-import org.seedstack.shed.exception.ErrorCode;
+import org.seedstack.seed.ErrorCode;
 
 public enum ITErrorCode implements ErrorCode {
     ANOTHER_EXCEPTION_THAN_EXPECTED_OCCURRED,

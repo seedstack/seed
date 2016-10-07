@@ -23,7 +23,7 @@ import org.seedstack.seed.security.SecurityConfig;
 import org.seedstack.seed.security.spi.SecurityScope;
 import org.seedstack.seed.security.spi.data.DataObfuscationHandler;
 import org.seedstack.seed.security.spi.data.DataSecurityHandler;
-import org.seedstack.shed.exception.SeedException;
+import org.seedstack.seed.SeedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

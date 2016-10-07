@@ -12,7 +12,7 @@ import org.mockito.internal.util.reflection.Whitebox;
 import org.seedstack.seed.transaction.TransactionConfig;
 import org.seedstack.seed.transaction.spi.TransactionManager;
 import org.seedstack.seed.transaction.spi.TransactionMetadata;
-import org.seedstack.shed.exception.SeedException;
+import org.seedstack.seed.SeedException;
 
 import javax.naming.Context;
 import javax.transaction.Status;

@@ -16,7 +16,7 @@ import org.seedstack.seed.core.Seed;
 import org.seedstack.seed.spi.SeedLauncher;
 import org.seedstack.seed.spi.SeedTool;
 import org.seedstack.seed.spi.ToolContext;
-import org.seedstack.shed.exception.SeedException;
+import org.seedstack.seed.SeedException;
 
 import java.util.ServiceLoader;
 

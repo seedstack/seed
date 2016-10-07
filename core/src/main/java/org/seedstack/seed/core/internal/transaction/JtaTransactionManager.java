@@ -13,7 +13,7 @@ import org.seedstack.seed.transaction.Propagation;
 import org.seedstack.seed.transaction.TransactionConfig;
 import org.seedstack.seed.transaction.spi.TransactionHandler;
 import org.seedstack.seed.transaction.spi.TransactionMetadata;
-import org.seedstack.shed.exception.SeedException;
+import org.seedstack.seed.SeedException;
 
 import javax.inject.Inject;
 import javax.naming.Context;

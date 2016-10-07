@@ -8,7 +8,7 @@
 package org.seedstack.seed.core.internal.transaction;
 
 import org.junit.Test;
-import org.seedstack.shed.exception.SeedException;
+import org.seedstack.seed.SeedException;
 import org.seedstack.seed.transaction.spi.TransactionManager;
 import org.seedstack.seed.transaction.spi.TransactionMetadata;
 

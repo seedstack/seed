@@ -9,11 +9,10 @@ package org.seedstack.seed.core.internal.crypto;
 
 import com.google.inject.Key;
 import com.google.inject.name.Names;
-import org.seedstack.shed.exception.SeedException;
 import org.seedstack.seed.core.utils.SeedReflectionUtils;
 import org.seedstack.seed.crypto.CryptoConfig;
 import org.seedstack.seed.crypto.EncryptionService;
-import org.seedstack.shed.reflect.Maybe;
+import org.seedstack.seed.SeedException;
 
 import javax.inject.Qualifier;
 import java.lang.annotation.Annotation;
@@ -21,6 +20,7 @@ import java.security.KeyStore;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * This class prepare the EncryptionService bindings for Guice based on the configuration.
@@ -70,9 +70,9 @@ class EncryptionServiceBindingFactory {
 
     private Key<EncryptionService> createKeyFromQualifier(String qualifier) {
         Key<EncryptionService> key;
-        Maybe<Class<Object>> classMaybe = SeedReflectionUtils.forName(qualifier);
-        if (classMaybe.isPresent()) {
-            Class<?> qualifierClass = classMaybe.get();
+        Optional<Class<Object>> optionalClass = SeedReflectionUtils.optionalOfClass(qualifier);
+        if (optionalClass.isPresent()) {
+            Class<?> qualifierClass = optionalClass.get();
             if (!Annotation.class.isAssignableFrom(qualifierClass) || !qualifierClass.isAnnotationPresent(Qualifier.class)) {
                 throw SeedException.createNew(CryptoErrorCode.INVALID_QUALIFIER_ANNOTATION).put("qualifier", qualifier);
             }

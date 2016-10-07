@@ -7,7 +7,7 @@
  */
 package org.seedstack.seed.core.utils;
 
-import org.seedstack.shed.exception.SeedException;
+import org.seedstack.seed.SeedException;
 import org.seedstack.seed.core.internal.CoreErrorCode;
 
 import java.lang.reflect.InvocationHandler;

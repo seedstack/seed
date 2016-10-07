@@ -6,10 +6,4 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 #
 
-[org.seedstack.seed.security]
-sessions.enabled = true
-
-[org.seedstack.seed.security.urls]
-/xsrf-protected-without-session = xsrf
-/xsrf-protected-with-session = authcBasic, xsrf
-/** = authcBasic
+logs: WARN

@@ -11,7 +11,7 @@
 package org.seedstack.seed.core.internal.crypto;
 
 import org.seedstack.seed.crypto.EncryptionService;
-import org.seedstack.shed.exception.SeedException;
+import org.seedstack.seed.SeedException;
 
 import javax.annotation.Nullable;
 import javax.crypto.BadPaddingException;

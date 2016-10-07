@@ -13,8 +13,7 @@ import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.reflections.ReflectionUtils;
 import org.seedstack.seed.core.internal.CoreErrorCode;
-import org.seedstack.shed.exception.SeedException;
-import org.seedstack.shed.reflect.Maybe;
+import org.seedstack.seed.SeedException;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
@@ -25,6 +24,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -552,15 +552,15 @@ public final class SeedReflectionUtils {
     /**
      * Checks if a class exists in the classpath.
      *
-     * @param dependency class to look for
-     * @return a Maybe of the class or an empty maybe is the class is not present
+     * @param dependency class to look for.
+     * @return an {@link Optional} of the class (empty if class is not present).
      */
     @SuppressWarnings("unchecked")
-    public static <T> Maybe<Class<T>> forName(String dependency) {
+    public static <T> Optional<Class<T>> optionalOfClass(String dependency) {
         try {
-            return Maybe.of((Class<T>) Class.forName(dependency));
+            return Optional.of((Class<T>) Class.forName(dependency));
         } catch (ClassNotFoundException e) {
-            return Maybe.empty();
+            return Optional.empty();
         }
     }
 }

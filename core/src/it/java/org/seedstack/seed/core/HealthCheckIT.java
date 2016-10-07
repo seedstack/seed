@@ -22,9 +22,9 @@ import org.junit.Test;
 import org.seedstack.seed.core.internal.metrics.HealthCheckMethodReplacer;
 import org.seedstack.seed.core.internal.metrics.HealthcheckProvider;
 import org.seedstack.seed.core.utils.DependencyClassProxy;
-import org.seedstack.shed.reflect.Maybe;
 
 import javax.inject.Inject;
+import java.util.Optional;
 
 public class HealthCheckIT {
     private static final String MY_HEALTHCHECK = "my-healthcheck";
@@ -35,7 +35,7 @@ public class HealthCheckIT {
 
     private static class MyHealthCheck {
         @Inject
-        private Maybe<HealthcheckProvider> healthCheckProvider;
+        private Optional<HealthcheckProvider> healthCheckProvider;
 
         void start() {
             if (healthCheckProvider.isPresent()) {
@@ -60,7 +60,7 @@ public class HealthCheckIT {
     public void test() {
         MyHealthCheck myHealthCheck = injector.getInstance(MyHealthCheck.class);
         myHealthCheck.start();
-        Maybe<HealthcheckProvider> provider = injector.getInstance(Key.get(new TypeLiteral<Maybe<HealthcheckProvider>>() {
+        Optional<HealthcheckProvider> provider = injector.getInstance(Key.get(new TypeLiteral<Optional<HealthcheckProvider>>() {
         }));
         Assertions.assertThat(provider.isPresent()).isTrue();
         HealthCheckRegistry registry = provider.get().getHealthCheckRegistry();
