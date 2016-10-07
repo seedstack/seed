@@ -9,9 +9,8 @@ package org.seedstack.seed.web.internal.security;
 
 import org.seedstack.shed.exception.ErrorCode;
 
-enum WebSecurityErrorCodes implements ErrorCode {
-    UNABLE_TO_APPLY_XSRF_PROTECTION,
+enum WebSecurityErrorCode implements ErrorCode {
+    INVALID_XSRF_TOKEN,
     MISSING_XSRF_COOKIE,
-    MISSING_XSRF_HEADER,
-    INVALID_XSRF_TOKEN
+    MISSING_XSRF_HEADER
 }

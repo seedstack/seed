@@ -63,7 +63,7 @@ class SecurityModule extends AbstractModule {
                     mainModuleToInstall = mainSecurityModule;
                 } else if (!(mainSecurityModule instanceof DefaultSecurityModule)) {
                     throw SeedException
-                            .createNew(SecurityErrorCodes.MULTIPLE_MAIN_SECURITY_MODULES)
+                            .createNew(SecurityErrorCode.MULTIPLE_MAIN_SECURITY_MODULES)
                             .put("first", mainModuleToInstall.getClass().getCanonicalName())
                             .put("second", mainSecurityModule.getClass().getCanonicalName());
                 }

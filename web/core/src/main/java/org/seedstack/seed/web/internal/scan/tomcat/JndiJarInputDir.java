@@ -68,7 +68,7 @@ class JndiJarInputDir implements Vfs.Dir {
                             return new JndiJarInputFile(entry, jarInputStream);
                         }
                     } catch (IOException e) {
-                        throw SeedException.wrap(e, WebErrorCode.UNABLE_TO_SCAN_TOMCAT_JNDI_JAR);
+                        throw SeedException.wrap(e, WebErrorCode.UNABLE_TO_SCAN_TOMCAT_JNDI_JAR).put("url", url.toExternalForm());
                     }
                 }
             }

@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.MissingResourceException;
 import java.util.Optional;
 import java.util.ResourceBundle;
+import java.util.regex.Matcher;
 
 public class ErrorsTool extends AbstractSeedTool {
     private static final String INDENTATION = "  ";
@@ -106,7 +107,7 @@ public class ErrorsTool extends AbstractSeedTool {
 
     private String getTitle(Class<? extends ErrorCode> errorCodeClass) {
         if (file) {
-            return errorCodeClass.getName().replaceAll("\\.", File.separator) + ".properties";
+            return errorCodeClass.getName().replaceAll("\\.", Matcher.quoteReplacement(File.separator)) + ".properties";
         } else {
             return formatCamelCase(errorCodeClass.getSimpleName().replace("ErrorCodes", "").replace("ErrorCode", ""));
         }

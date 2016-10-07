@@ -10,6 +10,8 @@ package org.seedstack.seed.web;
 import org.seedstack.coffig.Config;
 import org.seedstack.coffig.SingleValue;
 
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -129,6 +131,8 @@ public class WebConfig {
 
         private String host = DEFAULT_HOST;
         @SingleValue
+        @Min(0)
+        @Max(65535)
         private int port = DEFAULT_PORT;
         private String contextPath = DEFAULT_CONTEXT_PATH;
         private boolean https = DEFAULT_HTTPS_ACTIVATION;

@@ -31,7 +31,7 @@ class AntiXsrfFilter extends AdviceFilter {
             AntiXsrfService.applyXsrfProtection((HttpServletRequest) request, (HttpServletResponse) response);
             return true;
         } catch (SeedException e) {
-            switch ((WebSecurityErrorCodes) e.getErrorCode()) {
+            switch ((WebSecurityErrorCode) e.getErrorCode()) {
                 case MISSING_XSRF_HEADER:
                     ((HttpServletResponse) response).sendError(HttpServletResponse.SC_FORBIDDEN, "Missing XSRF protection token in the request");
                     return false;

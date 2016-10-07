@@ -54,7 +54,10 @@ class MetricMembersInjector<T> implements MembersInjector<T> {
                         field.set(t, metricRegistry.getMetrics().get(fullName));
                     }
                 } else {
-                    throw SeedException.createNew(MetricsErrorCode.INVALID_METRIC_TYPE);
+                    throw SeedException.createNew(MetricsErrorCode.INVALID_METRIC_TYPE)
+                            .put("type", o.getClass().getName())
+                            .put("field", field.getName())
+                            .put("class", t.getClass().getName());
                 }
             } else {
                 Metric metric;
@@ -68,13 +71,18 @@ class MetricMembersInjector<T> implements MembersInjector<T> {
                 } else if (Histogram.class.isAssignableFrom(field.getType())) {
                     metric = metricRegistry.histogram(determineName(Histogram.class.getSimpleName().toLowerCase()));
                 } else {
-                    throw SeedException.createNew(MetricsErrorCode.INVALID_METRIC_TYPE);
+                    throw SeedException.createNew(MetricsErrorCode.INVALID_METRIC_TYPE)
+                            .put("type", field.getType().getName())
+                            .put("field", field.getName())
+                            .put("class", t.getClass().getName());
                 }
 
                 field.set(t, metric);
             }
         } catch (IllegalAccessException e) {
-            throw SeedException.wrap(e, MetricsErrorCode.ERROR_ACCESSING_METRIC_FIELD).put("class", field.getDeclaringClass().getCanonicalName()).put("field", field.getName());
+            throw SeedException.wrap(e, MetricsErrorCode.ERROR_ACCESSING_METRIC_FIELD)
+                    .put("class", field.getDeclaringClass().getCanonicalName())
+                    .put("field", field.getName());
         }
     }
 

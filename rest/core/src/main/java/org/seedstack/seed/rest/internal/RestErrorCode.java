@@ -15,9 +15,7 @@ import org.seedstack.shed.exception.ErrorCode;
  * @author adrien.lauer@mpsa.com
  */
 public enum RestErrorCode implements ErrorCode {
-    MULTIPLE_PATH_FOR_THE_SAME_REL,
-    UNSUPPORTED_CACHE_POLICY,
-    CANNOT_MERGE_RESOURCE_WITH_DIFFERENT_REL,
     CANNOT_MERGE_RESOURCES_WITH_DIFFERENT_DOC,
-    JAX_RS_FEATURE_NOT_FOUND
+    CANNOT_MERGE_RESOURCE_WITH_DIFFERENT_REL,
+    MULTIPLE_PATH_FOR_THE_SAME_REL
 }

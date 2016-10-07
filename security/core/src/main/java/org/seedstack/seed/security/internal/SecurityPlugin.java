@@ -124,11 +124,16 @@ public class SecurityPlugin extends AbstractSeedPlugin {
                     try {
                         scopeCandidateClass.getConstructor(String.class);
                     } catch (NoSuchMethodException e) {
-                        throw SeedException.wrap(e, SecurityErrorCodes.MISSING_ADEQUATE_SCOPE_CONSTRUCTOR).put("scopeName", scopeName);
+                        throw SeedException.wrap(e, SecurityErrorCode.MISSING_ADEQUATE_SCOPE_CONSTRUCTOR)
+                                .put("scopeName", scopeName)
+                                .put("class", scopeCandidateClass.getName());
                     }
 
                     if (this.scopeClasses.containsKey(scopeName)) {
-                        throw SeedException.createNew(SecurityErrorCodes.DUPLICATE_SCOPE_NAME).put("scopeName", scopeName);
+                        throw SeedException.createNew(SecurityErrorCode.DUPLICATE_SCOPE_NAME)
+                                .put("scopeName", scopeName)
+                                .put("class1", this.scopeClasses.get(scopeName).getName())
+                                .put("class2", scopeCandidateClass.getName());
                     }
 
                     this.scopeClasses.put(scopeName, (Class<? extends Scope>) scopeCandidateClass);

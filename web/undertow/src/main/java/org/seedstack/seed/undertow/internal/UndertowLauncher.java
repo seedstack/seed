@@ -13,11 +13,11 @@ import io.undertow.Undertow;
 import io.undertow.servlet.api.DeploymentManager;
 import io.undertow.servlet.spec.ServletContextImpl;
 import org.seedstack.coffig.Coffig;
-import org.seedstack.shed.exception.SeedException;
 import org.seedstack.seed.core.Seed;
 import org.seedstack.seed.spi.SeedLauncher;
 import org.seedstack.seed.web.WebConfig;
 import org.seedstack.seed.web.internal.ServletContextUtils;
+import org.seedstack.shed.exception.SeedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,11 +40,10 @@ public class UndertowLauncher implements SeedLauncher {
 
         ServletContextImpl servletContext = deploymentManager.getDeployment().getServletContext();
         Kernel kernel = ServletContextUtils.getKernel(servletContext);
+        UndertowPlugin undertowPlugin = getUndertowPlugin(kernel);
+        WebConfig.ServerConfig serverConfig = undertowPlugin.getServerConfig();
 
         try {
-            UndertowPlugin undertowPlugin = getUndertowPlugin(kernel);
-            WebConfig.ServerConfig serverConfig = undertowPlugin.getServerConfig();
-
             undertow = new ServerFactory().createServer(
                     deploymentManager,
                     serverConfig,
@@ -74,13 +73,17 @@ public class UndertowLauncher implements SeedLauncher {
 
     @Override
     public void shutdown() throws Exception {
-        if (undertow != null) {
-            undertow.stop();
-            LOGGER.info("Undertow Web server stopped");
-        }
-        if (deploymentManager != null) {
-            // should done at last for diagnostic purpose
-            deploymentManager.undeploy();
+        try {
+            if (undertow != null) {
+                undertow.stop();
+                LOGGER.info("Undertow Web server stopped");
+            }
+            if (deploymentManager != null) {
+                // should done at last for diagnostic purpose
+                deploymentManager.undeploy();
+            }
+        } catch (Exception e) {
+            throw SeedException.wrap(e, UndertowErrorCode.UNEXPECTED_EXCEPTION);
         }
     }
 }

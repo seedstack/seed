@@ -10,7 +10,7 @@ package org.seedstack.seed.undertow.internal;
 import org.seedstack.shed.exception.ErrorCode;
 
 enum UndertowErrorCode implements ErrorCode {
-    UNEXPECTED_EXCEPTION,
     MISSING_SSL_CONFIGURATION,
-    MISSING_UNDERTOW_PLUGIN
+    MISSING_UNDERTOW_PLUGIN,
+    UNEXPECTED_EXCEPTION
 }

@@ -48,14 +48,14 @@ public class GuiceComponentProvider implements ComponentProvider {
 
         injector = (Injector) getServletContext().getAttribute(Injector.class.getName());
         if (injector == null) {
-            throw SeedException.createNew(Jersey2ErrorCodes.MISSING_INJECTOR);
+            throw SeedException.createNew(Jersey2ErrorCode.MISSING_INJECTOR);
         }
     }
 
     private ServletContext getServletContext() {
         ServletContext servletContext = serviceLocator.getService(ServletContext.class);
         if (servletContext == null) {
-            throw SeedException.createNew(Jersey2ErrorCodes.MISSING_SERVLET_CONTEXT);
+            throw SeedException.createNew(Jersey2ErrorCode.MISSING_SERVLET_CONTEXT);
         }
         return servletContext;
     }

@@ -53,11 +53,11 @@ class StatelessAntiXsrfService implements AntiXsrfService {
                 String requestToken = httpServletRequest.getHeader(headerName);
 
                 if (requestToken == null) {
-                    throw SeedException.createNew(WebSecurityErrorCodes.MISSING_XSRF_HEADER);
+                    throw SeedException.createNew(WebSecurityErrorCode.MISSING_XSRF_HEADER);
                 }
 
                 if (cookieToken == null) {
-                    throw SeedException.createNew(WebSecurityErrorCodes.MISSING_XSRF_COOKIE);
+                    throw SeedException.createNew(WebSecurityErrorCode.MISSING_XSRF_COOKIE);
                 }
 
                 // Check for multiple headers (keep only the first one)
@@ -68,7 +68,7 @@ class StatelessAntiXsrfService implements AntiXsrfService {
 
                 // Check if tokens match
                 if (!cookieToken.equals(requestToken)) {
-                    throw SeedException.createNew(WebSecurityErrorCodes.INVALID_XSRF_TOKEN);
+                    throw SeedException.createNew(WebSecurityErrorCode.INVALID_XSRF_TOKEN);
                 }
             }
         }

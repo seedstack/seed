@@ -24,10 +24,18 @@
             <artifactId>seed-specs</artifactId>
             <version>${project.version}</version>
         </dependency>
+
+        <!-- Provided dependencies -->
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>javax.servlet-api</artifactId>
             <version>${javax.servlet.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>javax.validation</groupId>
+            <artifactId>validation-api</artifactId>
+            <version>${javax.validation.version}</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>

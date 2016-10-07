@@ -16,10 +16,10 @@ import io.nuun.kernel.api.plugin.context.Context;
 import io.nuun.kernel.api.plugin.context.InitContext;
 import io.nuun.kernel.api.plugin.request.ClasspathScanRequest;
 import io.nuun.kernel.core.AbstractPlugin;
-import org.seedstack.shed.exception.SeedException;
 import org.seedstack.seed.core.internal.CorePlugin;
 import org.seedstack.seed.core.internal.metrics.HealthcheckProvider;
 import org.seedstack.seed.core.internal.metrics.MetricsProvider;
+import org.seedstack.shed.exception.SeedException;
 import org.seedstack.shed.reflect.Maybe;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,7 +39,7 @@ public class MetricsPlugin extends AbstractPlugin {
     private static final Logger LOGGER = LoggerFactory.getLogger(MetricsPlugin.class);
 
     private MetricRegistry metricRegistry;
-    private HealthCheckRegistry healthCheckRegistry ;
+    private HealthCheckRegistry healthCheckRegistry;
     private final Set<Class<? extends HealthCheck>> healthCheckClasses = new HashSet<>();
 
     @Inject
@@ -55,14 +55,14 @@ public class MetricsPlugin extends AbstractPlugin {
     public InitState init(InitContext initContext) {
         CorePlugin corePlugin = initContext.dependency(CorePlugin.class);
         Maybe<MetricsProvider> metricsProvider = corePlugin.getDependency(MetricsProvider.class);
-        if ( ! metricsProvider.isPresent()) {
-        	throw SeedException.createNew(MetricsErrorCode.METRICS_REGISTRY_NOT_FOUND);
+        if (!metricsProvider.isPresent()) {
+            throw SeedException.createNew(MetricsErrorCode.METRICS_REGISTRY_NOT_FOUND);
         }
         metricRegistry = metricsProvider.get().getMetricRegistry();
-        
+
         Maybe<HealthcheckProvider> healthCheckProvider = corePlugin.getDependency(HealthcheckProvider.class);
-        if ( ! metricsProvider.isPresent()) {
-        	throw SeedException.createNew(MetricsErrorCode.HEALTHCHECK_REGISTRY_NOT_FOUND);
+        if (!metricsProvider.isPresent()) {
+            throw SeedException.createNew(MetricsErrorCode.HEALTH_CHECK_REGISTRY_NOT_FOUND);
         }
         healthCheckRegistry = healthCheckProvider.get().getHealthCheckRegistry();
 
@@ -86,10 +86,12 @@ public class MetricsPlugin extends AbstractPlugin {
             healthCheckRegistry.register(healthCheckEntry.getKey(), healthCheckEntry.getValue());
         }
     }
-	@Override
-	public Collection<Class<?>> requiredPlugins() {
-		return Lists.<Class<?>>newArrayList(CorePlugin.class);
-	}
+
+    @Override
+    public Collection<Class<?>> requiredPlugins() {
+        return Lists.<Class<?>>newArrayList(CorePlugin.class);
+    }
+
     @Override
     public Collection<ClasspathScanRequest> classpathScanRequests() {
         return classpathScanRequestBuilder().subtypeOf(HealthCheck.class).build();
@@ -104,9 +106,9 @@ public class MetricsPlugin extends AbstractPlugin {
         return healthCheckRegistry;
     }
 
-	public MetricRegistry getMetricRegistry() {
-		return metricRegistry;
-	}
-    
-    
+    public MetricRegistry getMetricRegistry() {
+        return metricRegistry;
+    }
+
+
 }

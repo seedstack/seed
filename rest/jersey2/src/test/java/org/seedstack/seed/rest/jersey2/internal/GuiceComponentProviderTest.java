@@ -96,7 +96,7 @@ public class GuiceComponentProviderTest {
             underTest.initialize(serviceLocator);
             fail();
         } catch (SeedException e) {
-            assertThat(e.getErrorCode()).isEqualTo(Jersey2ErrorCodes.MISSING_SERVLET_CONTEXT);
+            assertThat(e.getErrorCode()).isEqualTo(Jersey2ErrorCode.MISSING_SERVLET_CONTEXT);
         }
     }
 
@@ -114,7 +114,7 @@ public class GuiceComponentProviderTest {
             underTest.initialize(serviceLocator);
             fail();
         } catch (SeedException e) {
-            assertThat(e.getErrorCode()).isEqualTo(Jersey2ErrorCodes.MISSING_INJECTOR);
+            assertThat(e.getErrorCode()).isEqualTo(Jersey2ErrorCode.MISSING_INJECTOR);
         }
     }
 

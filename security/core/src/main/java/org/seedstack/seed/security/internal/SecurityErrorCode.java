@@ -5,14 +5,18 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-package org.seedstack.seed.rest.jersey2.internal;
+package org.seedstack.seed.security.internal;
 
 import org.seedstack.shed.exception.ErrorCode;
 
 /**
- * @author pierre.thirouin@ext.mpsa.com (Pierre Thirouin)
+ * @author epo.jemba@ext.mpsa.com
+ * @author adrien.lauer@mpsa.com
  */
-enum Jersey2ErrorCodes implements ErrorCode {
-    MISSING_INJECTOR,
-    MISSING_SERVLET_CONTEXT
+public enum SecurityErrorCode implements ErrorCode {
+    DUPLICATE_SCOPE_NAME,
+    MISSING_ADEQUATE_SCOPE_CONSTRUCTOR,
+    MULTIPLE_MAIN_SECURITY_MODULES,
+    UNABLE_TO_CREATE_SCOPE,
+    UNEXPECTED_ERROR
 }

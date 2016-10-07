@@ -13,7 +13,7 @@ import org.seedstack.seed.security.Role;
 import org.seedstack.seed.security.RoleMapping;
 import org.seedstack.seed.security.Scope;
 import org.seedstack.seed.security.SecurityConfig;
-import org.seedstack.seed.security.internal.SecurityErrorCodes;
+import org.seedstack.seed.security.internal.SecurityErrorCode;
 import org.seedstack.seed.security.principals.PrincipalProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -114,7 +114,7 @@ public class ConfigurationRoleMapping implements RoleMapping {
                                     Constructor<? extends Scope> constructor = scopeClass.getValue().getConstructor(String.class);
                                     scope = constructor.newInstance(scopeValue);
                                 } catch (Exception e) {
-                                    throw SeedException.wrap(e, SecurityErrorCodes.UNABLE_TO_CREATE_SCOPE);
+                                    throw SeedException.wrap(e, SecurityErrorCode.UNABLE_TO_CREATE_SCOPE).put("scopeName", scopeClass.getValue().getName());
                                 }
 
                                 currentRole.getScopes().add(scope);
