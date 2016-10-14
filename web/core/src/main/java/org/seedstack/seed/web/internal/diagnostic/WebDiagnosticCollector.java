@@ -33,7 +33,7 @@ class WebDiagnosticCollector implements DiagnosticInfoCollector {
             result.put("version", String.format("%d.%d", servletContext.getMajorVersion(), servletContext.getMinorVersion()));
             if (servletContext.getMajorVersion() >= 3) {
                 try {
-                    result.put("effective-version", String.format("%d.%d", servletContext.getEffectiveMajorVersion(), servletContext.getEffectiveMinorVersion()));
+                    result.put("effectiveVersion", String.format("%d.%d", servletContext.getEffectiveMajorVersion(), servletContext.getEffectiveMinorVersion()));
                     result.put("servlets", buildServletList());
                     result.put("filters", buildFilterList());
                 } catch (UnsupportedOperationException e) {
@@ -76,12 +76,12 @@ class WebDiagnosticCollector implements DiagnosticInfoCollector {
             if (mappings == null) {
                 mappings = new ArrayList<>();
             }
-            filterRegistrationInfo.put("servlet-name-mappings", Lists.newArrayList(mappings));
+            filterRegistrationInfo.put("servletNameMappings", Lists.newArrayList(mappings));
             Collection<String> patterns = filterRegistration.getUrlPatternMappings();
             if (patterns == null) {
                 patterns = new ArrayList<>();
             }
-            filterRegistrationInfo.put("url-pattern-mappings", Lists.newArrayList(patterns));
+            filterRegistrationInfo.put("urlPatternMappings", Lists.newArrayList(patterns));
 
             filterMap.put(filterRegistrationEntry.getKey(), filterRegistrationInfo);
         }

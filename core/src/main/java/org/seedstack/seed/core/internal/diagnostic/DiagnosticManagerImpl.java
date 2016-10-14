@@ -9,11 +9,11 @@ package org.seedstack.seed.core.internal.diagnostic;
 
 import com.google.common.collect.Maps;
 import org.seedstack.seed.DiagnosticManager;
+import org.seedstack.seed.SeedException;
 import org.seedstack.seed.core.internal.CoreErrorCode;
 import org.seedstack.seed.core.utils.SeedLoggingUtils;
 import org.seedstack.seed.spi.diagnostic.DiagnosticInfoCollector;
 import org.seedstack.seed.spi.diagnostic.DiagnosticReporter;
-import org.seedstack.seed.SeedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -127,7 +127,7 @@ public class DiagnosticManagerImpl implements DiagnosticManager {
     private Map<String, Object> collectSystemInfo() {
         Map<String, Object> result = new HashMap<>();
 
-        result.put("diagnostic-time", DATE_FORMAT.format(new Date()));
+        result.put("diagnosticTime", DATE_FORMAT.format(new Date()));
         result.put("properties", buildSystemPropertiesList());
         result.put("threads", buildThreadList());
 
@@ -137,7 +137,7 @@ public class DiagnosticManagerImpl implements DiagnosticManager {
 
         RuntimeMXBean runtimeMXBean = ManagementFactory.getRuntimeMXBean();
         result.put("args", runtimeMXBean.getInputArguments());
-        result.put("start-time", DATE_FORMAT.format(runtimeMXBean.getStartTime()));
+        result.put("startTime", DATE_FORMAT.format(runtimeMXBean.getStartTime()));
 
         return result;
     }
@@ -154,10 +154,10 @@ public class DiagnosticManagerImpl implements DiagnosticManager {
                 threadResults.put("name", threadInfo.getThreadName());
                 threadResults.put("cpu", threadMXBean.getThreadCpuTime(threadId));
                 threadResults.put("user", threadMXBean.getThreadUserTime(threadId));
-                threadResults.put("blocked-count", threadInfo.getBlockedCount());
-                threadResults.put("blocked-time", threadInfo.getBlockedTime());
-                threadResults.put("waited-count", threadInfo.getWaitedCount());
-                threadResults.put("waited-time", threadInfo.getWaitedTime());
+                threadResults.put("blockedCount", threadInfo.getBlockedCount());
+                threadResults.put("blockedTime", threadInfo.getBlockedTime());
+                threadResults.put("waitedCount", threadInfo.getWaitedCount());
+                threadResults.put("waitedTime", threadInfo.getWaitedTime());
                 threadResults.put("suspended", threadInfo.isSuspended());
                 threadResults.put("native", threadInfo.isInNative());
                 threadResults.put("state", threadInfo.getThreadState().toString());

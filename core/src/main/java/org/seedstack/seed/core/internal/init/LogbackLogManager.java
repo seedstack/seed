@@ -5,7 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-package org.seedstack.seed.core.internal.logging;
+package org.seedstack.seed.core.internal.init;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
@@ -21,15 +21,15 @@ import org.seedstack.seed.LogConfig;
 import org.seedstack.seed.spi.log.LogManager;
 import org.slf4j.LoggerFactory;
 
-public class LogbackLogManager implements LogManager {
+class LogbackLogManager implements LogManager {
     private final LoggerContext context = (LoggerContext) LoggerFactory.getILoggerFactory();
 
-    public LogbackLogManager() {
+    LogbackLogManager() {
         context.getLogger(Logger.ROOT_LOGGER_NAME).setLevel(Level.OFF);
     }
 
     @Override
-    public synchronized void init(LogConfig logConfig) {
+    public synchronized void configure(LogConfig logConfig) {
         context.reset();
         if (!context.isStarted()) {
             context.start();

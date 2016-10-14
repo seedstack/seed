@@ -11,14 +11,15 @@ import org.reflections.vfs.Vfs;
 
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Handle all url types not handled before during classpath scan to quietly log them. This should be the latest handler
  * registered.
  */
 public class FallbackUrlType implements Vfs.UrlType {
-    private List<URL> failedUrls = new ArrayList<>();
+    private Set<URL> failedUrls = new HashSet<>();
 
     @Override
     public boolean matches(URL url) {
@@ -47,7 +48,7 @@ public class FallbackUrlType implements Vfs.UrlType {
         };
     }
 
-    public List<URL> getFailedUrls() {
+    public Set<URL> getFailedUrls() {
         return failedUrls;
     }
 }

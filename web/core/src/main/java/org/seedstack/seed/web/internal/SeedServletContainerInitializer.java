@@ -85,6 +85,6 @@ public class SeedServletContainerInitializer implements ServletContainerInitiali
 
     private void handleException(Throwable t) {
         LOGGER.error("An exception occurred during web application startup, collecting diagnostic information");
-        Seed.diagnostic(kernel).dumpDiagnosticReport(t);
+        Seed.diagnostic().dumpDiagnosticReport(t);
     }
 }

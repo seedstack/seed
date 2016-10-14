@@ -19,12 +19,11 @@ import org.seedstack.coffig.spi.ConfigurationProvider;
 import org.seedstack.seed.Application;
 import org.seedstack.seed.ApplicationConfig;
 import org.seedstack.seed.DiagnosticManager;
-import org.seedstack.seed.core.Seed;
+import org.seedstack.seed.SeedException;
 import org.seedstack.seed.core.SeedRuntime;
 import org.seedstack.seed.core.internal.CoreErrorCode;
 import org.seedstack.seed.core.utils.SeedReflectionUtils;
 import org.seedstack.seed.spi.config.ApplicationProvider;
-import org.seedstack.seed.SeedException;
 
 import java.io.IOException;
 import java.net.URL;
@@ -83,7 +82,7 @@ public class ConfigurationPlugin extends AbstractPlugin implements ApplicationPr
         detectConfigurationFiles(initContext);
 
         application = new ApplicationImpl(applicationConfig, configuration);
-        diagnosticManager.registerDiagnosticInfoCollector("core", new ConfigurationDiagnosticCollector(application));
+        diagnosticManager.registerDiagnosticInfoCollector("application", new ApplicationDiagnosticCollector(application));
 
         return InitState.INITIALIZED;
     }
@@ -110,8 +109,8 @@ public class ConfigurationPlugin extends AbstractPlugin implements ApplicationPr
 
         ConfigurationProvider configurationProvider = configuration.getProvider();
         ((CompositeProvider) configurationProvider).get(PrioritizedProvider.class)
-                .registerProvider("scanned", jacksonProvider, Seed.CONFIGURATION_BASE_PRIORITY - 1)
-                .registerProvider("scanned-override", jacksonProvider, Seed.CONFIGURATION_OVERRIDE_PRIORITY - 1);
+                .registerProvider("scanned", jacksonProvider, -1)
+                .registerProvider("scanned-override", jacksonProvider, 999);
     }
 
     private Set<String> retrieveConfigurationResources(InitContext initContext) {

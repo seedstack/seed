@@ -13,10 +13,10 @@ import org.seedstack.seed.spi.diagnostic.DiagnosticInfoCollector;
 import java.util.HashMap;
 import java.util.Map;
 
-class ConfigurationDiagnosticCollector implements DiagnosticInfoCollector {
+class ApplicationDiagnosticCollector implements DiagnosticInfoCollector {
     private final Application application;
 
-    ConfigurationDiagnosticCollector(Application application) {
+    ApplicationDiagnosticCollector(Application application) {
         this.application = application;
     }
 
@@ -24,14 +24,12 @@ class ConfigurationDiagnosticCollector implements DiagnosticInfoCollector {
     public Map<String, Object> collect() {
         Map<String, Object> result = new HashMap<>();
 
-        Map<String, Object> applicationInfo = new HashMap<>();
-        applicationInfo.put("id", application.getId());
-        applicationInfo.put("name", application.getName());
-        applicationInfo.put("version", application.getVersion());
+        result.put("id", application.getId());
+        result.put("name", application.getName());
+        result.put("version", application.getVersion());
         if (application.isStorageEnabled()) {
-            applicationInfo.put("storage", application.getStorageLocation(""));
+            result.put("storage", application.getStorageLocation(""));
         }
-        result.put("application", applicationInfo);
 
         return result;
     }

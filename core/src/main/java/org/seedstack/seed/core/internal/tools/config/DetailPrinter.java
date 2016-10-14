@@ -5,7 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-package org.seedstack.seed.core.internal.configuration.tool;
+package org.seedstack.seed.core.internal.tools.config;
 
 import com.google.common.base.Strings;
 import org.fusesource.jansi.Ansi;
@@ -13,14 +13,14 @@ import org.seedstack.shed.text.TextUtils;
 
 import java.io.PrintStream;
 
-public class DetailPrinter {
-    private final Node node;
+class DetailPrinter {
+    private final PropertyInfo propertyInfo;
 
-    public DetailPrinter(Node node) {
-        this.node = node;
+    DetailPrinter(PropertyInfo propertyInfo) {
+        this.propertyInfo = propertyInfo;
     }
 
-    void printDetail(PrintStream stream, PropertyInfo propertyInfo) {
+    void printDetail(PrintStream stream) {
         Ansi ansi = Ansi.ansi();
 
         String title = "Details of " + propertyInfo.getName();

@@ -5,22 +5,18 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-package org.seedstack.seed.core.internal;
+package org.seedstack.seed.core.internal.tools.errors;
 
 import com.google.common.base.CaseFormat;
 import com.google.common.base.Strings;
-import io.nuun.kernel.api.plugin.InitState;
-import io.nuun.kernel.api.plugin.context.InitContext;
-import io.nuun.kernel.api.plugin.request.ClasspathScanRequest;
 import org.fusesource.jansi.Ansi;
-import org.seedstack.seed.cli.CliOption;
 import org.seedstack.seed.ErrorCode;
 
 import javax.annotation.Nullable;
 import java.io.File;
+import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -29,50 +25,21 @@ import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.regex.Matcher;
 
-public class ErrorsTool extends AbstractSeedTool {
+class ErrorCodePrinter {
     private static final String INDENTATION = "  ";
-    private List<Class<? extends ErrorCode>> errorCodes = new ArrayList<>();
+    private final Class<? extends ErrorCode> errorCodeClass;
+    private final boolean all;
+    private final boolean missing;
+    private final boolean file;
 
-    @CliOption(name = "m", longName = "missing")
-    private boolean missing;
-    @CliOption(name = "a", longName = "all")
-    private boolean all;
-    @CliOption(name = "f", longName = "file")
-    private boolean file;
-
-    @Override
-    public String toolName() {
-        return "errors";
+    ErrorCodePrinter(Class<? extends ErrorCode> errorCodeClass, PrintingOptions printingOptions) {
+        this.errorCodeClass = errorCodeClass;
+        this.all = printingOptions.isAll();
+        this.missing = printingOptions.isMissing();
+        this.file = printingOptions.isFile();
     }
 
-    @Override
-    public Collection<ClasspathScanRequest> classpathScanRequests() {
-        return classpathScanRequestBuilder()
-                .subtypeOf(ErrorCode.class)
-                .build();
-    }
-
-    @Override
-    protected InitState initialize(InitContext initContext) {
-        initContext.scannedSubTypesByParentClass().get(ErrorCode.class)
-                .stream()
-                .filter(Enum.class::isAssignableFrom)
-                .filter(ErrorCode.class::isAssignableFrom)
-                .map((e) -> e.asSubclass(ErrorCode.class))
-                .forEach(errorCodes::add);
-        Collections.sort(errorCodes, Comparator.comparing(Class::getSimpleName));
-        return InitState.INITIALIZED;
-    }
-
-    @Override
-    public Integer call() throws Exception {
-        Ansi ansi = new Ansi();
-        errorCodes.forEach((errorCodeClass) -> processErrorCodes(errorCodeClass, ansi));
-        System.out.println(ansi.toString());
-        return 0;
-    }
-
-    private void processErrorCodes(Class<? extends ErrorCode> errorCodeClass, Ansi ansi) {
+    void print(PrintStream stream) {
         Ansi subAnsi = new Ansi();
         boolean someProperty = false;
 
@@ -95,6 +62,7 @@ public class ErrorsTool extends AbstractSeedTool {
             }
         }
 
+        Ansi ansi = new Ansi();
         if (someProperty) {
             ansi.fgBright(Ansi.Color.YELLOW)
                     .a(getTitle(errorCodeClass))
@@ -103,6 +71,8 @@ public class ErrorsTool extends AbstractSeedTool {
                     .a(subAnsi.toString())
                     .newline();
         }
+
+        stream.print(ansi.toString());
     }
 
     private String getTitle(Class<? extends ErrorCode> errorCodeClass) {
@@ -128,4 +98,5 @@ public class ErrorsTool extends AbstractSeedTool {
             return null;
         }
     }
+
 }

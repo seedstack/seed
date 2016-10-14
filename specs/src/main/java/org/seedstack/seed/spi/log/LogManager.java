@@ -10,7 +10,7 @@ package org.seedstack.seed.spi.log;
 import org.seedstack.seed.LogConfig;
 
 public interface LogManager {
-    void init(LogConfig logConfig);
+    void configure(LogConfig logConfig);
 
     void close();
 }

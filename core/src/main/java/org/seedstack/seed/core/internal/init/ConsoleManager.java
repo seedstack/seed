@@ -5,7 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-package org.seedstack.seed.core.internal;
+package org.seedstack.seed.core.internal.init;
 
 import org.fusesource.jansi.AnsiOutputStream;
 import org.fusesource.jansi.WindowsAnsiOutputStream;
@@ -19,32 +19,27 @@ import static org.fusesource.jansi.internal.CLibrary.STDOUT_FILENO;
 import static org.fusesource.jansi.internal.CLibrary.isatty;
 
 public class ConsoleManager {
-    private volatile boolean colorSupported;
-    private PrintStream savedOut;
-    private PrintStream savedErr;
+    private final PrintStream savedOut = System.out;
+    private final PrintStream savedErr = System.err;
 
-    public synchronized void install() {
-        OutputStream out = wrapOutputStream(System.out);
-        OutputStream err = wrapOutputStream(System.err);
-        colorSupported = isColorSupported(out) && isColorSupported(err);
-        savedOut = System.out;
-        System.setOut(new PrintStream(out));
-        savedErr = System.err;
-        System.setErr(new PrintStream(err));
+    private static class Holder {
+        private static final ConsoleManager INSTANCE = new ConsoleManager();
     }
 
-    public synchronized void uninstall() {
-        System.setOut(savedOut);
-        System.setErr(savedErr);
-        colorSupported = false;
+    public static synchronized void install() {
+        System.setOut(new PrintStream(Holder.INSTANCE.wrapOutputStream(System.out)));
+        System.setErr(new PrintStream(Holder.INSTANCE.wrapOutputStream(System.err)));
     }
 
-    public boolean isColorSupported() {
-        return colorSupported;
+    public static synchronized void uninstall() {
+        synchronized (ConsoleManager.class) {
+            System.setOut(Holder.INSTANCE.savedOut);
+            System.setErr(Holder.INSTANCE.savedErr);
+        }
     }
 
-    private boolean isColorSupported(OutputStream outputStream) {
-        return outputStream instanceof ColorOutputStream || outputStream instanceof WindowsAnsiOutputStream;
+    private ConsoleManager() {
+        // noop
     }
 
     private OutputStream wrapOutputStream(final OutputStream stream) {

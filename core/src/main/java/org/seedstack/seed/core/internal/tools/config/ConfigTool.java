@@ -5,16 +5,16 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-package org.seedstack.seed.core.internal.configuration.tool;
+package org.seedstack.seed.core.internal.tools.config;
 
 import io.nuun.kernel.api.plugin.InitState;
 import io.nuun.kernel.api.plugin.context.InitContext;
 import io.nuun.kernel.api.plugin.request.ClasspathScanRequest;
 import org.seedstack.coffig.Config;
+import org.seedstack.seed.SeedException;
 import org.seedstack.seed.cli.CliArgs;
 import org.seedstack.seed.core.internal.AbstractSeedTool;
-import org.seedstack.seed.core.internal.configuration.ConfigErrorCode;
-import org.seedstack.seed.SeedException;
+import org.seedstack.seed.core.internal.CoreErrorCode;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -22,7 +22,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-public class ConfigurationTool extends AbstractSeedTool {
+public class ConfigTool extends AbstractSeedTool {
     private final Node root = new Node();
     @CliArgs
     private String[] args;
@@ -67,13 +67,13 @@ public class ConfigurationTool extends AbstractSeedTool {
     private void info(String[] path) {
         Node node = root.find(Arrays.copyOfRange(path, 0, path.length - 1));
         if (node == null) {
-            throw SeedException.createNew(ConfigErrorCode.INVALID_CONFIG_PATH).put("path", path);
+            throw SeedException.createNew(CoreErrorCode.INVALID_CONFIG_PATH).put("path", path);
         } else {
             PropertyInfo propertyInfo = node.getPropertyInfo(path[path.length - 1]);
             if (propertyInfo == null) {
-                throw SeedException.createNew(ConfigErrorCode.INVALID_CONFIG_PROPERTY).put("property", path[path.length - 1]);
+                throw SeedException.createNew(CoreErrorCode.INVALID_CONFIG_PROPERTY).put("property", path[path.length - 1]);
             }
-            new DetailPrinter(node).printDetail(System.out, propertyInfo);
+            new DetailPrinter(propertyInfo).printDetail(System.out);
         }
     }
 

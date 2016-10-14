@@ -13,7 +13,6 @@ import io.nuun.kernel.api.plugin.context.InitContext;
 import io.nuun.kernel.core.AbstractPlugin;
 import org.seedstack.coffig.Coffig;
 import org.seedstack.seed.Application;
-import org.seedstack.seed.core.Seed;
 import org.seedstack.seed.core.SeedRuntime;
 import org.seedstack.seed.spi.config.ApplicationProvider;
 
@@ -51,10 +50,6 @@ public abstract class AbstractSeedPlugin extends AbstractPlugin {
 
     protected Collection<Class<?>> dependencies() {
         return Lists.newArrayList();
-    }
-
-    protected Coffig getBaseConfiguration() {
-        return Seed.baseConfiguration();
     }
 
     protected Application getApplication() {

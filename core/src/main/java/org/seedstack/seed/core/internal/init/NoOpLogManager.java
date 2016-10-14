@@ -5,19 +5,19 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-package org.seedstack.seed.core.internal.logging;
+package org.seedstack.seed.core.internal.init;
 
 import org.seedstack.seed.LogConfig;
 import org.seedstack.seed.spi.log.LogManager;
 
-public class NoOpLogManager implements LogManager {
+class NoOpLogManager implements LogManager {
     @Override
-    public void init(LogConfig logConfig) {
-        // nothing to do
+    public void configure(LogConfig logConfig) {
+        // noop
     }
 
     @Override
     public void close() {
-        // nothing to do
+        // noop
     }
 }
