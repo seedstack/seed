@@ -17,6 +17,7 @@ import org.seedstack.coffig.ConfigurationException;
 import org.seedstack.coffig.SingleValue;
 import org.seedstack.seed.Application;
 import org.seedstack.seed.ApplicationConfig;
+import org.seedstack.seed.ClassConfiguration;
 import org.seedstack.seed.Configuration;
 import org.seedstack.seed.core.fixtures.SomeEnum;
 
@@ -121,5 +122,15 @@ public class ConfigurationIT {
         assertThat(holder.configObject2).isNotNull();
         assertThat(holder.configObject2.property1).isNull();
         assertThat(holder.configObject2.property2).containsExactly(5);
+    }
+
+    @Test
+    public void class_attributes_can_be_retrieved() {
+        Application application = injector.getInstance(Application.class);
+        ClassConfiguration<ConfigurationIT> configuration = application.getConfiguration(ConfigurationIT.class);
+        assertThat(configuration.keySet()).containsExactly("key1", "key2", "key3");
+        assertThat(configuration.get("key1")).isEqualTo("value1");
+        assertThat(configuration.get("key2")).isEqualTo("value2bis");
+        assertThat(configuration.get("key3")).isEqualTo("value3");
     }
 }

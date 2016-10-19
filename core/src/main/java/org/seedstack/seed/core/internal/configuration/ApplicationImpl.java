@@ -7,21 +7,25 @@
  */
 package org.seedstack.seed.core.internal.configuration;
 
+import com.google.inject.util.Types;
 import org.seedstack.coffig.Coffig;
 import org.seedstack.seed.Application;
 import org.seedstack.seed.ApplicationConfig;
+import org.seedstack.seed.ClassConfiguration;
 import org.seedstack.seed.SeedException;
 import org.seedstack.seed.core.internal.CoreErrorCode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.util.Optional;
 
 /**
  * Implementation of the {@link Application} interface.
  */
 class ApplicationImpl implements Application {
     private static final Logger LOGGER = LoggerFactory.getLogger(ApplicationImpl.class);
+    private static final String CLASSES_CONFIGURATION_PREFIX = "classes";
     private final ApplicationConfig applicationConfig;
     private final Coffig configuration;
     private final File storageDirectory;
@@ -78,9 +82,18 @@ class ApplicationImpl implements Application {
     }
 
     @Override
-    public Coffig getConfiguration(Class<?> aClass) {
-        // TODO implement
-        return null;
+    @SuppressWarnings("unchecked")
+    public <T> ClassConfiguration<T> getConfiguration(Class<T> aClass) {
+        ClassConfiguration<T> classConfiguration = ClassConfiguration.empty(aClass);
+        StringBuilder sb = new StringBuilder(CLASSES_CONFIGURATION_PREFIX);
+        for (String part : aClass.getName().split("\\.")) {
+            sb.append(".").append(part);
+            Optional<Object> optional = configuration.getOptional(Types.newParameterizedType(ClassConfiguration.class, aClass), sb.toString());
+            if (optional.isPresent()) {
+                classConfiguration.merge((ClassConfiguration<T>) optional.get());
+            }
+        }
+        return classConfiguration;
     }
 
     private void ensureWritableDirectory(File location) {
