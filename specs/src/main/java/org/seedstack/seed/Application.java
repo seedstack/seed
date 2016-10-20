@@ -64,10 +64,10 @@ public interface Application {
     Coffig getConfiguration();
 
     /**
-     * Get the configuration of the specified class.
+     * Get the configuration properties of the specified class.
      *
      * @param aClass the class to get the configuration from.
-     * @return the {@link Coffig} object of the configuration specific to the specified class.
+     * @return the {@link ClassConfiguration} object containing all configuration properties for the class.
      */
-    Coffig getConfiguration(Class<?> aClass);
+    <T> ClassConfiguration<T> getConfiguration(Class<T> aClass);
 }

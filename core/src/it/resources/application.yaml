@@ -6,6 +6,16 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 #
 
+classes:
+  org:
+    seedstack:
+      key1: value1
+      seed:
+        core:
+          key2: value2
+          ConfigurationIT:
+            key2: value2bis
+            key3: value3
 logs: WARN
 application:
   id: seed-it
