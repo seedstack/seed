@@ -26,20 +26,22 @@ public class ConsoleManager {
         private static final ConsoleManager INSTANCE = new ConsoleManager();
     }
 
-    public static synchronized void install() {
-        System.setOut(new PrintStream(Holder.INSTANCE.wrapOutputStream(System.out)));
-        System.setErr(new PrintStream(Holder.INSTANCE.wrapOutputStream(System.err)));
-    }
-
-    public static synchronized void uninstall() {
-        synchronized (ConsoleManager.class) {
-            System.setOut(Holder.INSTANCE.savedOut);
-            System.setErr(Holder.INSTANCE.savedErr);
-        }
+    public static ConsoleManager get() {
+        return Holder.INSTANCE;
     }
 
     private ConsoleManager() {
         // noop
+    }
+
+    public synchronized void install() {
+        System.setOut(new PrintStream(wrapOutputStream(System.out)));
+        System.setErr(new PrintStream(wrapOutputStream(System.err)));
+    }
+
+    public synchronized void uninstall() {
+        System.setOut(savedOut);
+        System.setErr(savedErr);
     }
 
     private OutputStream wrapOutputStream(final OutputStream stream) {

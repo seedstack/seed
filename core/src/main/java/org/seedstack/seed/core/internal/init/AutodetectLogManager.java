@@ -11,6 +11,7 @@ import org.seedstack.seed.LogConfig;
 import org.seedstack.seed.core.utils.SeedReflectionUtils;
 import org.seedstack.seed.spi.log.LogManager;
 import org.slf4j.LoggerFactory;
+import org.slf4j.bridge.SLF4JBridgeHandler;
 
 public class AutodetectLogManager implements LogManager {
     private final LogManager logManager;
@@ -29,6 +30,14 @@ public class AutodetectLogManager implements LogManager {
         } else {
             logManager = new NoOpLogManager();
         }
+
+        try {
+            java.util.logging.LogManager.getLogManager().reset();
+            SLF4JBridgeHandler.removeHandlersForRootLogger();
+            SLF4JBridgeHandler.install();
+        } catch (Exception e) {
+            // silent error
+        }
     }
 
     @Override
@@ -38,6 +47,7 @@ public class AutodetectLogManager implements LogManager {
 
     @Override
     public void close() {
+        SLF4JBridgeHandler.uninstall();
         logManager.close();
     }
 

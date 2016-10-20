@@ -12,6 +12,7 @@ import io.nuun.kernel.api.config.KernelConfiguration;
 import org.seedstack.coffig.Coffig;
 import org.seedstack.seed.DiagnosticManager;
 import org.seedstack.seed.LogConfig;
+import org.seedstack.seed.ProxyConfig;
 import org.seedstack.seed.SeedException;
 import org.seedstack.seed.core.internal.CoreErrorCode;
 import org.seedstack.seed.core.internal.diagnostic.DiagnosticManagerImpl;
@@ -20,11 +21,8 @@ import org.seedstack.seed.core.internal.init.BaseConfiguration;
 import org.seedstack.seed.core.internal.init.ConsoleManager;
 import org.seedstack.seed.core.internal.init.GlobalValidatorFactory;
 import org.seedstack.seed.core.internal.init.KernelManager;
-import org.seedstack.seed.core.utils.SeedLoggingUtils;
+import org.seedstack.seed.core.internal.init.ProxyManager;
 import org.seedstack.seed.spi.log.LogManager;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.slf4j.bridge.SLF4JBridgeHandler;
 
 import javax.annotation.Nullable;
 import javax.validation.ValidatorFactory;
@@ -34,12 +32,13 @@ import javax.validation.ValidatorFactory;
  * It handles global initialization and cleanup.
  */
 public class Seed {
-    private static final Logger LOGGER = LoggerFactory.getLogger(Seed.class);
     private static boolean initialized = false;
     private static boolean noLogs = false;
     private final Coffig configuration;
+    private final ConsoleManager consoleManager;
     private final LogManager logManager;
     private final ValidatorFactory validatorFactory;
+    private final ProxyManager proxyManager;
     private final KernelManager kernelManager;
 
     private static class Holder {
@@ -68,7 +67,7 @@ public class Seed {
     }
 
     public static void disposeKernel(Kernel kernel) {
-        getInstance().kernelManager.disposeKernel(kernel);
+        KernelManager.get().disposeKernel(kernel);
     }
 
     public static DiagnosticManager diagnostic() {
@@ -81,10 +80,12 @@ public class Seed {
 
     public static void close() {
         if (initialized) {
-            getInstance().validatorFactory.close();
-            getInstance().logManager.close();
-            ConsoleManager.uninstall();
-            SLF4JBridgeHandler.uninstall();
+            Seed instance = getInstance();
+            instance.proxyManager.uninstall();
+            instance.validatorFactory.close();
+            instance.consoleManager.uninstall();
+            instance.logManager.close();
+            initialized = false;
         }
     }
 
@@ -102,22 +103,29 @@ public class Seed {
     }
 
     private Seed() {
-        try {
-            java.util.logging.LogManager.getLogManager().reset();
-            SLF4JBridgeHandler.removeHandlersForRootLogger();
-            SLF4JBridgeHandler.install();
-        } catch (Exception e) {
-            SeedLoggingUtils.logWarningWithDebugDetails(LOGGER, e, "Unable to redirect JUL loggers to SLF4J");
-        }
-
-        ConsoleManager.install();
+        // Logging initialization (should silence logs until logging activation later in the initialization)
         logManager = AutodetectLogManager.get();
+
+        // Console
+        consoleManager = ConsoleManager.get();
+        consoleManager.install();
+
+        // Configuration
         validatorFactory = GlobalValidatorFactory.get();
         configuration = BaseConfiguration.get();
+
+        // Logging activation
         if (!noLogs) {
             logManager.configure(configuration.get(LogConfig.class));
         }
+
+        // Proxy
+        proxyManager = ProxyManager.get();
+        proxyManager.install(configuration.get(ProxyConfig.class));
+
+        // Nuun
         kernelManager = KernelManager.get();
+
         initialized = true;
     }
 }
