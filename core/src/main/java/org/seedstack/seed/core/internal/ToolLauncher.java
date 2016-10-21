@@ -12,11 +12,11 @@ import io.nuun.kernel.api.Kernel;
 import io.nuun.kernel.api.Plugin;
 import io.nuun.kernel.api.config.KernelConfiguration;
 import io.nuun.kernel.core.NuunCore;
+import org.seedstack.seed.SeedException;
 import org.seedstack.seed.core.Seed;
 import org.seedstack.seed.spi.SeedLauncher;
 import org.seedstack.seed.spi.SeedTool;
 import org.seedstack.seed.spi.ToolContext;
-import org.seedstack.seed.SeedException;
 
 import java.util.ServiceLoader;
 
@@ -54,6 +54,7 @@ public class ToolLauncher implements SeedLauncher {
     @SuppressWarnings("unchecked")
     private KernelConfiguration buildKernelConfiguration(SeedTool seedTool) {
         KernelConfiguration kernelConfiguration = NuunCore.newKernelConfiguration()
+                .param(CorePlugin.AUTODETECT_MODULES_KERNEL_PARAM, "false")
                 .withoutSpiPluginsLoader()
                 .addPlugin(seedTool.getClass());
         seedTool.pluginsToLoad().forEach(pluginClass -> kernelConfiguration.addPlugin((Class<? extends Plugin>) pluginClass));

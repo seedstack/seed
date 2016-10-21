@@ -7,14 +7,15 @@
  */
 package org.seedstack.seed.core.internal;
 
+import com.google.common.base.Strings;
 import com.google.inject.Module;
 import io.nuun.kernel.api.plugin.InitState;
 import io.nuun.kernel.api.plugin.context.InitContext;
 import io.nuun.kernel.api.plugin.request.ClasspathScanRequest;
 import org.seedstack.seed.Install;
+import org.seedstack.seed.SeedException;
 import org.seedstack.seed.core.utils.SeedReflectionUtils;
 import org.seedstack.seed.spi.dependency.DependencyProvider;
-import org.seedstack.seed.SeedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,6 +32,7 @@ import java.util.Set;
  * and configuration files.
  */
 public class CorePlugin extends AbstractSeedPlugin {
+    static final String AUTODETECT_MODULES_KERNEL_PARAM = "seed.autodetectModules";
     private static final Logger LOGGER = LoggerFactory.getLogger(CorePlugin.class);
     private static final String SEEDSTACK_PACKAGE = "org.seedstack";
     private final Set<Class<? extends Module>> seedModules = new HashSet<>();
@@ -61,7 +63,10 @@ public class CorePlugin extends AbstractSeedPlugin {
         detectDependencyProviders(initContext);
 
         // Detect modules to install
-        detectModules(initContext);
+        String autodetectModules = initContext.kernelParam(AUTODETECT_MODULES_KERNEL_PARAM);
+        if (Strings.isNullOrEmpty(autodetectModules) || Boolean.parseBoolean(autodetectModules)) {
+            detectModules(initContext);
+        }
 
         return InitState.INITIALIZED;
     }

@@ -3,6 +3,8 @@
 * [new] New configuration system based on [Coffig library](https://github.com/seedstack/coffig).
 * [new] Tooling support allows to launch tools from the command-line (-Dtool=<toolName>) or from the SeedStack maven plugin.
 * [new] Add `config` tool which dumps the current configuration options for the application.
+* [new] Kernel parameter `seed.autodetectModules` allows to control if module detection should be done (true/false).
+* [new] HTTP(S) proxy automatic detection or explicit configuration support. 
 * [brk] Java 8 is now required.
 * [brk] Classic configuration system based on props has been removed.
 * [brk] Configuration keys have been shortened and renamed.
