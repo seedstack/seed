@@ -25,7 +25,8 @@ import java.util.Hashtable;
  * SEED JNDI context that can lookup for instances from the injector.
  */
 class JndiContext implements Context {
-    public static final String THIS_CONTEXT_IS_IMMUTABLE = "This context is immutable";
+    private static final String THIS_CONTEXT_IS_IMMUTABLE = "This context is immutable";
+
     @Inject
     static Injector injector;
     private Hashtable<?, ?> environment;
@@ -123,22 +124,22 @@ class JndiContext implements Context {
 
     @Override
     public void destroySubcontext(Name name) throws NamingException {
-        throw new UnsupportedOperationException();
+        throw new NamingException(THIS_CONTEXT_IS_IMMUTABLE);
     }
 
     @Override
     public void destroySubcontext(String name) throws NamingException {
-        throw new UnsupportedOperationException();
+        throw new NamingException(THIS_CONTEXT_IS_IMMUTABLE);
     }
 
     @Override
     public Context createSubcontext(Name name) throws NamingException {
-        throw new UnsupportedOperationException();
+        throw new NamingException(THIS_CONTEXT_IS_IMMUTABLE);
     }
 
     @Override
     public Context createSubcontext(String name) throws NamingException {
-        throw new UnsupportedOperationException();
+        throw new NamingException(THIS_CONTEXT_IS_IMMUTABLE);
     }
 
     @Override

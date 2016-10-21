@@ -23,7 +23,8 @@ public class JndiConfig {
         return Collections.unmodifiableMap(additionalContexts);
     }
 
-    public void addAdditionalContext(String name, String propertiesPath) {
+    public JndiConfig addAdditionalContext(String name, String propertiesPath) {
         this.additionalContexts.put(name, propertiesPath);
+        return this;
     }
 }

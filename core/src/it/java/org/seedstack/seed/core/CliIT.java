@@ -14,6 +14,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.seedstack.seed.cli.CliContext;
 import org.seedstack.seed.core.fixtures.TestCliCommand;
+import org.seedstack.seed.core.rules.SeedITRule;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

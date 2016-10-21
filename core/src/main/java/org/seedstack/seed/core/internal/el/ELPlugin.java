@@ -12,10 +12,10 @@ import io.nuun.kernel.api.plugin.context.InitContext;
 import io.nuun.kernel.api.plugin.request.ClasspathScanRequest;
 import net.jodah.typetools.TypeResolver;
 import org.kametic.specifications.Specification;
+import org.seedstack.seed.SeedException;
 import org.seedstack.seed.core.internal.AbstractSeedPlugin;
 import org.seedstack.seed.core.utils.SeedReflectionUtils;
 import org.seedstack.seed.el.spi.ELHandler;
-import org.seedstack.seed.SeedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,8 +29,9 @@ import java.util.Optional;
 
 public class ELPlugin extends AbstractSeedPlugin {
     private static final Logger LOGGER = LoggerFactory.getLogger(ELPlugin.class);
-    private static final Optional<Class<Object>> EL_MAYBE = SeedReflectionUtils.optionalOfClass("javax.el.Expression");
-    static final Optional<Class<ELContext>> EL3_MAYBE = SeedReflectionUtils.optionalOfClass("javax.el.StandardELContext");
+    private static final Optional<Class<Object>> EL_OPTIONAL = SeedReflectionUtils.optionalOfClass("javax.el.Expression");
+    static final Optional<Class<ELContext>> EL3_OPTIONAL = SeedReflectionUtils.optionalOfClass("javax.el.StandardELContext");
+    static final Optional<Class<ELContext>> JUEL_OPTIONAL = SeedReflectionUtils.optionalOfClass("de.odysseus.el.util.SimpleContext");
 
     private final Specification<Class<?>> specificationELHandlers = classImplements(ELHandler.class);
     private ELModule elModule;
@@ -48,7 +49,7 @@ public class ELPlugin extends AbstractSeedPlugin {
     @SuppressWarnings("unchecked")
     @Override
     public InitState initialize(InitContext initContext) {
-        if (EL_MAYBE.isPresent()) {
+        if (EL_OPTIONAL.isPresent()) {
             Map<Class<? extends Annotation>, Class<ELHandler>> elMap = new HashMap<>();
 
             // Scan all the ExpressionLanguageHandler
@@ -82,6 +83,14 @@ public class ELPlugin extends AbstractSeedPlugin {
     }
 
     public boolean isEnabled() {
-        return EL3_MAYBE.isPresent();
+        return EL_OPTIONAL.isPresent();
+    }
+
+    public boolean isLevel3() {
+        return isEnabled() && EL3_OPTIONAL.isPresent();
+    }
+
+    public boolean isStandalone() {
+        return isEnabled() && (EL3_OPTIONAL.isPresent() || JUEL_OPTIONAL.isPresent());
     }
 }

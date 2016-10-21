@@ -21,6 +21,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.seedstack.seed.core.internal.metrics.HealthCheckMethodReplacer;
 import org.seedstack.seed.core.internal.metrics.HealthcheckProvider;
+import org.seedstack.seed.core.rules.SeedITRule;
 import org.seedstack.seed.core.utils.DependencyClassProxy;
 
 import javax.inject.Inject;

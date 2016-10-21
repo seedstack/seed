@@ -5,11 +5,10 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-package org.seedstack.seed.core;
+package org.seedstack.seed.core.rules;
 
 import com.google.inject.Injector;
 import io.nuun.kernel.api.Kernel;
-import io.nuun.kernel.api.config.KernelConfiguration;
 import mockit.Mock;
 import mockit.MockUp;
 import org.junit.Rule;
@@ -17,6 +16,7 @@ import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.Statement;
+import org.seedstack.seed.core.Seed;
 
 import java.lang.reflect.Method;
 import java.util.HashMap;

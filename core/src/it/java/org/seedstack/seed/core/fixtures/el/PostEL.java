@@ -14,9 +14,8 @@ import java.lang.annotation.Target;
 
 /**
  * EL executed after the annotated method.
- *
- *  *          */
-@Target({ElementType.METHOD })
+ */
+@Target({ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface PostEL {
 

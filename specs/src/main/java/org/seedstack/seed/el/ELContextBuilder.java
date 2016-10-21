@@ -14,8 +14,7 @@ import java.lang.reflect.Method;
 
 /**
  * ELContextBuilder provides a DSL to build ELContext instances.
- *
- *  *          */
+ */
 public interface ELContextBuilder {
 
     /**
@@ -40,9 +39,7 @@ public interface ELContextBuilder {
     interface ELPropertyProvider {
 
         /**
-         * Gets the context used by the service.
-         *
-         * @return ELContext
+         * @return the context used by the service.
          */
         ELContext build();
 

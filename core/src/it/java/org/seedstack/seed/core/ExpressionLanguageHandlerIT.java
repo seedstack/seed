@@ -16,6 +16,7 @@ import org.junit.Test;
 import org.seedstack.seed.core.fixtures.el.Foo;
 import org.seedstack.seed.core.fixtures.el.SomeDTO;
 import org.seedstack.seed.SeedException;
+import org.seedstack.seed.core.rules.SeedITRule;
 
 
 public class ExpressionLanguageHandlerIT {

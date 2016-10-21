@@ -83,7 +83,7 @@ public class SecurityPlugin extends AbstractSeedPlugin {
         configureScopes(scannedClasses.get(Scope.class));
         configureDataSecurityHandlers(scannedClasses.get(DataSecurityHandler.class));
         securityProviders.addAll(initContext.dependencies(SecurityProvider.class));
-        elEnabled = initContext.dependency(ELPlugin.class).isEnabled();
+        elEnabled = initContext.dependency(ELPlugin.class).isStandalone();
         securityConfigurer = new SecurityConfigurer(securityConfig, scannedClasses, principalCustomizerClasses);
 
         if (!elEnabled) {

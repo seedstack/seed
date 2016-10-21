@@ -22,8 +22,7 @@ import javax.inject.Inject;
 
 /**
  * Implementation of ELService.
- *
- *  *          */
+ */
 class ELServiceInternal implements ELService {
     @Inject
     private ExpressionFactory expressionFactory;
@@ -52,17 +51,11 @@ class ELServiceInternal implements ELService {
     }
 
     private static class ELInstance implements ELContextProvider, ELExpressionProvider, ELService.MethodExpressionProvider, ELService.ValueExpressionProvider {
-
         private final ExpressionFactory expressionFactory;
-
         private String el;
-
         private Class returnType;
-
         private MethodExpression methodExpression;
-
         private ValueExpression valueExpression;
-
         private ELContext context;
 
         ELInstance(ExpressionFactory expressionFactory) {

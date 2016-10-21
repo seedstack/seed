@@ -19,6 +19,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.seedstack.seed.core.internal.metrics.MetricsProvider;
+import org.seedstack.seed.core.rules.SeedITRule;
 import org.seedstack.seed.core.utils.DependencyProxy;
 import org.seedstack.seed.core.utils.ProxyMethodReplacer;
 

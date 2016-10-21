@@ -19,17 +19,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * The SEED unique internal Security Expression Interpreter.
- * <p>
- * It has the responsibility to interpret any form of secured expression.
- * <p>
- * It will be supported by an API.
+ * The Security Expression Interpreter has the responsibility to interpret any form of security expression.
  */
 public class SecurityExpressionInterpreter {
-
     @Inject
     private ELService elService;
-
     @Inject
     private ELContextBuilder elContextBuilder;
 
@@ -66,22 +60,13 @@ public class SecurityExpressionInterpreter {
         return (Boolean) elService.withExpression(expression, Boolean.class).withContext(elContext).asValueExpression().eval();
     }
 
-    /**
-     * Gets the methods available in the security ELContext.
-     *
-     * @return map of method name and method
-     */
-    public Map<String, Method> getMethods() {
+    private Map<String, Method> getMethods() {
         Map<String, Method> availableMethods = new HashMap<>();
         try {
             availableMethods.put("hasRole", SecurityExpressionUtils.class.getDeclaredMethod("hasRole", String.class));
-            availableMethods.put("hasOneRole", SecurityExpressionUtils.class.getDeclaredMethod("hasOneRole", String[].class));
-            availableMethods.put("hasAllRoles", SecurityExpressionUtils.class.getDeclaredMethod("hasAllRoles", String[].class));
-            availableMethods.put("hasRole", SecurityExpressionUtils.class.getDeclaredMethod("hasRole", String.class, String[].class));
+            availableMethods.put("hasRoleOn", SecurityExpressionUtils.class.getDeclaredMethod("hasRoleOn", String.class, String.class));
             availableMethods.put("hasPermission", SecurityExpressionUtils.class.getDeclaredMethod("hasPermission", String.class));
-            availableMethods.put("hasOnePermission", SecurityExpressionUtils.class.getDeclaredMethod("hasOnePermission", String[].class));
-            availableMethods.put("hasAllPermissions", SecurityExpressionUtils.class.getDeclaredMethod("hasAllPermissions", String[].class));
-            availableMethods.put("hasPermission", SecurityExpressionUtils.class.getDeclaredMethod("hasPermission", String.class, String[].class));
+            availableMethods.put("hasPermissionOn", SecurityExpressionUtils.class.getDeclaredMethod("hasPermissionOn", String.class, String.class));
         } catch (NoSuchMethodException e) {
             throw SeedException.wrap(e, SecurityErrorCode.UNEXPECTED_ERROR);
         }

@@ -17,6 +17,7 @@ import org.seedstack.seed.Logging;
 import org.seedstack.seed.core.fixtures.Service1;
 import org.seedstack.seed.core.fixtures.Service2;
 import org.seedstack.seed.core.fixtures.Service3;
+import org.seedstack.seed.core.rules.SeedITRule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import some.other.pkg.ForeignClass;

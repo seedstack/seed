@@ -5,11 +5,12 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-package org.seedstack.seed.core;
+package org.seedstack.seed.core.fixtures;
 
 
 import io.nuun.kernel.api.plugin.request.BindingRequest;
 import io.nuun.kernel.core.AbstractPlugin;
+import org.seedstack.seed.core.IgnoreIT;
 
 import java.util.Collection;
 

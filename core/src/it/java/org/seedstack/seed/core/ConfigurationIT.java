@@ -20,6 +20,7 @@ import org.seedstack.seed.ApplicationConfig;
 import org.seedstack.seed.ClassConfiguration;
 import org.seedstack.seed.Configuration;
 import org.seedstack.seed.core.fixtures.SomeEnum;
+import org.seedstack.seed.core.rules.SeedITRule;
 
 import javax.inject.Inject;
 

@@ -12,6 +12,7 @@ import com.google.inject.Injector;
 import org.assertj.core.api.Assertions;
 import org.junit.Rule;
 import org.junit.Test;
+import org.seedstack.seed.core.rules.SeedITRule;
 
 import javax.inject.Inject;
 
@@ -31,7 +32,7 @@ public class IgnoreIT {
     static class ScannedClass {
     }
 
-    @interface Scan {
+    public @interface Scan {
     }
 
     @Test

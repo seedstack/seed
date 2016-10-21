@@ -32,7 +32,6 @@ public class JndiPlugin extends AbstractSeedPlugin {
 
     private final Map<String, Context> additionalJndiContexts = new HashMap<>();
     private Context defaultJndiContext;
-    private JndiConfig jndiConfig;
 
     @Override
     public String name() {
@@ -41,7 +40,7 @@ public class JndiPlugin extends AbstractSeedPlugin {
 
     @Override
     public InitState initialize(InitContext initContext) {
-        jndiConfig = getConfiguration(JndiConfig.class);
+        JndiConfig jndiConfig = getConfiguration(JndiConfig.class);
 
         // Default JNDI context
         try {

@@ -11,6 +11,7 @@ import org.assertj.core.api.Assertions;
 import org.junit.Rule;
 import org.junit.Test;
 import org.seedstack.seed.core.fixtures.el.ELFixture;
+import org.seedstack.seed.core.rules.SeedITRule;
 import org.seedstack.seed.el.ELContextBuilder;
 import org.seedstack.seed.el.ELService;
 

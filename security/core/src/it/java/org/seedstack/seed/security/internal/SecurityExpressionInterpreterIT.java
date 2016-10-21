@@ -34,21 +34,19 @@ public class SecurityExpressionInterpreterIT {
     @Test
     @WithUser(id = "Obiwan", password = "yodarulez")
     public void check_security_permission_methods_interpreted() {
-        Assertions.assertThat(interpreter.interpret("${hasAllPermissions('lightSaber:*', 'academy:*')}")).isTrue();
-        Assertions.assertThat(interpreter.interpret("${hasOnePermission('lightSaber:*', 'site:haunt')}")).isTrue();
-        Assertions.assertThat(interpreter.interpret("${hasOnePermission('site:haunt')}")).isFalse();
+        Assertions.assertThat(interpreter.interpret("${hasPermission('lightSaber:*') && hasPermission('academy:*')}")).isTrue();
+        Assertions.assertThat(interpreter.interpret("${hasPermission('lightSaber:*') || hasPermission('site:haunt')}")).isTrue();
         Assertions.assertThat(interpreter.interpret("${hasPermission('site:haunt')}")).isFalse();
-        Assertions.assertThat(interpreter.interpret("${hasPermission('lightSaber:*', 'MU')}")).isFalse();
+        Assertions.assertThat(interpreter.interpret("${hasPermissionOn('lightSaber:*', 'MU')}")).isFalse();
     }
 
     @Test
     @WithUser(id = "ThePoltergeist", password = "bouh")
     public void check_security_method_with_scope_interpreted() {
         Assertions.assertThat(interpreter.interpret("${hasRole('ghost')}")).isTrue();
-        Assertions.assertThat(interpreter.interpret("${hasRole('ghost', 'MU')}")).isTrue();
-        Assertions.assertThat(interpreter.interpret("${hasRole('king', 'MU')}")).isFalse();
-        Assertions.assertThat(interpreter.interpret("${hasAllRoles('ghost')}")).isTrue();
-        Assertions.assertThat(interpreter.interpret("${hasAllRoles('ghost', 'king')}")).isFalse();
-        Assertions.assertThat(interpreter.interpret("${hasOneRole('ghost', 'king')}")).isTrue();
+        Assertions.assertThat(interpreter.interpret("${hasRoleOn('ghost', 'MU')}")).isTrue();
+        Assertions.assertThat(interpreter.interpret("${hasRoleOn('king', 'MU')}")).isFalse();
+        Assertions.assertThat(interpreter.interpret("${hasRole('ghost') && hasRole('king')}")).isFalse();
+        Assertions.assertThat(interpreter.interpret("${hasRole('ghost') || hasRole('king')}")).isTrue();
     }
 }

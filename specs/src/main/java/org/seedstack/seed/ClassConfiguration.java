@@ -23,6 +23,15 @@ public abstract class ClassConfiguration<T> {
         };
     }
 
+    public static <T> ClassConfiguration<T> of(Class<T> targetClass, String... keyValuePairs) {
+        Map<String, String> map = new HashMap<>();
+        for (int i = 0; i < keyValuePairs.length - 1; i += 2) {
+            map.put(keyValuePairs[i], keyValuePairs[i + 1]);
+        }
+        return new ClassConfiguration<T>(targetClass, map) {
+        };
+    }
+
     public static <T> ClassConfiguration<T> empty(Class<T> targetClass) {
         return new ClassConfiguration<T>(targetClass, new HashMap<>()) {
         };

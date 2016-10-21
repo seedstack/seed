@@ -7,7 +7,6 @@
  */
 package org.seedstack.seed.security.internal.securityexpr;
 
-import org.seedstack.seed.security.Scope;
 import org.seedstack.seed.security.SecuritySupport;
 import org.seedstack.seed.security.SimpleScope;
 
@@ -21,7 +20,6 @@ import javax.inject.Inject;
  * It is not meant to be used by projects directly.
  */
 public final class SecurityExpressionUtils {
-
     @Inject
     private static SecuritySupport securitySupport;
 
@@ -39,34 +37,14 @@ public final class SecurityExpressionUtils {
     }
 
     /**
-     * Checks if the current user has at least one of the given roles.
-     *
-     * @param roles the list of role to check
-     * @return true if user has the one of the given roles
-     */
-    public static boolean hasOneRole(String... roles) {
-        return securitySupport.hasAnyRole(roles);
-    }
-
-    /**
-     * Checks the current user roles.
-     *
-     * @param roles the list of role to check
-     * @return true if user has all the given roles
-     */
-    public static boolean hasAllRoles(String... roles) {
-        return securitySupport.hasAllRoles(roles);
-    }
-
-    /**
      * Checks the current user role in the given scopes.
      *
-     * @param role the role to check
-     * @param simpleScopes the list of simple scopes to verify the role on (optional).
-     * @return true if the user has the role for all the given simple scopes.
+     * @param role        the role to check
+     * @param simpleScope the simple scope to check this role on.
+     * @return true if the user has the role for the given simple scope.
      */
-    public static boolean hasRole(String role, String... simpleScopes) {
-        return securitySupport.hasRole(role, getSimpleScopes(simpleScopes));
+    public static boolean hasRoleOn(String role, String simpleScope) {
+        return securitySupport.hasRole(role, new SimpleScope(simpleScope));
     }
 
     /**
@@ -80,43 +58,13 @@ public final class SecurityExpressionUtils {
     }
 
     /**
-     * Checks if the current user has at least one of the given permissions.
-     *
-     * @param permissions the list of permission to check
-     * @return true if user has at least one of the permissions
-     */
-    public static boolean hasOnePermission(String... permissions) {
-        return securitySupport.isPermittedAny(permissions);
-    }
-
-    /**
-     * Checks the current user permissions.
-     *
-     * @param permissions the list of permission to check
-     * @return true if user has all the given permissions
-     */
-    public static boolean hasAllPermissions(String... permissions) {
-        return securitySupport.isPermittedAll(permissions);
-    }
-
-    /**
      * Checks the current user permission.
      *
-     * @param permission the permission to check
-     * @param simpleScopes the list of simple scopes for this permission
-     * @return true if user has the given permission
+     * @param permission  the permission to check
+     * @param simpleScope the simple scope to check this permission on.
+     * @return true if user has the given permission for the given simple scope.
      */
-    public static boolean hasPermission(String permission, String... simpleScopes) {
-        return securitySupport.isPermitted(permission, getSimpleScopes(simpleScopes));
+    public static boolean hasPermissionOn(String permission, String simpleScope) {
+        return securitySupport.isPermitted(permission, new SimpleScope(simpleScope));
     }
-
-    private static Scope[] getSimpleScopes(String[] scopeValues) {
-        Scope[] scopes = new Scope[scopeValues.length];
-        for (int i = 0; i < scopes.length; i++) {
-            scopes[i] = new SimpleScope(scopeValues[i]);
-        }
-        return scopes;
-    }
-
-
 }

@@ -11,6 +11,7 @@ package org.seedstack.seed.core;
 import org.assertj.core.api.Assertions;
 import org.junit.Rule;
 import org.junit.Test;
+import org.seedstack.seed.core.rules.SeedITRule;
 import org.seedstack.seed.crypto.EncryptionService;
 import org.seedstack.seed.crypto.Hash;
 import org.seedstack.seed.crypto.HashingService;
