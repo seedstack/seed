@@ -12,32 +12,61 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * This class holds the full definition of a Servlet servlet. It can be returned as a collection element from {@link WebProvider#servlets()}
+ * to define the servlets that must be registered by Seed.
+ */
 public class ServletDefinition extends AbstractDefinition {
     private final Class<? extends Servlet> servletClass;
     private final List<String> mappings = new ArrayList<String>();
     private int loadOnStartup = -1;
 
+    /**
+     * Creates a servlet definition with the specified name and class.
+     *
+     * @param name         the servlet name.
+     * @param servletClass the servlet class.
+     */
     public ServletDefinition(String name, Class<? extends Servlet> servletClass) {
         super(name);
         this.servletClass = servletClass;
     }
 
+    /**
+     * @return the Servlet class.
+     */
     public Class<? extends Servlet> getServletClass() {
         return servletClass;
     }
 
+    /**
+     * @return true if the Servlet should be loaded on startup, false otherwise.
+     */
     public int getLoadOnStartup() {
         return loadOnStartup;
     }
 
+    /**
+     * Sets if the Servlet should be loaded on startup.
+     *
+     * @param loadOnStartup true if the Servlet should be loaded on startup, false otherwise.
+     */
     public void setLoadOnStartup(int loadOnStartup) {
         this.loadOnStartup = loadOnStartup;
     }
 
+    /**
+     * @return the servlet mappings (URL patterns).
+     */
     public String[] getMappings() {
         return mappings.toArray(new String[mappings.size()]);
     }
 
+    /**
+     * Add mappings to this Servlet definition.
+     *
+     * @param mappings the servlet mappings (URL patterns).
+     */
     public void addMappings(String... mappings) {
         this.mappings.addAll(Arrays.asList(mappings));
     }

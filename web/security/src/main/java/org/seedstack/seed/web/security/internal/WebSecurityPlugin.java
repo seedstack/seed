@@ -20,11 +20,12 @@ import org.seedstack.seed.SeedRuntime;
 import org.seedstack.seed.core.internal.application.ApplicationPlugin;
 import org.seedstack.seed.security.internal.SecurityGuiceConfigurer;
 import org.seedstack.seed.security.internal.SecurityProvider;
+import org.seedstack.seed.web.security.SecurityFilter;
 import org.seedstack.seed.web.spi.FilterDefinition;
 import org.seedstack.seed.web.spi.ListenerDefinition;
+import org.seedstack.seed.web.spi.SeedFilterPriority;
 import org.seedstack.seed.web.spi.ServletDefinition;
 import org.seedstack.seed.web.spi.WebProvider;
-import org.seedstack.seed.web.security.SecurityFilter;
 
 import javax.servlet.Filter;
 import javax.servlet.ServletContext;
@@ -106,7 +107,7 @@ public class WebSecurityPlugin extends AbstractPlugin implements SecurityProvide
     @Override
     public List<FilterDefinition> filters() {
         FilterDefinition securityFilter = new FilterDefinition("security", GuiceShiroFilter.class);
-        securityFilter.setPriority(Integer.MAX_VALUE);
+        securityFilter.setPriority(SeedFilterPriority.SECURITY);
         securityFilter.setAsyncSupported(true);
         securityFilter.addMappings(new FilterDefinition.Mapping("/*"));
         return Lists.newArrayList(securityFilter);

@@ -16,6 +16,7 @@ import org.seedstack.seed.core.internal.CorePlugin;
 import org.seedstack.seed.core.spi.configuration.ConfigurationProvider;
 import org.seedstack.seed.web.spi.FilterDefinition;
 import org.seedstack.seed.web.spi.ListenerDefinition;
+import org.seedstack.seed.web.spi.SeedFilterPriority;
 import org.seedstack.seed.web.spi.ServletDefinition;
 import org.seedstack.seed.web.spi.WebProvider;
 import org.slf4j.Logger;
@@ -86,7 +87,7 @@ public class WebDiagnosticPlugin extends AbstractPlugin implements WebProvider {
             LOGGER.info("Per-request diagnostic enabled, a diagnostic file will be dumped for each request exception");
 
             FilterDefinition filterDefinition = new FilterDefinition("web-diagnostic", WebDiagnosticFilter.class);
-            filterDefinition.setPriority(10000);
+            filterDefinition.setPriority(SeedFilterPriority.DIAGNOSTIC);
             filterDefinition.setAsyncSupported(true);
             filterDefinition.addMappings(new FilterDefinition.Mapping("/*"));
             return Lists.newArrayList(filterDefinition);
