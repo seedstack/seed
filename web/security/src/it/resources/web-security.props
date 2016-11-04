@@ -30,3 +30,4 @@ padawan = academy:learn
 /jediAcademy.html = authcBasic, perms[academy:learn]
 /logout = logout
 /teapot = teapot[param]
+/cert = cert

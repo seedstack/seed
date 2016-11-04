@@ -11,11 +11,9 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Scopes;
 import com.google.inject.multibindings.Multibinder;
 import com.sun.jersey.spi.container.ResourceFilterFactory;
-import org.seedstack.seed.rest.internal.RestConcern;
 
 import java.util.Set;
 
-@RestConcern
 class Jersey1Module extends AbstractModule {
     private final Set<Class<? extends ResourceFilterFactory>> resourceFilterFactories;
 

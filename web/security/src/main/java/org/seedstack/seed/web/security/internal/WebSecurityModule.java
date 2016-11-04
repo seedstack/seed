@@ -86,9 +86,8 @@ class WebSecurityModule extends ShiroWebModule {
         }
         LOGGER.debug("{} URL(s) bound to security filters", entryCount);
 
-        // Bind Seed filters
+        // Bind filters which are not PatchMatchingFilters
         bind(AntiXsrfFilter.class);
-        bind(X509CertificateFilter.class);
 
         // Bind custom filters not extending PathMatchingFilter as Shiro doesn't do it
         for (Class<? extends Filter> customFilter : customFilters) {
