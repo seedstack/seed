@@ -25,7 +25,7 @@ import java.security.cert.X509Certificate;
  *
  * @author yves.dautremay@mpsa.com
  */
-class X509CertificateFilter extends AuthenticatingFilter {
+public class X509CertificateFilter extends AuthenticatingFilter {
 
     private static final String OPTIONAL = "optional";
 
