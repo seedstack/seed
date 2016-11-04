@@ -17,6 +17,7 @@ import org.seedstack.seed.core.spi.configuration.ConfigurationProvider;
 import org.seedstack.seed.core.utils.SeedConfigurationUtils;
 import org.seedstack.seed.web.spi.FilterDefinition;
 import org.seedstack.seed.web.spi.ListenerDefinition;
+import org.seedstack.seed.web.spi.SeedFilterPriority;
 import org.seedstack.seed.web.spi.ServletDefinition;
 import org.seedstack.seed.web.spi.WebProvider;
 import org.slf4j.Logger;
@@ -82,7 +83,7 @@ public class WebCORSPlugin extends AbstractPlugin implements WebProvider {
             LOGGER.info("CORS support enabled on {}", corsMapping);
 
             FilterDefinition filterDefinition = new FilterDefinition("web-cors", CORSFilter.class);
-            filterDefinition.setPriority(1000);
+            filterDefinition.setPriority(SeedFilterPriority.CORS);
             filterDefinition.setAsyncSupported(true);
             filterDefinition.addInitParameters(corsParameters);
             filterDefinition.addMappings(new FilterDefinition.Mapping("/*"));

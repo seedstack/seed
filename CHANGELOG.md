@@ -1,5 +1,6 @@
 # Version 2.3.2 (2016-11-04)
 
+* [fix] Fix wrong priority of CORS filter which was below security filter.
 * [fix] Fix binding of `X509CertificateFilter` which was bound multiple times.
 
 # Version 2.3.1 (2016-09-07)

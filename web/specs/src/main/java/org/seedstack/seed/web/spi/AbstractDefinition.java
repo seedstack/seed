@@ -11,6 +11,9 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * This class holds common attributes for {@link FilterDefinition} and {@link ServletDefinition}.
+ */
 public abstract class AbstractDefinition {
     private final String name;
     private final Map<String, String> initParams = new HashMap<String, String>();
@@ -20,22 +23,41 @@ public abstract class AbstractDefinition {
         this.name = name;
     }
 
+    /**
+     * @return the name of the filter or servlet.
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     * @return the init parameters of the filter or servlet.
+     */
     public Map<String, String> getInitParameters() {
         return Collections.unmodifiableMap(initParams);
     }
 
+    /**
+     * Add multiple init parameters to the filter or servlet definition.
+     *
+     * @param initParams the init parameters to add.
+     */
     public void addInitParameters(Map<String, String> initParams) {
         this.initParams.putAll(initParams);
     }
 
+    /**
+     * @return true if asynchronous request are supported by this filter or servlet.
+     */
     public boolean isAsyncSupported() {
         return asyncSupported;
     }
 
+    /**
+     * Sets if asynchronous requests are supported by this filter or servlet.
+     *
+     * @param asyncSupported true if asynchronous requests are supported, false otherwise.
+     */
     public void setAsyncSupported(boolean asyncSupported) {
         this.asyncSupported = asyncSupported;
     }
