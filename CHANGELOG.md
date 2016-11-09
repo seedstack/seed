@@ -1,4 +1,4 @@
-# Version 3.3.0 (2016-?-?)
+# Version 3.0.0 (2016-?-?)
 
 * [new] New configuration system based on [Coffig library](https://github.com/seedstack/coffig).
 * [new] Tooling support allows to launch tools from the command-line (-Dtool=<toolName>) or from the SeedStack maven plugin.
@@ -14,6 +14,12 @@
 * [brk] The `transaction`, `el` and `crypto` modules are merged into `core` module.
 * [brk] The `shell` module is now an add-on.
 * [brk] Even when only one transaction handler is present, it is no longer automatically used (an explicit resource must always be specified for the transaction).
+
+# Version 2.3.2 (2016-11-09)
+
+* [fix] Fix colors under Windows command-line
+* [fix] Fix wrong priority of CORS filter which was below security filter.
+* [fix] Fix binding of `X509CertificateFilter` which was bound multiple times.
 
 # Version 2.3.1 (2016-09-07)
 

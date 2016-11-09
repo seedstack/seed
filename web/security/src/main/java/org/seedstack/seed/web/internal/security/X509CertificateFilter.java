@@ -23,7 +23,7 @@ import java.security.cert.X509Certificate;
 /**
  * A security filter that extracts the certificate from the request for later use
  */
-class X509CertificateFilter extends AuthenticatingFilter {
+public class X509CertificateFilter extends AuthenticatingFilter {
 
     private static final String OPTIONAL = "optional";
 

@@ -14,6 +14,7 @@ import org.seedstack.seed.core.internal.AbstractSeedPlugin;
 import org.seedstack.seed.web.WebConfig;
 import org.seedstack.seed.web.spi.FilterDefinition;
 import org.seedstack.seed.web.spi.ListenerDefinition;
+import org.seedstack.seed.web.spi.SeedFilterPriority;
 import org.seedstack.seed.web.spi.ServletDefinition;
 import org.seedstack.seed.web.spi.WebProvider;
 import org.slf4j.Logger;
@@ -61,7 +62,7 @@ public class WebResourcesPlugin extends AbstractSeedPlugin implements WebProvide
             LOGGER.info("Static Web resources served on /*");
 
             FilterDefinition resourcesFilter = new FilterDefinition("web-resources", WebResourcesFilter.class);
-            resourcesFilter.setPriority(-1000);
+            resourcesFilter.setPriority(SeedFilterPriority.RESOURCES);
             resourcesFilter.setAsyncSupported(true);
             resourcesFilter.addMappings(new FilterDefinition.Mapping("/*"));
             return Lists.newArrayList(resourcesFilter);

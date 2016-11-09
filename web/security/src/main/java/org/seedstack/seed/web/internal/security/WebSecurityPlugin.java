@@ -23,6 +23,7 @@ import org.seedstack.seed.web.SecurityFilter;
 import org.seedstack.seed.web.WebConfig;
 import org.seedstack.seed.web.spi.FilterDefinition;
 import org.seedstack.seed.web.spi.ListenerDefinition;
+import org.seedstack.seed.web.spi.SeedFilterPriority;
 import org.seedstack.seed.web.spi.ServletDefinition;
 import org.seedstack.seed.web.spi.WebProvider;
 
@@ -104,7 +105,7 @@ public class WebSecurityPlugin extends AbstractSeedPlugin implements SecurityPro
     @Override
     public List<FilterDefinition> filters() {
         FilterDefinition securityFilter = new FilterDefinition("security", GuiceShiroFilter.class);
-        securityFilter.setPriority(Integer.MAX_VALUE);
+        securityFilter.setPriority(SeedFilterPriority.SECURITY);
         securityFilter.setAsyncSupported(true);
         securityFilter.addMappings(new FilterDefinition.Mapping("/*"));
         return Lists.newArrayList(securityFilter);
