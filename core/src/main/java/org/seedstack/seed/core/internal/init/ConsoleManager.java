@@ -7,26 +7,21 @@
  */
 package org.seedstack.seed.core.internal.init;
 
+import org.fusesource.jansi.AnsiConsole;
 import org.fusesource.jansi.AnsiOutputStream;
-import org.fusesource.jansi.WindowsAnsiOutputStream;
 
 import java.io.FilterOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
 
-import static org.fusesource.jansi.internal.CLibrary.STDOUT_FILENO;
-import static org.fusesource.jansi.internal.CLibrary.isatty;
-
 public class ConsoleManager {
-    private volatile boolean colorSupported;
     private PrintStream savedOut;
     private PrintStream savedErr;
 
     public synchronized void install() {
         OutputStream out = wrapOutputStream(System.out);
         OutputStream err = wrapOutputStream(System.err);
-        colorSupported = isColorSupported(out) && isColorSupported(err);
         savedOut = System.out;
         System.setOut(new PrintStream(out));
         savedErr = System.err;
@@ -36,39 +31,33 @@ public class ConsoleManager {
     public synchronized void uninstall() {
         System.setOut(savedOut);
         System.setErr(savedErr);
-        colorSupported = false;
     }
 
     public boolean isColorSupported() {
-        return colorSupported;
-    }
-
-    private boolean isColorSupported(OutputStream outputStream) {
-        return outputStream instanceof ColorOutputStream || outputStream instanceof WindowsAnsiOutputStream;
+        // we cannot know if color is supported
+        return false;
     }
 
     private OutputStream wrapOutputStream(final OutputStream stream) {
         try {
-            if (isIntelliJ() || isTTY() || isCygwin()) {
-                return ansiOutput(stream);
-            } else if (isWindows()) {
-                return windowsOutput(stream);
-            } else {
+            if (Boolean.getBoolean("jansi.passthrough")) {
+                // honor jansi passthrough
+                return stream;
+            } else if (Boolean.getBoolean("jansi.strip")) {
+                // honor jansi strip
                 return basicOutput(stream);
+            } else if (isXtermColor()) {
+                // enable color in recognized XTERM color modes
+                return ansiOutput(stream);
+            } else if (isIntelliJ()) {
+                // enable color under Intellij
+                return ansiOutput(stream);
+            } else {
+                // let Jansi handle other detection
+                return AnsiConsole.wrapOutputStream(stream);
             }
         } catch (Throwable e) {
-            return basicOutput(stream);
-        }
-    }
-
-    private FilterOutputStream ansiOutput(OutputStream stream) {
-        return new ColorOutputStream(stream);
-    }
-
-    private FilterOutputStream windowsOutput(OutputStream stream) {
-        try {
-            return new WindowsAnsiOutputStream(stream);
-        } catch (Exception e) {
+            // If any error occurs, strip ANSI codes
             return basicOutput(stream);
         }
     }
@@ -77,27 +66,22 @@ public class ConsoleManager {
         return new AnsiOutputStream(stream);
     }
 
+    private FilterOutputStream ansiOutput(OutputStream stream) {
+        return new ColorOutputStream(stream);
+    }
+
+    private boolean isXtermColor() {
+        String term = System.getenv("TERM");
+        return "xterm-256color".equals(term) ||
+                "xterm-color".equals(term) ||
+                "xterm".equals(term);
+    }
+
     private boolean isIntelliJ() {
         try {
             Class.forName("com.intellij.rt.execution.application.AppMain");
             return true;
         } catch (ClassNotFoundException e) {
-            return false;
-        }
-    }
-
-    private boolean isWindows() {
-        return System.getProperty("os.name").startsWith("Windows");
-    }
-
-    private boolean isCygwin() {
-        return isWindows() && System.getenv("TERM") != null;
-    }
-
-    private boolean isTTY() {
-        try {
-            return isatty(STDOUT_FILENO) != 0;
-        } catch (Exception e) {
             return false;
         }
     }
