@@ -9,6 +9,7 @@ package org.seedstack.seed.core.internal.configuration;
 
 import com.google.inject.util.Types;
 import org.seedstack.coffig.Coffig;
+import org.seedstack.coffig.node.ValueNode;
 import org.seedstack.seed.Application;
 import org.seedstack.seed.ApplicationConfig;
 import org.seedstack.seed.ClassConfiguration;
@@ -94,6 +95,11 @@ class ApplicationImpl implements Application {
             }
         }
         return classConfiguration;
+    }
+
+    @Override
+    public String substituteWithConfiguration(String value) {
+        return (String) configuration.getMapper().map(new ValueNode(value), String.class);
     }
 
     private void ensureWritableDirectory(File location) {

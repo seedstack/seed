@@ -70,4 +70,12 @@ public interface Application {
      * @return the {@link ClassConfiguration} object containing all configuration properties for the class.
      */
     <T> ClassConfiguration<T> getConfiguration(Class<T> aClass);
+
+    /**
+     * Substitute any ${...} expression in the given string with the configuration values.
+     *
+     * @param value the string to substitute.
+     * @return the substituted string.
+     */
+    String substituteWithConfiguration(String value);
 }

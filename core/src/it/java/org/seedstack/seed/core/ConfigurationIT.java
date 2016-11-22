@@ -134,4 +134,10 @@ public class ConfigurationIT {
         assertThat(configuration.get("key2")).isEqualTo("value2bis");
         assertThat(configuration.get("key3")).isEqualTo("value3");
     }
+
+    @Test
+    public void configuration_substitution() {
+        Application application = injector.getInstance(Application.class);
+        assertThat(application.substituteWithConfiguration("Hello ${person1}!")).isEqualTo("Hello Alice!");
+    }
 }
