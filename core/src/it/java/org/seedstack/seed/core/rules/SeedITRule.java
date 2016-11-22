@@ -16,7 +16,9 @@ import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.Statement;
+import org.seedstack.seed.SeedException;
 import org.seedstack.seed.core.Seed;
+import org.seedstack.seed.core.internal.CoreErrorCode;
 
 import java.lang.reflect.Method;
 import java.util.HashMap;
@@ -66,6 +68,8 @@ public class SeedITRule implements TestRule {
 
                 try {
                     base.evaluate();
+                } catch (Exception e) {
+                    throw SeedException.wrap(e, CoreErrorCode.UNEXPECTED_EXCEPTION);
                 } finally {
                     stopKernel();
                 }

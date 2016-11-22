@@ -28,10 +28,5 @@ public @interface Configuration {
     /**
      * If the configuration property is mandatory.
      */
-    boolean mandatory() default true;
-
-    /**
-     * The default value if configuration property is not present.
-     */
-    String[] defaultValue() default {};
+    boolean mandatory() default false;
 }

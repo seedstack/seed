@@ -38,8 +38,8 @@ public class ConfigurationIT {
         @Configuration("secret1")
         String secret1;
 
-        @Configuration(value = "dummy", defaultValue = "defaultValue")
-        String dummy;
+        @Configuration(value = "dummy")
+        String dummy = "defaultValue";
 
         @Configuration("someEnum")
         SomeEnum someEnum;
@@ -53,8 +53,14 @@ public class ConfigurationIT {
         @Configuration
         ConfigObject configObject1;
 
-        @Configuration(value = "missingProperty", defaultValue = "5")
-        ConfigObject configObject2;
+        @Configuration(value = "missingProperty")
+        ConfigObject configObject2 = new ConfigObject().setProperty2(5);
+
+        @Configuration
+        OtherConfigObject otherConfigObject1 = new OtherConfigObject();
+
+        @Configuration
+        OtherConfigObject otherConfigObject2;
     }
 
     @Before
@@ -63,10 +69,20 @@ public class ConfigurationIT {
     }
 
     @Config("someObject")
-    private static class ConfigObject {
-        String property1;
+    public static class ConfigObject {
+        String property1 = "defaultValue";
         @SingleValue
         int[] property2;
+
+        public ConfigObject setProperty2(int... property2) {
+            this.property2 = property2;
+            return this;
+        }
+    }
+
+    @Config("nonExistingObject")
+    private static class OtherConfigObject {
+        String property1 = "defaultValue";
     }
 
     @Test
@@ -121,8 +137,11 @@ public class ConfigurationIT {
         assertThat(holder.configObject1.property1).isEqualTo("value");
         assertThat(holder.configObject1.property2).containsExactly(5, 6, 7);
         assertThat(holder.configObject2).isNotNull();
-        assertThat(holder.configObject2.property1).isNull();
+        assertThat(holder.configObject2.property1).isEqualTo("defaultValue");
         assertThat(holder.configObject2.property2).containsExactly(5);
+        assertThat(holder.otherConfigObject1).isNotNull();
+        assertThat(holder.otherConfigObject1.property1).isEqualTo("defaultValue");
+        assertThat(holder.otherConfigObject2).isNull();
     }
 
     @Test

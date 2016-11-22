@@ -33,6 +33,7 @@ public class SeedException extends RuntimeException {
     private static final String JAVA_LANG_THROWABLE = "java.lang.Throwable";
     private static final String PRINT_STACK_TRACE = "printStackTrace";
     private static final String CONSTRUCTOR = "<init>";
+    private static final String COM_GOOGLE_INJECT_INTERNAL_ERRORS = "com.google.inject.internal.Errors";
 
     private final ErrorCode errorCode;
     private final Map<String, Object> properties = new HashMap<>();
@@ -126,8 +127,9 @@ public class SeedException extends RuntimeException {
     public String toString() {
         int location = getLocation();
 
-        if (location == 1) {
-            // if called from throwable constructor we return the simple message to avoid messing stack trace
+        if (location == 1 || location == 3) {
+            // if called from throwable constructor or from a verbose Guice exception
+            // we return the simple message to avoid messing stack trace
             return getMessage();
         }
 
@@ -331,6 +333,10 @@ public class SeedException extends RuntimeException {
             // In Throwable printStackTrace
             if (JAVA_LANG_THROWABLE.equals(stackTraceElement.getClassName()) && PRINT_STACK_TRACE.equals(stackTraceElement.getMethodName())) {
                 return 2;
+            }
+            // In a Guice verbose exception
+            if (COM_GOOGLE_INJECT_INTERNAL_ERRORS.equals(stackTraceElement.getClassName())) {
+                return 3;
             }
         }
         // Elsewhere

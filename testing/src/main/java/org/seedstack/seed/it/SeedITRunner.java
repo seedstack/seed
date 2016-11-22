@@ -44,8 +44,6 @@ import java.util.ServiceLoader;
  * interception, test extensions, ...).
  */
 public class SeedITRunner extends BlockJUnit4ClassRunner {
-    private static final Logger LOGGER = LoggerFactory.getLogger(SeedITRunner.class);
-
     private final ServiceLoader<ITRunnerPlugin> plugins;
     private final Expect.TestingStep expectedTestingStep;
     private final Class<? extends Throwable> expectedClass;

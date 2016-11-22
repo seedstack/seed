@@ -14,6 +14,8 @@
 * [brk] The `transaction`, `el` and `crypto` modules are merged into `core` module.
 * [brk] The `shell` module is now an add-on.
 * [brk] Even when only one transaction handler is present, it is no longer automatically used (an explicit resource must always be specified for the transaction).
+* [brk] The default value of the `@Configuration` annotation `mandatory` argument has been changed to `false`.
+* [brk] The `defaultValue` attribute of the `@Configuration` annotation has been removed. Pre-initialize fields if a default value is needed.
 
 # Version 2.3.2 (2016-11-09)
 

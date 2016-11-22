@@ -12,6 +12,7 @@ import com.google.inject.MembersInjector;
 import org.seedstack.coffig.Coffig;
 import org.seedstack.coffig.node.ArrayNode;
 import org.seedstack.coffig.node.ValueNode;
+import org.seedstack.coffig.util.Utils;
 import org.seedstack.seed.Configuration;
 import org.seedstack.seed.SeedException;
 import org.seedstack.seed.core.internal.CoreErrorCode;
@@ -39,27 +40,27 @@ class ConfigurationMembersInjector<T> implements MembersInjector<T> {
         for (ConfigurableField configurableField : fields) {
             Configuration configuration = configurableField.getConfiguration();
             Field field = configurableField.getField();
-            Optional<?> optionalValue = coffig.getOptional(field.getType(), configuration.value());
+            Class<?> fieldType = field.getType();
+            Optional<?> optionalValue = coffig.getOptional(fieldType, configuration.value());
 
             try {
                 if (optionalValue.isPresent()) {
                     field.set(t, optionalValue.get());
-                } else {
-                    String[] defaultValue = configuration.defaultValue();
-                    if (defaultValue.length > 0) {
-                        field.set(t, mapValue(defaultValue, field.getType()));
-                    } else if (configuration.mandatory()) {
-                        throw SeedException.createNew(CoreErrorCode.MISSING_CONFIGURATION_KEY)
-                                .put("key", Joiner.on(".").join(configuration.value()));
-                    }
+                } else if (configuration.mandatory()) {
+                    throw SeedException.createNew(CoreErrorCode.MISSING_CONFIGURATION_KEY)
+                            .put("key", computeConfigKey(configuration, fieldType));
                 }
             } catch (Exception e) {
                 throw SeedException.wrap(e, CoreErrorCode.UNABLE_TO_INJECT_CONFIGURATION_VALUE)
                         .put("class", field.getDeclaringClass().getCanonicalName())
                         .put("field", field.getName())
-                        .put("key", Joiner.on(".").join(configuration.value()));
+                        .put("key", computeConfigKey(configuration, fieldType));
             }
         }
+    }
+
+    private String computeConfigKey(Configuration configuration, Class<?> fieldType) {
+        return configuration.value().length > 0 ? Joiner.on(".").join(configuration.value()) : Utils.resolvePath(fieldType);
     }
 
     private Object mapValue(String[] value, Class<?> type) {
