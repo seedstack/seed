@@ -23,12 +23,7 @@ public class TestLifecycleListener implements LifecycleListener {
     @Logging
     private Logger logger;
 
-    private static ThreadLocal<State> state = new ThreadLocal<State>() {
-        @Override
-        protected State initialValue() {
-            return new State();
-        }
-    };
+    private static ThreadLocal<State> state = ThreadLocal.withInitial(State::new);
 
     @Override
     public void started() {

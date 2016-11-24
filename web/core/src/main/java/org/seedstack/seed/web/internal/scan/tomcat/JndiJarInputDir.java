@@ -10,7 +10,6 @@ package org.seedstack.seed.web.internal.scan.tomcat;
 import com.google.common.collect.AbstractIterator;
 import org.reflections.vfs.Vfs;
 import org.seedstack.seed.SeedException;
-import org.seedstack.seed.core.utils.SeedLoggingUtils;
 import org.seedstack.seed.web.internal.WebErrorCode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,7 +44,7 @@ class JndiJarInputDir implements Vfs.Dir {
                 try {
                     jarInputStream = new JarInputStream(url.openConnection().getInputStream());
                 } catch (Exception e) {
-                    SeedLoggingUtils.logWarningWithDebugDetails(LOGGER, e, "Unable to open JAR at {}, ignoring it", url.toExternalForm());
+                    LOGGER.warn("Unable to open JAR at {}, ignoring it", url.toExternalForm(), e);
                 }
             }
 
@@ -78,7 +77,7 @@ class JndiJarInputDir implements Vfs.Dir {
         try {
             jarInputStream.close();
         } catch (IOException e) {
-            SeedLoggingUtils.logWarningWithDebugDetails(LOGGER, e, "Unable to close JAR at {}", url.toExternalForm());
+            LOGGER.warn("Unable to close JAR at {}", url.toExternalForm(), e);
         }
     }
 

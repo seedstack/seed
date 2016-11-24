@@ -8,10 +8,10 @@
 package org.seedstack.seed.core.internal.el;
 
 import com.google.inject.Binder;
-import com.google.inject.matcher.AbstractMatcher;
 import com.google.inject.matcher.Matcher;
 import com.google.inject.matcher.Matchers;
-import org.seedstack.seed.core.utils.SeedReflectionUtils;
+import org.seedstack.seed.core.internal.utils.MethodMatcherBuilder;
+import org.seedstack.shed.reflect.AnnotationPredicates;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
@@ -82,16 +82,11 @@ public class ELBinder {
     public ELBinder bindELAnnotation(Class<? extends Annotation> annotationClass, ExecutionPolicy policy) {
         ELInterceptor interceptor = new ELInterceptor(annotationClass, policy);
         binder.requestInjection(interceptor);
-        binder.bindInterceptor(Matchers.any(), handlerMethod(annotationClass), interceptor);
+        binder.bindInterceptor(Matchers.any(), handlerMethodMatcher(annotationClass), interceptor);
         return this;
     }
 
-    private Matcher<Method> handlerMethod(final Class<? extends Annotation> annotationClass) {
-        return new AbstractMatcher<Method>() {
-            @Override
-            public boolean matches(Method candidate) {
-                return !candidate.isSynthetic() && SeedReflectionUtils.getMetaAnnotationFromAncestors(candidate, annotationClass) != null;
-            }
-        };
+    private Matcher<Method> handlerMethodMatcher(final Class<? extends Annotation> annotationClass) {
+        return new MethodMatcherBuilder(AnnotationPredicates.elementAnnotatedWith(annotationClass, true)).build();
     }
 }

@@ -9,17 +9,17 @@ package org.seedstack.seed.core.internal.metrics;
 
 import com.codahale.metrics.health.HealthCheck;
 import com.codahale.metrics.health.HealthCheck.Result;
-import org.seedstack.seed.core.utils.ProxyMethodReplacer;
 
 /**
- * {@link ProxyMethodReplacer} for a {@link HealthCheck}.
+ * Substitute for a {@link HealthCheck}.
  */
-public interface HealthCheckMethodReplacer extends ProxyMethodReplacer{
+public interface HealthCheckMethodReplacer {
 
-	/**
-	 * Return the result of an {@link HealthCheck} test.
-	 * @return the {@link Result} for the {@link HealthCheck} test. 
-	 * @see HealthCheck
-	 */
-	Result check();
+    /**
+     * Return the result of an {@link HealthCheck} test.
+     *
+     * @return the {@link Result} for the {@link HealthCheck} test.
+     * @see HealthCheck
+     */
+    Result check();
 }

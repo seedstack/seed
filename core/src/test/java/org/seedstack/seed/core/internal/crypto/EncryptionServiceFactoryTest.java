@@ -16,9 +16,6 @@ import mockit.Verifications;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.seedstack.seed.SeedException;
-import org.seedstack.seed.core.internal.crypto.EncryptionServiceFactory;
-import org.seedstack.seed.core.internal.crypto.EncryptionServiceImpl;
-import org.seedstack.seed.core.internal.crypto.KeyPairConfig;
 import org.seedstack.seed.crypto.CryptoConfig;
 import org.seedstack.seed.crypto.EncryptionService;
 
@@ -31,16 +28,11 @@ import java.security.UnrecoverableKeyException;
 import java.security.cert.Certificate;
 import java.util.HashMap;
 
-import static org.seedstack.seed.core.utils.ConfigurationUtils.buildKey;
-
 /**
  * Unit test for {@link EncryptionServiceFactory}.
  */
 public class EncryptionServiceFactoryTest {
-
     private static final String ALIAS = "key1";
-    public static final String CERT_FILE_KEY = buildKey("cert", ALIAS, "file");
-    public static final String CERT_RESOURCE_KEY = buildKey("cert", ALIAS, "resource");
     private static final char[] PASSWORD = "password".toCharArray();
 
     @Mocked

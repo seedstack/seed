@@ -31,7 +31,6 @@ import java.util.Map;
 
 class WebSecurityModule extends ShiroWebModule {
     private static final Logger LOGGER = LoggerFactory.getLogger(ShiroWebModule.class);
-    private static final String PROPERTIES_PREFIX = "org.seedstack.seed.security.urls";
     private static final Map<String, Key<? extends Filter>> DEFAULT_FILTERS = new HashMap<>();
 
     static {

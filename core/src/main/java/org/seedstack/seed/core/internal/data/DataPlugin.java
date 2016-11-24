@@ -19,7 +19,7 @@ import org.seedstack.seed.DataManager;
 import org.seedstack.seed.DataSet;
 import org.seedstack.seed.SeedException;
 import org.seedstack.seed.core.internal.AbstractSeedPlugin;
-import org.seedstack.seed.core.utils.SeedReflectionUtils;
+import org.seedstack.shed.ClassLoaders;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -120,7 +120,7 @@ public class DataPlugin extends AbstractSeedPlugin {
 
     @Override
     public void start(Context context) {
-        ClassLoader classLoader = SeedReflectionUtils.findMostCompleteClassLoader(DataPlugin.class);
+        ClassLoader classLoader = ClassLoaders.findMostCompleteClassLoader(DataPlugin.class);
 
         if (loadInitializationData) {
             for (Map<String, DataImporterDefinition<Object>> dataImporterDefinitionMap : allDataImporters.values()) {

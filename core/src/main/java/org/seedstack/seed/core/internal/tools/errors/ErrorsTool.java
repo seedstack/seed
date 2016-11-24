@@ -10,7 +10,7 @@ package org.seedstack.seed.core.internal.tools.errors;
 import io.nuun.kernel.api.plugin.InitState;
 import io.nuun.kernel.api.plugin.context.InitContext;
 import io.nuun.kernel.api.plugin.request.ClasspathScanRequest;
-import org.seedstack.seed.ErrorCode;
+import org.seedstack.shed.exception.ErrorCode;
 import org.seedstack.seed.cli.CliOption;
 import org.seedstack.seed.core.internal.AbstractSeedTool;
 

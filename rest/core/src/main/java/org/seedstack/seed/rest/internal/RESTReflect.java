@@ -7,8 +7,8 @@
  */
 package org.seedstack.seed.rest.internal;
 
-import org.seedstack.seed.core.utils.SeedReflectionUtils;
 import org.seedstack.seed.rest.Rel;
+import org.seedstack.shed.reflect.Classes;
 
 import javax.ws.rs.BeanParam;
 import javax.ws.rs.Path;
@@ -147,7 +147,7 @@ class RESTReflect {
         if (paramAnnotation.annotationType().equals(QueryParam.class)) {
             String varName = ((QueryParam) paramAnnotation).value();
             addHrefVar(baseParam, hrefVars, varName);
-        } else if (SeedReflectionUtils.isClassPresent("javax.ws.rs.BeanParam") && paramAnnotation.annotationType().equals(BeanParam.class)) {
+        } else if (Classes.optional("javax.ws.rs.BeanParam").isPresent() && paramAnnotation.annotationType().equals(BeanParam.class)) {
             hrefVars.putAll(findQueryParamOnFields(baseParam, parameterClass));
         }
         return hrefVars;

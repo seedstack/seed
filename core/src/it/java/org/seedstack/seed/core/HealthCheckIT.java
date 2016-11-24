@@ -20,9 +20,9 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.seedstack.seed.core.internal.metrics.HealthCheckMethodReplacer;
-import org.seedstack.seed.core.internal.metrics.HealthcheckProvider;
+import org.seedstack.seed.core.internal.metrics.HealthCheckProvider;
 import org.seedstack.seed.core.rules.SeedITRule;
-import org.seedstack.seed.core.utils.DependencyClassProxy;
+import org.seedstack.seed.core.internal.dependency.DependencyClassProxy;
 
 import javax.inject.Inject;
 import java.util.Optional;
@@ -36,7 +36,7 @@ public class HealthCheckIT {
 
     private static class MyHealthCheck {
         @Inject
-        private Optional<HealthcheckProvider> healthCheckProvider;
+        private Optional<HealthCheckProvider> healthCheckProvider;
 
         void start() {
             if (healthCheckProvider.isPresent()) {
@@ -61,7 +61,7 @@ public class HealthCheckIT {
     public void test() {
         MyHealthCheck myHealthCheck = injector.getInstance(MyHealthCheck.class);
         myHealthCheck.start();
-        Optional<HealthcheckProvider> provider = injector.getInstance(Key.get(new TypeLiteral<Optional<HealthcheckProvider>>() {
+        Optional<HealthCheckProvider> provider = injector.getInstance(Key.get(new TypeLiteral<Optional<HealthCheckProvider>>() {
         }));
         Assertions.assertThat(provider.isPresent()).isTrue();
         HealthCheckRegistry registry = provider.get().getHealthCheckRegistry();

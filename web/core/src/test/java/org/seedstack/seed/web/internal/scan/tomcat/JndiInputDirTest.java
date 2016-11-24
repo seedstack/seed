@@ -54,7 +54,7 @@ public class JndiInputDirTest {
         when(aaContext.list("/")).thenReturn(new ListNamingEnumeration<>(Lists.newArrayList(new NameClassPair("AAA", "dummy"))));
         when(aaContext.lookup("AAA")).thenReturn(new ResourceMock(aaaInputStream));
 
-        when(bContext.list("/")).thenReturn(new ListNamingEnumeration<>(Lists.<NameClassPair>newArrayList()));
+        when(bContext.list("/")).thenReturn(new ListNamingEnumeration<>(Lists.newArrayList()));
 
         final URLConnection goodUrlConnection = mock(URLConnection.class);
         when(goodUrlConnection.getContent()).thenReturn(rootContext);

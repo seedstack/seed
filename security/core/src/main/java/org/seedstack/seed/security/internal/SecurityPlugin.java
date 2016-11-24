@@ -10,8 +10,8 @@ package org.seedstack.seed.security.internal;
 import com.google.common.collect.Lists;
 import io.nuun.kernel.api.plugin.InitState;
 import io.nuun.kernel.api.plugin.context.InitContext;
-import io.nuun.kernel.api.plugin.request.BindingRequest;
 import io.nuun.kernel.api.plugin.request.ClasspathScanRequest;
+import org.seedstack.seed.SeedException;
 import org.seedstack.seed.core.internal.AbstractSeedPlugin;
 import org.seedstack.seed.core.internal.el.ELPlugin;
 import org.seedstack.seed.security.PrincipalCustomizer;
@@ -21,9 +21,6 @@ import org.seedstack.seed.security.RolePermissionResolver;
 import org.seedstack.seed.security.Scope;
 import org.seedstack.seed.security.SecurityConfig;
 import org.seedstack.seed.security.spi.SecurityScope;
-import org.seedstack.seed.security.spi.data.DataObfuscationHandler;
-import org.seedstack.seed.security.spi.data.DataSecurityHandler;
-import org.seedstack.seed.SeedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,7 +39,6 @@ public class SecurityPlugin extends AbstractSeedPlugin {
 
     private final Map<String, Class<? extends Scope>> scopeClasses = new HashMap<>();
     private final Set<SecurityProvider> securityProviders = new HashSet<>();
-    private final Set<Class<? extends DataSecurityHandler<?>>> dataSecurityHandlers = new HashSet<>();
     private SecurityConfigurer securityConfigurer;
     private boolean elEnabled;
 
@@ -63,13 +59,7 @@ public class SecurityPlugin extends AbstractSeedPlugin {
                 .descendentTypeOf(RoleMapping.class)
                 .descendentTypeOf(RolePermissionResolver.class)
                 .descendentTypeOf(Scope.class)
-                .descendentTypeOf(DataSecurityHandler.class)
                 .descendentTypeOf(PrincipalCustomizer.class).build();
-    }
-
-    @Override
-    public Collection<BindingRequest> bindingRequests() {
-        return bindingRequestsBuilder().descendentTypeOf(DataObfuscationHandler.class).build();
     }
 
     @Override
@@ -81,7 +71,6 @@ public class SecurityPlugin extends AbstractSeedPlugin {
         Collection<Class<? extends PrincipalCustomizer<?>>> principalCustomizerClasses = (Collection) scannedClasses.get(PrincipalCustomizer.class);
 
         configureScopes(scannedClasses.get(Scope.class));
-        configureDataSecurityHandlers(scannedClasses.get(DataSecurityHandler.class));
         securityProviders.addAll(initContext.dependencies(SecurityProvider.class));
         elEnabled = initContext.dependency(ELPlugin.class).isStandalone();
         securityConfigurer = new SecurityConfigurer(securityConfig, scannedClasses, principalCustomizerClasses);
@@ -93,16 +82,6 @@ public class SecurityPlugin extends AbstractSeedPlugin {
         return InitState.INITIALIZED;
     }
 
-    @SuppressWarnings("unchecked")
-    private void configureDataSecurityHandlers(Collection<Class<?>> securityHandlerClasses) {
-        if (securityHandlerClasses != null) {
-            for (Class<?> candidate : securityHandlerClasses) {
-                if (DataSecurityHandler.class.isAssignableFrom(candidate)) {
-                    dataSecurityHandlers.add((Class<? extends DataSecurityHandler<?>>) candidate);
-                }
-            }
-        }
-    }
 
     @SuppressWarnings("unchecked")
     private void configureScopes(Collection<Class<?>> scopeClasses) {
@@ -144,7 +123,6 @@ public class SecurityPlugin extends AbstractSeedPlugin {
         return new SecurityModule(
                 securityConfigurer,
                 scopeClasses,
-                dataSecurityHandlers,
                 elEnabled,
                 securityProviders
         );

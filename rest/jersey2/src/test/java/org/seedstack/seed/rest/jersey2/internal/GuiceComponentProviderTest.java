@@ -171,7 +171,7 @@ public class GuiceComponentProviderTest {
         givenInjections();
         underTest.initialize(serviceLocator);
 
-        underTest.bind(MyProvider.class, Sets.<Class<?>>newHashSet(MyProviderImpl.class));
+        underTest.bind(MyProvider.class, Sets.newHashSet(MyProviderImpl.class));
 
         new Verifications() {{
            bindingBuilder.to(MyProvider.class);

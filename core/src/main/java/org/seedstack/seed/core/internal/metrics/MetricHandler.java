@@ -14,9 +14,8 @@ import com.codahale.metrics.Metric;
  */
 public interface MetricHandler {
 
-	/**
-	 * @return a {@link Metric}
-	 */
-	Metric handle();
-	
+    /**
+     * @return a {@link Metric}
+     */
+    Metric handle();
 }

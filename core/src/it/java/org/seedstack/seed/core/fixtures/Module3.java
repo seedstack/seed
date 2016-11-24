@@ -18,7 +18,7 @@ class Module3 extends AbstractModule {
 
 	@Override
 	protected void configure() {
-		bind(Service3.class).toProvider(Providers.<Service3>of(null));
+		bind(Service3.class).toProvider(Providers.of(null));
         bind(Key.get(Service.class, Names.named("Service3"))).to(Key.get(Service1.class));
 	}
 

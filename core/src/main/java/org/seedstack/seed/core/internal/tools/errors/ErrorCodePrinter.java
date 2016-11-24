@@ -10,7 +10,7 @@ package org.seedstack.seed.core.internal.tools.errors;
 import com.google.common.base.CaseFormat;
 import com.google.common.base.Strings;
 import org.fusesource.jansi.Ansi;
-import org.seedstack.seed.ErrorCode;
+import org.seedstack.shed.exception.ErrorCode;
 
 import javax.annotation.Nullable;
 import java.io.File;

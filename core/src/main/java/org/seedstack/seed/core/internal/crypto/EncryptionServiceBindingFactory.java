@@ -9,10 +9,10 @@ package org.seedstack.seed.core.internal.crypto;
 
 import com.google.inject.Key;
 import com.google.inject.name.Names;
-import org.seedstack.seed.core.utils.SeedReflectionUtils;
+import org.seedstack.seed.SeedException;
 import org.seedstack.seed.crypto.CryptoConfig;
 import org.seedstack.seed.crypto.EncryptionService;
-import org.seedstack.seed.SeedException;
+import org.seedstack.shed.reflect.Classes;
 
 import javax.inject.Qualifier;
 import java.lang.annotation.Annotation;
@@ -68,7 +68,7 @@ class EncryptionServiceBindingFactory {
 
     private Key<EncryptionService> createKeyFromQualifier(String qualifier) {
         Key<EncryptionService> key;
-        Optional<Class<Object>> optionalClass = SeedReflectionUtils.optionalOfClass(qualifier);
+        Optional<Class<Object>> optionalClass = Classes.optional(qualifier);
         if (optionalClass.isPresent()) {
             Class<?> qualifierClass = optionalClass.get();
             if (!Annotation.class.isAssignableFrom(qualifierClass) || !qualifierClass.isAnnotationPresent(Qualifier.class)) {

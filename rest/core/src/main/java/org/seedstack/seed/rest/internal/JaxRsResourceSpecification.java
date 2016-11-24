@@ -8,12 +8,11 @@
 package org.seedstack.seed.rest.internal;
 
 import org.kametic.specifications.AbstractSpecification;
-import org.seedstack.seed.core.utils.BaseClassSpecifications;
+import org.seedstack.shed.reflect.AnnotationPredicates;
+import org.seedstack.shed.reflect.ClassPredicates;
 
 import javax.ws.rs.Path;
-
-import static org.seedstack.seed.core.utils.BaseClassSpecifications.classAnnotatedWith;
-import static org.seedstack.seed.core.utils.BaseClassSpecifications.classIsAbstract;
+import java.lang.reflect.Modifier;
 
 /**
  * Matches non abstract classes annotated by {@link javax.ws.rs.Path} or containing methods annotated by {@code Path}.
@@ -30,10 +29,18 @@ import static org.seedstack.seed.core.utils.BaseClassSpecifications.classIsAbstr
  * class or interface annotations is not supported.</b>
  * </blockquote>
  */
-public class JaxRsResourceSpecification extends AbstractSpecification<Class<?>> {
+class JaxRsResourceSpecification extends AbstractSpecification<Class<?>> {
+    static final JaxRsResourceSpecification INSTANCE = new JaxRsResourceSpecification();
+
+    private JaxRsResourceSpecification() {
+        // not instantiation allowed
+    }
 
     @Override
     public boolean isSatisfiedBy(Class<?> candidate) {
-        return classAnnotatedWith(Path.class).and(BaseClassSpecifications.not(classIsAbstract())).isSatisfiedBy(candidate);
+        return ClassPredicates
+                .classModifierIs(Modifier.ABSTRACT).negate()
+                .and(AnnotationPredicates.elementAnnotatedWith(Path.class, false))
+                .test(candidate);
     }
 }

@@ -17,8 +17,7 @@ import javax.ws.rs.core.Response;
 
 @Ignore // Tells nuun to not scan the test class
 public class JaxRsResourceSpecificationTest {
-
-    private JaxRsResourceSpecification underTest = new JaxRsResourceSpecification();
+    private JaxRsResourceSpecification underTest = JaxRsResourceSpecification.INSTANCE;
 
     @Test
     public void valid_resource_specification() {

@@ -7,9 +7,8 @@
  */
 package org.seedstack.seed.core.internal.el;
 
-import org.apache.commons.lang.StringUtils;
+import com.google.common.base.Strings;
 import org.seedstack.seed.SeedException;
-import org.seedstack.seed.core.utils.SeedCheckUtils;
 import org.seedstack.seed.el.ELService;
 
 import javax.el.ELContext;
@@ -20,6 +19,9 @@ import javax.el.PropertyNotFoundException;
 import javax.el.ValueExpression;
 import javax.inject.Inject;
 
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkNotNull;
+
 /**
  * Implementation of ELService.
  */
@@ -29,14 +31,14 @@ class ELServiceInternal implements ELService {
 
     @Override
     public ELContextProvider withExpression(String el, Class returnType) {
-        SeedCheckUtils.checkIf(StringUtils.isNotBlank(el));
-        SeedCheckUtils.checkIfNotNull(returnType);
+        checkArgument(!Strings.isNullOrEmpty(el), "An expression is required");
+        checkNotNull(returnType, "The return type must not be null");
         return new ELInstance(expressionFactory, el, returnType);
     }
 
     @Override
     public ValueExpressionProvider withValueExpression(ValueExpression valueExpression) {
-        SeedCheckUtils.checkIfNotNull(valueExpression);
+        checkNotNull(valueExpression, "The value expression must not be null");
         ELInstance elInstance = new ELInstance(expressionFactory);
         elInstance.setValueExpression(valueExpression);
         return elInstance;
@@ -44,7 +46,7 @@ class ELServiceInternal implements ELService {
 
     @Override
     public MethodExpressionProvider withMethodExpression(MethodExpression methodExpression) {
-        SeedCheckUtils.checkIfNotNull(methodExpression);
+        checkNotNull(methodExpression, "The method expression must not be null");
         ELInstance elInstance = new ELInstance(expressionFactory);
         elInstance.setMethodExpression(methodExpression);
         return elInstance;
@@ -70,7 +72,7 @@ class ELServiceInternal implements ELService {
 
         @Override
         public ELExpressionProvider withContext(ELContext elContext) {
-            SeedCheckUtils.checkIfNotNull(elContext);
+            checkNotNull(elContext, "The context must not be null");
             context = elContext;
             return this;
         }

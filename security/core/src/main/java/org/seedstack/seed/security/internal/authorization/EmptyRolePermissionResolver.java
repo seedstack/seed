@@ -21,7 +21,7 @@ public class EmptyRolePermissionResolver implements RolePermissionResolver {
 
 	@Override
 	public Collection<Permission> resolvePermissionsInRole(Role role) {
-		return Collections.<Permission> emptyList();
+		return Collections.emptyList();
 	}
 
 }

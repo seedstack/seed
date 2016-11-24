@@ -9,11 +9,12 @@ package org.seedstack.seed.core.internal.tools.config;
 
 import com.google.common.base.Strings;
 import org.fusesource.jansi.Ansi;
-import org.seedstack.shed.text.TextUtils;
+import org.seedstack.shed.text.TextWrapper;
 
 import java.io.PrintStream;
 
 class DetailPrinter {
+    private static final TextWrapper textWrapper = new TextWrapper(120);
     private final PropertyInfo propertyInfo;
 
     DetailPrinter(PropertyInfo propertyInfo) {
@@ -72,7 +73,7 @@ class DetailPrinter {
     private void printLongDescription(PropertyInfo propertyInfo, Ansi ansi) {
         String longDescription = propertyInfo.getLongDescription();
         if (longDescription != null) {
-            ansi.newline().a(TextUtils.wrap(longDescription, 80)).newline();
+            ansi.newline().a(textWrapper.wrap(longDescription)).newline();
         }
     }
 

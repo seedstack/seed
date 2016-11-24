@@ -7,15 +7,16 @@
  */
 package org.seedstack.seed.core.internal;
 
-import org.seedstack.seed.ErrorCode;
+import org.seedstack.shed.exception.ErrorCode;
 
 public enum CoreErrorCode implements ErrorCode {
+    DUPLICATED_BINDING_KEY,
     ERROR_DURING_LIFECYCLE_CALLBACK,
     INVALID_CONFIG_PATH,
     INVALID_CONFIG_PROPERTY,
     MISSING_CONFIGURATION_KEY,
-    MISSING_SEED_ENTRY_POINT,
-    MULTIPLE_SEED_ENTRY_POINTS,
+    MISSING_SEED_LAUNCHER,
+    MULTIPLE_SEED_LAUNCHERS,
     MULTIPLE_TOOLS_WITH_IDENTICAL_NAMES,
     NO_LOCAL_STORAGE_CONFIGURED,
     RETHROW_EXCEPTION_AFTER_DIAGNOSTIC_FAILURE,

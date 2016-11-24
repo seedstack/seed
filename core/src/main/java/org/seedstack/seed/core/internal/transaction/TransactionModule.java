@@ -13,6 +13,7 @@ import com.google.inject.matcher.Matchers;
 import com.google.inject.multibindings.Multibinder;
 import com.google.inject.name.Names;
 import com.google.inject.util.Providers;
+import org.seedstack.seed.core.internal.utils.MethodMatcherBuilder;
 import org.seedstack.seed.transaction.spi.TransactionHandler;
 import org.seedstack.seed.transaction.spi.TransactionManager;
 import org.seedstack.seed.transaction.spi.TransactionMetadata;
@@ -34,8 +35,6 @@ class TransactionModule extends AbstractModule {
 
     @Override
     protected void configure() {
-        bind(TransactionMetadata.class);
-
         Multibinder<TransactionMetadataResolver> transactionMetadataResolverMultibinder = Multibinder.newSetBinder(binder(), TransactionMetadataResolver.class);
         for (Class<? extends TransactionMetadataResolver> transactionMetadataResolver : transactionMetadataResolvers) {
             transactionMetadataResolverMultibinder.addBinding().to(transactionMetadataResolver);
@@ -46,13 +45,12 @@ class TransactionModule extends AbstractModule {
             }).annotatedWith(Names.named("default")).toInstance(defaultTransactionHandlerClass);
         } else {
             bind(new TypeLiteral<Class<? extends TransactionHandler>>() {
-            }).annotatedWith(Names.named("default")).toProvider(Providers.<Class<? extends TransactionHandler>>of(null));
+            }).annotatedWith(Names.named("default")).toProvider(Providers.of(null));
         }
 
         requestInjection(transactionManager);
-
-        bindInterceptor(Matchers.any(), TransactionPlugin.TRANSACTIONAL_MATCHER, transactionManager.getMethodInterceptor());
-
+        bindInterceptor(Matchers.any(), new MethodMatcherBuilder(TransactionalResolver.INSTANCE).build(), transactionManager.getMethodInterceptor());
         bind(TransactionManager.class).toInstance(transactionManager);
+        bind(TransactionMetadata.class);
     }
 }

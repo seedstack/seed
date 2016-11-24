@@ -14,11 +14,11 @@ import io.nuun.kernel.api.plugin.context.InitContext;
 import io.nuun.kernel.api.plugin.request.ClasspathScanRequest;
 import org.seedstack.seed.core.SeedRuntime;
 import org.seedstack.seed.core.internal.AbstractSeedPlugin;
-import org.seedstack.seed.core.utils.SeedReflectionUtils;
 import org.seedstack.seed.web.spi.FilterDefinition;
 import org.seedstack.seed.web.spi.ListenerDefinition;
 import org.seedstack.seed.web.spi.ServletDefinition;
 import org.seedstack.seed.web.spi.WebProvider;
+import org.seedstack.shed.reflect.Classes;
 
 import javax.servlet.ServletContext;
 import javax.websocket.ClientEndpoint;
@@ -35,7 +35,7 @@ import java.util.Set;
  * All the scanned classes will be passed to the module.
  */
 public class WebSocketPlugin extends AbstractSeedPlugin implements WebProvider {
-    private final boolean webSocketPresent = SeedReflectionUtils.isClassPresent("javax.websocket.server.ServerEndpoint");
+    private final boolean webSocketPresent = Classes.optional("javax.websocket.server.ServerEndpoint").isPresent();
     private final Set<Class<?>> serverEndpointClasses = new HashSet<>();
     private final Set<Class<?>> clientEndpointClasses = new HashSet<>();
     private final Set<Class<? extends ServerEndpointConfig.Configurator>> serverConfiguratorClasses = new HashSet<>();

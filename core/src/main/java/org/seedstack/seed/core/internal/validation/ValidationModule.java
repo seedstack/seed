@@ -13,8 +13,7 @@ import com.google.inject.Provides;
 import com.google.inject.matcher.AbstractMatcher;
 import com.google.inject.matcher.Matcher;
 import com.google.inject.matcher.Matchers;
-import org.seedstack.seed.core.utils.SeedLoggingUtils;
-import org.seedstack.seed.core.utils.SeedReflectionUtils;
+import org.seedstack.shed.reflect.Annotations;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,9 +38,7 @@ class ValidationModule extends AbstractModule {
     @Override
     protected void configure() {
         bind(ValidatorFactory.class).toInstance(validatorFactory);
-
         enableValidationOnInjectionPoints();
-
         if (isDynamicValidationSupported()) {
             configureDynamicValidation();
         }
@@ -60,7 +57,7 @@ class ValidationModule extends AbstractModule {
         try {
             executableValidator = validatorFactory.getValidator().forExecutables();
         } catch (Throwable t) {
-            SeedLoggingUtils.logWarningWithDebugDetails(LOGGER, t, "Unable to create the dynamic validator, support for dynamic validation disabled");
+            LOGGER.warn("Unable to create the dynamic validator, support for dynamic validation disabled", t);
         }
         return executableValidator != null;
     }
@@ -117,7 +114,7 @@ class ValidationModule extends AbstractModule {
     }
 
     private boolean hasConstraintOrValidAnnotation(Annotation annotation) {
-        return SeedReflectionUtils.hasAnnotationDeep(annotation.annotationType(), Constraint.class) ||
+        return Annotations.on(annotation.annotationType()).includingMetaAnnotations().find(Constraint.class).isPresent() ||
                 Valid.class.equals(annotation.annotationType());
     }
 }

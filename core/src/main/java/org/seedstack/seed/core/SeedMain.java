@@ -28,6 +28,11 @@ import java.util.ServiceLoader;
  * </p>
  */
 public class SeedMain {
+    /**
+     * Entry point of Seed standalone applications (launched from the command-line).
+     *
+     * @param args The command-line arguments.
+     */
     public static void main(String[] args) {
         String toolName = System.getProperty("tool");
         SeedLauncher seedLauncher;
@@ -38,47 +43,57 @@ public class SeedMain {
             seedLauncher = getLauncher();
         }
 
-        Runtime.getRuntime().addShutdownHook(new Thread() {
-            @Override
-            public void run() {
-                try {
-                    seedLauncher.shutdown();
-                    Seed.close();
-                } catch (Throwable t) {
-                    handleThrowable(t);
-                }
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            try {
+                seedLauncher.shutdown();
+                Seed.close();
+            } catch (Exception e) {
+                handleException(e);
             }
-        });
+        }));
 
         try {
             seedLauncher.launch(args);
-        } catch (Throwable t) {
-            handleThrowable(t);
+        } catch (Exception e) {
+            handleException(e);
             System.exit(-1);
         }
     }
 
+    /**
+     * Discover implementations of {@link SeedLauncher} through the {@link ServiceLoader} mechanism and if exactly one
+     * implementation is available, returns it. Otherwise, throws an exception.
+     *
+     * @return an instance of the unique {@link SeedLauncher} implementation.
+     */
     public static SeedLauncher getLauncher() {
         List<SeedLauncher> entryPointServices = Lists.newArrayList(ServiceLoader.load(SeedLauncher.class));
 
         if (entryPointServices.size() < 1) {
-            throw SeedException.createNew(CoreErrorCode.MISSING_SEED_ENTRY_POINT);
+            throw SeedException.createNew(CoreErrorCode.MISSING_SEED_LAUNCHER);
         } else if (entryPointServices.size() > 1) {
-            throw SeedException.createNew(CoreErrorCode.MULTIPLE_SEED_ENTRY_POINTS);
+            throw SeedException.createNew(CoreErrorCode.MULTIPLE_SEED_LAUNCHERS);
         }
 
         return entryPointServices.get(0);
     }
 
+    /**
+     * Returns an instance of the {@link ToolLauncher} configured for the specified tool.
+     *
+     * @param toolName the tool to execute.
+     * @return the {@link ToolLauncher} instance.
+     */
     public static SeedLauncher getToolLauncher(String toolName) {
         return new ToolLauncher(toolName);
     }
 
-    private static void handleThrowable(Throwable throwable) {
-        if (throwable instanceof SeedException) {
-            throwable.printStackTrace(System.err);
+    private static void handleException(Exception e) {
+        Seed.diagnostic().dumpDiagnosticReport(e);
+        if (e instanceof SeedException) {
+            e.printStackTrace(System.err);
         } else {
-            SeedException.wrap(throwable, CoreErrorCode.UNEXPECTED_EXCEPTION).printStackTrace(System.err);
+            SeedException.wrap(e, CoreErrorCode.UNEXPECTED_EXCEPTION).printStackTrace(System.err);
         }
     }
 }

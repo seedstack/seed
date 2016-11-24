@@ -18,7 +18,7 @@ import java.util.List;
 public class BaseClasspathScanHandler implements ClasspathScanHandler {
     @Override
     public List<Vfs.UrlType> urlTypes() {
-        return Lists.<Vfs.UrlType>newArrayList(
+        return Lists.newArrayList(
             Vfs.DefaultUrlTypes.jarFile,
             Vfs.DefaultUrlTypes.jarUrl,
             Vfs.DefaultUrlTypes.directory,

@@ -11,3 +11,4 @@ org.seedstack.seed.core.internal.crypto.CryptoPlugin
 org.seedstack.seed.core.internal.cli.CliPlugin
 org.seedstack.seed.core.internal.el.ELPlugin
 org.seedstack.seed.core.internal.transaction.TransactionPlugin
+org.seedstack.seed.core.internal.dependency.DependencyPlugin

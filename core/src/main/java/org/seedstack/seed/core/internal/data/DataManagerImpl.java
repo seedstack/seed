@@ -99,7 +99,7 @@ class DataManagerImpl implements DataManager {
             throw SeedException.createNew(DataErrorCode.NO_EXPORTER_FOUND).put(DATA_SET, String.format(CLASSES_MAP_KEY, group, name));
         }
 
-        dumpAll(Lists.<DataSetMarker<Object>>newArrayList(new DataSetMarker(
+        dumpAll(Lists.newArrayList(new DataSetMarker(
                 dataExporterDefinition.getGroup(),
                 dataExporterDefinition.getName(),
                 injector.getInstance(dataExporterDefinition.getDataExporterClass()).exportData()

@@ -9,38 +9,18 @@ package org.seedstack.seed.core.internal;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Module;
-import com.google.inject.TypeLiteral;
-import com.google.inject.util.Types;
-import org.seedstack.seed.core.utils.SeedCheckUtils;
-import org.seedstack.seed.spi.dependency.DependencyProvider;
 
 import java.util.Collection;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Optional;
 
 class CoreModule extends AbstractModule {
     private final Collection<Module> subModules;
-    private final Map<Class<?>, Optional<? extends DependencyProvider>> optionalDependencies;
 
-    CoreModule(Collection<Module> subModules, Map<Class<?>, Optional<? extends DependencyProvider>> optionalDependencies) {
+    CoreModule(Collection<Module> subModules) {
         this.subModules = subModules;
-        this.optionalDependencies = optionalDependencies;
     }
 
     @Override
     protected void configure() {
-        // Static utils
-        requestStaticInjection(SeedCheckUtils.class);
-
-        // Install detected modules
         subModules.forEach(this::install);
-
-        // Optional dependencies
-        for (final Entry<Class<?>, Optional<? extends DependencyProvider>> dependency : this.optionalDependencies.entrySet()) {
-            @SuppressWarnings("unchecked")
-            TypeLiteral<Optional<? extends DependencyProvider>> typeLiteral = (TypeLiteral<Optional<? extends DependencyProvider>>) TypeLiteral.get(Types.newParameterizedType(Optional.class, dependency.getKey()));
-            bind(typeLiteral).toInstance(dependency.getValue());
-        }
     }
 }

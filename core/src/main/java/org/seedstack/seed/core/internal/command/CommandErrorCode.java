@@ -7,7 +7,7 @@
  */
 package org.seedstack.seed.core.internal.command;
 
-import org.seedstack.seed.ErrorCode;
+import org.seedstack.shed.exception.ErrorCode;
 
 /**
  * SEED commands error codes.

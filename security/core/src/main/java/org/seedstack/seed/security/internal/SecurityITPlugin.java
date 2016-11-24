@@ -31,7 +31,7 @@ public class SecurityITPlugin implements ITRunnerPlugin {
     @Override
     public List<Class<? extends TestRule>> provideTestRulesToApply(TestClass testClass, Object target) {
         if (!testClass.getAnnotatedMethods(WithUser.class).isEmpty() || testClass.getJavaClass().getAnnotation(WithUser.class) != null) {
-            return Lists.<Class<? extends TestRule>> newArrayList(SecurityITRule.class);
+            return Lists.newArrayList(SecurityITRule.class);
         } else {
             return null;
         }

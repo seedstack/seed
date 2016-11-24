@@ -7,15 +7,16 @@
  */
 package org.seedstack.seed.core.internal.el;
 
-import org.apache.commons.lang.StringUtils;
+import com.google.common.base.Strings;
 import org.seedstack.seed.SeedException;
-import org.seedstack.seed.core.utils.SeedCheckUtils;
 import org.seedstack.seed.el.ELContextBuilder;
 
 import javax.el.ELContext;
 import javax.el.ExpressionFactory;
 import javax.inject.Inject;
 import java.lang.reflect.Method;
+
+import static com.google.common.base.Preconditions.checkArgument;
 
 /**
  * Implementation of ELContextBuilder.
@@ -63,14 +64,14 @@ class ELContextBuilderImpl implements ELContextBuilder {
 
         @Override
         public ELPropertyProvider withProperty(String name, Object object) {
-            SeedCheckUtils.checkIf(StringUtils.isNotBlank(name));
+            checkArgument(!Strings.isNullOrEmpty(name), "A property name is required");
             elContext.getELResolver().setValue(elContext, null, name, object);
             return this;
         }
 
         @Override
         public ELPropertyProvider withFunction(String prefix, String localName, Method method) {
-            SeedCheckUtils.checkIf(StringUtils.isNotBlank(localName));
+            checkArgument(!Strings.isNullOrEmpty(localName), "A function local name is required");
             if (ELPlugin.EL3_OPTIONAL.isPresent()) {
                 elContext.getFunctionMapper().mapFunction(prefix, localName, method);
             } else if (ELPlugin.JUEL_OPTIONAL.isPresent()) {

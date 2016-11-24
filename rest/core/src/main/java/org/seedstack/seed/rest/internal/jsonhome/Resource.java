@@ -10,12 +10,13 @@ package org.seedstack.seed.rest.internal.jsonhome;
 import com.damnhandy.uri.template.UriTemplate;
 import com.damnhandy.uri.template.UriTemplateBuilder;
 import org.seedstack.seed.SeedException;
-import org.seedstack.seed.core.utils.SeedCheckUtils;
 import org.seedstack.seed.rest.internal.RestErrorCode;
 
 import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.Map;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * The JSON-HOME representation of a REST resource as defined by the
@@ -44,8 +45,8 @@ public class Resource {
      * @param hints the the resource hints
      */
     public Resource(String rel, String href, @Nullable Hints hints) {
-        SeedCheckUtils.checkIfNotNull(rel);
-        SeedCheckUtils.checkIfNotNull(href);
+        checkNotNull(rel, "The rel must not be null");
+        checkNotNull(href, "The href must not be null");
         this.rel = rel;
         this.href = href;
         this.hints = hints;
@@ -60,8 +61,8 @@ public class Resource {
      * @param hints        the the resource hints
      */
     public Resource(String rel, String hrefTemplate, @Nullable Map<String, String> pathParams, @Nullable Map<String, String> queryParams, @Nullable Hints hints) {
-        SeedCheckUtils.checkIfNotNull(rel);
-        SeedCheckUtils.checkIfNotNull(hrefTemplate);
+        checkNotNull(rel, "The rel must not be null");
+        checkNotNull(hrefTemplate, "The href must not be null");
         this.rel = rel;
         this.hrefTemplate = hrefTemplate;
         if (this.pathParams != null) {

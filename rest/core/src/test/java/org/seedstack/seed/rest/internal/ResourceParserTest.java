@@ -79,7 +79,7 @@ public class ResourceParserTest {
         };
 
         ResourceScanner resourceScanner = new ResourceScanner(restConfig, servletContext);
-        resourceScanner.scan(Lists.<Class<?>>newArrayList(MyLinkTemplateResource.class));
+        resourceScanner.scan(Lists.newArrayList(MyLinkTemplateResource.class));
         resourceMap = resourceScanner.jsonHomeResources();
         links = resourceScanner.halLinks();
         Assertions.assertThat(resourceMap).isNotNull();

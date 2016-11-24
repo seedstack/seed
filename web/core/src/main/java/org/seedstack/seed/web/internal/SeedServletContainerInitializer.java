@@ -13,8 +13,6 @@ import io.nuun.kernel.api.config.KernelConfiguration;
 import io.nuun.kernel.core.NuunCore;
 import org.seedstack.seed.SeedException;
 import org.seedstack.seed.core.Seed;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.servlet.ServletContainerInitializer;
 import javax.servlet.ServletContext;
@@ -25,7 +23,6 @@ import java.util.Enumeration;
 import java.util.Set;
 
 public class SeedServletContainerInitializer implements ServletContainerInitializer, ServletContextListener {
-    private static final Logger LOGGER = LoggerFactory.getLogger(SeedServletContainerInitializer.class);
     private Kernel kernel;
 
     @Override
@@ -34,12 +31,8 @@ public class SeedServletContainerInitializer implements ServletContainerInitiali
             kernel = Seed.createKernel(servletContext, buildKernelConfiguration(servletContext), true);
             servletContext.setAttribute(ServletContextUtils.KERNEL_ATTRIBUTE_NAME, kernel);
             servletContext.setAttribute(ServletContextUtils.INJECTOR_ATTRIBUTE_NAME, kernel.objectGraph().as(Injector.class));
-        } catch (SeedException e) {
-            handleException(e);
-            throw e;
         } catch (Exception e) {
             handleException(e);
-            throw SeedException.wrap(e, WebErrorCode.UNEXPECTED_EXCEPTION);
         }
 
         servletContext.addListener(this);
@@ -47,7 +40,7 @@ public class SeedServletContainerInitializer implements ServletContainerInitiali
 
     @Override
     public void contextInitialized(ServletContextEvent sce) {
-        // nothing to do
+        // nothing to do, already initialized
     }
 
     @Override
@@ -58,12 +51,8 @@ public class SeedServletContainerInitializer implements ServletContainerInitiali
                 servletContext.removeAttribute(ServletContextUtils.INJECTOR_ATTRIBUTE_NAME);
                 servletContext.removeAttribute(ServletContextUtils.KERNEL_ATTRIBUTE_NAME);
                 Seed.disposeKernel(kernel);
-            } catch (SeedException e) {
-                handleException(e);
-                throw e;
             } catch (Exception e) {
                 handleException(e);
-                throw SeedException.wrap(e, WebErrorCode.UNEXPECTED_EXCEPTION);
             }
         }
     }
@@ -83,8 +72,12 @@ public class SeedServletContainerInitializer implements ServletContainerInitiali
         return kernelConfiguration;
     }
 
-    private void handleException(Throwable t) {
-        LOGGER.error("An exception occurred during web application startup, collecting diagnostic information");
-        Seed.diagnostic().dumpDiagnosticReport(t);
+    private void handleException(Exception e) throws SeedException {
+        Seed.diagnostic().dumpDiagnosticReport(e);
+        if (e instanceof SeedException) {
+            throw (SeedException) e;
+        } else {
+            throw SeedException.wrap(e, WebErrorCode.UNEXPECTED_EXCEPTION);
+        }
     }
 }

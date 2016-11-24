@@ -10,8 +10,6 @@ package org.seedstack.seed.core.internal;
 import com.google.inject.AbstractModule;
 import com.google.inject.Module;
 import io.nuun.kernel.api.plugin.context.InitContext;
-import mockit.Expectations;
-import mockit.Mocked;
 import org.assertj.core.api.Assertions;
 import org.fest.reflect.core.Reflection;
 import org.junit.Before;
@@ -20,15 +18,12 @@ import org.seedstack.coffig.Coffig;
 import org.seedstack.seed.Application;
 import org.seedstack.seed.Install;
 import org.seedstack.seed.spi.config.ApplicationProvider;
-import org.seedstack.seed.spi.dependency.DependencyProvider;
-import org.seedstack.seed.SeedException;
 
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 
 import static org.mockito.Mockito.mock;
@@ -62,7 +57,7 @@ public class CorePluginTest {
 
     @Test
     public void initCorePluginTest() {
-        InitContext initContext = mockInitContextForCore(TestModule.class, null);
+        InitContext initContext = mockInitContextForCore(TestModule.class);
         corePlugin.init(initContext);
         Object object = corePlugin.nativeUnitModule();
         Assertions.assertThat(object).isInstanceOf(CoreModule.class);
@@ -73,7 +68,7 @@ public class CorePluginTest {
 
     @Test
     public void initCorePluginTest2() {
-        InitContext initContext = mockInitContextForCore(null, null);
+        InitContext initContext = mockInitContextForCore(null);
         corePlugin.init(initContext);
         Object object = corePlugin.nativeUnitModule();
         Assertions.assertThat(object).isInstanceOf(CoreModule.class);
@@ -87,7 +82,7 @@ public class CorePluginTest {
         Assertions.assertThat(corePlugin.name()).isNotNull();
     }
 
-    private InitContext mockInitContextForCore(Class<?> moduleClass, Class<?> dependencyClass) {
+    private InitContext mockInitContextForCore(Class<?> moduleClass) {
         InitContext initContext = mock(InitContext.class);
         Application application = mock(Application.class);
 
@@ -98,55 +93,10 @@ public class CorePluginTest {
         }
         scannedClassesByAnnotationClass.put(Install.class, classs);
 
-        Map<Class<?>, Collection<Class<?>>> scannedSubTypesByParentClass = new HashMap<>();
-        Collection<Class<?>> providerClasses = new ArrayList<>();
-        if (dependencyClass != null) {
-            providerClasses.add(dependencyClass);
-        }
-        scannedSubTypesByParentClass.put(DependencyProvider.class, providerClasses);
-
         when(application.getConfiguration()).thenReturn(Coffig.builder().build());
         when(initContext.dependency(ApplicationProvider.class)).thenReturn(() -> application);
         when(initContext.scannedClassesByAnnotationClass()).thenReturn(scannedClassesByAnnotationClass);
-        when(initContext.scannedSubTypesByParentClass()).thenReturn(scannedSubTypesByParentClass);
 
         return initContext;
     }
-
-    @Test
-    public void checkOptionalDependency(@Mocked final DependencyProvider myProvider) {
-        new Expectations() {
-            {
-                myProvider.getClassToCheck();
-                result = "java.lang.String";
-            }
-        };
-        InitContext initContext = mockInitContextForCore(null, myProvider.getClass());
-        corePlugin.init(initContext);
-        Optional<?> optionalDependency = corePlugin.getDependency(myProvider.getClass());
-        Assertions.assertThat(optionalDependency).isNotNull();
-        Assertions.assertThat(optionalDependency.isPresent()).isTrue();
-    }
-
-    @Test
-    public void checkOptionalDependencyNOK(@Mocked final DependencyProvider myProvider) {
-        new Expectations() {
-            {
-                myProvider.getClassToCheck();
-                result = "xxxxx";
-            }
-        };
-        InitContext initContext = mockInitContextForCore(null, myProvider.getClass());
-        corePlugin.init(initContext);
-        Optional<?> optionalDependency = corePlugin.getDependency(myProvider.getClass());
-        Assertions.assertThat(optionalDependency).isNotNull();
-        Assertions.assertThat(optionalDependency.isPresent()).isFalse();
-    }
-
-    @Test(expected = SeedException.class)
-    public void checkOptionalDependencyWithInstantiationError() {
-        InitContext initContext = mockInitContextForCore(null, DependencyProvider.class);
-        corePlugin.init(initContext);
-    }
-
 }
