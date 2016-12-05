@@ -7,14 +7,11 @@
  */
 package org.seedstack.seed.core.internal.transaction;
 
-import com.google.inject.matcher.Matcher;
 import io.nuun.kernel.api.plugin.InitState;
 import io.nuun.kernel.api.plugin.PluginException;
 import io.nuun.kernel.api.plugin.context.InitContext;
 import io.nuun.kernel.api.plugin.request.ClasspathScanRequest;
 import org.seedstack.seed.core.internal.AbstractSeedPlugin;
-import org.seedstack.seed.core.utils.SeedMatchers;
-import org.seedstack.seed.transaction.Transactional;
 import org.seedstack.seed.transaction.TransactionConfig;
 import org.seedstack.seed.transaction.spi.TransactionHandler;
 import org.seedstack.seed.transaction.spi.TransactionManager;
@@ -36,7 +33,6 @@ import java.util.Set;
  * </ul>
  */
 public class TransactionPlugin extends AbstractSeedPlugin {
-    static final Matcher<Method> TRANSACTIONAL_MATCHER = SeedMatchers.methodOrAncestorMetaAnnotatedWith(Transactional.class).and(SeedMatchers.methodNotSynthetic()).and(SeedMatchers.methodNotOfObject());
     private static final Logger LOGGER = LoggerFactory.getLogger(TransactionPlugin.class);
     private final Set<Class<? extends TransactionMetadataResolver>> transactionMetadataResolvers = new HashSet<>();
     private TransactionManager transactionManager;
@@ -94,6 +90,6 @@ public class TransactionPlugin extends AbstractSeedPlugin {
      * @return true if the method is candidate to be transactional, false otherwise.
      */
     public boolean isTransactional(Method method) {
-        return TRANSACTIONAL_MATCHER.matches(method);
+        return TransactionalResolver.INSTANCE.test(method);
     }
 }

@@ -32,8 +32,8 @@ import javax.validation.ValidatorFactory;
  * It handles global initialization and cleanup.
  */
 public class Seed {
-    private static boolean initialized = false;
-    private static boolean noLogs = false;
+    private static volatile boolean initialized = false;
+    private static volatile boolean noLogs = false;
     private final Coffig configuration;
     private final ConsoleManager consoleManager;
     private final LogManager logManager;
@@ -45,14 +45,32 @@ public class Seed {
         private static final Seed INSTANCE = new Seed();
     }
 
+    /**
+     * Disable logs globally if a supported SLF4J implementation is used. Currently only Logback is supported.
+     */
     public static void disableLogs() {
         noLogs = true;
     }
 
+    /**
+     * Create and start a basic kernel without specifying a runtime context, nor a configuration. Seed JVM-global
+     * state is automatically initialized before the first time a kernel is created.
+     *
+     * @return the {@link Kernel} instance.
+     */
     public static Kernel createKernel() {
         return createKernel(null, null, true);
     }
 
+    /**
+     * Create, initialize and optionally start a kernel with the specified runtime context and configuration. Seed JVM-global
+     * state is automatically initialized before the first time a kernel is created.
+     *
+     * @param runtimeContext      the runtime context object, which will be accessible from plugins.
+     * @param kernelConfiguration the kernel configuration.
+     * @param autoStart           if true, the kernel is started automatically.
+     * @return the {@link Kernel} instance.
+     */
     public static Kernel createKernel(@Nullable Object runtimeContext, @Nullable KernelConfiguration kernelConfiguration, boolean autoStart) {
         Seed instance = getInstance();
         return instance.kernelManager.createKernel(
@@ -66,18 +84,38 @@ public class Seed {
                 autoStart);
     }
 
+    /**
+     * Stops and dispose a running {@link Kernel} instance.
+     *
+     * @param kernel the kernel to dispose.
+     */
     public static void disposeKernel(Kernel kernel) {
         KernelManager.get().disposeKernel(kernel);
     }
 
+    /**
+     * Provides the default {@link DiagnosticManager} instance to dump diagnostics outside a running kernel.
+     *
+     * @return the default diagnostic manager.
+     */
     public static DiagnosticManager diagnostic() {
         return new DiagnosticManagerImpl();
     }
 
+    /**
+     * Provides the application base configuration (i.e. not including configuration sources discovered after kernel
+     * startup).
+     *
+     * @return the {@link Coffig} object for application base configuration.
+     */
     public static Coffig baseConfiguration() {
         return BaseConfiguration.get();
     }
 
+    /**
+     * Cleanup Seed JVM-global state explicitly. Should be done before exiting the JVM. After calling {@link #close()}
+     * Seed is no longer usable in the current JVM.
+     */
     public static void close() {
         if (initialized) {
             Seed instance = getInstance();
@@ -85,6 +123,7 @@ public class Seed {
             instance.validatorFactory.close();
             instance.consoleManager.uninstall();
             instance.logManager.close();
+            Thread.setDefaultUncaughtExceptionHandler(null);
             initialized = false;
         }
     }
@@ -92,7 +131,7 @@ public class Seed {
     private static Seed getInstance() {
         try {
             return Holder.INSTANCE;
-        } catch (ExceptionInInitializerError e) {
+        } catch (Throwable e) {
             Throwable cause = e.getCause();
             if (cause != null) {
                 throw SeedException.wrap(cause, CoreErrorCode.UNABLE_TO_INITIALIZE_SEED);
@@ -103,6 +142,14 @@ public class Seed {
     }
 
     private Seed() {
+        Thread.setDefaultUncaughtExceptionHandler((thread, throwable) -> {
+            if (throwable instanceof SeedException) {
+                throwable.printStackTrace(System.err);
+            } else {
+                SeedException.wrap(throwable, CoreErrorCode.UNEXPECTED_EXCEPTION).printStackTrace(System.err);
+            }
+        });
+
         // Logging initialization (should silence logs until logging activation later in the initialization)
         logManager = AutodetectLogManager.get();
 

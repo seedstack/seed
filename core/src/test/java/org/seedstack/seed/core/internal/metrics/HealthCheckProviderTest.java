@@ -16,13 +16,13 @@ public class HealthCheckProviderTest {
 
 	@Test
 	public void testGetClassToCheck() {
-		HealthcheckProvider healthCheckProvider = new HealthcheckProvider();
+		HealthCheckProvider healthCheckProvider = new HealthCheckProvider();
 		Assertions.assertThat(healthCheckProvider.getClassToCheck()).isNotEmpty();
 	}
 
 	@Test
 	public void testGetHealthCheckRegistry() {
-		HealthcheckProvider healthCheckProvider = new HealthcheckProvider();
+		HealthCheckProvider healthCheckProvider = new HealthCheckProvider();
 		HealthCheckRegistry registry = healthCheckProvider.getHealthCheckRegistry();
 		Assertions.assertThat(registry).isNotNull();
 		Assertions.assertThat(healthCheckProvider.getHealthCheckRegistry()).isEqualTo(registry);
@@ -30,7 +30,7 @@ public class HealthCheckProviderTest {
 
 	@Test
 	public void testRegisterStringHealthCheck() {
-		HealthcheckProvider healthCheckProvider = new HealthcheckProvider();
+		HealthCheckProvider healthCheckProvider = new HealthCheckProvider();
 		HealthCheck healthCheck = new HealthCheck(){
 
 			@Override
@@ -45,7 +45,7 @@ public class HealthCheckProviderTest {
 
 	@Test
 	public void testRegisterStringHealthCheckMethodReplacer() {
-		HealthcheckProvider healthCheckProvider = new HealthcheckProvider();
+		HealthCheckProvider healthCheckProvider = new HealthCheckProvider();
 		final String name = "name";
 		healthCheckProvider.register(name, () -> {
             // TODO Auto-generated method stub

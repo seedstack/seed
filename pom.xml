@@ -36,11 +36,11 @@
         <jersey2.version>2.22.2</jersey2.version>
         <hibernate-validator.version>5.2.4.Final</hibernate-validator.version>
         <aopalliance.version>1.0</aopalliance.version>
+        <glassfish-javax.el.version>3.0.0</glassfish-javax.el.version>
 
         <compatibility.skip>true</compatibility.skip>
 
         <bintray.package>seed</bintray.package>
-        <glassfish-javax.el.version>3.0.0</glassfish-javax.el.version>
     </properties>
 
     <modules>

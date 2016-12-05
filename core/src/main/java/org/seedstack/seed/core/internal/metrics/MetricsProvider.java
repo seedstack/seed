@@ -18,39 +18,39 @@ import javax.inject.Singleton;
  */
 @Singleton
 public class MetricsProvider implements DependencyProvider {
+    private MetricRegistry metricRegistry;
 
-	private MetricRegistry metricRegistry ;
+    /**
+     * @return a {@link MetricRegistry}.
+     */
+    public MetricRegistry getMetricRegistry() {
+        if (this.metricRegistry == null)
+            this.metricRegistry = new MetricRegistry();
+        return this.metricRegistry;
+    }
 
-	/**
-	 * @return a {@link MetricRegistry}.
-	 */
-	public MetricRegistry getMetricRegistry() {
-		if ( this.metricRegistry == null)
-			this.metricRegistry = new MetricRegistry();
-		return this.metricRegistry;
-	}
+    /**
+     * Register a new {@link Metric}.
+     *
+     * @param name          {@link Metric} name to register.
+     * @param metricHandler {@link MetricHandler} to handle to add a new {@link Metric}.
+     */
+    public void register(String name, MetricHandler metricHandler) {
+        getMetricRegistry().register(name, metricHandler.handle());
+    }
 
-	/**
-	 * Register a new {@link Metric}.
-	 * @param name {@link Metric} name to register.
-	 * @param metricHandler {@link MetricHandler} to handle to add a new {@link Metric}.
-	 */
-	public void register(String name, MetricHandler metricHandler) {
-		getMetricRegistry().register(name, metricHandler.handle());
-	}
+    /**
+     * Register a new {@link Metric}.
+     *
+     * @param name   {@link Metric} name to register.
+     * @param metric {@link Metric} to register.
+     */
+    public void register(String name, Metric metric) {
+        getMetricRegistry().register(name, metric);
+    }
 
-	/**
-	 * Register a new {@link Metric}.
-	 * @param name {@link Metric} name to register.
-	 * @param metric {@link Metric} to register.
-	 */
-	public void register(String name, Metric metric) {
-		getMetricRegistry().register(name, metric);
-	}
-
-	@Override
-	public String getClassToCheck() {
-		return "com.codahale.metrics.MetricRegistry";
-	}
-
+    @Override
+    public String getClassToCheck() {
+        return "com.codahale.metrics.MetricRegistry";
+    }
 }

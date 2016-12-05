@@ -18,21 +18,23 @@ import java.lang.reflect.Method;
  * In order to be exposed the method should be:
  * </p>
  * <ol>
- *   <li>meta annotated by {@link javax.ws.rs.HttpMethod};</li>
- *   <li>annotated by {@link Rel} with {@code home=true};</li>
- *   <li>If the annotated is not found on the method, the declaring class is checked.</li>
+ * <li>meta annotated by {@link javax.ws.rs.HttpMethod};</li>
+ * <li>annotated by {@link Rel} with {@code home=true};</li>
+ * <li>If the annotated is not found on the method, the declaring class is checked.</li>
  * </ol>
  */
-public class JsonHomeSpecification extends AbstractSpecification<Method> {
+class JsonHomeSpecification extends AbstractSpecification<Method> {
+    static JsonHomeSpecification INSTANCE = new JsonHomeSpecification();
 
-    private static final HttpMethodSpecification HTTP_METHOD_SPECIFICATION = new HttpMethodSpecification();
+    private JsonHomeSpecification() {
+        // no instantiation allowed
+    }
 
     @Override
     public boolean isSatisfiedBy(Method method) {
-        if (!HTTP_METHOD_SPECIFICATION.isSatisfiedBy(method)) {
+        if (!HttpMethodSpecification.INSTANCE.isSatisfiedBy(method)) {
             return false;
         }
-
         Rel rootRel = method.getDeclaringClass().getAnnotation(Rel.class);
         Rel rel = method.getAnnotation(Rel.class);
         if (rel != null) {

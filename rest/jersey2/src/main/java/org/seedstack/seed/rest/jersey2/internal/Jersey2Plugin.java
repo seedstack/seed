@@ -15,7 +15,6 @@ import org.glassfish.jersey.media.multipart.MultiPartFeature;
 import org.glassfish.jersey.server.ServerProperties;
 import org.glassfish.jersey.server.mvc.jsp.JspMvcFeature;
 import org.glassfish.jersey.servlet.ServletProperties;
-import org.seedstack.seed.core.utils.SeedReflectionUtils;
 import org.seedstack.seed.rest.RestConfig;
 import org.seedstack.seed.rest.internal.RestPlugin;
 import org.seedstack.seed.rest.spi.RestProvider;
@@ -23,6 +22,7 @@ import org.seedstack.seed.web.spi.FilterDefinition;
 import org.seedstack.seed.web.spi.ListenerDefinition;
 import org.seedstack.seed.web.spi.ServletDefinition;
 import org.seedstack.seed.web.spi.WebProvider;
+import org.seedstack.shed.reflect.Classes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,7 +48,7 @@ public class Jersey2Plugin extends AbstractPlugin implements WebProvider {
 
     @Override
     public Collection<Class<?>> requiredPlugins() {
-        return Lists.<Class<?>>newArrayList(RestPlugin.class, RestProvider.class);
+        return Lists.newArrayList(RestPlugin.class, RestProvider.class);
     }
 
     @Override
@@ -147,11 +147,11 @@ public class Jersey2Plugin extends AbstractPlugin implements WebProvider {
     }
 
     private boolean isJspFeaturePresent() {
-        return SeedReflectionUtils.optionalOfClass("org.glassfish.jersey.server.mvc.jsp.JspMvcFeature").isPresent();
+        return Classes.optional("org.glassfish.jersey.server.mvc.jsp.JspMvcFeature").isPresent();
     }
 
     private boolean isMultipartFeaturePresent() {
-        return SeedReflectionUtils.optionalOfClass("org.glassfish.jersey.media.multipart.MultiPartFeature").isPresent();
+        return Classes.optional("org.glassfish.jersey.media.multipart.MultiPartFeature").isPresent();
     }
 
     @Override

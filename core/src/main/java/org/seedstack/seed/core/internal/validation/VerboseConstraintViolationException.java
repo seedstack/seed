@@ -7,7 +7,7 @@
  */
 package org.seedstack.seed.core.internal.validation;
 
-import org.seedstack.seed.core.utils.SeedReflectionUtils;
+import org.seedstack.seed.core.internal.guice.BindingUtils;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
@@ -32,7 +32,7 @@ public class VerboseConstraintViolationException extends ConstraintViolationExce
         boolean first = true;
         for (final ConstraintViolation<?> constraintViolation : constraintViolations) {
             if (first) {
-                sb.append(SeedReflectionUtils.cleanProxy(constraintViolation.getRootBeanClass()).getCanonicalName()).append("\n");
+                sb.append(BindingUtils.cleanProxy(constraintViolation.getRootBeanClass()).getCanonicalName()).append("\n");
                 first = false;
             }
             sb.append("\t");

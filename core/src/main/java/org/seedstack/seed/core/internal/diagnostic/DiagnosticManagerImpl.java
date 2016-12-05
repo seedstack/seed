@@ -11,7 +11,6 @@ import com.google.common.collect.Maps;
 import org.seedstack.seed.DiagnosticManager;
 import org.seedstack.seed.SeedException;
 import org.seedstack.seed.core.internal.CoreErrorCode;
-import org.seedstack.seed.core.utils.SeedLoggingUtils;
 import org.seedstack.seed.spi.diagnostic.DiagnosticInfoCollector;
 import org.seedstack.seed.spi.diagnostic.DiagnosticReporter;
 import org.slf4j.Logger;
@@ -50,7 +49,7 @@ public class DiagnosticManagerImpl implements DiagnosticManager {
             try {
                 diagnosticReporterToUse = (DiagnosticReporter) Class.forName(reporterClassName).newInstance();
             } catch (Exception e) {
-                SeedLoggingUtils.logWarningWithDebugDetails(LOGGER, e, "Custom diagnostic reporter ({}) cannot be instantiated, fallback to default reporter", reporterClassName);
+                LOGGER.warn("Custom diagnostic reporter {} cannot be instantiated, falling back to default reporter", reporterClassName, e);
                 diagnosticReporterToUse = new DefaultDiagnosticReporter();
             }
         } else {

@@ -10,12 +10,12 @@ package org.seedstack.seed.web.internal.resources;
 import com.google.inject.assistedinject.Assisted;
 import org.seedstack.seed.Application;
 import org.seedstack.seed.SeedException;
-import org.seedstack.seed.core.utils.SeedReflectionUtils;
 import org.seedstack.seed.web.ResourceInfo;
 import org.seedstack.seed.web.ResourceRequest;
 import org.seedstack.seed.web.WebConfig;
 import org.seedstack.seed.web.WebResourceResolver;
 import org.seedstack.seed.web.internal.WebErrorCode;
+import org.seedstack.shed.ClassLoaders;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,7 +54,7 @@ class WebResourcesResolverImpl implements WebResourceResolver {
     WebResourcesResolverImpl(final Application application, @Assisted ServletContext servletContext) {
         WebConfig.StaticResourcesConfig staticResourcesConfig = application.getConfiguration().get(WebConfig.class).staticResources();
         this.servletContext = servletContext;
-        this.classLoader = SeedReflectionUtils.findMostCompleteClassLoader(WebResourcesResolverImpl.class);
+        this.classLoader = ClassLoaders.findMostCompleteClassLoader(WebResourcesResolverImpl.class);
         this.mimetypesFileTypeMap = new MimetypesFileTypeMap();
         this.serveMinifiedResources = staticResourcesConfig.isMinificationEnabled();
         this.serveGzippedResources = staticResourcesConfig.isGzipEnabled();

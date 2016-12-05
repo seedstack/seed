@@ -22,15 +22,13 @@ import org.junit.runners.model.InitializationError;
 import org.junit.runners.model.Statement;
 import org.seedstack.seed.SeedException;
 import org.seedstack.seed.core.Seed;
-import org.seedstack.seed.core.utils.SeedReflectionUtils;
 import org.seedstack.seed.it.internal.ITErrorCode;
 import org.seedstack.seed.it.internal.ITPlugin;
 import org.seedstack.seed.it.spi.ITKernelMode;
 import org.seedstack.seed.it.spi.ITRunnerPlugin;
 import org.seedstack.seed.it.spi.KernelRule;
 import org.seedstack.seed.it.spi.PausableStatement;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.seedstack.shed.ClassLoaders;
 
 import java.util.HashMap;
 import java.util.List;
@@ -61,7 +59,7 @@ public class SeedITRunner extends BlockJUnit4ClassRunner {
     @SuppressWarnings("unchecked")
     public SeedITRunner(Class<?> klass) throws InitializationError {
         super(klass);
-        this.plugins = ServiceLoader.load(ITRunnerPlugin.class, SeedReflectionUtils.findMostCompleteClassLoader(SeedITRunner.class));
+        this.plugins = ServiceLoader.load(ITRunnerPlugin.class, ClassLoaders.findMostCompleteClassLoader(SeedITRunner.class));
 
         Expect annotation = getTestClass().getJavaClass().getAnnotation(Expect.class);
         if (annotation != null) {

@@ -18,10 +18,9 @@ import org.assertj.core.api.Assertions;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.seedstack.seed.core.internal.dependency.DependencyProxy;
 import org.seedstack.seed.core.internal.metrics.MetricsProvider;
 import org.seedstack.seed.core.rules.SeedITRule;
-import org.seedstack.seed.core.utils.DependencyProxy;
-import org.seedstack.seed.core.utils.ProxyMethodReplacer;
 
 import javax.inject.Inject;
 import java.util.Optional;
@@ -44,7 +43,7 @@ public class MetricsIT {
                 metricsProvider.get().register(NEW_METRIC, () -> c);
                 c.inc();
 
-                DependencyProxy<Gauge<Long>> gauge = new DependencyProxy<>(new Class[]{Gauge.class}, new ProxyMethodReplacer() {
+                DependencyProxy<Gauge<Long>> gauge = new DependencyProxy<>(new Class[]{Gauge.class}, new Object() {
                     @SuppressWarnings("unused")
                     public Long getValue() {
                         return GAUGE_VALUE;

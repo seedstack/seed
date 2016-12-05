@@ -10,7 +10,7 @@ package org.seedstack.seed.core.internal.tools.config;
 import org.seedstack.coffig.Config;
 import org.seedstack.coffig.SingleValue;
 import org.seedstack.coffig.util.Utils;
-import org.seedstack.seed.core.utils.SeedReflectionUtils;
+import org.seedstack.shed.reflect.Annotations;
 
 import javax.validation.constraints.NotNull;
 import java.lang.reflect.Field;
@@ -187,7 +187,7 @@ class Node implements Comparable<Node> {
                     // ignore
                 }
             }
-            propertyInfo.setMandatory(propertyInfo.getDefaultValue() == null && SeedReflectionUtils.hasAnnotationDeep(field, NotNull.class));
+            propertyInfo.setMandatory(propertyInfo.getDefaultValue() == null && Annotations.on(field).includingMetaAnnotations().find(NotNull.class).isPresent());
 
             result.put(name, propertyInfo);
         }

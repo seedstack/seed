@@ -13,8 +13,12 @@ import javax.ws.rs.HttpMethod;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 
+class HttpMethodSpecification extends AbstractSpecification<Method> {
+    static final HttpMethodSpecification INSTANCE = new HttpMethodSpecification();
 
-public class HttpMethodSpecification extends AbstractSpecification<Method> {
+    private HttpMethodSpecification() {
+        // no instantiation allowed
+    }
 
     @Override
     public boolean isSatisfiedBy(Method candidate) {

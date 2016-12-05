@@ -10,7 +10,6 @@ package org.seedstack.seed.web.internal.scan.websphere;
 import com.google.common.collect.AbstractIterator;
 import org.reflections.vfs.Vfs;
 import org.seedstack.seed.SeedException;
-import org.seedstack.seed.core.utils.SeedLoggingUtils;
 import org.seedstack.seed.web.internal.WebErrorCode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,7 +52,7 @@ class WsInputDir implements Vfs.Dir {
                     jarInputStream = new JarInputStream(new URL(warfile).openStream());
 
                 } catch (Exception e) {
-                    SeedLoggingUtils.logWarningWithDebugDetails(LOGGER, e, "Unable to open WAR at {}, ignoring it", url.toExternalForm());
+                    LOGGER.warn("Unable to open WAR at {}, ignoring it", url.toExternalForm(), e);
                 }
             }
 
@@ -89,7 +88,7 @@ class WsInputDir implements Vfs.Dir {
         try {
             jarInputStream.close();
         } catch (IOException e) {
-            SeedLoggingUtils.logWarningWithDebugDetails(LOGGER, e, "Unable to close WAR at {}", url.toExternalForm());
+            LOGGER.warn("Unable to close WAR at {}", url.toExternalForm(), e);
         }
     }
 

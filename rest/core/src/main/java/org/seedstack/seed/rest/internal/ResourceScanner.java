@@ -29,25 +29,20 @@ import java.util.Set;
 /**
  * Scans the JAX-RS resources for building JSON-HOME resources and HAL links.
  */
-public class ResourceScanner {
-
-    private static final RelSpecification METHOD_OR_CLASS_HAS_REL = new RelSpecification();
-    private static final JsonHomeSpecification EXPOSE_AS_ENTRY_POINT = new JsonHomeSpecification();
-
+class ResourceScanner {
     private final Map<String, List<Method>> resourceByRel = new HashMap<>();
     private final Map<String, Resource> jsonHomeResources = new HashMap<>();
     private final Map<String, Link> halLinks = new HashMap<>();
-
     private final RestConfig restConfig;
     private final String servletContextPath;
 
     /**
      * Constructor.
      *
-     * @param restConfig the REST configuration object.
-     * @param servletContext    the servlet context
+     * @param restConfig     the REST configuration object.
+     * @param servletContext the servlet context
      */
-    public ResourceScanner(RestConfig restConfig, ServletContext servletContext) {
+    ResourceScanner(RestConfig restConfig, ServletContext servletContext) {
         this.restConfig = restConfig;
         this.servletContextPath = servletContext == null ? "" : servletContext.getContextPath();
     }
@@ -58,7 +53,7 @@ public class ResourceScanner {
      * @param classes the resource to scan
      * @return itself
      */
-    public ResourceScanner scan(final Collection<Class<?>> classes) {
+    ResourceScanner scan(final Collection<Class<?>> classes) {
         for (Class<?> aClass : classes) {
             collectHttpMethodsWithRel(aClass);
         }
@@ -69,7 +64,7 @@ public class ResourceScanner {
 
     private void collectHttpMethodsWithRel(Class<?> aClass) {
         for (Method method : aClass.getDeclaredMethods()) {
-            if (METHOD_OR_CLASS_HAS_REL.isSatisfiedBy(method)) {
+            if (RelSpecification.INSTANCE.isSatisfiedBy(method)) {
                 Rel relAnnotation = RESTReflect.findRel(method);
                 if (relAnnotation == null || "".equals(relAnnotation.value())) {
                     throw new IllegalStateException("Missing rel value on " + method.toGenericString());
@@ -93,7 +88,7 @@ public class ResourceScanner {
      *
      * @return resource map
      */
-    public Map<String, Resource> jsonHomeResources() {
+    Map<String, Resource> jsonHomeResources() {
         return jsonHomeResources;
     }
 
@@ -102,7 +97,7 @@ public class ResourceScanner {
      *
      * @return the link map
      */
-    public Map<String, Link> halLinks() {
+    Map<String, Link> halLinks() {
         return halLinks;
     }
 
@@ -131,7 +126,7 @@ public class ResourceScanner {
     private Resource buildJsonHomeResource(String baseParam, String rel, Method method) {
         Resource currentResource = null;
 
-        if (EXPOSE_AS_ENTRY_POINT.isSatisfiedBy(method)) {
+        if (JsonHomeSpecification.INSTANCE.isSatisfiedBy(method)) {
 
             String path = RESTReflect.findPath(method);
             if (path == null) {

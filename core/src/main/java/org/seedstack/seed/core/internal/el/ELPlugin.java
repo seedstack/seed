@@ -14,8 +14,8 @@ import net.jodah.typetools.TypeResolver;
 import org.kametic.specifications.Specification;
 import org.seedstack.seed.SeedException;
 import org.seedstack.seed.core.internal.AbstractSeedPlugin;
-import org.seedstack.seed.core.utils.SeedReflectionUtils;
 import org.seedstack.seed.el.spi.ELHandler;
+import org.seedstack.shed.reflect.Classes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,9 +29,9 @@ import java.util.Optional;
 
 public class ELPlugin extends AbstractSeedPlugin {
     private static final Logger LOGGER = LoggerFactory.getLogger(ELPlugin.class);
-    private static final Optional<Class<Object>> EL_OPTIONAL = SeedReflectionUtils.optionalOfClass("javax.el.Expression");
-    static final Optional<Class<ELContext>> EL3_OPTIONAL = SeedReflectionUtils.optionalOfClass("javax.el.StandardELContext");
-    static final Optional<Class<ELContext>> JUEL_OPTIONAL = SeedReflectionUtils.optionalOfClass("de.odysseus.el.util.SimpleContext");
+    private static final Optional<Class<Object>> EL_OPTIONAL = Classes.optional("javax.el.Expression");
+    static final Optional<Class<ELContext>> EL3_OPTIONAL = Classes.optional("javax.el.StandardELContext");
+    static final Optional<Class<ELContext>> JUEL_OPTIONAL = Classes.optional("de.odysseus.el.util.SimpleContext");
 
     private final Specification<Class<?>> specificationELHandlers = classImplements(ELHandler.class);
     private ELModule elModule;

@@ -14,17 +14,12 @@ import io.nuun.kernel.api.plugin.context.InitContext;
 import io.nuun.kernel.api.plugin.request.ClasspathScanRequest;
 import org.seedstack.seed.Install;
 import org.seedstack.seed.SeedException;
-import org.seedstack.seed.core.utils.SeedReflectionUtils;
-import org.seedstack.seed.spi.dependency.DependencyProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Constructor;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -36,7 +31,6 @@ public class CorePlugin extends AbstractSeedPlugin {
     private static final Logger LOGGER = LoggerFactory.getLogger(CorePlugin.class);
     private static final String SEEDSTACK_PACKAGE = "org.seedstack";
     private final Set<Class<? extends Module>> seedModules = new HashSet<>();
-    private final Map<Class<?>, Optional<? extends DependencyProvider>> optionalDependencies = new HashMap<>();
 
     @Override
     public String name() {
@@ -51,7 +45,6 @@ public class CorePlugin extends AbstractSeedPlugin {
     @Override
     public Collection<ClasspathScanRequest> classpathScanRequests() {
         return classpathScanRequestBuilder()
-                .subtypeOf(DependencyProvider.class)
                 .annotationType(Install.class)
                 .build();
     }
@@ -59,10 +52,6 @@ public class CorePlugin extends AbstractSeedPlugin {
     @SuppressWarnings("unchecked")
     @Override
     public InitState initialize(InitContext initContext) {
-        // Scan optional dependencies
-        detectDependencyProviders(initContext);
-
-        // Detect modules to install
         String autodetectModules = initContext.kernelParam(AUTODETECT_MODULES_KERNEL_PARAM);
         if (Strings.isNullOrEmpty(autodetectModules) || Boolean.parseBoolean(autodetectModules)) {
             detectModules(initContext);
@@ -83,14 +72,6 @@ public class CorePlugin extends AbstractSeedPlugin {
         LOGGER.debug("Detected {} module(s) to install", seedModules.size());
     }
 
-    @SuppressWarnings("unchecked")
-    private void detectDependencyProviders(InitContext initContext) {
-        initContext.scannedSubTypesByParentClass().get(DependencyProvider.class)
-                .stream()
-                .filter(DependencyProvider.class::isAssignableFrom)
-                .forEach(candidate -> getDependency((Class<DependencyProvider>) candidate));
-    }
-
     @Override
     public Object nativeUnitModule() {
         Collection<Module> subModules = new HashSet<>();
@@ -105,31 +86,6 @@ public class CorePlugin extends AbstractSeedPlugin {
             }
         }
 
-        return new CoreModule(subModules, optionalDependencies);
-    }
-
-    /**
-     * Return {@link Optional} which contains the provider if dependency is present.
-     * Always return a {@link Optional} instance.
-     *
-     * @param providerClass provider to use an optional dependency
-     * @return {@link Optional} which contains the provider if dependency is present
-     */
-    @SuppressWarnings("unchecked")
-    public <T extends DependencyProvider> Optional<T> getDependency(Class<T> providerClass) {
-        if (!optionalDependencies.containsKey(providerClass)) {
-            Optional<T> optionalDependency = Optional.empty();
-            try {
-                T provider = providerClass.newInstance();
-                if (SeedReflectionUtils.optionalOfClass(provider.getClassToCheck()).isPresent()) {
-                    LOGGER.debug("Found a new optional provider [{}] for [{}]", providerClass.getName(), provider.getClassToCheck());
-                    optionalDependency = Optional.of(provider);
-                }
-            } catch (Exception e) {
-                throw SeedException.wrap(e, CoreErrorCode.UNABLE_TO_INSTANTIATE_CLASS).put("class", providerClass.getCanonicalName());
-            }
-            optionalDependencies.put(providerClass, optionalDependency);
-        }
-        return (Optional<T>) optionalDependencies.get(providerClass);
+        return new CoreModule(subModules);
     }
 }

@@ -7,7 +7,7 @@
  */
 package org.seedstack.seed.core.internal.validation;
 
-import org.seedstack.seed.ErrorCode;
+import org.seedstack.shed.exception.ErrorCode;
 
 enum ValidationErrorCode implements ErrorCode {
     DYNAMIC_VALIDATION_IS_NOT_SUPPORTED

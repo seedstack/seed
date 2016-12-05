@@ -11,7 +11,6 @@ import com.google.common.base.Joiner;
 import com.google.common.collect.AbstractIterator;
 import org.reflections.vfs.Vfs;
 import org.seedstack.seed.SeedException;
-import org.seedstack.seed.core.utils.SeedLoggingUtils;
 import org.seedstack.seed.web.internal.WebErrorCode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,7 +50,7 @@ class JndiInputDir implements Vfs.Dir {
                     enumerationDeque.push(((DirContext) content).list("/"));
                     fullPath.add(null);
                 } catch (Exception e) {
-                    SeedLoggingUtils.logWarningWithDebugDetails(LOGGER, e, "Unable to open JNDI directory at {}, ignoring it", url.toExternalForm());
+                    LOGGER.warn("Unable to open JNDI directory at {}, ignoring it", url.toExternalForm(), e);
                 }
             }
 
@@ -78,7 +77,7 @@ class JndiInputDir implements Vfs.Dir {
             try {
                 dirContext.close();
             } catch (NamingException e) {
-                SeedLoggingUtils.logWarningWithDebugDetails(LOGGER, e, "Unable to close JNDI directory at {}", url.toExternalForm());
+                LOGGER.warn("Unable to close JNDI directory at {}", url.toExternalForm(), e);
             }
         }
 

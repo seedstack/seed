@@ -7,7 +7,7 @@
  */
 package org.seedstack.seed.rest.jersey2.internal;
 
-import org.seedstack.seed.ErrorCode;
+import org.seedstack.shed.exception.ErrorCode;
 
 
 enum Jersey2ErrorCode implements ErrorCode {

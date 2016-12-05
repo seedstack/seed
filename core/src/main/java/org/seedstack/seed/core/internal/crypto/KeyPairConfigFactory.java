@@ -8,8 +8,8 @@
 package org.seedstack.seed.core.internal.crypto;
 
 import org.seedstack.seed.SeedException;
-import org.seedstack.seed.core.utils.SeedReflectionUtils;
 import org.seedstack.seed.crypto.CryptoConfig;
+import org.seedstack.shed.ClassLoaders;
 
 import java.net.URL;
 import java.security.KeyStore;
@@ -55,7 +55,7 @@ class KeyPairConfigFactory {
             // Find the certificate location from the classpath
             String certResource = certificateConfig.getResource();
             if (certResource != null) {
-                URL urlResource = SeedReflectionUtils.findMostCompleteClassLoader().getResource(certResource);
+                URL urlResource = ClassLoaders.findMostCompleteClassLoader().getResource(certResource);
                 if (urlResource == null) {
                     throw SeedException.createNew(CryptoErrorCode.CERTIFICATE_NOT_FOUND)
                             .put("certificateName", certificateName).put("certResource", certResource);

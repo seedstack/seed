@@ -11,11 +11,10 @@ import io.nuun.kernel.api.plugin.InitState;
 import io.nuun.kernel.api.plugin.context.InitContext;
 import io.nuun.kernel.api.plugin.request.ClasspathScanRequest;
 import io.nuun.kernel.core.AbstractPlugin;
-import org.kametic.specifications.Specification;
-import org.seedstack.seed.core.SeedRuntime;
 import org.seedstack.seed.cli.CliCommand;
 import org.seedstack.seed.cli.CommandLineHandler;
 import org.seedstack.seed.cli.spi.CliContext;
+import org.seedstack.seed.core.SeedRuntime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,18 +22,12 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.seedstack.seed.core.utils.BaseClassSpecifications.ancestorImplements;
-import static org.seedstack.seed.core.utils.BaseClassSpecifications.classIsAbstract;
-import static org.seedstack.seed.core.utils.BaseClassSpecifications.classIsInterface;
-
 /**
  * This plugin enables to run {@link CommandLineHandler} through
  * {@link CliLauncher}.
  */
 public class CommandLinePlugin extends AbstractPlugin {
     private static final Logger LOGGER = LoggerFactory.getLogger(CommandLinePlugin.class);
-
-    private final Specification<Class<?>> cliHandlerSpec = and(ancestorImplements(CommandLineHandler.class), not(classIsInterface()), not(classIsAbstract()));
     private final Map<String, Class<? extends CommandLineHandler>> cliHandlers = new HashMap<>();
 
     private CliContext cliContext;
@@ -51,7 +44,7 @@ public class CommandLinePlugin extends AbstractPlugin {
 
     @Override
     public Collection<ClasspathScanRequest> classpathScanRequests() {
-        return classpathScanRequestBuilder().specification(cliHandlerSpec).build();
+        return classpathScanRequestBuilder().specification(CommandLineHandlerSpecification.INSTANCE).build();
     }
 
     @Override
@@ -62,7 +55,7 @@ public class CommandLinePlugin extends AbstractPlugin {
             return InitState.INITIALIZED;
         }
 
-        Collection<Class<?>> cliHandlerCandidates = initContext.scannedTypesBySpecification().get(cliHandlerSpec);
+        Collection<Class<?>> cliHandlerCandidates = initContext.scannedTypesBySpecification().get(CommandLineHandlerSpecification.INSTANCE);
         for (Class<?> candidate : cliHandlerCandidates) {
             CliCommand cliCommand = candidate.getAnnotation(CliCommand.class);
             if (CommandLineHandler.class.isAssignableFrom(candidate) && cliCommand != null) {

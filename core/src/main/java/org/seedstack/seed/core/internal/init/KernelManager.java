@@ -17,7 +17,7 @@ import org.seedstack.seed.core.Seed;
 import org.seedstack.seed.core.SeedRuntime;
 import org.seedstack.seed.core.internal.scan.ClasspathScanHandler;
 import org.seedstack.seed.core.internal.scan.FallbackUrlType;
-import org.seedstack.seed.core.utils.SeedReflectionUtils;
+import org.seedstack.shed.ClassLoaders;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -139,7 +139,7 @@ public class KernelManager {
     }
 
     private String getBanner() {
-        InputStream bannerStream = SeedReflectionUtils.findMostCompleteClassLoader(Seed.class).getResourceAsStream("banner.txt");
+        InputStream bannerStream = ClassLoaders.findMostCompleteClassLoader(Seed.class).getResourceAsStream("banner.txt");
         if (bannerStream != null) {
             try {
                 return new Scanner(bannerStream).useDelimiter("\\Z").next();

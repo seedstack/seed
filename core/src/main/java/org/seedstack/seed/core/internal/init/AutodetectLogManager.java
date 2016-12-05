@@ -8,8 +8,8 @@
 package org.seedstack.seed.core.internal.init;
 
 import org.seedstack.seed.LogConfig;
-import org.seedstack.seed.core.utils.SeedReflectionUtils;
 import org.seedstack.seed.spi.log.LogManager;
+import org.seedstack.shed.reflect.Classes;
 import org.slf4j.LoggerFactory;
 import org.slf4j.bridge.SLF4JBridgeHandler;
 
@@ -56,6 +56,6 @@ public class AutodetectLogManager implements LogManager {
     }
 
     private boolean isLoggerFactoryActive(String className) {
-        return SeedReflectionUtils.isClassPresent(className) && LoggerFactory.getILoggerFactory().getClass().getName().equals(className);
+        return Classes.optional(className).isPresent() && LoggerFactory.getILoggerFactory().getClass().getName().equals(className);
     }
 }

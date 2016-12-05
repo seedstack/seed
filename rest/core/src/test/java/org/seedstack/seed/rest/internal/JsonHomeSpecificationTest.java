@@ -17,8 +17,7 @@ import javax.ws.rs.core.Response;
 
 
 public class JsonHomeSpecificationTest {
-
-    private JsonHomeSpecification underTest = new JsonHomeSpecification();
+    private JsonHomeSpecification underTest = JsonHomeSpecification.INSTANCE;
 
     @Test
     public void valid_json_entry_point_specification() throws NoSuchMethodException {

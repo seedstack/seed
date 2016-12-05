@@ -16,11 +16,9 @@ import com.google.inject.spi.Element;
 import com.google.inject.spi.Elements;
 import com.google.inject.spi.PrivateElements;
 import org.apache.shiro.mgt.SecurityManager;
-import org.seedstack.seed.security.Scope;
-import org.seedstack.seed.security.internal.data.DataSecurityModule;
-import org.seedstack.seed.security.internal.securityexpr.SecurityExpressionModule;
-import org.seedstack.seed.security.spi.data.DataSecurityHandler;
 import org.seedstack.seed.SeedException;
+import org.seedstack.seed.security.Scope;
+import org.seedstack.seed.security.internal.securityexpr.SecurityExpressionModule;
 
 import java.util.Collection;
 import java.util.List;
@@ -29,18 +27,14 @@ import java.util.Map;
 @SecurityConcern
 class SecurityModule extends AbstractModule {
     private static final Key<org.apache.shiro.mgt.SecurityManager> SECURITY_MANAGER_KEY = Key.get(SecurityManager.class);
-
     private final Map<String, Class<? extends Scope>> scopeClasses;
     private final SecurityConfigurer securityConfigurer;
     private final boolean elEnabled;
-    private final Collection<Class<? extends DataSecurityHandler<?>>> dataSecurityHandlers;
     private final Collection<SecurityProvider> securityProviders;
 
-
-    SecurityModule(SecurityConfigurer securityConfigurer, Map<String, Class<? extends Scope>> scopeClasses, Collection<Class<? extends DataSecurityHandler<?>>> dataSecurityHandlers, boolean elEnabled, Collection<SecurityProvider> securityProviders) {
+    SecurityModule(SecurityConfigurer securityConfigurer, Map<String, Class<? extends Scope>> scopeClasses, boolean elEnabled, Collection<SecurityProvider> securityProviders) {
         this.securityConfigurer = securityConfigurer;
         this.scopeClasses = scopeClasses;
-        this.dataSecurityHandlers = dataSecurityHandlers;
         this.elEnabled = elEnabled;
         this.securityProviders = securityProviders;
     }
@@ -52,7 +46,6 @@ class SecurityModule extends AbstractModule {
 
         if (elEnabled) {
             install(new SecurityExpressionModule());
-            install(new DataSecurityModule(dataSecurityHandlers));
         }
 
         Module mainModuleToInstall = null;

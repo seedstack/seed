@@ -33,7 +33,7 @@ public class TestITRunnerPlugin implements ITRunnerPlugin {
     @Override
     @SuppressWarnings("unchecked")
     public List<Class<? extends MethodRule>> provideMethodRulesToApply(TestClass testClass, Object target) {
-        return checkForActivation(testClass) ? Lists.<Class<? extends MethodRule>>newArrayList(TestKernelRule.class) : null;
+        return checkForActivation(testClass) ? Lists.newArrayList(TestKernelRule.class) : null;
     }
 
     @Override

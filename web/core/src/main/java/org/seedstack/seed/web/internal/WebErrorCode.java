@@ -7,7 +7,7 @@
  */
 package org.seedstack.seed.web.internal;
 
-import org.seedstack.seed.ErrorCode;
+import org.seedstack.shed.exception.ErrorCode;
 
 /**
  * Enumerates all Web error codes.

@@ -15,7 +15,7 @@ import org.seedstack.seed.core.fixtures.TestDataImporter3;
 import org.seedstack.seed.core.fixtures.data.TestDataImporter;
 import org.seedstack.seed.core.fixtures.data.TestDataImporter2;
 import org.seedstack.seed.core.rules.SeedITRule;
-import org.seedstack.seed.core.utils.SeedReflectionUtils;
+import org.seedstack.shed.ClassLoaders;
 
 import javax.inject.Inject;
 import java.io.ByteArrayOutputStream;
@@ -47,7 +47,7 @@ public class DataManagerIT {
 
     @Test
     public void data_are_imported_correctly() throws Exception {
-        dataManager.importData(SeedReflectionUtils.findMostCompleteClassLoader(DataManagerIT.class).getResourceAsStream("test_data.json"), null, null, true);
+        dataManager.importData(ClassLoaders.findMostCompleteClassLoader(DataManagerIT.class).getResourceAsStream("test_data.json"), null, null, true);
 
         assertThat(TestDataImporter.getData().size()).isEqualTo(2);
 

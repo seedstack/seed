@@ -41,11 +41,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
-
 public class RestPlugin extends AbstractSeedPlugin implements RestProvider {
-    static final Specification<Class<?>> resourcesSpecification = new JaxRsResourceSpecification();
-    static final Specification<Class<?>> providersSpecification = new JaxRsProviderSpecification();
-
     private final Map<Variant, Class<? extends RootResource>> rootResourcesByVariant = new HashMap<>();
     private RestConfig restConfig;
     private boolean enabled;
@@ -68,8 +64,8 @@ public class RestPlugin extends AbstractSeedPlugin implements RestProvider {
     @Override
     public Collection<ClasspathScanRequest> classpathScanRequests() {
         return classpathScanRequestBuilder()
-                .specification(providersSpecification)
-                .specification(resourcesSpecification)
+                .specification(JaxRsResourceSpecification.INSTANCE)
+                .specification(JaxRsProviderSpecification.INSTANCE)
                 .build();
     }
 
@@ -78,8 +74,8 @@ public class RestPlugin extends AbstractSeedPlugin implements RestProvider {
         Map<Specification, Collection<Class<?>>> scannedClasses = initContext.scannedTypesBySpecification();
 
         restConfig = getConfiguration(RestConfig.class);
-        resources = scannedClasses.get(RestPlugin.resourcesSpecification);
-        providers = scannedClasses.get(RestPlugin.providersSpecification);
+        resources = scannedClasses.get(JaxRsResourceSpecification.INSTANCE);
+        providers = scannedClasses.get(JaxRsProviderSpecification.INSTANCE);
 
         initializeHypermedia();
 

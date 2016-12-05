@@ -38,7 +38,7 @@ public class CommandLineITPlugin implements ITRunnerPlugin {
     @Override
     public List<Class<? extends MethodRule>> provideMethodRulesToApply(TestClass testClass, Object target) {
         if (checkForActivation(testClass)) {
-            return Lists.<Class<? extends MethodRule>>newArrayList(CommandLineITRule.class);
+            return Lists.newArrayList(CommandLineITRule.class);
         } else {
             return null;
         }

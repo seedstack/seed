@@ -13,7 +13,7 @@ import org.seedstack.coffig.provider.JacksonProvider;
 import org.seedstack.coffig.provider.SystemPropertyProvider;
 import org.seedstack.seed.core.Seed;
 import org.seedstack.seed.core.internal.configuration.PrioritizedProvider;
-import org.seedstack.seed.core.utils.SeedReflectionUtils;
+import org.seedstack.shed.ClassLoaders;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,23 +45,25 @@ public class BaseConfiguration {
     private BaseConfiguration(ValidatorFactory validatorFactory) {
         baseConfiguration = Coffig.builder()
                 .withProviders(new PrioritizedProvider()
-                        .registerProvider(BASE_CONFIGURATION_PROVIDER, buildJacksonProvider("application.yaml"), CONFIGURATION_BASE_PRIORITY)
-                        .registerProvider(BASE_OVERRIDE_CONFIGURATION_PROVIDER, buildJacksonProvider("application.override.yaml"), CONFIGURATION_OVERRIDE_PRIORITY)
+                        .registerProvider(BASE_CONFIGURATION_PROVIDER, buildJacksonProvider("application.yaml", "application.yml", "application.json"), CONFIGURATION_BASE_PRIORITY)
+                        .registerProvider(BASE_OVERRIDE_CONFIGURATION_PROVIDER, buildJacksonProvider("application.override.yaml", "application.override.yml", "application.override.json"), CONFIGURATION_OVERRIDE_PRIORITY)
                         .registerProvider(ENV_CONFIGURATION_PROVIDER, new EnvironmentVariableProvider(), CONFIGURATION_ENVIRONMENT_PRIORITY)
                         .registerProvider(SYS_CONFIGURATION_PROVIDER, new SystemPropertyProvider(), CONFIGURATION_SYS_PRIORITY))
                 .enableValidation(validatorFactory)
                 .build();
     }
 
-    private JacksonProvider buildJacksonProvider(String resourceName) {
+    private JacksonProvider buildJacksonProvider(String... resourceNames) {
         JacksonProvider jacksonProvider = new JacksonProvider();
-        try {
-            Enumeration<URL> configResources = SeedReflectionUtils.findMostCompleteClassLoader(Seed.class).getResources(resourceName);
-            while (configResources.hasMoreElements()) {
-                jacksonProvider.addSource(configResources.nextElement());
+        for (String resourceName : resourceNames) {
+            try {
+                Enumeration<URL> configResources = ClassLoaders.findMostCompleteClassLoader(Seed.class).getResources(resourceName);
+                while (configResources.hasMoreElements()) {
+                    jacksonProvider.addSource(configResources.nextElement());
+                }
+            } catch (IOException e) {
+                LOGGER.warn("I/O error during detection of configuration files", e);
             }
-        } catch (IOException e) {
-            LOGGER.warn("I/O error during detection of configuration files", e);
         }
         return jacksonProvider;
     }

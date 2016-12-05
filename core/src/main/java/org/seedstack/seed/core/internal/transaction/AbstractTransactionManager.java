@@ -7,25 +7,22 @@
  */
 package org.seedstack.seed.core.internal.transaction;
 
-import com.google.common.base.Predicate;
 import com.google.inject.Injector;
 import com.google.inject.Key;
 import com.google.inject.name.Names;
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
-import org.apache.commons.lang.builder.EqualsBuilder;
-import org.reflections.ReflectionUtils;
-import org.seedstack.seed.core.utils.SeedReflectionUtils;
+import org.seedstack.seed.SeedException;
 import org.seedstack.seed.transaction.Transactional;
 import org.seedstack.seed.transaction.spi.ExceptionHandler;
 import org.seedstack.seed.transaction.spi.TransactionHandler;
 import org.seedstack.seed.transaction.spi.TransactionManager;
 import org.seedstack.seed.transaction.spi.TransactionMetadata;
 import org.seedstack.seed.transaction.spi.TransactionMetadataResolver;
-import org.seedstack.seed.SeedException;
 
 import javax.inject.Inject;
 import java.lang.reflect.Method;
+import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -142,7 +139,6 @@ public abstract class AbstractTransactionManager implements TransactionManager {
 
     private TransactionMetadata readTransactionMetadata(MethodInvocation methodInvocation) {
         Method method = methodInvocation.getMethod();
-        Class<?> targetClass = SeedReflectionUtils.cleanProxy(methodInvocation.getThis().getClass());
         TransactionMetadata transactionMetadataDefaults = injector.getInstance(TransactionMetadata.class).defaults();
         TransactionMetadata transactionMetadata = injector.getInstance(TransactionMetadata.class).defaults();
 
@@ -150,7 +146,7 @@ public abstract class AbstractTransactionManager implements TransactionManager {
             transactionMetadata.mergeFrom(transactionMetadataResolver.resolve(methodInvocation, transactionMetadataDefaults));
         }
 
-        transactionMetadata.mergeFrom(deepGetAnnotation(method, targetClass));
+        transactionMetadata.mergeFrom(deepGetAnnotation(method));
 
         return transactionMetadata;
     }
@@ -174,38 +170,8 @@ public abstract class AbstractTransactionManager implements TransactionManager {
         }
     }
 
-    @SuppressWarnings("unchecked")
-    private Transactional deepGetAnnotation(final Method method, Class<?> targetClass) {
-        Transactional transaction = method.getAnnotation(Transactional.class);
-
-        // Fetching annotations from method (we fetch all methods in super and interfaces)
-        if (transaction == null) {
-            Predicate<? super Method> predicate = (Predicate<Method>) input -> (!method.equals(input)) && methodIsEqual(method, input);
-
-            Set<Method> methods = ReflectionUtils.getAllMethods(targetClass, predicate);
-
-            for (Method method2 : methods) {
-                transaction = method2.getAnnotation(Transactional.class);
-                if (transaction != null) {
-                    break;
-                }
-            }
-        }
-
-        // Fetching annotation from class
-        if (transaction == null) {
-            transaction = SeedReflectionUtils.getMetaAnnotationFromAncestors(targetClass, Transactional.class);
-        }
-
-        return transaction;
-    }
-
-    private boolean methodIsEqual(Method left, Method right) {
-        EqualsBuilder builder = new EqualsBuilder()
-                .append(left.getName(), right.getName())
-                .append(left.getParameterTypes(), right.getParameterTypes())
-                .append(left.getReturnType(), right.getReturnType());
-
-        return builder.isEquals();
+    private Transactional deepGetAnnotation(final Method method) {
+        Optional<Transactional> transactional = TransactionalResolver.INSTANCE.apply(method);
+        return transactional.isPresent() ? transactional.get() : null;
     }
 }

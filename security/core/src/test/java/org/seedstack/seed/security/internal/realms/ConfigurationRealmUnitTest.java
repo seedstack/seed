@@ -54,7 +54,7 @@ public class ConfigurationRealmUnitTest {
     public void getRealmRoles_nominal() {
         PrincipalProvider<String> identity = Principals.identityPrincipal(username);
 
-        Set<String> foundRoles = underTest.getRealmRoles(identity, Collections.<PrincipalProvider<?>>emptyList());
+        Set<String> foundRoles = underTest.getRealmRoles(identity, Collections.emptyList());
 
         assertThat(foundRoles).hasSize(2);
         assertThat(foundRoles).contains(role1);
@@ -66,7 +66,7 @@ public class ConfigurationRealmUnitTest {
         String username = "titi";
         PrincipalProvider<String> identity = Principals.identityPrincipal(username);
 
-        Set<String> foundRoles = underTest.getRealmRoles(identity, Collections.<PrincipalProvider<?>>emptyList());
+        Set<String> foundRoles = underTest.getRealmRoles(identity, Collections.emptyList());
 
         assertThat(foundRoles).isEmpty();
     }

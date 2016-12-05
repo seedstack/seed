@@ -24,9 +24,7 @@ import java.security.cert.X509Certificate;
  * A security filter that extracts the certificate from the request for later use
  */
 public class X509CertificateFilter extends AuthenticatingFilter {
-
     private static final String OPTIONAL = "optional";
-
     private boolean optional;
 
     @Override

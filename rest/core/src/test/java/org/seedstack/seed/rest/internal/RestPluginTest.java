@@ -39,8 +39,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.seedstack.seed.rest.internal.RestPlugin.providersSpecification;
-import static org.seedstack.seed.rest.internal.RestPlugin.resourcesSpecification;
 
 
 @RunWith(JMockit.class)
@@ -62,8 +60,8 @@ public class RestPluginTest {
 
     @Test
     public void testRequestScanForJaxRsClasses() throws Exception {
-        assertScanSpecification(providersSpecification);
-        assertScanSpecification(RestPlugin.resourcesSpecification);
+        assertScanSpecification(JaxRsProviderSpecification.INSTANCE);
+        assertScanSpecification(JaxRsResourceSpecification.INSTANCE);
     }
 
     private void assertScanSpecification(Specification<Class<?>> specification) {
@@ -82,8 +80,8 @@ public class RestPluginTest {
     public void testWithoutServletContext() throws Exception {
         givenConfiguration();
         givenSpecifications(
-                new Pair(resourcesSpecification, MyResource.class),
-                new Pair(providersSpecification, MyProvider.class)
+                new Pair(JaxRsResourceSpecification.INSTANCE, MyResource.class),
+                new Pair(JaxRsProviderSpecification.INSTANCE, MyProvider.class)
         );
         InitState init = underTest.init(initContext);
         assertThat(init).isEqualTo(InitState.INITIALIZED);
@@ -94,8 +92,8 @@ public class RestPluginTest {
     public void testInitGetJaxRsClasses() throws Exception {
         givenConfiguration();
         givenSpecifications(
-                new Pair(resourcesSpecification, MyResource.class),
-                new Pair(providersSpecification, MyProvider.class)
+                new Pair(JaxRsResourceSpecification.INSTANCE, MyResource.class),
+                new Pair(JaxRsProviderSpecification.INSTANCE, MyProvider.class)
         );
 
         underTest.provideContainerContext(SeedRuntime.builder()

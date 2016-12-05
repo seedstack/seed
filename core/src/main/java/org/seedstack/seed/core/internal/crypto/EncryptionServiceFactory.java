@@ -7,10 +7,10 @@
  */
 package org.seedstack.seed.core.internal.crypto;
 
-import org.seedstack.seed.core.utils.SeedReflectionUtils;
 import org.seedstack.seed.crypto.CryptoConfig;
 import org.seedstack.seed.crypto.EncryptionService;
 import org.seedstack.seed.SeedException;
+import org.seedstack.shed.ClassLoaders;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -123,7 +123,7 @@ class EncryptionServiceFactory {
             // Find the certificate location from the classpath
             String resource = certificateConfig.getResource();
             if (resource != null) {
-                URL urlResource = SeedReflectionUtils.findMostCompleteClassLoader().getResource(resource);
+                URL urlResource = ClassLoaders.findMostCompleteClassLoader().getResource(resource);
                 if (urlResource == null) {
                     throw SeedException.createNew(CryptoErrorCode.CERTIFICATE_NOT_FOUND)
                             .put("alias", alias).put("certResource", resource);
