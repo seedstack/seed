@@ -10,7 +10,7 @@ package org.seedstack.seed.core.internal.dependency;
 import com.google.inject.AbstractModule;
 import com.google.inject.TypeLiteral;
 import com.google.inject.util.Types;
-import org.seedstack.seed.spi.dependency.DependencyProvider;
+import org.seedstack.seed.spi.DependencyProvider;
 
 import java.util.Map;
 import java.util.Map.Entry;

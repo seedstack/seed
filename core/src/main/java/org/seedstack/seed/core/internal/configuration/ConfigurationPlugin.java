@@ -18,11 +18,11 @@ import org.seedstack.coffig.provider.JacksonProvider;
 import org.seedstack.coffig.spi.ConfigurationProvider;
 import org.seedstack.seed.Application;
 import org.seedstack.seed.ApplicationConfig;
-import org.seedstack.seed.DiagnosticManager;
+import org.seedstack.seed.diagnostic.DiagnosticManager;
 import org.seedstack.seed.SeedException;
 import org.seedstack.seed.core.SeedRuntime;
 import org.seedstack.seed.core.internal.CoreErrorCode;
-import org.seedstack.seed.spi.config.ApplicationProvider;
+import org.seedstack.seed.spi.ApplicationProvider;
 import org.seedstack.shed.ClassLoaders;
 
 import java.io.IOException;

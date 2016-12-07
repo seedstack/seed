@@ -8,7 +8,7 @@
 package org.seedstack.seed.rest.internal.exceptionmapper;
 
 import org.seedstack.seed.Application;
-import org.seedstack.seed.DiagnosticManager;
+import org.seedstack.seed.diagnostic.DiagnosticManager;
 import org.seedstack.seed.web.WebConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

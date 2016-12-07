@@ -19,7 +19,7 @@ import org.seedstack.coffig.Coffig;
 import org.seedstack.seed.Application;
 import org.seedstack.seed.core.fixtures.transaction.TransactionHandlerTestImpl;
 import org.seedstack.seed.core.fixtures.transaction.TransactionMetadataResolverTestImpl;
-import org.seedstack.seed.spi.config.ApplicationProvider;
+import org.seedstack.seed.spi.ApplicationProvider;
 import org.seedstack.seed.transaction.Transactional;
 import org.seedstack.seed.transaction.TransactionConfig;
 import org.seedstack.seed.transaction.spi.TransactionHandler;

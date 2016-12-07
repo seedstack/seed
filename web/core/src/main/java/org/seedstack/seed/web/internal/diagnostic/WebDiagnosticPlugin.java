@@ -10,7 +10,7 @@ package org.seedstack.seed.web.internal.diagnostic;
 import com.google.common.collect.Lists;
 import io.nuun.kernel.api.plugin.InitState;
 import io.nuun.kernel.api.plugin.context.InitContext;
-import org.seedstack.seed.DiagnosticManager;
+import org.seedstack.seed.diagnostic.DiagnosticManager;
 import org.seedstack.seed.core.SeedRuntime;
 import org.seedstack.seed.core.internal.AbstractSeedPlugin;
 import org.seedstack.seed.web.WebConfig;

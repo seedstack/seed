@@ -9,8 +9,8 @@ package org.seedstack.seed.core.internal.diagnostic;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.multibindings.MapBinder;
-import org.seedstack.seed.DiagnosticManager;
-import org.seedstack.seed.spi.diagnostic.DiagnosticInfoCollector;
+import org.seedstack.seed.diagnostic.DiagnosticManager;
+import org.seedstack.seed.diagnostic.spi.DiagnosticInfoCollector;
 
 import java.util.Map;
 

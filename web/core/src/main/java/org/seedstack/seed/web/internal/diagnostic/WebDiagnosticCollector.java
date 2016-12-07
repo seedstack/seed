@@ -8,7 +8,7 @@
 package org.seedstack.seed.web.internal.diagnostic;
 
 import com.google.common.collect.Lists;
-import org.seedstack.seed.spi.diagnostic.DiagnosticInfoCollector;
+import org.seedstack.seed.diagnostic.spi.DiagnosticInfoCollector;
 
 import javax.servlet.FilterRegistration;
 import javax.servlet.ServletContext;

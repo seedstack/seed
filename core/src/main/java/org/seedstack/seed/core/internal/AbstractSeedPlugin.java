@@ -14,7 +14,7 @@ import io.nuun.kernel.core.AbstractPlugin;
 import org.seedstack.coffig.Coffig;
 import org.seedstack.seed.Application;
 import org.seedstack.seed.core.SeedRuntime;
-import org.seedstack.seed.spi.config.ApplicationProvider;
+import org.seedstack.seed.spi.ApplicationProvider;
 
 import java.util.ArrayList;
 import java.util.Collection;

@@ -8,7 +8,7 @@
 package org.seedstack.seed.core.internal.command;
 
 import com.google.common.base.Strings;
-import org.seedstack.seed.spi.command.Argument;
+import org.seedstack.seed.command.Argument;
 
 import java.lang.reflect.Field;
 

@@ -13,10 +13,8 @@ import mockit.Mocked;
 import mockit.Verifications;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
-import org.seedstack.seed.core.internal.crypto.CryptoModule;
-import org.seedstack.seed.core.internal.crypto.CryptoPlugin;
 import org.seedstack.seed.crypto.EncryptionService;
-import org.seedstack.seed.spi.config.ApplicationProvider;
+import org.seedstack.seed.spi.ApplicationProvider;
 
 import java.security.KeyStore;
 import java.util.Collection;

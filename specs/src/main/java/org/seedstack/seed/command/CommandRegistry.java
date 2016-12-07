@@ -5,12 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-package org.seedstack.seed;
-
-import org.seedstack.seed.spi.command.Argument;
-import org.seedstack.seed.spi.command.Command;
-import org.seedstack.seed.spi.command.CommandDefinition;
-import org.seedstack.seed.spi.command.Option;
+package org.seedstack.seed.command;
 
 import java.util.List;
 import java.util.Map;
@@ -32,7 +27,7 @@ public interface CommandRegistry {
      *
      * @param scope the command scope.
      * @param name the command name.
-     * @return the list of {@link org.seedstack.seed.spi.command.Option}.
+     * @return the list of {@link Option}.
      */
     List<Option> getOptionsInfo(String scope, String name);
 
@@ -42,7 +37,7 @@ public interface CommandRegistry {
      *
      * @param scope the command scope.
      * @param name the command name.
-     * @return the list of {@link org.seedstack.seed.spi.command.Argument}.
+     * @return the list of {@link Argument}.
      */
     List<Argument> getArgumentsInfo(String scope, String name);
 
@@ -51,19 +46,19 @@ public interface CommandRegistry {
      *
      * @param scope the command scope.
      * @param name the command name.
-     * @return the {@link org.seedstack.seed.spi.command.CommandDefinition} object.
+     * @return the {@link CommandDefinition} object.
      */
     CommandDefinition getCommandInfo(String scope, String name);
 
     /**
-     * Instantiate a {@link org.seedstack.seed.spi.command.Command} object given a scope, a name and a list of arguments and options.
+     * Instantiate a {@link Command} object given a scope, a name and a list of arguments and options.
      *
      * @param scope the command scope.
      * @param name the command name.
      * @param argValues the argument values.
      * @param optionValues the option values.
      *
-     * @return the {@link org.seedstack.seed.spi.command.Command} object, already initialized and injected with corresponding values.
+     * @return the {@link Command} object, already initialized and injected with corresponding values.
      */
     Command createCommand(String scope, String name, List<String> argValues, Map<String, String> optionValues);
 }

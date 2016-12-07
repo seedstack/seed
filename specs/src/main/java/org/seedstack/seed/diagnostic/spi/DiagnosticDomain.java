@@ -5,36 +5,26 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-package org.seedstack.seed.spi.command;
-
+package org.seedstack.seed.diagnostic.spi;
 
 import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
 import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import static java.lang.annotation.ElementType.TYPE;
+
 /**
- * This annotation marks commands to be registered by seed shell support.
+ * Marks a diagnostic collector and defines its diagnostic domain.
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ ElementType.TYPE })
+@Target({TYPE})
 @Inherited
-public @interface CommandDefinition {
+public @interface DiagnosticDomain {
     /**
-     * The scope of the command.
+     * @return the diagnostic domain name.
      */
-    String scope();
-
-    /**
-     * The name of the command.
-     */
-    String name();
-
-    /**
-     * The description of the command
-     */
-    String description() default "";
+    String value();
 }

@@ -9,8 +9,8 @@ package org.seedstack.seed.core.internal.command;
 
 import com.google.common.base.Strings;
 import org.seedstack.seed.SeedException;
-import org.seedstack.seed.spi.command.Argument;
-import org.seedstack.seed.spi.command.Command;
+import org.seedstack.seed.command.Argument;
+import org.seedstack.seed.command.Command;
 
 import javax.inject.Inject;
 import java.util.Map;
@@ -23,7 +23,7 @@ import java.util.TreeSet;
  * This built-in SEED command displays a list of all available commands or can display available options for a particular
  * command.
  */
-@org.seedstack.seed.spi.command.CommandDefinition(scope = "", name = "help", description = "Display a list of available commands or help on a specific command")
+@org.seedstack.seed.command.CommandDefinition(scope = "", name = "help", description = "Display a list of available commands or help on a specific command")
 public class HelpCommand implements Command {
     @Argument(index = 0, description = "The command name to get help for", mandatory = false)
     private String commandName;

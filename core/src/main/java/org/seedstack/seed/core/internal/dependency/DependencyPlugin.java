@@ -13,7 +13,7 @@ import io.nuun.kernel.api.plugin.request.ClasspathScanRequest;
 import org.seedstack.seed.SeedException;
 import org.seedstack.seed.core.internal.AbstractSeedPlugin;
 import org.seedstack.seed.core.internal.CoreErrorCode;
-import org.seedstack.seed.spi.dependency.DependencyProvider;
+import org.seedstack.seed.spi.DependencyProvider;
 import org.seedstack.shed.reflect.Classes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -11,11 +11,11 @@ import com.google.common.base.Strings;
 import com.google.inject.Injector;
 import com.google.inject.Key;
 import com.google.inject.name.Names;
-import org.seedstack.seed.CommandRegistry;
+import org.seedstack.seed.command.CommandRegistry;
 import org.seedstack.seed.SeedException;
-import org.seedstack.seed.spi.command.Argument;
-import org.seedstack.seed.spi.command.Command;
-import org.seedstack.seed.spi.command.Option;
+import org.seedstack.seed.command.Argument;
+import org.seedstack.seed.command.Command;
+import org.seedstack.seed.command.Option;
 
 import javax.inject.Inject;
 import java.util.ArrayList;
@@ -75,7 +75,7 @@ class CommandRegistryImpl implements CommandRegistry {
     }
 
     @Override
-    public org.seedstack.seed.spi.command.CommandDefinition getCommandInfo(String scope, String name) {
+    public org.seedstack.seed.command.CommandDefinition getCommandInfo(String scope, String name) {
         String qualifiedName = buildQualifiedName(scope, name);
 
         // Lookup for command definition

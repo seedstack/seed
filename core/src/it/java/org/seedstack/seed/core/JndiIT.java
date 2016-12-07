@@ -13,7 +13,7 @@ import org.assertj.core.api.Assertions;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.seedstack.seed.FromContext;
+import org.seedstack.seed.JndiContext;
 import org.seedstack.seed.core.fixtures.Service1;
 import org.seedstack.seed.core.rules.SeedITRule;
 
@@ -54,7 +54,7 @@ public class JndiIT {
         Service1 service1Default;
 
         @Resource(name = "org.seedstack.seed.core.fixtures.Service1")
-        @FromContext("test2")
+        @JndiContext("test2")
         Service1 service1Named;
     }
 

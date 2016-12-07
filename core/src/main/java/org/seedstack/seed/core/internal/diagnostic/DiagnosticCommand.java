@@ -7,9 +7,9 @@
  */
 package org.seedstack.seed.core.internal.diagnostic;
 
-import org.seedstack.seed.DiagnosticManager;
-import org.seedstack.seed.spi.command.Command;
-import org.seedstack.seed.spi.command.CommandDefinition;
+import org.seedstack.seed.diagnostic.DiagnosticManager;
+import org.seedstack.seed.command.Command;
+import org.seedstack.seed.command.CommandDefinition;
 
 import javax.inject.Inject;
 import java.util.Map;

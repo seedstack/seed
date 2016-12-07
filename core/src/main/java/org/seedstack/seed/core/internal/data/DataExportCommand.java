@@ -8,9 +8,9 @@
 package org.seedstack.seed.core.internal.data;
 
 import org.seedstack.seed.DataManager;
-import org.seedstack.seed.spi.command.CommandDefinition;
-import org.seedstack.seed.spi.command.Option;
-import org.seedstack.seed.spi.command.StreamCommand;
+import org.seedstack.seed.command.CommandDefinition;
+import org.seedstack.seed.command.Option;
+import org.seedstack.seed.command.StreamCommand;
 
 import javax.inject.Inject;
 import java.io.InputStream;

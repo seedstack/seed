@@ -11,7 +11,8 @@ import io.nuun.kernel.api.Plugin;
 import org.seedstack.coffig.Coffig;
 import org.seedstack.coffig.provider.CompositeProvider;
 import org.seedstack.coffig.provider.InMemoryProvider;
-import org.seedstack.seed.DiagnosticManager;
+import org.seedstack.seed.diagnostic.spi.DiagnosticInfoCollector;
+import org.seedstack.seed.diagnostic.DiagnosticManager;
 import org.seedstack.seed.core.internal.configuration.PrioritizedProvider;
 
 import javax.validation.ValidatorFactory;
@@ -126,7 +127,7 @@ public class SeedRuntime {
         return new Builder();
     }
 
-    private class RuntimeDiagnosticCollector implements org.seedstack.seed.spi.diagnostic.DiagnosticInfoCollector {
+    private class RuntimeDiagnosticCollector implements DiagnosticInfoCollector {
         @Override
         public Map<String, Object> collect() {
             Map<String, Object> result = new HashMap<>();

@@ -10,8 +10,7 @@ package org.seedstack.seed.core.internal.dependency;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.seedstack.seed.SeedException;
-import org.seedstack.seed.core.internal.dependency.DependencyProxy;
-import org.seedstack.seed.spi.dependency.DependencyProvider;
+import org.seedstack.seed.spi.DependencyProvider;
 
 public class DependencyProxyTest {
     private static final String PROXY_METHOD = "proxy method";

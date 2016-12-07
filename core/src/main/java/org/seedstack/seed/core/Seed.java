@@ -10,7 +10,6 @@ package org.seedstack.seed.core;
 import io.nuun.kernel.api.Kernel;
 import io.nuun.kernel.api.config.KernelConfiguration;
 import org.seedstack.coffig.Coffig;
-import org.seedstack.seed.DiagnosticManager;
 import org.seedstack.seed.LogConfig;
 import org.seedstack.seed.ProxyConfig;
 import org.seedstack.seed.SeedException;
@@ -21,8 +20,9 @@ import org.seedstack.seed.core.internal.init.BaseConfiguration;
 import org.seedstack.seed.core.internal.init.ConsoleManager;
 import org.seedstack.seed.core.internal.init.GlobalValidatorFactory;
 import org.seedstack.seed.core.internal.init.KernelManager;
+import org.seedstack.seed.core.internal.init.LogManager;
 import org.seedstack.seed.core.internal.init.ProxyManager;
-import org.seedstack.seed.spi.log.LogManager;
+import org.seedstack.seed.diagnostic.DiagnosticManager;
 
 import javax.annotation.Nullable;
 import javax.validation.ValidatorFactory;
@@ -35,6 +35,7 @@ public class Seed {
     private static volatile boolean initialized = false;
     private static volatile boolean noLogs = false;
     private final Coffig configuration;
+    private final DiagnosticManager diagnosticManager;
     private final ConsoleManager consoleManager;
     private final LogManager logManager;
     private final ValidatorFactory validatorFactory;
@@ -76,9 +77,9 @@ public class Seed {
         return instance.kernelManager.createKernel(
                 SeedRuntime.builder()
                         .context(runtimeContext)
-                        .diagnosticManager(new DiagnosticManagerImpl())
-                        .configuration(instance.configuration.fork())
+                        .diagnosticManager(instance.diagnosticManager)
                         .validatorFactory(instance.validatorFactory)
+                        .configuration(instance.configuration.fork())
                         .build(),
                 kernelConfiguration,
                 autoStart);
@@ -99,7 +100,7 @@ public class Seed {
      * @return the default diagnostic manager.
      */
     public static DiagnosticManager diagnostic() {
-        return new DiagnosticManagerImpl();
+        return getInstance().diagnosticManager;
     }
 
     /**
@@ -109,7 +110,7 @@ public class Seed {
      * @return the {@link Coffig} object for application base configuration.
      */
     public static Coffig baseConfiguration() {
-        return BaseConfiguration.get();
+        return getInstance().configuration;
     }
 
     /**
@@ -157,8 +158,13 @@ public class Seed {
         consoleManager = ConsoleManager.get();
         consoleManager.install();
 
-        // Configuration
+        // Diagnostics
+        diagnosticManager = new DiagnosticManagerImpl();
+
+        // Validation
         validatorFactory = GlobalValidatorFactory.get();
+
+        // Configuration
         configuration = BaseConfiguration.get();
 
         // Logging activation

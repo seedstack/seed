@@ -17,7 +17,7 @@ import org.junit.Test;
 import org.seedstack.coffig.Coffig;
 import org.seedstack.seed.Application;
 import org.seedstack.seed.Install;
-import org.seedstack.seed.spi.config.ApplicationProvider;
+import org.seedstack.seed.spi.ApplicationProvider;
 
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;

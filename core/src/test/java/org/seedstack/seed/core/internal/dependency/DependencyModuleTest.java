@@ -12,7 +12,7 @@ import com.google.inject.TypeLiteral;
 import mockit.Mocked;
 import mockit.Verifications;
 import org.junit.Test;
-import org.seedstack.seed.spi.dependency.DependencyProvider;
+import org.seedstack.seed.spi.DependencyProvider;
 
 import java.util.HashMap;
 import java.util.Map;

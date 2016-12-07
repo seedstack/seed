@@ -5,9 +5,10 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-package org.seedstack.seed;
+package org.seedstack.seed.diagnostic;
 
-import org.seedstack.seed.spi.diagnostic.DiagnosticInfoCollector;
+import org.seedstack.seed.diagnostic.spi.DiagnosticInfoCollector;
+import org.seedstack.seed.diagnostic.spi.DiagnosticReporter;
 
 import java.util.Map;
 
@@ -24,7 +25,7 @@ public interface DiagnosticManager {
     Map<String, Object> getDiagnosticInfo(Throwable t);
 
     /**
-     * Dump the diagnostic information through the {@link org.seedstack.seed.spi.diagnostic.DiagnosticReporter}.
+     * Dump the diagnostic information through the {@link DiagnosticReporter}.
      *
      * @param t the exception which may be the origin of this diagnostic generation. May be null.
      */

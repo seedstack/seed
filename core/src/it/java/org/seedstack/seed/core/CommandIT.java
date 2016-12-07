@@ -12,12 +12,12 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import org.junit.Rule;
 import org.junit.Test;
-import org.seedstack.seed.CommandRegistry;
+import org.seedstack.seed.command.CommandRegistry;
 import org.seedstack.seed.core.fixtures.TestCommand;
 import org.seedstack.seed.core.rules.SeedITRule;
-import org.seedstack.seed.spi.command.Argument;
-import org.seedstack.seed.spi.command.Command;
-import org.seedstack.seed.spi.command.Option;
+import org.seedstack.seed.command.Argument;
+import org.seedstack.seed.command.Command;
+import org.seedstack.seed.command.Option;
 
 import javax.inject.Inject;
 import java.util.List;

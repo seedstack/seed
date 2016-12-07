@@ -14,7 +14,7 @@ import com.fasterxml.jackson.core.util.DefaultIndenter;
 import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import org.seedstack.seed.spi.diagnostic.DiagnosticReporter;
+import org.seedstack.seed.diagnostic.spi.DiagnosticReporter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,7 +30,7 @@ import java.util.Date;
 import java.util.Map;
 
 /**
- * Default implementation of {@link org.seedstack.seed.spi.diagnostic.DiagnosticReporter} that logs to a JSON
+ * Default implementation of {@link DiagnosticReporter} that logs to a JSON
  * file in the system temporary directory (from java.io.tmpdir system property).
  */
 class DefaultDiagnosticReporter implements DiagnosticReporter {

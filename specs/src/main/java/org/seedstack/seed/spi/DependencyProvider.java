@@ -5,12 +5,16 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-package org.seedstack.seed.spi.log;
+package org.seedstack.seed.spi;
 
-import org.seedstack.seed.LogConfig;
+/**
+ * Interface to use to discover optional dependencies.
+ */
+public interface DependencyProvider {
 
-public interface LogManager {
-    void configure(LogConfig logConfig);
-
-    void close();
+	/**
+	 * Return the class to check in the classpath.
+	 * @return the class to check in the classpath.
+	 */
+	String getClassToCheck();
 }

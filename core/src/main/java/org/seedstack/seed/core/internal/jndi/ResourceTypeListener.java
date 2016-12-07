@@ -10,7 +10,7 @@ package org.seedstack.seed.core.internal.jndi;
 import com.google.inject.TypeLiteral;
 import com.google.inject.spi.TypeEncounter;
 import com.google.inject.spi.TypeListener;
-import org.seedstack.seed.FromContext;
+import org.seedstack.seed.JndiContext;
 import org.seedstack.seed.SeedException;
 
 import javax.annotation.Resource;
@@ -38,9 +38,9 @@ class ResourceTypeListener implements TypeListener {
                 Resource resourceAnnotation = field.getAnnotation(Resource.class);
                 if (resourceAnnotation != null) {
                     Context contextToLookup = defaultContext;
-                    FromContext fromContextAnnotation = field.getAnnotation(FromContext.class);
-                    if (fromContextAnnotation != null) {
-                        contextToLookup = jndiContexts.get(fromContextAnnotation.value());
+                    JndiContext jndiContextAnnotation = field.getAnnotation(JndiContext.class);
+                    if (jndiContextAnnotation != null) {
+                        contextToLookup = jndiContexts.get(jndiContextAnnotation.value());
                     }
 
                     String resourceName = resourceAnnotation.name();
@@ -49,8 +49,8 @@ class ResourceTypeListener implements TypeListener {
                             typeEncounter.register(new ResourceMembersInjector<>(field, contextToLookup.lookup(resourceName)));
                         } catch (NamingException e) {
                             String contextName = "default";
-                            if (fromContextAnnotation != null) {
-                                contextName = fromContextAnnotation.value();
+                            if (jndiContextAnnotation != null) {
+                                contextName = jndiContextAnnotation.value();
                             }
 
                             throw SeedException.wrap(e, JndiErrorCode.UNABLE_TO_REGISTER_INJECTION_FOR_RESOURCE)

@@ -7,7 +7,6 @@
  */
 package org.seedstack.seed.core.internal.dependency;
 
-import com.google.inject.AbstractModule;
 import io.nuun.kernel.api.plugin.context.InitContext;
 import mockit.Expectations;
 import mockit.Mocked;
@@ -17,8 +16,8 @@ import org.junit.Test;
 import org.seedstack.coffig.Coffig;
 import org.seedstack.seed.Application;
 import org.seedstack.seed.SeedException;
-import org.seedstack.seed.spi.config.ApplicationProvider;
-import org.seedstack.seed.spi.dependency.DependencyProvider;
+import org.seedstack.seed.spi.ApplicationProvider;
+import org.seedstack.seed.spi.DependencyProvider;
 
 import java.util.ArrayList;
 import java.util.Collection;

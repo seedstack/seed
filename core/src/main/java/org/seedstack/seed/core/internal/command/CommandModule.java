@@ -10,8 +10,8 @@ package org.seedstack.seed.core.internal.command;
 import com.google.inject.PrivateModule;
 import com.google.inject.TypeLiteral;
 import com.google.inject.name.Names;
-import org.seedstack.seed.CommandRegistry;
-import org.seedstack.seed.spi.command.Command;
+import org.seedstack.seed.command.CommandRegistry;
+import org.seedstack.seed.command.Command;
 
 import java.util.Map;
 

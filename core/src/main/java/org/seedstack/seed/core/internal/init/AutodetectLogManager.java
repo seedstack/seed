@@ -8,7 +8,6 @@
 package org.seedstack.seed.core.internal.init;
 
 import org.seedstack.seed.LogConfig;
-import org.seedstack.seed.spi.log.LogManager;
 import org.seedstack.shed.reflect.Classes;
 import org.slf4j.LoggerFactory;
 import org.slf4j.bridge.SLF4JBridgeHandler;

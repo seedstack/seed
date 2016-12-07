@@ -18,7 +18,6 @@ import ch.qos.logback.core.ConsoleAppender;
 import ch.qos.logback.core.joran.spi.JoranException;
 import ch.qos.logback.core.joran.util.ConfigurationWatchListUtil;
 import org.seedstack.seed.LogConfig;
-import org.seedstack.seed.spi.log.LogManager;
 import org.slf4j.LoggerFactory;
 
 class LogbackLogManager implements LogManager {

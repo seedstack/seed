@@ -5,45 +5,36 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-package org.seedstack.seed.spi.command;
+package org.seedstack.seed.command;
 
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
+import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * This annotation marks fields of a command to be injected with the argument value set at command invocation.
+ * This annotation marks commands to be registered by seed shell support.
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.FIELD})
-public @interface Argument {
-
+@Target({ ElementType.TYPE })
+@Inherited
+public @interface CommandDefinition {
     /**
-     * The index of the argument.
+     * The scope of the command.
      */
-    int index();
+    String scope();
 
     /**
-     * The name of the argument.
+     * The name of the command.
      */
-    String name() default "";
+    String name();
 
     /**
-     * If the argument is mandatory.
-     */
-    boolean mandatory() default true;
-
-    /**
-     * The default value to use if argument is not present.
-     */
-    String defaultValue() default "";
-
-    /**
-     * The description of the argument (used by the help command).
+     * The description of the command
      */
     String description() default "";
 }

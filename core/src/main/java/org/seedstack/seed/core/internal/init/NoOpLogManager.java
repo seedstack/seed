@@ -8,7 +8,6 @@
 package org.seedstack.seed.core.internal.init;
 
 import org.seedstack.seed.LogConfig;
-import org.seedstack.seed.spi.log.LogManager;
 
 class NoOpLogManager implements LogManager {
     @Override

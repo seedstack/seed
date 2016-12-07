@@ -11,9 +11,9 @@ import io.nuun.kernel.api.plugin.InitState;
 import io.nuun.kernel.api.plugin.context.InitContext;
 import io.nuun.kernel.api.plugin.request.ClasspathScanRequest;
 import org.seedstack.seed.core.internal.AbstractSeedPlugin;
-import org.seedstack.seed.spi.command.Argument;
-import org.seedstack.seed.spi.command.Command;
-import org.seedstack.seed.spi.command.Option;
+import org.seedstack.seed.command.Argument;
+import org.seedstack.seed.command.Command;
+import org.seedstack.seed.command.Option;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,10 +40,10 @@ public class CommandPlugin extends AbstractSeedPlugin {
     public InitState initialize(InitContext initContext) {
         Map<Class<? extends Annotation>, Collection<Class<?>>> scannedClassesByAnnotationClass = initContext.scannedClassesByAnnotationClass();
 
-        Collection<Class<?>> commandAnnotatedClasses = scannedClassesByAnnotationClass.get(org.seedstack.seed.spi.command.CommandDefinition.class);
+        Collection<Class<?>> commandAnnotatedClasses = scannedClassesByAnnotationClass.get(org.seedstack.seed.command.CommandDefinition.class);
         for (Class<?> candidate : commandAnnotatedClasses) {
             if (Command.class.isAssignableFrom(candidate)) {
-                org.seedstack.seed.spi.command.CommandDefinition commandDefinitionAnnotation = candidate.getAnnotation(org.seedstack.seed.spi.command.CommandDefinition.class);
+                org.seedstack.seed.command.CommandDefinition commandDefinitionAnnotation = candidate.getAnnotation(org.seedstack.seed.command.CommandDefinition.class);
                 if (commandDefinitionAnnotation != null) {
                     CommandDefinition commandDefinition = new CommandDefinition(commandDefinitionAnnotation, candidate.asSubclass(Command.class));
 
@@ -72,7 +72,7 @@ public class CommandPlugin extends AbstractSeedPlugin {
 
     @Override
     public Collection<ClasspathScanRequest> classpathScanRequests() {
-        return classpathScanRequestBuilder().annotationType(org.seedstack.seed.spi.command.CommandDefinition.class).build();
+        return classpathScanRequestBuilder().annotationType(org.seedstack.seed.command.CommandDefinition.class).build();
     }
 
     @Override

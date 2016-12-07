@@ -7,7 +7,7 @@
  */
 package org.seedstack.seed.core.internal.command;
 
-import org.seedstack.seed.spi.command.Option;
+import org.seedstack.seed.command.Option;
 
 import java.lang.reflect.Field;
 

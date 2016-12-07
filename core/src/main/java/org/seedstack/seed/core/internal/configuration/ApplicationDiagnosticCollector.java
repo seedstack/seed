@@ -8,7 +8,7 @@
 package org.seedstack.seed.core.internal.configuration;
 
 import org.seedstack.seed.Application;
-import org.seedstack.seed.spi.diagnostic.DiagnosticInfoCollector;
+import org.seedstack.seed.diagnostic.spi.DiagnosticInfoCollector;
 
 import java.util.HashMap;
 import java.util.Map;

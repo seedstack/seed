@@ -11,11 +11,11 @@ import io.nuun.kernel.api.plugin.InitState;
 import io.nuun.kernel.api.plugin.context.Context;
 import io.nuun.kernel.api.plugin.context.InitContext;
 import io.nuun.kernel.api.plugin.request.ClasspathScanRequest;
-import org.seedstack.seed.DiagnosticManager;
+import org.seedstack.seed.diagnostic.DiagnosticManager;
 import org.seedstack.seed.core.SeedRuntime;
 import org.seedstack.seed.core.internal.AbstractSeedPlugin;
-import org.seedstack.seed.spi.diagnostic.DiagnosticDomain;
-import org.seedstack.seed.spi.diagnostic.DiagnosticInfoCollector;
+import org.seedstack.seed.diagnostic.spi.DiagnosticDomain;
+import org.seedstack.seed.diagnostic.spi.DiagnosticInfoCollector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -9,9 +9,9 @@ package org.seedstack.seed.core.internal.command;
 
 import com.google.common.base.Strings;
 import org.seedstack.seed.SeedException;
-import org.seedstack.seed.spi.command.Argument;
-import org.seedstack.seed.spi.command.Command;
-import org.seedstack.seed.spi.command.Option;
+import org.seedstack.seed.command.Argument;
+import org.seedstack.seed.command.Command;
+import org.seedstack.seed.command.Option;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -22,13 +22,13 @@ import java.util.List;
  * Holds the definition of a command.
  */
 class CommandDefinition implements Comparable<CommandDefinition> {
-    private final org.seedstack.seed.spi.command.CommandDefinition commandDefinition;
+    private final org.seedstack.seed.command.CommandDefinition commandDefinition;
     private final Class<? extends Command> commandActionClass;
 
     private final List<ArgumentDefinition> argumentDefinitions = new ArrayList<>();
     private final List<OptionDefinition> optionDefinitions = new ArrayList<>();
 
-    CommandDefinition(org.seedstack.seed.spi.command.CommandDefinition commandDefinition, Class<? extends Command> commandActionClass) {
+    CommandDefinition(org.seedstack.seed.command.CommandDefinition commandDefinition, Class<? extends Command> commandActionClass) {
         this.commandDefinition = commandDefinition;
         this.commandActionClass = commandActionClass;
     }
@@ -72,7 +72,7 @@ class CommandDefinition implements Comparable<CommandDefinition> {
         return commandDefinition.name();
     }
 
-    org.seedstack.seed.spi.command.CommandDefinition getAnnotation() {
+    org.seedstack.seed.command.CommandDefinition getAnnotation() {
         return commandDefinition;
     }
 

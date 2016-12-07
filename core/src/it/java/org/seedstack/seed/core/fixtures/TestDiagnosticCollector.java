@@ -7,8 +7,8 @@
  */
 package org.seedstack.seed.core.fixtures;
 
-import org.seedstack.seed.spi.diagnostic.DiagnosticDomain;
-import org.seedstack.seed.spi.diagnostic.DiagnosticInfoCollector;
+import org.seedstack.seed.diagnostic.spi.DiagnosticDomain;
+import org.seedstack.seed.diagnostic.spi.DiagnosticInfoCollector;
 
 import javax.inject.Inject;
 import java.util.HashMap;

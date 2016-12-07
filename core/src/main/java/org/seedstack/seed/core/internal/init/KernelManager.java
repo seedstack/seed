@@ -12,7 +12,7 @@ import io.nuun.kernel.api.config.KernelConfiguration;
 import io.nuun.kernel.core.NuunCore;
 import io.nuun.kernel.core.internal.scanner.AbstractClasspathScanner;
 import org.reflections.vfs.Vfs;
-import org.seedstack.seed.DiagnosticManager;
+import org.seedstack.seed.diagnostic.DiagnosticManager;
 import org.seedstack.seed.core.Seed;
 import org.seedstack.seed.core.SeedRuntime;
 import org.seedstack.seed.core.internal.scan.ClasspathScanHandler;
@@ -69,7 +69,7 @@ public class KernelManager {
 
     public Kernel createKernel(SeedRuntime seedRuntime, @Nullable KernelConfiguration kernelConfiguration, boolean autoStart) {
         // Startup message
-        StringBuilder startMessage = new StringBuilder(">>> Starting Seed");
+        StringBuilder startMessage = new StringBuilder("Starting Seed");
         if (seedRuntime.getVersion() != null) {
             startMessage.append(" v").append(seedRuntime.getVersion());
         }
@@ -99,7 +99,7 @@ public class KernelManager {
         if (kernel != null && kernel.isStarted()) {
             LOGGER.info("Stopping Seed");
             kernel.stop();
-            LOGGER.info("<<< Seed stopped");
+            LOGGER.info("Seed stopped");
         }
     }
 

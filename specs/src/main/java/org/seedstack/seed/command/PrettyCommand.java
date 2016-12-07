@@ -5,7 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-package org.seedstack.seed.spi.command;
+package org.seedstack.seed.command;
 
 /**
  * This interface can be implemented by commands that are able to prettify their output object as a string.

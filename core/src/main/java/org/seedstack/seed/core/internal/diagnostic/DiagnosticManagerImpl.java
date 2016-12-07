@@ -8,11 +8,11 @@
 package org.seedstack.seed.core.internal.diagnostic;
 
 import com.google.common.collect.Maps;
-import org.seedstack.seed.DiagnosticManager;
 import org.seedstack.seed.SeedException;
 import org.seedstack.seed.core.internal.CoreErrorCode;
-import org.seedstack.seed.spi.diagnostic.DiagnosticInfoCollector;
-import org.seedstack.seed.spi.diagnostic.DiagnosticReporter;
+import org.seedstack.seed.diagnostic.DiagnosticManager;
+import org.seedstack.seed.diagnostic.spi.DiagnosticInfoCollector;
+import org.seedstack.seed.diagnostic.spi.DiagnosticReporter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

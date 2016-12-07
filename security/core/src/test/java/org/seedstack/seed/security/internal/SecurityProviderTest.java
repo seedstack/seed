@@ -16,7 +16,7 @@ import org.seedstack.seed.core.internal.el.ELPlugin;
 import org.seedstack.seed.security.Realm;
 import org.seedstack.seed.security.SecurityConfig;
 import org.seedstack.seed.security.internal.realms.ConfigurationRealm;
-import org.seedstack.seed.spi.config.ApplicationProvider;
+import org.seedstack.seed.spi.ApplicationProvider;
 
 import java.util.ArrayList;
 import java.util.Collection;

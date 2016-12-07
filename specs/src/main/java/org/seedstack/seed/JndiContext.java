@@ -24,7 +24,7 @@ import static java.lang.annotation.ElementType.TYPE;
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ TYPE, FIELD, METHOD })
 @Inherited
-public @interface FromContext {
+public @interface JndiContext {
     /**
      * The name of the context to use for resource lookup.
      */

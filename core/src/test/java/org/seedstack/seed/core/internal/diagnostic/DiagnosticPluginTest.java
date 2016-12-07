@@ -15,9 +15,9 @@ import org.junit.Test;
 import org.mockito.internal.util.reflection.Whitebox;
 import org.seedstack.coffig.Coffig;
 import org.seedstack.seed.Application;
-import org.seedstack.seed.spi.config.ApplicationProvider;
-import org.seedstack.seed.spi.diagnostic.DiagnosticDomain;
-import org.seedstack.seed.spi.diagnostic.DiagnosticInfoCollector;
+import org.seedstack.seed.spi.ApplicationProvider;
+import org.seedstack.seed.diagnostic.spi.DiagnosticDomain;
+import org.seedstack.seed.diagnostic.spi.DiagnosticInfoCollector;
 
 import java.util.AbstractMap;
 import java.util.Collection;
