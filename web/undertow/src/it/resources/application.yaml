@@ -7,7 +7,6 @@
 #
 
 logs: INFO
-application: test-app
 web:
   server:
     port: 9001

@@ -7,5 +7,5 @@
 #
 
 logs:
-  level: WARN
+  level: INFO
 custom-property: custom-value

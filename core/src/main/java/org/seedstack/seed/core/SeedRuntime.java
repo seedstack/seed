@@ -11,11 +11,14 @@ import io.nuun.kernel.api.Plugin;
 import org.seedstack.coffig.Coffig;
 import org.seedstack.coffig.provider.CompositeProvider;
 import org.seedstack.coffig.provider.InMemoryProvider;
-import org.seedstack.seed.diagnostic.spi.DiagnosticInfoCollector;
-import org.seedstack.seed.diagnostic.DiagnosticManager;
+import org.seedstack.coffig.spi.ConfigurationProvider;
+import org.seedstack.seed.core.internal.configuration.ConfigurationPriority;
 import org.seedstack.seed.core.internal.configuration.PrioritizedProvider;
+import org.seedstack.seed.diagnostic.DiagnosticManager;
+import org.seedstack.seed.diagnostic.spi.DiagnosticInfoCollector;
 
 import javax.validation.ValidatorFactory;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -24,13 +27,14 @@ import java.util.Set;
 
 public class SeedRuntime {
     private static final String SEED_PACKAGE_PREFIX = "org.seedstack.seed";
-    private static final int DEFAULT_CONFIGURATION_PRIORITY = -1000;
+    private static final String DEFAULT_CONFIGURATION_PROVIDER = "default-config";
 
     private final Object context;
     private final DiagnosticManager diagnosticManager;
     private final Coffig configuration;
+    private final InMemoryProvider inMemoryProvider;
+    private final PrioritizedProvider prioritizedProvider;
     private final ValidatorFactory validatorFactory;
-    private final InMemoryProvider defaultConfigurationProvider;
     private final String seedVersion;
     private final Set<String> inconsistentPlugins = new HashSet<>();
 
@@ -41,7 +45,9 @@ public class SeedRuntime {
         this.validatorFactory = validatorFactory;
         this.seedVersion = SeedRuntime.class.getPackage() == null ? null : SeedRuntime.class.getPackage().getImplementationVersion();
         this.diagnosticManager.registerDiagnosticInfoCollector("seed", new RuntimeDiagnosticCollector());
-        ((CompositeProvider) this.configuration.getProvider()).get(PrioritizedProvider.class).registerProvider("default", defaultConfigurationProvider = new InMemoryProvider(), DEFAULT_CONFIGURATION_PRIORITY);
+        this.prioritizedProvider = ((CompositeProvider) this.configuration.getProvider()).get(PrioritizedProvider.class);
+        this.inMemoryProvider = new InMemoryProvider();
+        registerConfigurationProvider(DEFAULT_CONFIGURATION_PROVIDER, this.inMemoryProvider, ConfigurationPriority.DEFAULT);
         checkConsistency();
     }
 
@@ -61,16 +67,28 @@ public class SeedRuntime {
         return configuration;
     }
 
+    public void registerConfigurationProvider(String name, ConfigurationProvider configurationProvider, int priority) {
+        prioritizedProvider.registerProvider(name, configurationProvider, priority);
+    }
+
+    public void setDefaultConfiguration(String key, String value) {
+        inMemoryProvider.put(key, value);
+    }
+
+    public void setDefaultConfiguration(String key, String... values) {
+        inMemoryProvider.put(key, values);
+    }
+
+    public void setDefaultConfiguration(String key, Collection<String> values) {
+        inMemoryProvider.put(key, values);
+    }
+
     public ValidatorFactory getValidatorFactory() {
         return validatorFactory;
     }
 
     public String getVersion() {
         return seedVersion;
-    }
-
-    public InMemoryProvider getDefaultConfiguration() {
-        return defaultConfigurationProvider;
     }
 
     private void checkConsistency() {

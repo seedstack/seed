@@ -8,7 +8,6 @@
 package org.seedstack.seed;
 
 import org.seedstack.coffig.Config;
-import org.seedstack.coffig.SingleValue;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -22,7 +21,6 @@ import java.util.UUID;
 public class ApplicationConfig {
     @NotNull
     private Set<String> basePackages = new HashSet<>();
-    @SingleValue
     @NotNull
     @Size(min = 1)
     private String id = UUID.randomUUID().toString();

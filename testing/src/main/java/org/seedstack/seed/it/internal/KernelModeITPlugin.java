@@ -38,7 +38,7 @@ public class KernelModeITPlugin implements ITRunnerPlugin {
     }
 
     @Override
-    public Map<String, String> provideDefaultConfiguration(TestClass testClass, FrameworkMethod frameworkMethod) {
+    public Map<String, String> provideConfiguration(TestClass testClass, FrameworkMethod frameworkMethod) {
         return null;
     }
 

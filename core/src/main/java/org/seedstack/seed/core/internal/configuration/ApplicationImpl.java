@@ -19,7 +19,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.util.Optional;
 
 /**
  * Implementation of the {@link Application} interface.
@@ -89,10 +88,8 @@ class ApplicationImpl implements Application {
         StringBuilder sb = new StringBuilder(CLASSES_CONFIGURATION_PREFIX);
         for (String part : aClass.getName().split("\\.")) {
             sb.append(".").append(part);
-            Optional<Object> optional = configuration.getOptional(Types.newParameterizedType(ClassConfiguration.class, aClass), sb.toString());
-            if (optional.isPresent()) {
-                classConfiguration.merge((ClassConfiguration<T>) optional.get());
-            }
+            configuration.getOptional(Types.newParameterizedType(ClassConfiguration.class, aClass), sb.toString())
+                    .ifPresent(o -> classConfiguration.merge((ClassConfiguration<T>) o));
         }
         return classConfiguration;
     }

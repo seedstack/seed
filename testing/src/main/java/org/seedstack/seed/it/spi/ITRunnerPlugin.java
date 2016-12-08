@@ -55,13 +55,14 @@ public interface ITRunnerPlugin {
     List<Class<? extends MethodRule>> provideMethodRulesToApply(TestClass testClass, Object target);
 
     /**
-     * The plugin can provide a default configuration for the started kernel.
+     * The plugin can provide some configuration for the started kernel. Only strings and arrays of string are supported.
+     * Arrays must be specified as comma-separated values.
      *
      * @param testClass the test class definition
      * @param method    the test method if the kernel is created per test, null otherwise.
-     * @return the default configuration map
+     * @return the configuration map
      */
-    Map<String, String> provideDefaultConfiguration(TestClass testClass, FrameworkMethod method);
+    Map<String, String> provideConfiguration(TestClass testClass, FrameworkMethod method);
 
     /**
      * The plugin can choose a kernel mode for the test. If multiple plugins require incompatible modes, an exception

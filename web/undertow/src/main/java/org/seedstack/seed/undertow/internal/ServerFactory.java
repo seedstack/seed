@@ -49,26 +49,11 @@ class ServerFactory {
     }
 
     private Undertow.Builder configureUndertow(Undertow.Builder builder, UndertowConfig undertowConfig) {
-        Optional<Integer> bufferSize = undertowConfig.getBufferSize();
-        if (bufferSize.isPresent()) {
-            builder.setBufferSize(bufferSize.get());
-        }
-        Optional<Integer> buffersPerRegion = undertowConfig.getBuffersPerRegion();
-        if (buffersPerRegion.isPresent()) {
-            builder.setBuffersPerRegion(buffersPerRegion.get());
-        }
-        Optional<Integer> ioThreads = undertowConfig.getIoThreads();
-        if (ioThreads.isPresent()) {
-            builder.setIoThreads(ioThreads.get());
-        }
-        Optional<Integer> workerThreads = undertowConfig.getWorkerThreads();
-        if (workerThreads.isPresent()) {
-            builder.setWorkerThreads(workerThreads.get());
-        }
-        Optional<Boolean> directBuffers = undertowConfig.getDirectBuffers();
-        if (directBuffers.isPresent()) {
-            builder.setDirectBuffers(directBuffers.get());
-        }
+        undertowConfig.getBufferSize().ifPresent(builder::setBufferSize);
+        undertowConfig.getBuffersPerRegion().ifPresent(builder::setBuffersPerRegion);
+        undertowConfig.getIoThreads().ifPresent(builder::setIoThreads);
+        undertowConfig.getWorkerThreads().ifPresent(builder::setWorkerThreads);
+        undertowConfig.getDirectBuffers().ifPresent(builder::setDirectBuffers);
         return builder;
     }
 

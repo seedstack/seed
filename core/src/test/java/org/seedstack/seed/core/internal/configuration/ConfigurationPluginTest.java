@@ -14,6 +14,7 @@ import org.junit.Test;
 import org.mockito.internal.util.reflection.Whitebox;
 import org.seedstack.coffig.Coffig;
 import org.seedstack.seed.ApplicationConfig;
+import org.seedstack.seed.core.SeedRuntime;
 import org.seedstack.seed.core.internal.diagnostic.DiagnosticManagerImpl;
 
 import java.util.ArrayList;
@@ -31,9 +32,11 @@ public class ConfigurationPluginTest {
     @Before
     public void before() {
         configurationPlugin = new ConfigurationPlugin();
-        Coffig coffig = Coffig.builder().withProviders(new PrioritizedProvider()).build();
+        Coffig coffig = mock(Coffig.class);
+        when(coffig.get(ApplicationConfig.class)).thenReturn(new ApplicationConfig());
         Whitebox.setInternalState(configurationPlugin, "configuration", coffig);
-        Whitebox.setInternalState(configurationPlugin, "applicationConfig", new ApplicationConfig());
+        SeedRuntime seedRuntime = mock(SeedRuntime.class);
+        Whitebox.setInternalState(configurationPlugin, "seedRuntime", seedRuntime);
         Whitebox.setInternalState(configurationPlugin, "diagnosticManager", new DiagnosticManagerImpl());
     }
 
@@ -50,15 +53,20 @@ public class ConfigurationPluginTest {
 
     @Test
     public void initPluginTest() {
-        InitContext initContext = mockInitContextForCore(Lists.newArrayList("META-INF/configuration/file.yaml", "bad.yaml"), Lists.newArrayList("META-INF/configuration/file.json", "bad.json"));
+        InitContext initContext = mockInitContextForCore(
+                Lists.newArrayList("META-INF/configuration/file.yaml", "bad.yaml"),
+                Lists.newArrayList("META-INF/configuration/file.yml", "bad.yml"),
+                Lists.newArrayList("META-INF/configuration/file.json", "bad.json")
+        );
         configurationPlugin.init(initContext);
     }
 
-    private InitContext mockInitContextForCore(ArrayList<String> yamlFiles, ArrayList<String> jsonFiles) {
+    private InitContext mockInitContextForCore(ArrayList<String> yamlFiles, ArrayList<String> ymlFiles, ArrayList<String> jsonFiles) {
         InitContext initContext = mock(InitContext.class);
 
         Map<String, Collection<String>> mapResourcesByRegex = new HashMap<>();
         mapResourcesByRegex.put(".*\\.yaml", yamlFiles);
+        mapResourcesByRegex.put(".*\\.yml", ymlFiles);
         mapResourcesByRegex.put(".*\\.json", jsonFiles);
 
         when(initContext.mapResourcesByRegex()).thenReturn(mapResourcesByRegex);
