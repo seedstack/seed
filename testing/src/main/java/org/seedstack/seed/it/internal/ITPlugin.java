@@ -7,17 +7,15 @@
  */
 package org.seedstack.seed.it.internal;
 
-import com.google.common.io.Files;
 import com.google.inject.Module;
 import io.nuun.kernel.api.plugin.InitState;
 import io.nuun.kernel.api.plugin.PluginException;
 import io.nuun.kernel.api.plugin.context.InitContext;
 import io.nuun.kernel.api.plugin.request.ClasspathScanRequest;
-import io.nuun.kernel.core.AbstractPlugin;
 import org.kametic.specifications.Specification;
-import org.seedstack.coffig.provider.InMemoryProvider;
 import org.seedstack.seed.SeedException;
 import org.seedstack.seed.core.SeedRuntime;
+import org.seedstack.seed.core.internal.AbstractSeedPlugin;
 import org.seedstack.seed.it.ITBind;
 import org.seedstack.seed.it.ITInstall;
 import org.slf4j.Logger;
@@ -26,6 +24,7 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
+import java.nio.file.Files;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Map;
@@ -34,15 +33,12 @@ import java.util.Set;
 /**
  * This plugin automatically enable integration tests to be managed by SEED.
  */
-public class ITPlugin extends AbstractPlugin {
-    public static final String IT_CLASS_NAME = "org.seedstack.seed.it.class.name";
-    public static final String DEFAULT_CONFIGURATION_PREFIX = "org.seedstack.seed.it.default-configuration.";
-
+public class ITPlugin extends AbstractSeedPlugin {
+    public static final String IT_CLASS_NAME = "seedstack.it.className";
     private static final Logger LOGGER = LoggerFactory.getLogger(ITPlugin.class);
 
     private final Set<Class<?>> itBindClasses = new HashSet<>();
     private final Set<Class<? extends Module>> itInstallModules = new HashSet<>();
-    private InMemoryProvider defaultConfigurationProvider;
     private File temporaryAppStorage;
     private Class<?> testClass;
 
@@ -53,7 +49,7 @@ public class ITPlugin extends AbstractPlugin {
 
     @Override
     public String name() {
-        return "it";
+        return "testing";
     }
 
     @Override
@@ -62,27 +58,21 @@ public class ITPlugin extends AbstractPlugin {
     }
 
     @Override
-    public void provideContainerContext(Object containerContext) {
-        defaultConfigurationProvider = ((SeedRuntime) containerContext).getDefaultConfiguration();
+    public void setup(SeedRuntime seedRuntime) {
+        // Create temporary directory for application storage
+        try {
+            temporaryAppStorage = Files.createTempDirectory("seedstack-it-").toFile();
+            LOGGER.info("Created temporary application storage directory {}", temporaryAppStorage.getAbsolutePath());
+            seedRuntime.setDefaultConfiguration("application.storage", temporaryAppStorage.getAbsolutePath());
+        } catch (IOException e) {
+            LOGGER.warn("Unable to create temporary application storage directory");
+        }
     }
 
     @Override
     @SuppressWarnings({"rawtypes", "unchecked"})
-    public InitState init(InitContext initContext) {
+    public InitState initialize(InitContext initContext) {
         String itClassName = initContext.kernelParam(IT_CLASS_NAME);
-
-        // Create temporary directory for application storage
-        temporaryAppStorage = Files.createTempDir();
-        LOGGER.info("Created temporary application storage directory {}", temporaryAppStorage.getAbsolutePath());
-        defaultConfigurationProvider.put("org.seedstack.seed.core.storage", temporaryAppStorage.getAbsolutePath());
-
-        // Process default configuration
-        for (Map.Entry<String, String> kernelParam : initContext.kernelParams().entrySet()) {
-            if (kernelParam.getKey().startsWith(DEFAULT_CONFIGURATION_PREFIX)) {
-                defaultConfigurationProvider.put(kernelParam.getKey().substring(DEFAULT_CONFIGURATION_PREFIX.length()), kernelParam.getValue());
-            }
-        }
-
         Map<Specification, Collection<Class<?>>> scannedTypesBySpecification = initContext.scannedTypesBySpecification();
 
         // For @ITBind
@@ -116,11 +106,10 @@ public class ITPlugin extends AbstractPlugin {
     @Override
     public void stop() {
         try {
-            // Clean the temporary application storage
-            deleteRecursively(temporaryAppStorage);
-            LOGGER.info("Deleted temporary application storage directory {}", temporaryAppStorage.getAbsolutePath());
-
-            // Clean the default configuration system property
+            if (temporaryAppStorage != null) {
+                deleteRecursively(temporaryAppStorage);
+                LOGGER.info("Deleted temporary application storage directory {}", temporaryAppStorage.getAbsolutePath());
+            }
         } catch (Exception e) {
             LOGGER.warn("Unable to delete temporary application storage directory " + temporaryAppStorage.getAbsolutePath(), e);
         }
@@ -148,11 +137,9 @@ public class ITPlugin extends AbstractPlugin {
             return;
         }
 
-        // TODO when building for Java 7 or later, use symlink detection, meanwhile let's hope the temporary IT directory doesn't contain any symlink
-
-        if (file.isDirectory()) {
+        // We do not want to traverse symbolic links to directories, we simply unlink them
+        if (file.isDirectory() && !Files.isSymbolicLink(file.toPath())) {
             File[] files = file.listFiles();
-
             if (files != null) {
                 for (File c : files) {
                     deleteRecursively(c);

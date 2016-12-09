@@ -10,8 +10,10 @@ package org.seedstack.seed.core.internal.init;
 import org.seedstack.coffig.Coffig;
 import org.seedstack.coffig.provider.EnvironmentVariableProvider;
 import org.seedstack.coffig.provider.JacksonProvider;
+import org.seedstack.coffig.provider.PrefixProvider;
 import org.seedstack.coffig.provider.SystemPropertyProvider;
 import org.seedstack.seed.core.Seed;
+import org.seedstack.seed.core.internal.configuration.ConfigurationPriority;
 import org.seedstack.seed.core.internal.configuration.PrioritizedProvider;
 import org.seedstack.shed.ClassLoaders;
 import org.slf4j.Logger;
@@ -24,14 +26,12 @@ import java.util.Enumeration;
 
 public class BaseConfiguration {
     private static final Logger LOGGER = LoggerFactory.getLogger(BaseConfiguration.class);
-    private static final String BASE_CONFIGURATION_PROVIDER = "base";
-    private static final String BASE_OVERRIDE_CONFIGURATION_PROVIDER = "base-override";
-    private static final String ENV_CONFIGURATION_PROVIDER = "env";
-    private static final String SYS_CONFIGURATION_PROVIDER = "sys";
-    private static final int CONFIGURATION_BASE_PRIORITY = 0;
-    private static final int CONFIGURATION_OVERRIDE_PRIORITY = 1000;
-    private static final int CONFIGURATION_ENVIRONMENT_PRIORITY = 2000;
-    private static final int CONFIGURATION_SYS_PRIORITY = 3000;
+    private static final String ENVIRONMENT_VARIABLES_PREFIX = "env";
+    private static final String SYSTEM_PROPERTIES_PREFIX = "sys";
+    private static final String BASE_CONFIGURATION_PROVIDER = "base-config";
+    private static final String BASE_OVERRIDE_CONFIGURATION_PROVIDER = "base-config-override";
+    private static final String ENV_CONFIGURATION_PROVIDER = "environment-variables";
+    private static final String SYS_CONFIGURATION_PROVIDER = "system-properties";
     private final Coffig baseConfiguration;
 
     private static class Holder {
@@ -45,10 +45,26 @@ public class BaseConfiguration {
     private BaseConfiguration(ValidatorFactory validatorFactory) {
         baseConfiguration = Coffig.builder()
                 .withProviders(new PrioritizedProvider()
-                        .registerProvider(BASE_CONFIGURATION_PROVIDER, buildJacksonProvider("application.yaml", "application.yml", "application.json"), CONFIGURATION_BASE_PRIORITY)
-                        .registerProvider(BASE_OVERRIDE_CONFIGURATION_PROVIDER, buildJacksonProvider("application.override.yaml", "application.override.yml", "application.override.json"), CONFIGURATION_OVERRIDE_PRIORITY)
-                        .registerProvider(ENV_CONFIGURATION_PROVIDER, new EnvironmentVariableProvider(), CONFIGURATION_ENVIRONMENT_PRIORITY)
-                        .registerProvider(SYS_CONFIGURATION_PROVIDER, new SystemPropertyProvider(), CONFIGURATION_SYS_PRIORITY))
+                        .registerProvider(
+                                BASE_CONFIGURATION_PROVIDER,
+                                buildJacksonProvider("application.yaml", "application.yml", "application.json"),
+                                ConfigurationPriority.BASE
+                        )
+                        .registerProvider(
+                                BASE_OVERRIDE_CONFIGURATION_PROVIDER,
+                                buildJacksonProvider("application.override.yaml", "application.override.yml", "application.override.json"),
+                                ConfigurationPriority.BASE_OVERRIDE
+                        )
+                        .registerProvider(
+                                ENV_CONFIGURATION_PROVIDER,
+                                new PrefixProvider<>(ENVIRONMENT_VARIABLES_PREFIX, new EnvironmentVariableProvider()),
+                                ConfigurationPriority.ENVIRONMENT_VARIABLES
+                        )
+                        .registerProvider(
+                                SYS_CONFIGURATION_PROVIDER,
+                                new PrefixProvider<>(SYSTEM_PROPERTIES_PREFIX, new SystemPropertyProvider()),
+                                ConfigurationPriority.SYSTEM_PROPERTIES
+                        ))
                 .enableValidation(validatorFactory)
                 .build();
     }

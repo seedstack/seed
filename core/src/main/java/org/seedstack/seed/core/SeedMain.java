@@ -34,7 +34,7 @@ public class SeedMain {
      * @param args The command-line arguments.
      */
     public static void main(String[] args) {
-        String toolName = System.getProperty("tool");
+        String toolName = System.getProperty("seedstack.tool");
         SeedLauncher seedLauncher;
 
         if (!Strings.isNullOrEmpty(toolName)) {

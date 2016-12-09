@@ -22,6 +22,7 @@ import org.junit.runners.model.InitializationError;
 import org.junit.runners.model.Statement;
 import org.seedstack.seed.SeedException;
 import org.seedstack.seed.core.Seed;
+import org.seedstack.seed.core.internal.configuration.ConfigurationPlugin;
 import org.seedstack.seed.it.internal.ITErrorCode;
 import org.seedstack.seed.it.internal.ITPlugin;
 import org.seedstack.seed.it.spi.ITKernelMode;
@@ -357,7 +358,7 @@ public class SeedITRunner extends BlockJUnit4ClassRunner {
 
         kernelConfiguration.param(ITPlugin.IT_CLASS_NAME, getTestClass().getJavaClass().getName());
         for (Map.Entry<String, String> defaultConfigurationEntry : configuration.entrySet()) {
-            kernelConfiguration.param(ITPlugin.DEFAULT_CONFIGURATION_PREFIX + defaultConfigurationEntry.getKey(), defaultConfigurationEntry.getValue());
+            kernelConfiguration.param(ConfigurationPlugin.EXTERNAL_CONFIG_PREFIX + defaultConfigurationEntry.getKey(), defaultConfigurationEntry.getValue());
         }
 
         return kernelConfiguration;
@@ -366,7 +367,7 @@ public class SeedITRunner extends BlockJUnit4ClassRunner {
     private Map<String, String> gatherConfiguration(FrameworkMethod frameworkMethod) {
         Map<String, String> configuration = new HashMap<>();
         for (ITRunnerPlugin plugin : plugins) {
-            Map<String, String> pluginConfiguration = plugin.provideDefaultConfiguration(getTestClass(), frameworkMethod);
+            Map<String, String> pluginConfiguration = plugin.provideConfiguration(getTestClass(), frameworkMethod);
             if (pluginConfiguration != null) {
                 configuration.putAll(pluginConfiguration);
             }

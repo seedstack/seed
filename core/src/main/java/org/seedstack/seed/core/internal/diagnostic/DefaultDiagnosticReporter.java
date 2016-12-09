@@ -54,12 +54,12 @@ class DefaultDiagnosticReporter implements DiagnosticReporter {
     public void writeDiagnosticReport(Map<String, Object> diagnosticInfo) throws IOException {
         File diagnosticFile;
 
-        File diagnosticDirectory = new File(System.getProperty("java.io.tmpdir"), "seed-diagnostics");
+        File diagnosticDirectory = new File(System.getProperty("java.io.tmpdir"), "seedstack-diagnostics");
         if (!diagnosticDirectory.exists() && !diagnosticDirectory.mkdirs() || !diagnosticDirectory.isDirectory() || !diagnosticDirectory.canWrite()) {
             diagnosticDirectory = new File(System.getProperty("java.io.tmpdir"));
         }
 
-        diagnosticFile = new File(diagnosticDirectory, String.format("seed-diag-%s.json", DATE_FORMAT.format(new Date())));
+        diagnosticFile = new File(diagnosticDirectory, String.format("seedstack-diagnostic-%s.json", DATE_FORMAT.format(new Date())));
         writeDiagnosticReport(diagnosticInfo, new FileOutputStream(diagnosticFile));
         LOGGER.warn("Diagnostic information dumped to file://{}", diagnosticFile.toURI().toURL().getPath());
     }
