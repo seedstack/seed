@@ -18,9 +18,15 @@ import ch.qos.logback.core.ConsoleAppender;
 import ch.qos.logback.core.joran.spi.JoranException;
 import ch.qos.logback.core.joran.util.ConfigurationWatchListUtil;
 import org.seedstack.seed.LogConfig;
+import org.seedstack.shed.reflect.Classes;
 import org.slf4j.LoggerFactory;
 
+import java.util.Map;
+
+import static com.google.common.base.Strings.isNullOrEmpty;
+
 class LogbackLogManager implements LogManager {
+    private final boolean underTomcat = Classes.optional("org.apache.catalina.startup.Catalina").isPresent();
     private final LoggerContext context = (LoggerContext) LoggerFactory.getILoggerFactory();
 
     LogbackLogManager() {
@@ -51,7 +57,7 @@ class LogbackLogManager implements LogManager {
             context.addListener(levelChangePropagator);
 
             PatternLayoutEncoder encoder = new PatternLayoutEncoder();
-            encoder.setPattern("%highlight(%-5level) [%d{ISO8601}] %magenta(%-8thread) %cyan(%-30logger{30}) %msg%n%red(%throwable)");
+            encoder.setPattern(isNullOrEmpty(logConfig.getPattern()) ? "%highlight(%-5level) [%d{ISO8601}] %magenta(%-8thread) %cyan(%-30logger{30}) %msg%n%red(%throwable)" : logConfig.getPattern());
             encoder.setContext(context);
             encoder.start();
 
@@ -64,10 +70,27 @@ class LogbackLogManager implements LogManager {
             Logger nuunLogger = context.getLogger("io.nuun");
             nuunLogger.setLevel(Level.WARN);
 
+            if (underTomcat && (logConfig.getLevel() == LogConfig.Level.DEBUG || logConfig.getLevel() == LogConfig.Level.TRACE)) {
+                // When running under Tomcat with a LevelChangePropagator, DEBUG level and below lead to an exception so we force INFO level
+                context.getLogger("org.apache.catalina").setLevel(Level.INFO);
+                context.getLogger("org.apache.juli").setLevel(Level.INFO);
+            }
+
+            for (Map.Entry<String, LogConfig.LoggerConfig> loggerLevelEntry : logConfig.getLoggerConfigs().entrySet()) {
+                Logger logger = context.getLogger(loggerLevelEntry.getKey());
+                LogConfig.LoggerConfig config = loggerLevelEntry.getValue();
+                logger.setLevel(convertLevel(config.getLevel()));
+                logger.setAdditive(config.isAdditive());
+            }
+
             Logger rootLogger = context.getLogger(Logger.ROOT_LOGGER_NAME);
-            rootLogger.setLevel(Level.valueOf(logConfig.getLevel().name()));
+            rootLogger.setLevel(convertLevel(logConfig.getLevel()));
             rootLogger.addAppender(logConsoleAppender);
         }
+    }
+
+    private Level convertLevel(LogConfig.Level level) {
+        return Level.valueOf(level.name());
     }
 
     @Override
