@@ -8,7 +8,6 @@
 package org.seedstack.seed.crypto;
 
 import org.seedstack.coffig.Config;
-import org.seedstack.coffig.ConfigurationException;
 import org.seedstack.coffig.SingleValue;
 import org.seedstack.seed.crypto.spi.SSLAuthenticationMode;
 
@@ -139,7 +138,7 @@ public class CryptoConfig {
 
         public CertificateConfig setResource(String resource) {
             if (file != null) {
-                throw new ConfigurationException("A certificate must be configured from either a resource or a file, not both");
+                throw new IllegalStateException("A certificate must be configured from either a resource or a file, not both");
             }
             this.resource = resource;
             return this;
@@ -151,7 +150,7 @@ public class CryptoConfig {
 
         public CertificateConfig setFile(String file) {
             if (resource != null) {
-                throw new ConfigurationException("A certificate must be configured from either a resource or a file, not both");
+                throw new IllegalStateException("A certificate must be configured from either a resource or a file, not both");
             }
             this.file = file;
             return this;

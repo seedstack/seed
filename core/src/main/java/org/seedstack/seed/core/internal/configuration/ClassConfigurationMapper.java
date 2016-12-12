@@ -7,13 +7,14 @@
  */
 package org.seedstack.seed.core.internal.configuration;
 
-import org.seedstack.coffig.ConfigurationException;
 import org.seedstack.coffig.TreeNode;
 import org.seedstack.coffig.node.MapNode;
 import org.seedstack.coffig.node.ValueNode;
 import org.seedstack.coffig.spi.ConfigurationMapper;
 import org.seedstack.coffig.util.Utils;
 import org.seedstack.seed.ClassConfiguration;
+import org.seedstack.seed.SeedException;
+import org.seedstack.seed.core.internal.CoreErrorCode;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -46,7 +47,9 @@ public class ClassConfigurationMapper implements ConfigurationMapper {
                     ))
             );
         } else {
-            throw new ConfigurationException("Class configuration cannot be mapped from " + treeNode.getClass().getSimpleName());
+            throw SeedException.createNew(CoreErrorCode.INVALID_CLASS_CONFIGURATION)
+                    .put("nodeType", treeNode.getClass().getSimpleName())
+                    .put("class", rawType.getName());
         }
     }
 

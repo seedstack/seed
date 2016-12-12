@@ -12,6 +12,7 @@ import org.seedstack.shed.exception.ErrorCode;
 public enum CoreErrorCode implements ErrorCode {
     DUPLICATED_BINDING_KEY,
     ERROR_DURING_LIFECYCLE_CALLBACK,
+    INVALID_CLASS_CONFIGURATION,
     INVALID_CONFIG_PATH,
     INVALID_CONFIG_PROPERTY,
     MISSING_CONFIGURATION_KEY,

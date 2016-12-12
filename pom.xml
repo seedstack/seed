@@ -14,7 +14,7 @@
     <parent>
         <groupId>org.seedstack.poms</groupId>
         <artifactId>parent-internal</artifactId>
-        <version>3.0.0-SNAPSHOT</version>
+        <version>3.0.0</version>
     </parent>
 
     <groupId>org.seedstack.seed</groupId>
@@ -23,7 +23,7 @@
     <packaging>pom</packaging>
 
     <properties>
-        <poms.version>3.0.0-SNAPSHOT</poms.version>
+        <poms.version>3.0.0</poms.version>
         <nuun-kernel.version>1.0.M9</nuun-kernel.version>
         <shed.version>1.0.0-SNAPSHOT</shed.version>
         <coffig.version>1.0.0-SNAPSHOT</coffig.version>
