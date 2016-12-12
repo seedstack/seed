@@ -1,12 +1,13 @@
-# Version 3.0.0 (2016-?-?)
+# Version 3.0.0 (2016-12-12)
 
 * [new] New configuration system based on [Coffig library](https://github.com/seedstack/coffig).
-* [new] Tooling support allows to launch tools from the command-line (-Dtool=<toolName>) or from the SeedStack maven plugin.
-* [new] Add `config` tool which dumps the current configuration options for the application.
-* [new] Kernel parameter `seed.autodetectModules` allows to control if module detection should be done (true/false).
+* [new] Tooling support allows to launch tools from the command-line (-Dseedstack.tool=<toolName>) or from the SeedStack maven plugin.
+* [new] The `config` tool dumps the current configuration options for the application.
+* [new] The `errors` tool dumps all current error messages available in the application.
+* [new] Kernel parameter `seedstack.autodetectModules` allows to control if module detection should be done (true/false).
 * [new] HTTP(S) proxy automatic detection or explicit configuration support. 
 * [brk] Java 8 is now required.
-* [brk] Classic configuration system based on props has been removed.
+* [brk] Classic configuration system based on props has been removed in favor of a YAML configuration (amongst others).
 * [brk] Configuration keys have been shortened and renamed.
 * [brk] The `password` configuration lookup has been replaced by the `$decrypt` configuration function.
 * [brk] Jersey 1 implementation of JAX-RS has been removed.
@@ -16,7 +17,8 @@
 * [brk] Even when only one transaction handler is present, it is no longer automatically used (an explicit resource must always be specified for the transaction).
 * [brk] The default value of the `@Configuration` annotation `mandatory` argument has been changed to `false`.
 * [brk] The `defaultValue` attribute of the `@Configuration` annotation has been removed. Pre-initialize fields if a default value is needed.
-* [brk] The package `org.seedstack.seed.core.utils` has been removed in favor of 'shed' utility library.
+* [brk] The package `org.seedstack.seed.core.utils` has been removed in favor of the 'shed' utility library.
+* [brk] Annotation resolution strategy has been unified for all SeedStack annotations and can exhibit minor differences with prior strategies.
 
 # Version 2.3.2 (2016-11-09)
 

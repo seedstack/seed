@@ -27,7 +27,7 @@ import java.util.Set;
  * and configuration files.
  */
 public class CorePlugin extends AbstractSeedPlugin {
-    static final String AUTODETECT_MODULES_KERNEL_PARAM = "seed.autodetectModules";
+    static final String AUTODETECT_MODULES_KERNEL_PARAM = "seedstack.autodetectModules";
     private static final Logger LOGGER = LoggerFactory.getLogger(CorePlugin.class);
     private static final String SEEDSTACK_PACKAGE = "org.seedstack";
     private final Set<Class<? extends Module>> seedModules = new HashSet<>();
