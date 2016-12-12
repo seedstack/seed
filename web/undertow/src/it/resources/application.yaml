@@ -7,7 +7,6 @@
 #
 
 logs: INFO
-application: toto
 web:
   server:
     port: 9001
