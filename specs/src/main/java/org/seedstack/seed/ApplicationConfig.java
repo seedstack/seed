@@ -37,6 +37,10 @@ public class ApplicationConfig {
     }
 
     public ApplicationConfig setId(String id) {
+        if (this.id.equals(this.name)) {
+            // keep name and id in sync if no custom name was specified
+            this.name = id;
+        }
         this.id = id;
         return this;
     }

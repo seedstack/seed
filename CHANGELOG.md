@@ -1,3 +1,7 @@
+# Version 3.0.0 (2017-01-??)
+
+* [fix] Application name was not reflecting application id change when no custom name specified. 
+
 # Version 3.0.0 (2016-12-12)
 
 * [new] New configuration system based on [Coffig library](https://github.com/seedstack/coffig).

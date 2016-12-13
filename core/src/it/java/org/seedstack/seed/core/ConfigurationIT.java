@@ -30,6 +30,8 @@ public class ConfigurationIT {
     @Rule
     public SeedITRule rule = new SeedITRule(this);
     private Injector injector;
+    @Inject
+    private Application application;
 
     private static class Holder {
         @Inject
@@ -158,5 +160,17 @@ public class ConfigurationIT {
     public void configuration_substitution() {
         Application application = injector.getInstance(Application.class);
         assertThat(application.substituteWithConfiguration("Hello ${person1}!")).isEqualTo("Hello Alice!");
+    }
+
+    @Test
+    public void applicationInjection() {
+        assertThat(application).isNotNull();
+    }
+
+    @Test
+    public void applicationInfo() {
+        assertThat(application.getId()).isEqualTo("seed-it");
+        assertThat(application.getName()).isEqualTo("seed-it");
+        assertThat(application.getVersion()).isEqualTo("1.0.0");
     }
 }
