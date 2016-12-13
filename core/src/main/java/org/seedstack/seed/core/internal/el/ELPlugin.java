@@ -90,7 +90,7 @@ public class ELPlugin extends AbstractSeedPlugin {
         return isEnabled() && EL3_OPTIONAL.isPresent();
     }
 
-    public boolean isStandalone() {
+    public boolean isFunctionMappingAvailable() {
         return isEnabled() && (EL3_OPTIONAL.isPresent() || JUEL_OPTIONAL.isPresent());
     }
 }

@@ -40,7 +40,7 @@ public class SecurityPlugin extends AbstractSeedPlugin {
     private final Map<String, Class<? extends Scope>> scopeClasses = new HashMap<>();
     private final Set<SecurityProvider> securityProviders = new HashSet<>();
     private SecurityConfigurer securityConfigurer;
-    private boolean elEnabled;
+    private boolean elAvailable;
 
     @Override
     public String name() {
@@ -68,16 +68,14 @@ public class SecurityPlugin extends AbstractSeedPlugin {
         SecurityConfig securityConfig = getConfiguration(SecurityConfig.class);
         Map<Class<?>, Collection<Class<?>>> scannedClasses = initContext.scannedSubTypesByAncestorClass();
 
-        Collection<Class<? extends PrincipalCustomizer<?>>> principalCustomizerClasses = (Collection) scannedClasses.get(PrincipalCustomizer.class);
-
         configureScopes(scannedClasses.get(Scope.class));
-        securityProviders.addAll(initContext.dependencies(SecurityProvider.class));
-        elEnabled = initContext.dependency(ELPlugin.class).isStandalone();
-        securityConfigurer = new SecurityConfigurer(securityConfig, scannedClasses, principalCustomizerClasses);
 
-        if (!elEnabled) {
-            LOGGER.info("No Java EL support, data security is disabled");
-        }
+        securityProviders.addAll(initContext.dependencies(SecurityProvider.class));
+
+        elAvailable = initContext.dependency(ELPlugin.class).isFunctionMappingAvailable();
+
+        Collection<Class<? extends PrincipalCustomizer<?>>> principalCustomizerClasses = (Collection) scannedClasses.get(PrincipalCustomizer.class);
+        securityConfigurer = new SecurityConfigurer(securityConfig, scannedClasses, principalCustomizerClasses);
 
         return InitState.INITIALIZED;
     }
@@ -123,7 +121,7 @@ public class SecurityPlugin extends AbstractSeedPlugin {
         return new SecurityModule(
                 securityConfigurer,
                 scopeClasses,
-                elEnabled,
+                elAvailable,
                 securityProviders
         );
     }

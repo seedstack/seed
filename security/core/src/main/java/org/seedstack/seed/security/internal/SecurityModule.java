@@ -29,13 +29,13 @@ class SecurityModule extends AbstractModule {
     private static final Key<org.apache.shiro.mgt.SecurityManager> SECURITY_MANAGER_KEY = Key.get(SecurityManager.class);
     private final Map<String, Class<? extends Scope>> scopeClasses;
     private final SecurityConfigurer securityConfigurer;
-    private final boolean elEnabled;
+    private final boolean elAvailable;
     private final Collection<SecurityProvider> securityProviders;
 
-    SecurityModule(SecurityConfigurer securityConfigurer, Map<String, Class<? extends Scope>> scopeClasses, boolean elEnabled, Collection<SecurityProvider> securityProviders) {
+    SecurityModule(SecurityConfigurer securityConfigurer, Map<String, Class<? extends Scope>> scopeClasses, boolean elAvailable, Collection<SecurityProvider> securityProviders) {
         this.securityConfigurer = securityConfigurer;
         this.scopeClasses = scopeClasses;
-        this.elEnabled = elEnabled;
+        this.elAvailable = elAvailable;
         this.securityProviders = securityProviders;
     }
 
@@ -44,7 +44,7 @@ class SecurityModule extends AbstractModule {
         install(new SecurityInternalModule(securityConfigurer, scopeClasses));
         install(new SecurityAopModule());
 
-        if (elEnabled) {
+        if (elAvailable) {
             install(new SecurityExpressionModule());
         }
 
