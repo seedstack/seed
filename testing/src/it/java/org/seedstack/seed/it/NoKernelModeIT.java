@@ -23,7 +23,7 @@ public class NoKernelModeIT extends AbstractSeedIT {
     @Configuration(value = "testKey")
     private String testKey;
 
-    @Configuration(value = "foo1")
+    @Configuration(value = "foo1", injectDefault = false)
     private String foo1;
 
     @Configuration(value = "foo2")

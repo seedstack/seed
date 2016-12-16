@@ -21,12 +21,17 @@ import java.lang.annotation.Target;
 @Target({ElementType.FIELD})
 public @interface Configuration {
     /**
-     * The configuration property name.
+     * @return the configuration property name.
      */
     String[] value() default {};
 
     /**
-     * If the configuration property is mandatory.
+     * @return true if the configuration property is mandatory, false otherwise.
      */
     boolean mandatory() default false;
+
+    /**
+     * @return true if a default value should be injected when the field is null, false if the field should be left as-is.
+     */
+    boolean injectDefault() default true;
 }

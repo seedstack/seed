@@ -2,6 +2,7 @@
 
 * [fix] Application name was not reflecting application id change when no custom name specified.
 * [fix] Remove irrelevant log info about the disabled data security when no EL present.
+* [chg] Inject a default value in fields annotated with `@Configuration` if they are null in the first place.
 
 # Version 3.0.0 (2016-12-12)
 

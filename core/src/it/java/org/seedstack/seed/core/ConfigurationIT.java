@@ -59,10 +59,13 @@ public class ConfigurationIT {
         ConfigObject configObject2 = new ConfigObject().setProperty2(5);
 
         @Configuration
-        OtherConfigObject otherConfigObject1 = new OtherConfigObject();
+        OtherConfigObject otherConfigObject1 = new OtherConfigObject().setProperty1("someValue");
 
         @Configuration
         OtherConfigObject otherConfigObject2;
+
+        @Configuration(injectDefault = false)
+        OtherConfigObject otherConfigObject3;
     }
 
     @Before
@@ -85,6 +88,11 @@ public class ConfigurationIT {
     @Config("nonExistingObject")
     private static class OtherConfigObject {
         String property1 = "defaultValue";
+
+        public OtherConfigObject setProperty1(String property1) {
+            this.property1 = property1;
+            return this;
+        }
     }
 
     @Test
@@ -142,8 +150,10 @@ public class ConfigurationIT {
         assertThat(holder.configObject2.property1).isEqualTo("defaultValue");
         assertThat(holder.configObject2.property2).containsExactly(5);
         assertThat(holder.otherConfigObject1).isNotNull();
-        assertThat(holder.otherConfigObject1.property1).isEqualTo("defaultValue");
-        assertThat(holder.otherConfigObject2).isNull();
+        assertThat(holder.otherConfigObject1.property1).isEqualTo("someValue");
+        assertThat(holder.otherConfigObject2).isNotNull();
+        assertThat(holder.otherConfigObject2.property1).isEqualTo("defaultValue");
+        assertThat(holder.otherConfigObject3).isNull();
     }
 
     @Test
