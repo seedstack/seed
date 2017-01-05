@@ -120,6 +120,13 @@ public class ConfigurationIT {
     }
 
     @Test
+    public void scanned_configuration_is_accessible() {
+        Holder holder = injector.getInstance(Holder.class);
+        assertThat(holder.application.getConfiguration().getOptional(String.class, "propertyInOtherFile").get()).isEqualTo("value");
+        assertThat(holder.application.getConfiguration().getOptional(String.class, "propertyInOtherFileWithSuffix")).isNotPresent();
+    }
+
+    @Test
     public void environment_variables_are_accessible_in_configuration() {
         Holder holder = injector.getInstance(Holder.class);
         String java_home = System.getenv("JAVA_HOME");
