@@ -34,8 +34,8 @@ import javax.validation.ValidatorFactory;
 public class Seed {
     private static volatile boolean initialized = false;
     private static volatile boolean noLogs = false;
+    private static final DiagnosticManager diagnosticManager = new DiagnosticManagerImpl();
     private final Coffig configuration;
-    private final DiagnosticManager diagnosticManager;
     private final ConsoleManager consoleManager;
     private final LogManager logManager;
     private final ValidatorFactory validatorFactory;
@@ -77,7 +77,7 @@ public class Seed {
         return instance.kernelManager.createKernel(
                 SeedRuntime.builder()
                         .context(runtimeContext)
-                        .diagnosticManager(instance.diagnosticManager)
+                        .diagnosticManager(diagnosticManager)
                         .validatorFactory(instance.validatorFactory)
                         .configuration(instance.configuration.fork())
                         .build(),
@@ -100,7 +100,7 @@ public class Seed {
      * @return the default diagnostic manager.
      */
     public static DiagnosticManager diagnostic() {
-        return getInstance().diagnosticManager;
+        return diagnosticManager;
     }
 
     /**
@@ -114,7 +114,7 @@ public class Seed {
     }
 
     /**
-     * Cleanup Seed JVM-global state explicitly. Should be done before exiting the JVM. After calling {@link #close()}
+     * Cleanup Seed JVM-global state explicitly. Should be done before exiting the JVM. After calling this method
      * Seed is no longer usable in the current JVM.
      */
     public static void close() {
@@ -132,13 +132,11 @@ public class Seed {
     private static Seed getInstance() {
         try {
             return Holder.INSTANCE;
-        } catch (Throwable e) {
-            Throwable cause = e.getCause();
-            if (cause != null) {
-                throw SeedException.wrap(cause, CoreErrorCode.UNABLE_TO_INITIALIZE_SEED);
-            } else {
-                throw SeedException.createNew(CoreErrorCode.UNABLE_TO_INITIALIZE_SEED);
+        } catch (Throwable t) {
+            if (t instanceof ExceptionInInitializerError) {
+                t = t.getCause();
             }
+            throw SeedException.wrap(t, CoreErrorCode.UNABLE_TO_INITIALIZE_SEED);
         }
     }
 
@@ -157,9 +155,6 @@ public class Seed {
         // Console
         consoleManager = ConsoleManager.get();
         consoleManager.install();
-
-        // Diagnostics
-        diagnosticManager = new DiagnosticManagerImpl();
 
         // Validation
         validatorFactory = GlobalValidatorFactory.get();
