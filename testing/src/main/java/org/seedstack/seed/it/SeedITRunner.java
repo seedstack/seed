@@ -15,7 +15,9 @@ import io.nuun.kernel.core.NuunCore;
 import org.junit.Before;
 import org.junit.rules.MethodRule;
 import org.junit.rules.TestRule;
+import org.junit.runner.notification.Failure;
 import org.junit.runner.notification.RunNotifier;
+import org.junit.runner.notification.StoppedByUserException;
 import org.junit.runners.BlockJUnit4ClassRunner;
 import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.InitializationError;
@@ -81,59 +83,65 @@ public class SeedITRunner extends BlockJUnit4ClassRunner {
 
     @Override
     public void run(RunNotifier notifier) {
-        // Determine kernel mode to use
-        for (ITRunnerPlugin plugin : plugins) {
-            ITKernelMode pluginKernelMode = plugin.kernelMode(getTestClass());
-            if (pluginKernelMode == null) {
-                pluginKernelMode = ITKernelMode.ANY;
+        try {
+            // Determine kernel mode to use
+            for (ITRunnerPlugin plugin : plugins) {
+                ITKernelMode pluginKernelMode = plugin.kernelMode(getTestClass());
+                if (pluginKernelMode == null) {
+                    pluginKernelMode = ITKernelMode.ANY;
+                }
+
+                switch (pluginKernelMode) {
+                    case NONE:
+                        if (kernelMode == ITKernelMode.PER_TEST_CLASS || kernelMode == ITKernelMode.PER_TEST) {
+                            throw SeedException.createNew(ITErrorCode.TEST_PLUGINS_MISMATCH)
+                                    .put("requestedKernelMode", ITKernelMode.NONE)
+                                    .put("incompatibleKernelMode", kernelMode.toString())
+                                    .put("testClass", getTestClass().getJavaClass().getCanonicalName());
+                        }
+                        kernelMode = ITKernelMode.NONE;
+                        break;
+                    case PER_TEST_CLASS:
+                        if (kernelMode == ITKernelMode.NONE || kernelMode == ITKernelMode.PER_TEST) {
+                            throw SeedException.createNew(ITErrorCode.TEST_PLUGINS_MISMATCH)
+                                    .put("requestedKernelMode", ITKernelMode.PER_TEST_CLASS)
+                                    .put("incompatibleKernelMode", kernelMode.toString())
+                                    .put("testClass", getTestClass().getJavaClass().getCanonicalName());
+                        }
+                        kernelMode = ITKernelMode.PER_TEST_CLASS;
+                        break;
+                    case PER_TEST:
+                        if (kernelMode == ITKernelMode.NONE || kernelMode == ITKernelMode.PER_TEST_CLASS) {
+                            throw SeedException.createNew(ITErrorCode.TEST_PLUGINS_MISMATCH)
+                                    .put("requestedKernelMode", ITKernelMode.PER_TEST)
+                                    .put("incompatibleKernelMode", kernelMode.toString())
+                                    .put("testClass", getTestClass().getJavaClass().getCanonicalName());
+                        }
+                        kernelMode = ITKernelMode.PER_TEST;
+                        break;
+                    default:
+                        break;
+                }
             }
 
-            switch (pluginKernelMode) {
-                case NONE:
-                    if (kernelMode == ITKernelMode.PER_TEST_CLASS || kernelMode == ITKernelMode.PER_TEST) {
-                        throw SeedException.createNew(ITErrorCode.TEST_PLUGINS_MISMATCH)
-                                .put("requestedKernelMode", ITKernelMode.NONE)
-                                .put("incompatibleKernelMode", kernelMode.toString())
-                                .put("testClass", getTestClass().getJavaClass().getCanonicalName());
-                    }
-                    kernelMode = ITKernelMode.NONE;
-                    break;
-                case PER_TEST_CLASS:
-                    if (kernelMode == ITKernelMode.NONE || kernelMode == ITKernelMode.PER_TEST) {
-                        throw SeedException.createNew(ITErrorCode.TEST_PLUGINS_MISMATCH)
-                                .put("requestedKernelMode", ITKernelMode.PER_TEST_CLASS)
-                                .put("incompatibleKernelMode", kernelMode.toString())
-                                .put("testClass", getTestClass().getJavaClass().getCanonicalName());
-                    }
-                    kernelMode = ITKernelMode.PER_TEST_CLASS;
-                    break;
-                case PER_TEST:
-                    if (kernelMode == ITKernelMode.NONE || kernelMode == ITKernelMode.PER_TEST_CLASS) {
-                        throw SeedException.createNew(ITErrorCode.TEST_PLUGINS_MISMATCH)
-                                .put("requestedKernelMode", ITKernelMode.PER_TEST)
-                                .put("incompatibleKernelMode", kernelMode.toString())
-                                .put("testClass", getTestClass().getJavaClass().getCanonicalName());
-                    }
-                    kernelMode = ITKernelMode.PER_TEST;
-                    break;
-                default:
-                    break;
+            // Default kernel mode is per test class
+            if (kernelMode == ITKernelMode.ANY) {
+                kernelMode = ITKernelMode.PER_TEST_CLASS;
             }
-        }
 
-        // Default kernel mode is per test class
-        if (kernelMode == ITKernelMode.ANY) {
-            kernelMode = ITKernelMode.PER_TEST_CLASS;
-        }
+            if (kernelMode == ITKernelMode.PER_TEST_CLASS) {
+                initKernel(gatherConfiguration(null));
+            }
 
-        if (kernelMode == ITKernelMode.PER_TEST_CLASS) {
-            initKernel(gatherConfiguration(null));
-        }
+            super.run(notifier);
 
-        super.run(notifier);
-
-        if (kernelMode == ITKernelMode.PER_TEST_CLASS) {
-            stopKernel();
+            if (kernelMode == ITKernelMode.PER_TEST_CLASS) {
+                stopKernel();
+            }
+        } catch (StoppedByUserException e) {
+            throw e;
+        } catch (Throwable t) {
+            notifyFailure(t, notifier);
         }
     }
 
@@ -239,16 +247,20 @@ public class SeedITRunner extends BlockJUnit4ClassRunner {
 
     @Override
     protected void runChild(FrameworkMethod method, RunNotifier notifier) {
-        defaultConfiguration = gatherConfiguration(method);
+        try {
+            defaultConfiguration = gatherConfiguration(method);
 
-        if (kernelMode == ITKernelMode.PER_TEST) {
-            initKernel(gatherConfiguration(method));
-        }
+            if (kernelMode == ITKernelMode.PER_TEST) {
+                initKernel(gatherConfiguration(method));
+            }
 
-        super.runChild(method, notifier);
+            super.runChild(method, notifier);
 
-        if (kernelMode == ITKernelMode.PER_TEST) {
-            stopKernel();
+            if (kernelMode == ITKernelMode.PER_TEST) {
+                stopKernel();
+            }
+        } catch (Throwable t) {
+            notifyFailure(t, notifier);
         }
     }
 
@@ -373,5 +385,9 @@ public class SeedITRunner extends BlockJUnit4ClassRunner {
             }
         }
         return configuration;
+    }
+
+    private void notifyFailure(Throwable t, RunNotifier notifier) {
+        notifier.fireTestFailure(new Failure(getDescription(), t));
     }
 }

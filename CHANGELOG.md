@@ -2,6 +2,7 @@
 
 * [fix] Application name was not reflecting application id change when no custom name specified.
 * [fix] Remove irrelevant log info about the disabled data security when no EL present.
+* [fix] Properly notify test initialization failures to JUnit.
 * [chg] Inject a default value in fields annotated with `@Configuration` if they are null in the first place.
 * [chg] Update coffig to [1.1.0](https://github.com/seedstack/coffig/releases/tag/v1.1.0).
 
