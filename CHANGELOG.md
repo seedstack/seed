@@ -1,4 +1,4 @@
-# Version 3.0.1 (2017-01-??)
+# Version 3.0.1 (2017-01-12)
 
 * [fix] Application name was not reflecting application id change when no custom name specified.
 * [fix] Remove irrelevant log info about the disabled data security when no EL present.
