@@ -16,6 +16,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 @Config("security")
@@ -37,6 +38,10 @@ public class SecurityConfig {
     public SecurityConfig addRealm(RealmConfig realmConfig) {
         realms.add(realmConfig);
         return this;
+    }
+
+    public Optional<RealmConfig> getRealm(String name) {
+        return realms.stream().filter(realmConfig -> realmConfig.getName().equals(name)).findFirst();
     }
 
     public Map<String, UserConfig> getUsers() {
