@@ -31,6 +31,7 @@ class Node implements Comparable<Node> {
     private final String name;
     private final Class<?> configClass;
     private final Class<?> outermostClass;
+    private final int outermostLevel;
     private final String[] path;
     private final Map<String, PropertyInfo> propertyInfo;
     private final SortedMap<String, Node> children = new TreeMap<>();
@@ -39,7 +40,8 @@ class Node implements Comparable<Node> {
         this.name = "";
         this.configClass = null;
         this.outermostClass = null;
-        this.path = null;
+        this.outermostLevel = 0;
+        this.path = new String[0];
         this.propertyInfo = new HashMap<>();
     }
 
@@ -48,6 +50,7 @@ class Node implements Comparable<Node> {
 
         List<String> path = new ArrayList<>();
         Class<?> previousClass = configClass;
+        int nestingLevel = -1;
         do {
             Config annotation = configClass.getAnnotation(Config.class);
             if (annotation == null) {
@@ -57,10 +60,12 @@ class Node implements Comparable<Node> {
             Collections.reverse(splitPath);
             path.addAll(splitPath);
             previousClass = configClass;
+            nestingLevel++;
         } while ((configClass = configClass.getDeclaringClass()) != null);
 
         Collections.reverse(path);
         this.outermostClass = previousClass;
+        this.outermostLevel = this.outermostClass.getAnnotation(Config.class).value().split("\\.").length;
         this.path = path.toArray(new String[path.size()]);
         this.name = this.path[this.path.length - 1];
         this.propertyInfo = buildPropertyInfo();
@@ -209,7 +214,7 @@ class Node implements Comparable<Node> {
     private String buildKey(String... parts) {
         StringBuilder sb = new StringBuilder();
         if (!configClass.equals(outermostClass)) {
-            for (int i = 1; i < path.length; i++) {
+            for (int i = outermostLevel; i < path.length; i++) {
                 sb.append(path[i]);
                 if (i < path.length - 1 || parts.length > 0) {
                     sb.append(".");

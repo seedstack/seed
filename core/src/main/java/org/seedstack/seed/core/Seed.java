@@ -10,7 +10,7 @@ package org.seedstack.seed.core;
 import io.nuun.kernel.api.Kernel;
 import io.nuun.kernel.api.config.KernelConfiguration;
 import org.seedstack.coffig.Coffig;
-import org.seedstack.seed.LogConfig;
+import org.seedstack.seed.LoggingConfig;
 import org.seedstack.seed.ProxyConfig;
 import org.seedstack.seed.SeedException;
 import org.seedstack.seed.core.internal.CoreErrorCode;
@@ -164,7 +164,7 @@ public class Seed {
 
         // Logging activation
         if (!noLogs) {
-            logManager.configure(configuration.get(LogConfig.class));
+            logManager.configure(configuration.get(LoggingConfig.class));
         }
 
         // Proxy

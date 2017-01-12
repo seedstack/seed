@@ -7,11 +7,11 @@
  */
 package org.seedstack.seed.core.internal.init;
 
-import org.seedstack.seed.LogConfig;
+import org.seedstack.seed.LoggingConfig;
 
 class NoOpLogManager implements LogManager {
     @Override
-    public void configure(LogConfig logConfig) {
+    public void configure(LoggingConfig loggingConfig) {
         // noop
     }
 

@@ -20,14 +20,14 @@ import java.util.Set;
 
 @Config("security")
 public class SecurityConfig {
-    private SessionsConfig sessions = new SessionsConfig();
+    private SessionConfig session = new SessionConfig();
     private List<RealmConfig> realms = new ArrayList<>();
     private Map<String, UserConfig> users = new HashMap<>();
     private Map<String, Set<String>> roles = new HashMap<>();
     private Map<String, Set<String>> permissions = new HashMap<>();
 
-    public SessionsConfig session() {
-        return sessions;
+    public SessionConfig session() {
+        return session;
     }
 
     public List<RealmConfig> getRealms() {
@@ -124,8 +124,8 @@ public class SecurityConfig {
         }
     }
 
-    @Config("sessions")
-    public static class SessionsConfig {
+    @Config("session")
+    public static class SessionConfig {
         @SingleValue
         private boolean enabled;
         private long timeout = 1000 * 60 * 15;
@@ -134,7 +134,7 @@ public class SecurityConfig {
             return enabled;
         }
 
-        public SessionsConfig setEnabled(boolean enabled) {
+        public SessionConfig setEnabled(boolean enabled) {
             this.enabled = enabled;
             return this;
         }
@@ -143,7 +143,7 @@ public class SecurityConfig {
             return timeout;
         }
 
-        public SessionsConfig setTimeout(long timeout) {
+        public SessionConfig setTimeout(long timeout) {
             this.timeout = timeout * 1000;
             return this;
         }

@@ -7,7 +7,7 @@
  */
 package org.seedstack.seed.core.internal.init;
 
-import org.seedstack.seed.LogConfig;
+import org.seedstack.seed.LoggingConfig;
 import org.seedstack.shed.reflect.Classes;
 import org.slf4j.LoggerFactory;
 import org.slf4j.bridge.SLF4JBridgeHandler;
@@ -40,8 +40,8 @@ public class AutodetectLogManager implements LogManager {
     }
 
     @Override
-    public void configure(LogConfig logConfig) {
-        logManager.configure(logConfig);
+    public void configure(LoggingConfig loggingConfig) {
+        logManager.configure(loggingConfig);
     }
 
     @Override

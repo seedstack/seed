@@ -6,20 +6,18 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 #
 
-logs: WARN
 security:
-  sessions: true
+  session: true
   users:
     Obiwan: yodarulez
-web:
-  security:
-    urls:
-      -
-        pattern: /xsrf-protected-without-session
-        filters: xsrf
-      -
-        pattern: /xsrf-protected-with-session
-        filters: [authcBasic, xsrf]
-      -
-        pattern: /**
-        filters: authcBasic
+  web:
+      urls:
+        -
+          pattern: /xsrf-protected-without-session
+          filters: xsrf
+        -
+          pattern: /xsrf-protected-with-session
+          filters: [authcBasic, xsrf]
+        -
+          pattern: /**
+          filters: authcBasic

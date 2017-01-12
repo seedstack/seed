@@ -7,10 +7,10 @@
  */
 package org.seedstack.seed.core.internal.init;
 
-import org.seedstack.seed.LogConfig;
+import org.seedstack.seed.LoggingConfig;
 
 public interface LogManager {
-    void configure(LogConfig logConfig);
+    void configure(LoggingConfig loggingConfig);
 
     void close();
 }

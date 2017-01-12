@@ -15,8 +15,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-@Config("logs")
-public class LogConfig {
+@Config("logging")
+public class LoggingConfig {
     @SingleValue
     @NotNull
     private Level level = Level.INFO;
@@ -28,7 +28,7 @@ public class LogConfig {
         return level;
     }
 
-    public LogConfig setLevel(Level level) {
+    public LoggingConfig setLevel(Level level) {
         this.level = level;
         return this;
     }
@@ -37,7 +37,7 @@ public class LogConfig {
         return pattern;
     }
 
-    public LogConfig setPattern(String pattern) {
+    public LoggingConfig setPattern(String pattern) {
         this.pattern = pattern;
         return this;
     }
@@ -46,7 +46,7 @@ public class LogConfig {
         return Collections.unmodifiableMap(loggerConfigs);
     }
 
-    public LogConfig configureLogger(String loggerName, LoggerConfig loggerConfig) {
+    public LoggingConfig configureLogger(String loggerName, LoggerConfig loggerConfig) {
         this.loggerConfigs.put(loggerName, loggerConfig);
         return this;
     }

@@ -5,10 +5,10 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-package org.seedstack.seed.web.internal.security;
+package org.seedstack.seed.web.security.internal;
 
 import org.seedstack.seed.SeedException;
-import org.seedstack.seed.web.WebConfig;
+import org.seedstack.seed.web.security.WebSecurityConfig;
 import org.seedstack.seed.web.spi.AntiXsrfService;
 
 import javax.inject.Inject;
@@ -24,10 +24,10 @@ class StatelessAntiXsrfService implements AntiXsrfService {
             's', 't', 'u', 'v', 'w', 'x', 'y', 'z', '0', '1', '2', '3', '4',
             '5', '6', '7', '8', '9'};
 
-    private final WebConfig.SecurityConfig.XSRFConfig xsrfConfig;
+    private final WebSecurityConfig.XSRFConfig xsrfConfig;
 
     @Inject
-    public StatelessAntiXsrfService(WebConfig.SecurityConfig webSecurityConfig) {
+    public StatelessAntiXsrfService(WebSecurityConfig webSecurityConfig) {
         xsrfConfig = webSecurityConfig.xsrf();
     }
 

@@ -5,7 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-package org.seedstack.seed.web.internal.security;
+package org.seedstack.seed.web.security.internal;
 
 import com.google.common.collect.Lists;
 import com.google.inject.Module;
@@ -20,7 +20,7 @@ import org.seedstack.seed.core.internal.configuration.ConfigurationPlugin;
 import org.seedstack.seed.security.internal.SecurityGuiceConfigurer;
 import org.seedstack.seed.security.internal.SecurityProvider;
 import org.seedstack.seed.web.SecurityFilter;
-import org.seedstack.seed.web.WebConfig;
+import org.seedstack.seed.web.security.WebSecurityConfig;
 import org.seedstack.seed.web.spi.FilterDefinition;
 import org.seedstack.seed.web.spi.ListenerDefinition;
 import org.seedstack.seed.web.spi.SeedFilterPriority;
@@ -40,7 +40,7 @@ public class WebSecurityPlugin extends AbstractSeedPlugin implements SecurityPro
     private final Collection<Class<? extends Filter>> scannedFilters = new ArrayList<>();
     private ServletContext servletContext;
     private String applicationId;
-    private WebConfig.SecurityConfig securityConfig;
+    private WebSecurityConfig securityConfig;
 
     @Override
     public String name() {
@@ -68,7 +68,7 @@ public class WebSecurityPlugin extends AbstractSeedPlugin implements SecurityPro
         ConfigurationPlugin configurationPlugin = initContext.dependency(ConfigurationPlugin.class);
 
         applicationId = configurationPlugin.getApplication().getId();
-        securityConfig = getConfiguration(WebConfig.SecurityConfig.class);
+        securityConfig = getConfiguration(WebSecurityConfig.class);
 
         for (Class<?> filterClass : initContext.scannedClassesByAnnotationClass().get(SecurityFilter.class)) {
             if (Filter.class.isAssignableFrom(filterClass)) {

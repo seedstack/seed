@@ -5,7 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-package org.seedstack.seed.web.internal.security;
+package org.seedstack.seed.web.security.internal;
 
 import com.google.inject.Key;
 import com.google.inject.Scopes;
@@ -16,8 +16,8 @@ import org.apache.shiro.util.StringUtils;
 import org.apache.shiro.web.filter.PathMatchingFilter;
 import org.seedstack.seed.security.internal.SecurityGuiceConfigurer;
 import org.seedstack.seed.web.SecurityFilter;
-import org.seedstack.seed.web.WebConfig;
-import org.seedstack.seed.web.internal.security.shiro.ShiroWebModule;
+import org.seedstack.seed.web.security.WebSecurityConfig;
+import org.seedstack.seed.web.security.internal.shiro.ShiroWebModule;
 import org.seedstack.seed.web.spi.AntiXsrfService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,11 +53,11 @@ class WebSecurityModule extends ShiroWebModule {
     }
 
     private final String applicationName;
-    private final WebConfig.SecurityConfig securityConfig;
+    private final WebSecurityConfig securityConfig;
     private final Collection<Class<? extends Filter>> customFilters;
     private final SecurityGuiceConfigurer securityGuiceConfigurer;
 
-    WebSecurityModule(ServletContext servletContext, WebConfig.SecurityConfig securityConfig, Collection<Class<? extends Filter>> customFilters, String applicationName, SecurityGuiceConfigurer securityGuiceConfigurer) {
+    WebSecurityModule(ServletContext servletContext, WebSecurityConfig securityConfig, Collection<Class<? extends Filter>> customFilters, String applicationName, SecurityGuiceConfigurer securityGuiceConfigurer) {
         super(servletContext);
         this.securityConfig = securityConfig;
         this.customFilters = customFilters;
@@ -67,7 +67,7 @@ class WebSecurityModule extends ShiroWebModule {
 
     @Override
     protected void configureShiroWeb() {
-        for (WebConfig.SecurityConfig.UrlConfig urlConfig : securityConfig.getUrls()) {
+        for (WebSecurityConfig.UrlConfig urlConfig : securityConfig.getUrls()) {
             String pattern = urlConfig.getPattern();
             List<String> filters = urlConfig.getFilters();
             LOGGER.trace("Binding {} to security filter chain {}", pattern, filters);
@@ -75,7 +75,7 @@ class WebSecurityModule extends ShiroWebModule {
         }
         LOGGER.debug("{} URL(s) bound to security filters", securityConfig.getUrls().size());
 
-        bind(WebConfig.SecurityConfig.class);
+        bind(WebSecurityConfig.class);
 
         // Bind filters which are not PatchMatchingFilters
         bind(AntiXsrfFilter.class);
