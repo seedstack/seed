@@ -7,7 +7,6 @@
  */
 package org.seedstack.seed.cli;
 
-import org.assertj.core.util.Strings;
 import org.seedstack.coffig.Config;
 
 @Config("cli")
@@ -19,6 +18,6 @@ public class CliConfig {
     }
 
     public boolean hasDefaultCommand() {
-        return !Strings.isNullOrEmpty(defaultCommand);
+        return defaultCommand != null && !defaultCommand.isEmpty();
     }
 }

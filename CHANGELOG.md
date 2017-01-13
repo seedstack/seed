@@ -1,3 +1,7 @@
+# Version 3.0.2 (2017-01-13)
+
+* [fix] Fix `ClassNotFoundException` in `CliConfig` due to wrong import. 
+
 # Version 3.0.1 (2017-01-12)
 
 * [fix] Application name was not reflecting application id change when no custom name specified.
