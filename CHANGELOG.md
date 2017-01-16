@@ -1,3 +1,7 @@
+# Version 3.0.3 (2017-01-16)
+
+* [chg] shed: **[1.0.1](https://github.com/seedstack/shed/releases/tag/v1.0.1)**
+
 # Version 3.0.2 (2017-01-13)
 
 * [fix] Fix `ClassNotFoundException` in `CliConfig` due to wrong import. 
