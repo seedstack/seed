@@ -19,14 +19,14 @@
 
     <groupId>org.seedstack.seed</groupId>
     <artifactId>seed</artifactId>
-    <version>3.0.3-SNAPSHOT</version>
+    <version>3.0.4-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <properties>
         <poms.version>3.0.0</poms.version>
         <nuun-kernel.version>1.0.M9</nuun-kernel.version>
         <shed.version>1.0.1</shed.version>
-        <coffig.version>1.1.0</coffig.version>
+        <coffig.version>2.0.0-SNAPSHOT</coffig.version>
         <commons-cli.version>1.3.1</commons-cli.version>
         <guice.version>4.0</guice.version>
         <shiro.version>1.2.4</shiro.version>
@@ -38,7 +38,7 @@
         <aopalliance.version>1.0</aopalliance.version>
         <glassfish-javax.el.version>3.0.0</glassfish-javax.el.version>
 
-        <compatibility.skip>true</compatibility.skip>
+        <compatibility.version>3.0.2</compatibility.version>
 
         <bintray.package>seed</bintray.package>
     </properties>

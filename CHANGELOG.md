@@ -1,3 +1,7 @@
+# Version 3.0.4 (2017-??-??)
+
+* [chg] coffig: **[2.0.0](https://github.com/seedstack/shed/releases/tag/v2.0.0)**
+
 # Version 3.0.3 (2017-01-16)
 
 * [chg] shed: **[1.0.1](https://github.com/seedstack/shed/releases/tag/v1.0.1)**
