@@ -15,5 +15,6 @@ import org.seedstack.shed.exception.ErrorCode;
 public enum RestErrorCode implements ErrorCode {
     CANNOT_MERGE_RESOURCES_WITH_DIFFERENT_DOC,
     CANNOT_MERGE_RESOURCE_WITH_DIFFERENT_REL,
-    MULTIPLE_PATH_FOR_THE_SAME_REL
+    MULTIPLE_PATH_FOR_THE_SAME_REL,
+    UNSUPPORTED_CACHE_POLICY
 }
