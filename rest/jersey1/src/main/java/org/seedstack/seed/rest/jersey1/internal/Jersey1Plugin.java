@@ -13,7 +13,7 @@ import io.nuun.kernel.api.plugin.InitState;
 import io.nuun.kernel.api.plugin.context.InitContext;
 import io.nuun.kernel.api.plugin.request.ClasspathScanRequest;
 import io.nuun.kernel.core.AbstractPlugin;
-import org.seedstack.seed.rest.ResourceFiltering;
+import org.seedstack.seed.rest.jersey1.ResourceFiltering;
 import org.seedstack.seed.rest.internal.RestConfiguration;
 import org.seedstack.seed.rest.internal.RestPlugin;
 import org.seedstack.seed.web.spi.FilterDefinition;

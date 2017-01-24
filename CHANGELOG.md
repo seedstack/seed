@@ -1,3 +1,9 @@
+# Version 2.3.3 (2017-01-24)
+
+* [fix] JAX-RS resources were not decorated with cache busting headers when using Jersey2 implementation.
+* [fix] Jersey2 module did not honor the `@CacheControl` annotation.
+* [brk] `@ResourceFiltering` annotation is specific to Jersey1 and has been moved to package `org.seedstack.seed.rest.jersey1` accordingly.
+
 # Version 2.3.2 (2016-11-09)
 
 * [fix] Fix colors under Windows command-line
