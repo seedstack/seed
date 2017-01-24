@@ -7,6 +7,7 @@
  */
 package org.seedstack.seed.rest.jersey1;
 
+import com.jayway.restassured.response.Response;
 import org.assertj.core.api.Assertions;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
@@ -56,6 +57,15 @@ public class RestIT extends AbstractSeedWebIT {
 
         // assert body
         JSONAssert.assertEquals(obj, new JSONObject(response), false);
+    }
+
+    @RunAsClient
+    @Test
+    public void cacheIsDisabledByDefault() {
+        Response response = expect().statusCode(200).get(baseURL.toString() + "hello");
+        assertThat(response.header("Last-Modified")).isNotEmpty();
+        assertThat(response.header("Expires")).isEqualTo("-1");
+        assertThat(response.header("Cache-Control")).isEqualTo("must revalidate, private");
     }
 
     @RunAsClient

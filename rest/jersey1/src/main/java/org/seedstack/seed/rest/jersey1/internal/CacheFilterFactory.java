@@ -10,7 +10,7 @@ package org.seedstack.seed.rest.jersey1.internal;
 import org.seedstack.seed.SeedException;
 import org.seedstack.seed.rest.CacheControl;
 import org.seedstack.seed.rest.CachePolicy;
-import org.seedstack.seed.rest.ResourceFiltering;
+import org.seedstack.seed.rest.jersey1.ResourceFiltering;
 import com.sun.jersey.api.model.AbstractMethod;
 import com.sun.jersey.spi.container.ContainerRequest;
 import com.sun.jersey.spi.container.ContainerRequestFilter;

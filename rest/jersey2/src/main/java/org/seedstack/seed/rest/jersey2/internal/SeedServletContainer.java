@@ -19,7 +19,7 @@ class SeedServletContainer extends ServletContainer {
     }
 
     static private class InternalResourceConfig extends ResourceConfig {
-        public InternalResourceConfig(Set<Class<?>> resources, Set<Class<?>> providers, Set<Class<?>> features, Map<String, ?> properties) {
+        InternalResourceConfig(Set<Class<?>> resources, Set<Class<?>> providers, Set<Class<?>> features, Map<String, ?> properties) {
             registerClasses(resources);
             registerClasses(providers);
             registerClasses(features);
