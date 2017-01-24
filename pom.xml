@@ -103,6 +103,18 @@
                         </licenseMerges>
                     </configuration>
                 </plugin>
+                <plugin>
+                    <groupId>com.github.siom79.japicmp</groupId>
+                    <artifactId>japicmp-maven-plugin</artifactId>
+                    <configuration>
+                        <parameter>
+                            <excludes>
+                                <exclude>*.internal.*</exclude>
+                                <exclude>org.seedstack.seed.rest.ResourceFiltering</exclude>
+                            </excludes>
+                        </parameter>
+                    </configuration>
+                </plugin>
             </plugins>
         </pluginManagement>
     </build>
