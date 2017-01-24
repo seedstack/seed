@@ -51,6 +51,15 @@ public class Jersey2IT extends AbstractSeedWebIT {
 
     @RunAsClient
     @Test
+    public void cacheIsDisabledByDefault() {
+        Response response = expect().statusCode(200).get(baseURL.toString() + "hello");
+        assertThat(response.header("Last-Modified")).isNotEmpty();
+        assertThat(response.header("Expires")).isEqualTo("-1");
+        assertThat(response.header("Cache-Control")).isEqualTo("must revalidate, private");
+    }
+
+    @RunAsClient
+    @Test
     public void subResourceLocator() {
         String result = expect().statusCode(200).when().get(baseURL.toString() + "locator/sub/1").asString();
         assertThat(result).isEqualTo("sub:1");
