@@ -123,6 +123,7 @@ public class ConfigurationIT {
     public void scanned_configuration_is_accessible() {
         Holder holder = injector.getInstance(Holder.class);
         assertThat(holder.application.getConfiguration().getOptional(String.class, "propertyInOtherFile").get()).isEqualTo("value");
+        assertThat(holder.application.getConfiguration().getOptional(String.class, "propertyInOtherPropertiesFile").get()).isEqualTo("value");
         assertThat(holder.application.getConfiguration().getOptional(String.class, "propertyInOtherFileWithSuffix")).isNotPresent();
     }
 
@@ -133,6 +134,12 @@ public class ConfigurationIT {
         if (java_home != null) {
             assertThat(holder.application.getConfiguration().get(String.class, "env.JAVA_HOME")).isEqualTo(java_home);
         }
+    }
+
+    @Test
+    public void properties_files_are_accessible_in_configuration() {
+        Holder holder = injector.getInstance(Holder.class);
+        assertThat(holder.application.getConfiguration().get(String.class, "test\\.keyFromProperties")).isEqualTo("testValue");
     }
 
     @Test

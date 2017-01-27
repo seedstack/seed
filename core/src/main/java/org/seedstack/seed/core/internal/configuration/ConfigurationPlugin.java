@@ -15,6 +15,7 @@ import io.nuun.kernel.core.AbstractPlugin;
 import org.seedstack.coffig.Coffig;
 import org.seedstack.coffig.provider.InMemoryProvider;
 import org.seedstack.coffig.provider.JacksonProvider;
+import org.seedstack.coffig.provider.PropertiesProvider;
 import org.seedstack.seed.Application;
 import org.seedstack.seed.ApplicationConfig;
 import org.seedstack.seed.SeedException;
@@ -46,10 +47,7 @@ public class ConfigurationPlugin extends AbstractPlugin implements ApplicationPr
     private static final String YAML_REGEX = ".*\\.yaml";
     private static final String YML_REGEX = ".*\\.yml";
     private static final String JSON_REGEX = ".*\\.json";
-    private static final String SYSTEM_PROPERTIES_PROVIDER = "system-properties-config";
-    private static final String KERNEL_PARAM_PROVIDER = "kernel-parameters-config";
-    private static final String SCANNED_PROVIDER = "scanned-config";
-    private static final String SCANNED_OVERRIDE_PROVIDER = "scanned-config-override";
+    private static final String PROPERTIES_REGEX = ".*\\.properties";
     private SeedRuntime seedRuntime;
     private Coffig configuration;
     private DiagnosticManager diagnosticManager;
@@ -80,6 +78,7 @@ public class ConfigurationPlugin extends AbstractPlugin implements ApplicationPr
                 .resourcesRegex(YAML_REGEX)
                 .resourcesRegex(YML_REGEX)
                 .resourcesRegex(JSON_REGEX)
+                .resourcesRegex(PROPERTIES_REGEX)
                 .build();
     }
 
@@ -107,7 +106,6 @@ public class ConfigurationPlugin extends AbstractPlugin implements ApplicationPr
         }
 
         seedRuntime.registerConfigurationProvider(
-                KERNEL_PARAM_PROVIDER,
                 kernelParamConfigProvider,
                 ConfigurationPriority.KERNEL_PARAMETERS_CONFIG
         );
@@ -132,7 +130,6 @@ public class ConfigurationPlugin extends AbstractPlugin implements ApplicationPr
         }
 
         seedRuntime.registerConfigurationProvider(
-                SYSTEM_PROPERTIES_PROVIDER,
                 systemPropertiesProvider,
                 ConfigurationPriority.SYSTEM_PROPERTIES_CONFIG
         );
@@ -141,6 +138,8 @@ public class ConfigurationPlugin extends AbstractPlugin implements ApplicationPr
     private void detectConfigurationFiles(InitContext initContext) {
         JacksonProvider jacksonProvider = new JacksonProvider();
         JacksonProvider jacksonOverrideProvider = new JacksonProvider();
+        PropertiesProvider propertiesProvider = new PropertiesProvider();
+        PropertiesProvider propertiesOverrideProvider = new PropertiesProvider();
 
         for (String configurationResource : retrieveConfigurationResources(initContext)) {
             try {
@@ -148,9 +147,17 @@ public class ConfigurationPlugin extends AbstractPlugin implements ApplicationPr
                 Enumeration<URL> urlEnumeration = classLoader.getResources(configurationResource);
                 while (urlEnumeration.hasMoreElements()) {
                     if (isOverrideResource(configurationResource)) {
-                        jacksonOverrideProvider.addSource(urlEnumeration.nextElement());
+                        if (isJacksonResource(configurationResource)) {
+                            jacksonOverrideProvider.addSource(urlEnumeration.nextElement());
+                        } else if (isPropertiesResource(configurationResource)) {
+                            propertiesOverrideProvider.addSource(urlEnumeration.nextElement());
+                        }
                     } else {
-                        jacksonProvider.addSource(urlEnumeration.nextElement());
+                        if (isJacksonResource(configurationResource)) {
+                            jacksonProvider.addSource(urlEnumeration.nextElement());
+                        } else if (isPropertiesResource(configurationResource)) {
+                            propertiesProvider.addSource(urlEnumeration.nextElement());
+                        }
                     }
                 }
             } catch (IOException e) {
@@ -159,14 +166,19 @@ public class ConfigurationPlugin extends AbstractPlugin implements ApplicationPr
         }
 
         seedRuntime.registerConfigurationProvider(
-                SCANNED_PROVIDER,
                 jacksonProvider,
                 ConfigurationPriority.SCANNED
         );
-
         seedRuntime.registerConfigurationProvider(
-                SCANNED_OVERRIDE_PROVIDER,
-                jacksonProvider,
+                propertiesProvider,
+                ConfigurationPriority.SCANNED
+        );
+        seedRuntime.registerConfigurationProvider(
+                jacksonOverrideProvider,
+                ConfigurationPriority.SCANNED_OVERRIDE
+        );
+        seedRuntime.registerConfigurationProvider(
+                propertiesOverrideProvider,
                 ConfigurationPriority.SCANNED_OVERRIDE
         );
     }
@@ -176,6 +188,7 @@ public class ConfigurationPlugin extends AbstractPlugin implements ApplicationPr
         allConfigurationResources.addAll(collectConfigResources(initContext, YAML_REGEX));
         allConfigurationResources.addAll(collectConfigResources(initContext, YML_REGEX));
         allConfigurationResources.addAll(collectConfigResources(initContext, JSON_REGEX));
+        allConfigurationResources.addAll(collectConfigResources(initContext, PROPERTIES_REGEX));
         return allConfigurationResources;
     }
 
@@ -188,7 +201,20 @@ public class ConfigurationPlugin extends AbstractPlugin implements ApplicationPr
     }
 
     private boolean isOverrideResource(String configurationResource) {
-        return configurationResource.endsWith(".override.yaml") || configurationResource.endsWith(".override.json");
+        return configurationResource.endsWith(".override.yaml") ||
+                configurationResource.endsWith(".override.yml") ||
+                configurationResource.endsWith(".override.json") ||
+                configurationResource.endsWith(".override.properties");
+    }
+
+    private boolean isJacksonResource(String configurationResource) {
+        return configurationResource.endsWith(".yaml") ||
+                configurationResource.endsWith(".yml") ||
+                configurationResource.endsWith(".json");
+    }
+
+    private boolean isPropertiesResource(String configurationResource) {
+        return configurationResource.endsWith(".properties");
     }
 
     @Override

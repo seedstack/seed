@@ -11,18 +11,17 @@ import org.seedstack.coffig.node.MapNode;
 import org.seedstack.coffig.spi.ConfigurationComponent;
 import org.seedstack.coffig.spi.ConfigurationProvider;
 
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class PrioritizedProvider implements ConfigurationProvider {
-    private final Map<String, PrioritizedConfigurationProvider> providers = new ConcurrentHashMap<>();
+    private final List<PrioritizedConfigurationProvider> providers = new CopyOnWriteArrayList<>();
     private final AtomicBoolean dirty = new AtomicBoolean(true);
 
     @Override
     public MapNode provide() {
-        return providers.entrySet().stream()
-                .map(Map.Entry::getValue)
+        return providers.stream()
                 .sorted(PrioritizedConfigurationProvider::compareTo)
                 .map(PrioritizedConfigurationProvider::getConfigurationProvider)
                 .map(ConfigurationProvider::provide)
@@ -32,44 +31,22 @@ public class PrioritizedProvider implements ConfigurationProvider {
 
     @Override
     public boolean isDirty() {
-        return dirty.get() || providers.values().stream().map(PrioritizedConfigurationProvider::getConfigurationProvider).filter(ConfigurationComponent::isDirty).count() > 0;
+        return dirty.get() || providers.stream().map(PrioritizedConfigurationProvider::getConfigurationProvider).filter(ConfigurationComponent::isDirty).count() > 0;
     }
 
     @Override
     public PrioritizedProvider fork() {
         PrioritizedProvider fork = new PrioritizedProvider();
-        for (Map.Entry<String, PrioritizedConfigurationProvider> providerEntry : providers.entrySet()) {
-            fork.registerProvider(providerEntry.getKey(), (ConfigurationProvider) providerEntry.getValue().getConfigurationProvider().fork(), providerEntry.getValue().getPriority());
+        for (PrioritizedConfigurationProvider prioritizedConfigurationProvider : providers) {
+            fork.registerProvider((ConfigurationProvider) prioritizedConfigurationProvider.getConfigurationProvider().fork(), prioritizedConfigurationProvider.getPriority());
         }
         return fork;
     }
 
-    public PrioritizedProvider registerProvider(String name, ConfigurationProvider configurationProvider) {
-        return registerProvider(name, configurationProvider, 0);
-    }
-
-    public PrioritizedProvider registerProvider(String name, ConfigurationProvider configurationProvider, int priority) {
-        if (providers.putIfAbsent(name, new PrioritizedConfigurationProvider(priority, configurationProvider)) != null) {
-            throw new IllegalStateException("A provider already exists with name " + name);
-        } else {
-            dirty.set(true);
-        }
+    public PrioritizedProvider registerProvider(ConfigurationProvider configurationProvider, int priority) {
+        providers.add(new PrioritizedConfigurationProvider(priority, configurationProvider));
+        dirty.set(true);
         return this;
-    }
-
-    public PrioritizedProvider unregisterProvider(String name) {
-        if (providers.remove(name) == null) {
-            throw new IllegalStateException("No provider exists with name " + name);
-        }
-        return this;
-    }
-
-    public ConfigurationProvider getProvider(String name) {
-        PrioritizedConfigurationProvider provider = providers.get(name);
-        if (provider == null) {
-            throw new IllegalStateException("No provider exists with name " + name);
-        }
-        return provider.configurationProvider;
     }
 
     private static class PrioritizedConfigurationProvider implements Comparable<PrioritizedConfigurationProvider> {

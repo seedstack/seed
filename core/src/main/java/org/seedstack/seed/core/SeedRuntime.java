@@ -47,7 +47,7 @@ public class SeedRuntime {
         this.diagnosticManager.registerDiagnosticInfoCollector("seed", new RuntimeDiagnosticCollector());
         this.prioritizedProvider = ((CompositeProvider) this.configuration.getProvider()).get(PrioritizedProvider.class);
         this.inMemoryProvider = new InMemoryProvider();
-        registerConfigurationProvider(DEFAULT_CONFIGURATION_PROVIDER, this.inMemoryProvider, ConfigurationPriority.DEFAULT);
+        registerConfigurationProvider(this.inMemoryProvider, ConfigurationPriority.DEFAULT);
         checkConsistency();
     }
 
@@ -67,8 +67,8 @@ public class SeedRuntime {
         return configuration;
     }
 
-    public void registerConfigurationProvider(String name, ConfigurationProvider configurationProvider, int priority) {
-        prioritizedProvider.registerProvider(name, configurationProvider, priority);
+    public void registerConfigurationProvider(ConfigurationProvider configurationProvider, int priority) {
+        prioritizedProvider.registerProvider(configurationProvider, priority);
     }
 
     public void setDefaultConfiguration(String key, String value) {

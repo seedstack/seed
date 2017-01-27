@@ -1,5 +1,7 @@
 # Version 3.0.4 (2017-??-??)
 
+* [new] Configuration can be sourced from properties files (`application.properties` and `META-INF/configuration/*.properties`).
+* [fix] Fix mishandling of override scanned configuration files. 
 * [chg] coffig: **[2.0.0](https://github.com/seedstack/shed/releases/tag/v2.0.0)**
 
 # Version 3.0.3 (2017-01-16)
