@@ -90,7 +90,9 @@ public class BaseConfiguration {
             try {
                 Enumeration<URL> configResources = ClassLoaders.findMostCompleteClassLoader(Seed.class).getResources(resourceName);
                 while (configResources.hasMoreElements()) {
-                    result.add(configResources.nextElement());
+                    URL url = configResources.nextElement();
+                    LOGGER.debug("Detected configuration resource: {}", url.toExternalForm());
+                    result.add(url);
                 }
             } catch (IOException e) {
                 LOGGER.warn("I/O error during detection of configuration file " + resourceName, e);

@@ -24,6 +24,8 @@ import org.seedstack.seed.core.internal.CoreErrorCode;
 import org.seedstack.seed.diagnostic.DiagnosticManager;
 import org.seedstack.seed.spi.ApplicationProvider;
 import org.seedstack.shed.ClassLoaders;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.net.URL;
@@ -42,6 +44,7 @@ import java.util.stream.Collectors;
  */
 public class ConfigurationPlugin extends AbstractPlugin implements ApplicationProvider {
     public static final String EXTERNAL_CONFIG_PREFIX = "seedstack.config.";
+    private static final Logger LOGGER = LoggerFactory.getLogger(ConfigurationPlugin.class);
     private static final String CONFIGURATION_PACKAGE = "META-INF.configuration";
     private static final String CONFIGURATION_LOCATION = "META-INF/configuration/";
     private static final String YAML_REGEX = ".*\\.yaml";
@@ -112,10 +115,14 @@ public class ConfigurationPlugin extends AbstractPlugin implements ApplicationPr
     }
 
     private void addValue(InMemoryProvider inMemoryProvider, String key, String value) {
+        String choppedKey = key.substring(EXTERNAL_CONFIG_PREFIX.length());
         if (value.contains(",")) {
-            inMemoryProvider.put(key.substring(EXTERNAL_CONFIG_PREFIX.length()), Arrays.stream(value.split(",")).map(String::trim).toArray(String[]::new));
+            String[] values = Arrays.stream(value.split(",")).map(String::trim).toArray(String[]::new);
+            LOGGER.debug("External array configuration property: {}={}", choppedKey, Arrays.toString(values));
+            inMemoryProvider.put(choppedKey, values);
         } else {
-            inMemoryProvider.put(key.substring(EXTERNAL_CONFIG_PREFIX.length()), value);
+            LOGGER.debug("External configuration property: {}={}", choppedKey, value);
+            inMemoryProvider.put(choppedKey, value);
         }
     }
 
@@ -146,17 +153,27 @@ public class ConfigurationPlugin extends AbstractPlugin implements ApplicationPr
                 ClassLoader classLoader = ClassLoaders.findMostCompleteClassLoader();
                 Enumeration<URL> urlEnumeration = classLoader.getResources(configurationResource);
                 while (urlEnumeration.hasMoreElements()) {
+                    URL url = urlEnumeration.nextElement();
+
                     if (isOverrideResource(configurationResource)) {
+                        LOGGER.debug("Detected override configuration resource: {}", url.toExternalForm());
+
                         if (isJacksonResource(configurationResource)) {
-                            jacksonOverrideProvider.addSource(urlEnumeration.nextElement());
+                            jacksonOverrideProvider.addSource(url);
                         } else if (isPropertiesResource(configurationResource)) {
-                            propertiesOverrideProvider.addSource(urlEnumeration.nextElement());
+                            propertiesOverrideProvider.addSource(url);
+                        } else {
+                            LOGGER.warn("Unrecognized override configuration resource: {}", url.toExternalForm());
                         }
                     } else {
+                        LOGGER.debug("Detected configuration resource: {}", url.toExternalForm());
+
                         if (isJacksonResource(configurationResource)) {
-                            jacksonProvider.addSource(urlEnumeration.nextElement());
+                            jacksonProvider.addSource(url);
                         } else if (isPropertiesResource(configurationResource)) {
-                            propertiesProvider.addSource(urlEnumeration.nextElement());
+                            propertiesProvider.addSource(url);
+                        } else {
+                            LOGGER.warn("Unrecognized configuration resource: {}", url.toExternalForm());
                         }
                     }
                 }
