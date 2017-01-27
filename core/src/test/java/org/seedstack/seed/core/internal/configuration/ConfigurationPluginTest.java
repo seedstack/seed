@@ -56,18 +56,20 @@ public class ConfigurationPluginTest {
         InitContext initContext = mockInitContextForCore(
                 Lists.newArrayList("META-INF/configuration/file.yaml", "bad.yaml"),
                 Lists.newArrayList("META-INF/configuration/file.yml", "bad.yml"),
-                Lists.newArrayList("META-INF/configuration/file.json", "bad.json")
+                Lists.newArrayList("META-INF/configuration/file.json", "bad.json"),
+                Lists.newArrayList("META-INF/configuration/file.properties", "bad.properties")
         );
         configurationPlugin.init(initContext);
     }
 
-    private InitContext mockInitContextForCore(ArrayList<String> yamlFiles, ArrayList<String> ymlFiles, ArrayList<String> jsonFiles) {
+    private InitContext mockInitContextForCore(ArrayList<String> yamlFiles, ArrayList<String> ymlFiles, ArrayList<String> jsonFiles, ArrayList<String> propertiesFiles) {
         InitContext initContext = mock(InitContext.class);
 
         Map<String, Collection<String>> mapResourcesByRegex = new HashMap<>();
         mapResourcesByRegex.put(".*\\.yaml", yamlFiles);
         mapResourcesByRegex.put(".*\\.yml", ymlFiles);
         mapResourcesByRegex.put(".*\\.json", jsonFiles);
+        mapResourcesByRegex.put(".*\\.properties", propertiesFiles);
 
         when(initContext.mapResourcesByRegex()).thenReturn(mapResourcesByRegex);
 
