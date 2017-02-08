@@ -34,7 +34,7 @@ import java.util.concurrent.ConcurrentMap;
  * Implementation of the diagnostic manager.
  */
 public class DiagnosticManagerImpl implements DiagnosticManager {
-    private static final String REPORTER_SYSTEM_PROPERTY = "seed.diagnostic";
+    private static final String REPORTER_SYSTEM_PROPERTY = "seedstack.diagnostic";
     private static final Logger LOGGER = LoggerFactory.getLogger(DiagnosticManagerImpl.class);
     private static final DateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss.SSS");
 
