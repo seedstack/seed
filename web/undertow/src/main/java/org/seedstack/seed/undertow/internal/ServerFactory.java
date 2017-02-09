@@ -13,6 +13,7 @@ import io.undertow.UndertowOptions;
 import io.undertow.server.handlers.PathHandler;
 import io.undertow.servlet.api.DeploymentManager;
 import org.seedstack.seed.SeedException;
+import org.seedstack.seed.crypto.CryptoConfig;
 import org.seedstack.seed.crypto.spi.SSLProvider;
 import org.seedstack.seed.undertow.UndertowConfig;
 import org.seedstack.seed.web.WebConfig;
@@ -63,12 +64,16 @@ class ServerFactory {
 
     private Undertow.Builder createHttpsBuilder(WebConfig.ServerConfig serverConfig, SSLProvider sslProvider) {
         Optional<SSLContext> sslContext = sslProvider.sslContext();
+        CryptoConfig.SSLConfig sslConfig = sslProvider.sslConfig();
         if (sslContext.isPresent()) {
             return Undertow.builder()
                     .addHttpsListener(serverConfig.getPort(), serverConfig.getHost(), sslContext.get())
-                    .setSocketOption(Options.SSL_CLIENT_AUTH_MODE, SslClientAuthMode.valueOf(sslProvider.sslConfig().getClientAuthMode().toString()));
+                    .setSocketOption(Options.SSL_CLIENT_AUTH_MODE, SslClientAuthMode.valueOf(sslConfig.getClientAuthMode().toString()));
         } else {
-            throw SeedException.createNew(UndertowErrorCode.MISSING_SSL_CONFIGURATION);
+            throw SeedException.createNew(UndertowErrorCode.MISSING_SSL_CONTEXT)
+                    .put("ksName", sslConfig.getKeyStore())
+                    .put("tsName", sslConfig.getTrustStore())
+                    .put("alias", sslConfig.getAlias());
         }
     }
 }

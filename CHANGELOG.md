@@ -1,6 +1,8 @@
 # Version 3.0.4 (2017-??-??)
 
 * [new] Configuration can be sourced from properties files (`application.properties` and `META-INF/configuration/*.properties`).
+* [new] The `effective-config` tool dumps the aggregated global configuration tree of the application.
+* [new] The `crypt` tool crypts values using the master key store.
 * [fix] Fix mishandling of override scanned configuration files. 
 * [chg] coffig: **[2.0.0](https://github.com/seedstack/shed/releases/tag/v2.0.0)**
 

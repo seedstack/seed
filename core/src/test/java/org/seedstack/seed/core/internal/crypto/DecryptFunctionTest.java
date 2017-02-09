@@ -14,9 +14,6 @@ import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.seedstack.coffig.Coffig;
 import org.seedstack.seed.SeedException;
-import org.seedstack.seed.core.internal.crypto.DecryptFunction;
-import org.seedstack.seed.core.internal.crypto.EncryptionServiceFactory;
-import org.seedstack.seed.core.internal.crypto.KeyStoreLoader;
 import org.seedstack.seed.crypto.CryptoConfig;
 import org.seedstack.seed.crypto.EncryptionService;
 
@@ -51,7 +48,7 @@ public class DecryptFunctionTest {
     public void testLookupDecryptWithoutMasterKeyStore() throws Exception {
         DecryptFunction decryptFunction = new DecryptFunction();
         decryptFunction.initialize(Coffig.builder().build());
-        decryptFunction.decrypt("");
+        decryptFunction.decrypt("seed", "");
     }
 
     @Test
@@ -67,7 +64,7 @@ public class DecryptFunctionTest {
 
         DecryptFunction decryptFunction = new DecryptFunction();
         decryptFunction.initialize(Coffig.builder().build());
-        Assertions.assertThat(decryptFunction.decrypt(cryptingString)).isEqualTo(toDecrypt);
+        Assertions.assertThat(decryptFunction.decrypt("seed", cryptingString)).isEqualTo(toDecrypt);
     }
 
     @Test(expected = SeedException.class)
@@ -83,6 +80,7 @@ public class DecryptFunctionTest {
         }};
         DecryptFunction decryptFunction = new DecryptFunction();
         decryptFunction.initialize(Coffig.builder().build());
+        decryptFunction.decrypt("seed", cryptingString);
     }
 
     @Test(expected = SeedException.class)
@@ -94,11 +92,11 @@ public class DecryptFunctionTest {
             result = keyStoreConfig;
 
             encryptionService.decrypt(DatatypeConverter.parseHexBinary(cryptingString));
-            result = new InvalidKeyException("dummy exception");
+            result = SeedException.wrap(new InvalidKeyException("dummy exception"), CryptoErrorCode.INVALID_KEY);
         }};
 
         DecryptFunction decryptFunction = new DecryptFunction();
         decryptFunction.initialize(Coffig.builder().build());
-        decryptFunction.decrypt(cryptingString);
+        decryptFunction.decrypt("seed", cryptingString);
     }
 }

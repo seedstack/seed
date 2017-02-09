@@ -8,29 +8,23 @@
 
 package org.seedstack.seed.crypto;
 
-import javax.crypto.Cipher;
-import javax.security.cert.X509Certificate;
-import java.security.InvalidKeyException;
-
 /**
- * Service to do asymmetric encryption and decryption. Encryption uses a {@link X509Certificate}, whereas decrypt uses
+ * Service to do asymmetric encryption and decryption. Encryption uses a {@link javax.security.cert.X509Certificate}, whereas decrypt uses
  * the private key stored in a key store.
  */
 public interface EncryptionService {
     /**
-     * Encrypt a byte[] by using a {@link X509Certificate}
-     * 
+     * Encrypt a byte[] by using a {@link javax.security.cert.X509Certificate}
+     *
      * @param toEncrypt byte[] to encrypt
      * @return byte[] encrypted
-     * @throws InvalidKeyException if the given key is inappropriate for initializing this cipher. See {@link Cipher#init(int, java.security.Key)}
      */
-    byte[] encrypt(byte[] toEncrypt) throws InvalidKeyException;
+    byte[] encrypt(byte[] toEncrypt);
 
     /**
      * @param toDecrypt byte[] to decrypt
      * @return byte[] decrypted
-     * @throws InvalidKeyException if the given key is inappropriate for initializing this cipher. See {@link Cipher#init(int, java.security.Key)}
      */
-    byte[] decrypt(byte[] toDecrypt) throws InvalidKeyException;
+    byte[] decrypt(byte[] toDecrypt);
 
 }

@@ -8,8 +8,8 @@
 
 package org.seedstack.seed.core.internal.crypto;
 
-import org.seedstack.seed.crypto.EncryptionService;
 import org.seedstack.seed.SeedException;
+import org.seedstack.seed.crypto.EncryptionService;
 
 import javax.annotation.Nullable;
 import javax.crypto.BadPaddingException;
@@ -34,7 +34,7 @@ class EncryptionServiceImpl implements EncryptionService {
     }
 
     @Override
-    public byte[] encrypt(byte[] toCrypt) throws InvalidKeyException {
+    public byte[] encrypt(byte[] toCrypt) {
         if (this.publicKey == null) {
             throw SeedException.createNew(CryptoErrorCode.MISSING_PUBLIC_KEY).put("alias", alias);
         }
@@ -42,7 +42,7 @@ class EncryptionServiceImpl implements EncryptionService {
     }
 
     @Override
-    public byte[] decrypt(byte[] toDecrypt) throws InvalidKeyException {
+    public byte[] decrypt(byte[] toDecrypt) {
         if (this.privateKey == null) {
             throw SeedException.createNew(CryptoErrorCode.MISSING_PRIVATE_KEY).put("alias", alias);
         }
@@ -56,22 +56,26 @@ class EncryptionServiceImpl implements EncryptionService {
      * @param key   key to use
      * @param mode  {@link Cipher#DECRYPT_MODE} to decrypt or {@link Cipher#ENCRYPT_MODE} to encrypt
      * @return byte[] encrypted or decrypted
-     * @throws InvalidKeyException if the given key is inappropriate for initializing this cipher. See {@link Cipher#init(int, java.security.Key)}
      */
-    private byte[] doEncryptionOrDecryption(byte[] crypt, Key key, int mode) throws InvalidKeyException {
+    private byte[] doEncryptionOrDecryption(byte[] crypt, Key key, int mode) {
         Cipher rsaCipher;
         try {
             rsaCipher = Cipher.getInstance(CIPHER);
         } catch (NoSuchAlgorithmException | NoSuchPaddingException e) {
             throw SeedException.wrap(e, CryptoErrorCode.UNABLE_TO_GET_CIPHER)
+                    .put("alias", alias)
                     .put("cipher", CIPHER);
         }
-        rsaCipher.init(mode, key);
+        try {
+            rsaCipher.init(mode, key);
+        } catch (InvalidKeyException e) {
+            throw SeedException.wrap(e, CryptoErrorCode.INVALID_KEY)
+                    .put("alias", alias);
+        }
         try {
             return rsaCipher.doFinal(crypt);
         } catch (IllegalBlockSizeException | BadPaddingException e) {
             throw SeedException.wrap(e, CryptoErrorCode.UNEXPECTED_EXCEPTION);
         }
     }
-
 }

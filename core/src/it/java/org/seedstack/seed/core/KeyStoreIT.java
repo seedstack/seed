@@ -26,8 +26,8 @@ public class KeyStoreIT {
     @Rule
     public SeedITRule rule = new SeedITRule(this);
     @Inject
-    @Named("default")
-    private KeyStore defaultKeyStore;
+    @Named("ssl")
+    private KeyStore sslKeyStore;
     @Inject
     @Named("master")
     private KeyStore masterKeyStore;
@@ -37,7 +37,7 @@ public class KeyStoreIT {
 
     @Test
     public void testKeyStoresInjection() {
-        Assertions.assertThat(defaultKeyStore).isNotNull();
+        Assertions.assertThat(sslKeyStore).isNotNull();
         Assertions.assertThat(masterKeyStore).isNotNull();
         Assertions.assertThat(myKeyStore).isNotNull();
     }

@@ -8,8 +8,8 @@
 package org.seedstack.seed.core.internal.crypto;
 
 import com.google.common.base.Strings;
-import org.seedstack.seed.crypto.CryptoConfig;
 import org.seedstack.seed.SeedException;
+import org.seedstack.seed.crypto.CryptoConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,9 +34,8 @@ class KeyStoreLoader {
         String path = ksConfig.getPath();
         if (Strings.isNullOrEmpty(name) || Strings.isNullOrEmpty(path) || Strings.isNullOrEmpty(ksConfig.getPassword())) {
             throw SeedException.createNew(CryptoErrorCode.KEYSTORE_CONFIGURATION_ERROR)
-                    .put("keyName", name)
-                    .put("path", path)
-                    .put("password", ksConfig.getPassword());
+                    .put("ksName", name)
+                    .put("path", path);
         }
         return loadFromInputStream(name, getInputStream(name, path), ksConfig);
     }

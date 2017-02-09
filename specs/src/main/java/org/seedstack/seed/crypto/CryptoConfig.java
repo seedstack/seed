@@ -19,7 +19,7 @@ import java.util.Set;
 
 @Config("crypto")
 public class CryptoConfig {
-    private static final String MASTER_KEYSTORE_NAME = "master";
+    public static final String MASTER_KEY_STORE_NAME = "master";
     private Map<String, KeyStoreConfig> keystores = new HashMap<>();
     private Map<String, CertificateConfig> certificates = new HashMap<>();
     private SSLConfig ssl = new SSLConfig();
@@ -43,7 +43,7 @@ public class CryptoConfig {
     }
 
     public KeyStoreConfig masterKeyStore() {
-        return keystores.get(MASTER_KEYSTORE_NAME);
+        return keystores.get(MASTER_KEY_STORE_NAME);
     }
 
     public SSLConfig ssl() {
@@ -163,8 +163,8 @@ public class CryptoConfig {
     @Config("ssl")
     public static class SSLConfig {
         private String protocol = "TLS";
-        private String keyStore = "default";
-        private String trustStore = "default";
+        private String keystore = MASTER_KEY_STORE_NAME;
+        private String truststore = MASTER_KEY_STORE_NAME;
         private String alias = "ssl";
         private SSLAuthenticationMode clientAuthMode = SSLAuthenticationMode.NOT_REQUESTED;
         private Set<String> ciphers = new HashSet<>();
@@ -177,17 +177,17 @@ public class CryptoConfig {
         }
 
         /**
-         * @return the key store name used for SSL (defaults to "default" if not specified).
+         * @return the key store name used for SSL (defaults to "master" if not specified).
          */
         public String getKeyStore() {
-            return keyStore;
+            return keystore;
         }
 
         /**
-         * @return the trust store name used for SSL (defaults to "default" if not specified).
+         * @return the trust store name used for SSL (defaults to "master" if not specified).
          */
         public String getTrustStore() {
-            return trustStore;
+            return truststore;
         }
 
         /**

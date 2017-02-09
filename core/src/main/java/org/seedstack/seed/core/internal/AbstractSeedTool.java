@@ -7,22 +7,32 @@
  */
 package org.seedstack.seed.core.internal;
 
-import com.google.common.collect.Lists;
 import org.seedstack.seed.core.internal.cli.CliPlugin;
 import org.seedstack.seed.core.internal.configuration.ConfigurationPlugin;
 import org.seedstack.seed.spi.SeedTool;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 public abstract class AbstractSeedTool extends AbstractSeedPlugin implements SeedTool {
     @Override
-    public String name() {
+    public final String name() {
         return toolName() + "-tool";
     }
 
     @Override
-    public Collection<Class<?>> pluginsToLoad() {
-        return Lists.newArrayList(CorePlugin.class, ConfigurationPlugin.class, CliPlugin.class);
+    public final Collection<Class<?>> pluginsToLoad() {
+        List<Class<?>> dependencies = new ArrayList<>(toolPlugins());
+        dependencies.add(CorePlugin.class);
+        dependencies.add(ConfigurationPlugin.class);
+        dependencies.add(CliPlugin.class);
+        return dependencies;
+    }
+
+    protected Collection<Class<?>> toolPlugins() {
+        return Collections.emptyList();
     }
 
     public abstract String toolName();

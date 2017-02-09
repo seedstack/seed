@@ -32,8 +32,6 @@ import java.util.Optional;
 public class CryptoPlugin extends AbstractSeedPlugin implements SSLProvider {
     private static final Logger LOGGER = LoggerFactory.getLogger(CryptoPlugin.class);
     private static final String ALIAS = "alias";
-    static final String MASTER_KEYSTORE_NAME = "master";
-    static final String MASTER_KEY_NAME = "seed";
 
     private final Map<Key<EncryptionService>, EncryptionService> encryptionServices = new HashMap<>();
     private final Map<String, KeyStore> keyStores = new HashMap<>();
@@ -110,7 +108,10 @@ public class CryptoPlugin extends AbstractSeedPlugin implements SSLProvider {
 
         String aliasName = sslConfig.getAlias();
         CryptoConfig.KeyStoreConfig.AliasConfig aliasConfig = keyStoreConfig.getAliases().get(aliasName);
-        if (aliasConfig == null || Strings.isNullOrEmpty(aliasConfig.getPassword())) {
+        if (aliasConfig == null) {
+            return null;
+        }
+        if (Strings.isNullOrEmpty(aliasConfig.getPassword())) {
             throw SeedException.createNew(CryptoErrorCode.MISSING_ALIAS_PASSWORD)
                     .put(ALIAS, aliasName)
                     .put("ksName", keyStoreName);

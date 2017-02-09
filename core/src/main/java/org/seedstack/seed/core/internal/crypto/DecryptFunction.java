@@ -16,37 +16,38 @@ import org.seedstack.seed.crypto.CryptoConfig;
 import org.seedstack.seed.crypto.EncryptionService;
 
 import javax.xml.bind.DatatypeConverter;
-import java.security.InvalidKeyException;
 import java.security.KeyStore;
 
 public class DecryptFunction implements ConfigFunctionHolder {
-    private EncryptionService encryptionService;
+    private EncryptionServiceFactory encryptionServiceFactory;
+    private CryptoConfig.KeyStoreConfig masterKeyStoreConfig;
 
     @Override
     public void initialize(Coffig coffig) {
         CryptoConfig cryptoConfig = coffig.get(CryptoConfig.class);
-        CryptoConfig.KeyStoreConfig masterKeyStoreConfig = cryptoConfig.masterKeyStore();
+        masterKeyStoreConfig = cryptoConfig.masterKeyStore();
         if (masterKeyStoreConfig != null) {
-            KeyStore keyStore = new KeyStoreLoader().load(CryptoPlugin.MASTER_KEYSTORE_NAME, masterKeyStoreConfig);
-            CryptoConfig.KeyStoreConfig.AliasConfig aliasConfig = masterKeyStoreConfig.getAliases().get(CryptoPlugin.MASTER_KEY_NAME);
-            if (aliasConfig == null || Strings.isNullOrEmpty(aliasConfig.getPassword())) {
-                throw SeedException.createNew(CryptoErrorCode.MISSING_MASTER_KEY_PASSWORD);
+            try {
+                KeyStore keyStore = new KeyStoreLoader().load(CryptoConfig.MASTER_KEY_STORE_NAME, masterKeyStoreConfig);
+                encryptionServiceFactory = new EncryptionServiceFactory(cryptoConfig, keyStore);
+            } catch (Exception e) {
+                encryptionServiceFactory = null;
             }
-            encryptionService = new EncryptionServiceFactory(cryptoConfig, keyStore).create(CryptoPlugin.MASTER_KEY_NAME, aliasConfig.getPassword().toCharArray());
         } else {
-            encryptionService = null;
+            encryptionServiceFactory = null;
         }
     }
 
     @ConfigFunction
-    String decrypt(String key) {
-        if (encryptionService == null) {
-            throw SeedException.createNew(CryptoErrorCode.MISSING_MASTER_KEYSTORE).put("keyPassword", "${env.KEY_PASSWD}").put("password", "${env.KS_PASSWD}");
+    String decrypt(String alias, String value) {
+        if (encryptionServiceFactory == null) {
+            throw SeedException.createNew(CryptoErrorCode.MISSING_MASTER_KEYSTORE);
         }
-        try {
-            return new String(encryptionService.decrypt(DatatypeConverter.parseHexBinary(key)));
-        } catch (InvalidKeyException e) {
-            throw SeedException.wrap(e, CryptoErrorCode.UNEXPECTED_EXCEPTION);
+        CryptoConfig.KeyStoreConfig.AliasConfig aliasConfig = masterKeyStoreConfig.getAliases().get(alias);
+        if (aliasConfig == null || Strings.isNullOrEmpty(aliasConfig.getPassword())) {
+            throw SeedException.createNew(CryptoErrorCode.MISSING_MASTER_KEY_PASSWORD);
         }
+        EncryptionService encryptionService = encryptionServiceFactory.create(alias, aliasConfig.getPassword().toCharArray());
+        return new String(encryptionService.decrypt(DatatypeConverter.parseHexBinary(value)));
     }
 }

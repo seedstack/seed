@@ -13,7 +13,7 @@ web:
     https: true
 crypto:
   keystores:
-    default:
+    master:
       path: src/it/resources/ssl.keystore
       password: kspasswd
       aliases:
