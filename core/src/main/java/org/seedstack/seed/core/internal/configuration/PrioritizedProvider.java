@@ -21,12 +21,14 @@ public class PrioritizedProvider implements ConfigurationProvider {
 
     @Override
     public MapNode provide() {
-        return providers.stream()
+        MapNode mapNode = providers.stream()
                 .sorted(PrioritizedConfigurationProvider::compareTo)
                 .map(PrioritizedConfigurationProvider::getConfigurationProvider)
                 .map(ConfigurationProvider::provide)
                 .reduce((conf1, conf2) -> (MapNode) conf1.merge(conf2))
                 .orElse(new MapNode());
+        dirty.set(false);
+        return mapNode;
     }
 
     @Override

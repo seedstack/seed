@@ -57,7 +57,7 @@ class LogbackLogManager implements LogManager {
             context.addListener(levelChangePropagator);
 
             PatternLayoutEncoder encoder = new PatternLayoutEncoder();
-            encoder.setPattern(isNullOrEmpty(loggingConfig.getPattern()) ? "%highlight(%-5level) [%d{ISO8601}] %magenta(%-8thread) %cyan(%-30logger{30}) %msg%n%red(%throwable)" : loggingConfig.getPattern());
+            encoder.setPattern(isNullOrEmpty(loggingConfig.getPattern()) ? "%highlight(%-5level) [%d{ISO8601}] %magenta(%-15thread) %cyan(%-30logger{30}) %msg%n%red(%throwable)" : loggingConfig.getPattern());
             encoder.setContext(context);
             encoder.start();
 

@@ -27,6 +27,6 @@ public class SecureConfigurationProcessor implements ConfigurationProcessor {
 
     private boolean isPotentialPassword(NamedNode namedNode) {
         String key = namedNode.name().toUpperCase();
-        return key.contains("PASSWORD") || key.contains("PASSWD");
+        return key.contains("PASSWORD") || key.contains("PASSWD") || key.contains("PWD");
     }
 }

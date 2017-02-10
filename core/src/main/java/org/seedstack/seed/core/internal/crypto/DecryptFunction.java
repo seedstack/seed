@@ -11,6 +11,7 @@ import com.google.common.base.Strings;
 import org.seedstack.coffig.Coffig;
 import org.seedstack.coffig.spi.ConfigFunction;
 import org.seedstack.coffig.spi.ConfigFunctionHolder;
+import org.seedstack.coffig.spi.ConfigurationComponent;
 import org.seedstack.seed.SeedException;
 import org.seedstack.seed.crypto.CryptoConfig;
 import org.seedstack.seed.crypto.EncryptionService;
@@ -36,6 +37,11 @@ public class DecryptFunction implements ConfigFunctionHolder {
         } else {
             encryptionServiceFactory = null;
         }
+    }
+
+    @Override
+    public ConfigurationComponent fork() {
+        return new DecryptFunction();
     }
 
     @ConfigFunction
