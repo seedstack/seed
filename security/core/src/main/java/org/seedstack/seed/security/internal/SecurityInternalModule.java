@@ -7,6 +7,7 @@
  */
 package org.seedstack.seed.security.internal;
 
+import com.google.common.base.Strings;
 import com.google.inject.Injector;
 import com.google.inject.PrivateModule;
 import com.google.inject.Provider;
@@ -72,27 +73,43 @@ class SecurityInternalModule extends PrivateModule {
         }
 
         bind(new TypeLiteral<Set<Class<? extends org.seedstack.seed.security.Realm>>>() {}).toInstance(apiRealmClasses);
-        bind(new TypeLiteral<Set<Realm>>() {}).toProvider(RealmProvider.class).asEagerSingleton();
+        bind(new TypeLiteral<Set<Realm>>() {}).toProvider(new RealmProvider(securityConfigurer.getSecurityConfiguration())).asEagerSingleton();
     }
 
     static class RealmProvider implements Provider<Set<Realm>> {
-
+        private final Configuration securityConfiguration;
         @Inject
         private Injector injector;
-
         @Inject
         private Set<Class<? extends org.seedstack.seed.security.Realm>> realmClasses;
-
         private Set<Realm> realms;
+
+        RealmProvider(Configuration securityConfiguration) {
+            this.securityConfiguration = securityConfiguration;
+        }
 
         @Override
         public Set<Realm> get() {
             if (realms == null) {
                 realms = new HashSet<Realm>();
                 for (Class<? extends org.seedstack.seed.security.Realm> seedRealmClass : realmClasses) {
-                    org.seedstack.seed.security.Realm realmInstance = injector.getInstance(seedRealmClass);
                     ShiroRealmAdapter realmAdapter = injector.getInstance(ShiroRealmAdapter.class);
-                    realmAdapter.setRealm(realmInstance);
+                    realmAdapter.setRealm(injector.getInstance(seedRealmClass));
+
+                    // Authentication cache
+                    realmAdapter.setAuthenticationCachingEnabled(securityConfiguration.getBoolean("cache.authentication.enabled", true));
+                    String authenticationCacheName = securityConfiguration.getString("cache.authentication.name");
+                    if (!Strings.isNullOrEmpty(authenticationCacheName)) {
+                        realmAdapter.setAuthenticationCacheName(authenticationCacheName);
+                    }
+
+                    // Authorization cache
+                    realmAdapter.setAuthorizationCachingEnabled(securityConfiguration.getBoolean("cache.authorization.enabled", true));
+                    String authorizationCacheName = securityConfiguration.getString("cache.authorization.name");
+                    if (!Strings.isNullOrEmpty(authorizationCacheName)) {
+                        realmAdapter.setAuthorizationCacheName(authorizationCacheName);
+                    }
+
                     realms.add(realmAdapter);
                 }
             }

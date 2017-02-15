@@ -7,29 +7,31 @@
  */
 package org.seedstack.seed.security.internal;
 
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import com.google.inject.Injector;
+import com.google.inject.PrivateBinder;
+import com.google.inject.Provider;
+import com.google.inject.TypeLiteral;
+import com.google.inject.binder.AnnotatedBindingBuilder;
+import com.google.inject.binder.AnnotatedElementBuilder;
+import com.google.inject.binder.ScopedBindingBuilder;
+import org.apache.commons.configuration.MapConfiguration;
+import org.apache.commons.configuration.PropertiesConfiguration;
+import org.apache.shiro.realm.Realm;
+import org.junit.Before;
+import org.junit.Test;
+import org.mockito.internal.util.reflection.Whitebox;
+import org.seedstack.seed.security.Scope;
+import org.seedstack.seed.security.internal.realms.ConfigurationRealm;
 
 import java.lang.annotation.Annotation;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.apache.shiro.realm.Realm;
-import org.junit.Before;
-import org.junit.Test;
-import org.mockito.internal.util.reflection.Whitebox;
-
-import com.google.inject.Injector;
-import com.google.inject.PrivateBinder;
-import com.google.inject.TypeLiteral;
-import com.google.inject.binder.AnnotatedBindingBuilder;
-import com.google.inject.binder.AnnotatedElementBuilder;
-import com.google.inject.binder.ScopedBindingBuilder;
-import org.seedstack.seed.security.Scope;
-import org.seedstack.seed.security.internal.realms.ConfigurationRealm;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class SecurityInternalModuleUnitTest {
 
@@ -39,7 +41,7 @@ public class SecurityInternalModuleUnitTest {
 
     private SecurityConfigurer securityConfigurer;
 
-    @SuppressWarnings({ "unchecked", "rawtypes" })
+    @SuppressWarnings({"unchecked", "rawtypes"})
     @Before
     public void before() {
         binder = mock(PrivateBinder.class);
@@ -49,7 +51,7 @@ public class SecurityInternalModuleUnitTest {
         AnnotatedElementBuilder aeb = mock(AnnotatedElementBuilder.class);
         when(binder.expose(any(Class.class))).thenReturn(aeb);
         ScopedBindingBuilder sb = mock(ScopedBindingBuilder.class);
-        when(ab.toProvider(any(Class.class))).thenReturn(sb);
+        when(ab.toProvider(any(Provider.class))).thenReturn(sb);
         when(binder.bind(any(TypeLiteral.class))).thenReturn(ab);
         when(binder.skipSources(any(Class.class), any(Class.class))).thenReturn(binder);
         securityConfigurer = mock(SecurityConfigurer.class);
@@ -62,13 +64,14 @@ public class SecurityInternalModuleUnitTest {
         Set<RealmConfiguration> realmConfs = new HashSet<RealmConfiguration>();
         realmConfs.add(new RealmConfiguration("ConfigurationRealm", ConfigurationRealm.class));
         when(securityConfigurer.getConfigurationRealms()).thenReturn(realmConfs);
+        when(securityConfigurer.getSecurityConfiguration()).thenReturn(new PropertiesConfiguration());
 
         underTest.configure();
     }
 
     @Test
     public void testProvider() {
-        SecurityInternalModule.RealmProvider rp = new SecurityInternalModule.RealmProvider();
+        SecurityInternalModule.RealmProvider rp = new SecurityInternalModule.RealmProvider(new PropertiesConfiguration());
         Injector i = mock(Injector.class);
         ShiroRealmAdapter adapter = new ShiroRealmAdapter();
         when(i.getInstance(ShiroRealmAdapter.class)).thenReturn(adapter);
