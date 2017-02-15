@@ -7,6 +7,7 @@
  */
 package org.seedstack.seed.security.internal;
 
+import com.google.common.base.Strings;
 import com.google.inject.Injector;
 import com.google.inject.PrivateModule;
 import com.google.inject.Provider;
@@ -43,7 +44,8 @@ class SecurityInternalModule extends PrivateModule {
 
         bind(ShiroRealmAdapter.class);
 
-        bind(new TypeLiteral<Map<String, Class<? extends Scope>>>() {}).toInstance(scopeClasses);
+        bind(new TypeLiteral<Map<String, Class<? extends Scope>>>() {
+        }).toInstance(scopeClasses);
 
         bind(SecuritySupport.class).to(ShiroSecuritySupport.class);
 
@@ -54,8 +56,10 @@ class SecurityInternalModule extends PrivateModule {
             principalCustomizers.addBinding().to(customizerClass);
         }
 
-        expose(new TypeLiteral<Set<Realm>>() {});
-        expose(new TypeLiteral<Set<PrincipalCustomizer>>() {});
+        expose(new TypeLiteral<Set<Realm>>() {
+        });
+        expose(new TypeLiteral<Set<PrincipalCustomizer>>() {
+        });
         expose(SecuritySupport.class);
         expose(SecurityConfig.class);
     }
@@ -71,28 +75,52 @@ class SecurityInternalModule extends PrivateModule {
             bind(RoleMapping.class).annotatedWith(Names.named(realm.getName() + "-role-mapping")).to(realm.getRoleMappingClass());
         }
 
-        bind(new TypeLiteral<Set<Class<? extends org.seedstack.seed.security.Realm>>>() {}).toInstance(apiRealmClasses);
-        bind(new TypeLiteral<Set<Realm>>() {}).toProvider(RealmProvider.class).asEagerSingleton();
+        bind(new TypeLiteral<Set<Class<? extends org.seedstack.seed.security.Realm>>>() {
+        }).toInstance(apiRealmClasses);
+        bind(new TypeLiteral<Set<Realm>>() {
+        }).toProvider(new RealmProvider(securityConfigurer.getSecurityConfiguration())).asEagerSingleton();
     }
 
     static class RealmProvider implements Provider<Set<Realm>> {
-
+        private final SecurityConfig securityConfiguration;
         @Inject
         private Injector injector;
-
         @Inject
         private Set<Class<? extends org.seedstack.seed.security.Realm>> realmClasses;
-
         private Set<Realm> realms;
+
+        RealmProvider(SecurityConfig securityConfiguration) {
+            this.securityConfiguration = securityConfiguration;
+        }
 
         @Override
         public Set<Realm> get() {
             if (realms == null) {
                 realms = new HashSet<>();
                 for (Class<? extends org.seedstack.seed.security.Realm> seedRealmClass : realmClasses) {
-                    org.seedstack.seed.security.Realm realmInstance = injector.getInstance(seedRealmClass);
                     ShiroRealmAdapter realmAdapter = injector.getInstance(ShiroRealmAdapter.class);
-                    realmAdapter.setRealm(realmInstance);
+                    realmAdapter.setRealm(injector.getInstance(seedRealmClass));
+
+                    if (securityConfiguration.cache().isEnabled()) {
+                        realmAdapter.setCachingEnabled(true);
+
+                        // Authentication cache
+                        realmAdapter.setAuthenticationCachingEnabled(securityConfiguration.cache().authentication().isEnabled());
+                        String authenticationCacheName = securityConfiguration.cache().authentication().getName();
+                        if (!Strings.isNullOrEmpty(authenticationCacheName)) {
+                            realmAdapter.setAuthenticationCacheName(authenticationCacheName);
+                        }
+
+                        // Authorization cache
+                        realmAdapter.setAuthorizationCachingEnabled(securityConfiguration.cache().authorization().isEnabled());
+                        String authorizationCacheName = securityConfiguration.cache().authorization().getName();
+                        if (!Strings.isNullOrEmpty(authorizationCacheName)) {
+                            realmAdapter.setAuthorizationCacheName(authorizationCacheName);
+                        }
+                    } else {
+                        realmAdapter.setCachingEnabled(false);
+                    }
+
                     realms.add(realmAdapter);
                 }
             }

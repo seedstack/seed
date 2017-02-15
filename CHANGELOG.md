@@ -44,6 +44,11 @@
 * [brk] The package `org.seedstack.seed.core.utils` has been removed in favor of the 'shed' utility library.
 * [brk] Annotation resolution strategy has been unified for all SeedStack annotations and can exhibit minor differences with prior strategies.
 
+# Version 2.3.4 (2017-02-15)
+
+* [new] Add security cache for authentication (enabled by default, can be disabled with `org.seedstack.seed.security.cache.authentication.enabled = false`)
+* [new] Add security cache for authorization (enabled by default, can be disabled with `org.seedstack.seed.security.cache.authorization.enabled = false`)
+
 # Version 2.3.3 (2017-01-24)
 
 * [fix] JAX-RS resources were not decorated with cache busting headers when using Jersey2 implementation.

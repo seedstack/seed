@@ -27,6 +27,6 @@ public class SecurityGuiceConfigurer {
         binder.bind(SubjectDAO.class).to(DefaultSubjectDAO.class);
         binder.bind(SessionStorageEvaluator.class).to(SeedSessionStorageEvaluator.class);
         binder.bind(CacheManager.class).to(MemoryConstrainedCacheManager.class);
-        binder.bindConstant().annotatedWith(Names.named("shiro.globalSessionTimeout")).to(securityConfig.session().getTimeout());
+        binder.bindConstant().annotatedWith(Names.named("shiro.globalSessionTimeout")).to(securityConfig.sessions().getTimeout());
     }
 }

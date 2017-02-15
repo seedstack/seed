@@ -21,14 +21,19 @@ import java.util.Set;
 
 @Config("security")
 public class SecurityConfig {
-    private SessionConfig session = new SessionConfig();
+    private SessionConfig sessions = new SessionConfig();
+    private CacheConfig cache = new CacheConfig();
     private List<RealmConfig> realms = new ArrayList<>();
     private Map<String, UserConfig> users = new HashMap<>();
     private Map<String, Set<String>> roles = new HashMap<>();
     private Map<String, Set<String>> permissions = new HashMap<>();
 
-    public SessionConfig session() {
-        return session;
+    public SessionConfig sessions() {
+        return sessions;
+    }
+
+    public CacheConfig cache() {
+        return cache;
     }
 
     public List<RealmConfig> getRealms() {
@@ -129,7 +134,7 @@ public class SecurityConfig {
         }
     }
 
-    @Config("session")
+    @Config("sessions")
     public static class SessionConfig {
         @SingleValue
         private boolean enabled;
@@ -151,6 +156,55 @@ public class SecurityConfig {
         public SessionConfig setTimeout(long timeout) {
             this.timeout = timeout * 1000;
             return this;
+        }
+    }
+
+    @Config("cache")
+    public static class CacheConfig {
+        @SingleValue
+        private boolean enabled = true;
+        private ItemCacheConfig authentication = new ItemCacheConfig();
+        private ItemCacheConfig authorization = new ItemCacheConfig();
+
+        public boolean isEnabled() {
+            return enabled;
+        }
+
+        public CacheConfig setEnabled(boolean enabled) {
+            this.enabled = enabled;
+            return this;
+        }
+
+        public ItemCacheConfig authentication() {
+            return authentication;
+        }
+
+        public ItemCacheConfig authorization() {
+            return authorization;
+        }
+
+        public static class ItemCacheConfig {
+            @SingleValue
+            private boolean enabled = true;
+            private String name;
+
+            public boolean isEnabled() {
+                return enabled;
+            }
+
+            public ItemCacheConfig setEnabled(boolean enabled) {
+                this.enabled = enabled;
+                return this;
+            }
+
+            public String getName() {
+                return name;
+            }
+
+            public ItemCacheConfig setName(String name) {
+                this.name = name;
+                return this;
+            }
         }
     }
 }

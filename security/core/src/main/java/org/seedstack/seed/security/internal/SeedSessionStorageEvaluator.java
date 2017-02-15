@@ -19,6 +19,6 @@ class SeedSessionStorageEvaluator implements SessionStorageEvaluator {
 
     @Override
     public boolean isSessionStorageEnabled(Subject subject) {
-        return securityConfig.session().isEnabled();
+        return securityConfig.sessions().isEnabled();
     }
 }
