@@ -7,7 +7,7 @@
 #
 
 security:
-  session: true
+  sessions: true
   users:
     Obiwan: yodarulez
   web:
