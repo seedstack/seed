@@ -1,9 +1,14 @@
-# Version 3.0.4 (2017-??-??)
+# Version 3.1.0 (2017-02-16)
 
 * [new] Configuration can be sourced from properties files (`application.properties` and `META-INF/configuration/*.properties`).
 * [new] The `effective-config` tool dumps the aggregated global configuration tree of the application.
 * [new] The `crypt` tool crypts values using the master key store.
-* [fix] Fix mishandling of override scanned configuration files. 
+* [new] Support for configuration profiles (specify profiles with system property `seedstack.profiles`).
+* [new] Sensitive information is hidden in configuration dumps (properties named `passwd`, `password`, `pwd`, system properties and environment variables)
+* [new] Ported security cache from version 2.3.4.
+* [new] Ported Jersey2 cache control from version 2.3.3.
+* [fix] Fix mishandling of override scanned configuration files.
+* [fix] Configuration was incorrectly refreshed at every access. 
 * [chg] coffig: **[2.0.0](https://github.com/seedstack/shed/releases/tag/v2.0.0)**
 
 # Version 3.0.3 (2017-01-16)
