@@ -75,7 +75,7 @@ public class DiagnosticManagerIT {
         assertThat((String) (seedInfo.get("version"))).isNotEmpty();
         assertThat((Set<String>) (seedInfo.get("inconsistentPlugins"))).isNotNull();
         assertThat((String) (seedInfo.get("contextClass"))).isNotEmpty();
-        assertThat((String) (seedInfo.get("configuration"))).isNotEmpty();
+        assertThat(seedInfo.get("configuration")).isNotNull();
     }
 
 

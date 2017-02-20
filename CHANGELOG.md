@@ -1,3 +1,7 @@
+# Version 3.1.1 (2017-02-20)
+
+* [chg] Default diagnostic dump changed from JSON to YAML.
+
 # Version 3.1.0 (2017-02-16)
 
 * [new] Configuration can be sourced from properties files (`application.properties` and `META-INF/configuration/*.properties`).

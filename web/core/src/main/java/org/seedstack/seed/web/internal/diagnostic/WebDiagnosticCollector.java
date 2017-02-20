@@ -7,7 +7,7 @@
  */
 package org.seedstack.seed.web.internal.diagnostic;
 
-import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import org.seedstack.seed.diagnostic.spi.DiagnosticInfoCollector;
 
 import javax.servlet.FilterRegistration;
@@ -56,7 +56,7 @@ class WebDiagnosticCollector implements DiagnosticInfoCollector {
             if (mappings == null) {
                 mappings = new ArrayList<>();
             }
-            servletRegistrationInfo.put("mappings", Lists.newArrayList(mappings));
+            servletRegistrationInfo.put("mappings", Sets.newLinkedHashSet(mappings));
 
             servletMap.put(servletRegistrationEntry.getKey(), servletRegistrationInfo);
         }
@@ -76,12 +76,12 @@ class WebDiagnosticCollector implements DiagnosticInfoCollector {
             if (mappings == null) {
                 mappings = new ArrayList<>();
             }
-            filterRegistrationInfo.put("servletNameMappings", Lists.newArrayList(mappings));
+            filterRegistrationInfo.put("servletNameMappings", Sets.newLinkedHashSet(mappings));
             Collection<String> patterns = filterRegistration.getUrlPatternMappings();
             if (patterns == null) {
                 patterns = new ArrayList<>();
             }
-            filterRegistrationInfo.put("urlPatternMappings", Lists.newArrayList(patterns));
+            filterRegistrationInfo.put("urlPatternMappings", Sets.newLinkedHashSet(patterns));
 
             filterMap.put(filterRegistrationEntry.getKey(), filterRegistrationInfo);
         }

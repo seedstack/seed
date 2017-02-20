@@ -8,12 +8,12 @@
 package org.seedstack.seed.core.internal.diagnostic;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.util.DefaultIndenter;
 import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import org.seedstack.seed.diagnostic.spi.DiagnosticReporter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,7 +36,7 @@ import java.util.Map;
 class DefaultDiagnosticReporter implements DiagnosticReporter {
     private static final DateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss.SSS");
     private static final Logger LOGGER = LoggerFactory.getLogger(DefaultDiagnosticReporter.class);
-    private static final JsonFactory JSON_FACTORY;
+    private static final YAMLFactory YAML_FACTORY;
     private static final DefaultPrettyPrinter DEFAULT_PRETTY_PRINTER;
 
     static {
@@ -44,7 +44,8 @@ class DefaultDiagnosticReporter implements DiagnosticReporter {
         objectMapper.configure(SerializationFeature.WRITE_NULL_MAP_VALUES, false);
         objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
 
-        JSON_FACTORY = new JsonFactory().setCodec(objectMapper);
+        YAML_FACTORY = new YAMLFactory();
+        YAML_FACTORY.setCodec(new ObjectMapper());
 
         DEFAULT_PRETTY_PRINTER = new DefaultPrettyPrinter();
         DEFAULT_PRETTY_PRINTER.indentArraysWith(DefaultIndenter.SYSTEM_LINEFEED_INSTANCE);
@@ -59,7 +60,7 @@ class DefaultDiagnosticReporter implements DiagnosticReporter {
             diagnosticDirectory = new File(System.getProperty("java.io.tmpdir"));
         }
 
-        diagnosticFile = new File(diagnosticDirectory, String.format("seedstack-diagnostic-%s.json", DATE_FORMAT.format(new Date())));
+        diagnosticFile = new File(diagnosticDirectory, String.format("seedstack-diagnostic-%s.yaml", DATE_FORMAT.format(new Date())));
         writeDiagnosticReport(diagnosticInfo, new FileOutputStream(diagnosticFile));
         LOGGER.warn("Diagnostic information dumped to file://{}", diagnosticFile.toURI().toURL().getPath());
     }
@@ -67,7 +68,7 @@ class DefaultDiagnosticReporter implements DiagnosticReporter {
     void writeDiagnosticReport(Map<String, Object> diagnosticInfo, OutputStream outputStream) throws IOException {
         JsonGenerator jsonGenerator = null;
         try {
-            jsonGenerator = JSON_FACTORY.createGenerator(new OutputStreamWriter(outputStream, Charset.forName("UTF-8").newEncoder()));
+            jsonGenerator = YAML_FACTORY.createGenerator(new OutputStreamWriter(outputStream, Charset.forName("UTF-8").newEncoder()));
             jsonGenerator.setPrettyPrinter(DEFAULT_PRETTY_PRINTER);
             jsonGenerator.writeObject(diagnosticInfo);
             jsonGenerator.flush();

@@ -8,8 +8,6 @@
 package org.seedstack.seed.core.internal.diagnostic;
 
 import org.junit.Test;
-import org.seedstack.seed.core.internal.diagnostic.DefaultDiagnosticReporter;
-import org.skyscreamer.jsonassert.JSONAssert;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -18,11 +16,11 @@ import java.util.HashMap;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class DefaultDiagnosticReporterTest {
-    DefaultDiagnosticReporter underTest = new DefaultDiagnosticReporter();
+    private DefaultDiagnosticReporter underTest = new DefaultDiagnosticReporter();
 
     @Test
     public void json_output_is_valid() throws Exception {
-        JSONAssert.assertEquals(produceReport(), "{\"hello\":{\"subHello\":\"subWorld\"}}", true);
+        assertThat(produceReport()).isEqualTo("---\nhello:\n  subHello: \"subWorld\"\n");
     }
 
     @Test

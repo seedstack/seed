@@ -7,6 +7,7 @@
  */
 package org.seedstack.seed.core;
 
+import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
 import io.nuun.kernel.api.Plugin;
 import org.seedstack.coffig.Coffig;
 import org.seedstack.coffig.provider.CompositeProvider;
@@ -27,7 +28,7 @@ import java.util.Set;
 
 public class SeedRuntime {
     private static final String SEED_PACKAGE_PREFIX = "org.seedstack.seed";
-    private static final String DEFAULT_CONFIGURATION_PROVIDER = "default-config";
+    private static final YAMLMapper yamlMapper = new YAMLMapper();
 
     private final Object context;
     private final DiagnosticManager diagnosticManager;
@@ -146,6 +147,7 @@ public class SeedRuntime {
     }
 
     private class RuntimeDiagnosticCollector implements DiagnosticInfoCollector {
+
         @Override
         public Map<String, Object> collect() {
             Map<String, Object> result = new HashMap<>();
@@ -153,7 +155,11 @@ public class SeedRuntime {
             result.put("version", seedVersion == null ? "UNKNOWN" : seedVersion);
             result.put("inconsistentPlugins", inconsistentPlugins);
             result.put("contextClass", context == null ? "NONE" : context.getClass().getName());
-            result.put("configuration", configuration.toString());
+            try {
+                result.put("configuration", yamlMapper.readValue(configuration.toString(), Map.class));
+            } catch (Exception e) {
+                result.put("rawConfiguration", configuration.toString());
+            }
 
             return result;
         }
