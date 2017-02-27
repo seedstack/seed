@@ -31,6 +31,7 @@ public class ApplicationConfig {
     @Size(min = 1)
     private String version = "1.0.0";
     private File storage;
+    private boolean packageScanWarning = true;
 
     public String getId() {
         return id;
@@ -82,6 +83,15 @@ public class ApplicationConfig {
 
     public ApplicationConfig addBasePackage(String basePackage) {
         this.basePackages.add(basePackage);
+        return this;
+    }
+
+    public boolean isPackageScanWarning() {
+        return packageScanWarning;
+    }
+
+    public ApplicationConfig setPackageScanWarning(boolean packageScanWarning) {
+        this.packageScanWarning = packageScanWarning;
         return this;
     }
 }

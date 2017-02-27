@@ -70,7 +70,11 @@ public class ConfigurationPlugin extends AbstractPlugin implements ApplicationPr
 
     @Override
     public String pluginPackageRoot() {
-        Set<String> basePackages = new HashSet<>(configuration.get(ApplicationConfig.class).getBasePackages());
+        ApplicationConfig applicationConfig = configuration.get(ApplicationConfig.class);
+        if (applicationConfig.getBasePackages().isEmpty() && applicationConfig.isPackageScanWarning()) {
+            LOGGER.warn("No base package configured, only classes in 'org.seedstack.*' packages will be scanned");
+        }
+        Set<String> basePackages = new HashSet<>(applicationConfig.getBasePackages());
         basePackages.add(CONFIGURATION_PACKAGE);
         return String.join(",", basePackages);
     }
