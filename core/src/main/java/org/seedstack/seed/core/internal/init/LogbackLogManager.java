@@ -50,12 +50,6 @@ class LogbackLogManager implements LogManager {
         if (autoConfigurationFailed || !isExplicitlyConfigured()) {
             context.reset();
 
-            LevelChangePropagator levelChangePropagator = new LevelChangePropagator();
-            levelChangePropagator.setContext(context);
-            levelChangePropagator.setResetJUL(true);
-            levelChangePropagator.start();
-            context.addListener(levelChangePropagator);
-
             PatternLayoutEncoder encoder = new PatternLayoutEncoder();
             encoder.setPattern(isNullOrEmpty(loggingConfig.getPattern()) ? "%highlight(%-5level) [%d{ISO8601}] %magenta(%-15thread) %cyan(%-30logger{30}) %msg%n%red(%throwable)" : loggingConfig.getPattern());
             encoder.setContext(context);
@@ -86,6 +80,12 @@ class LogbackLogManager implements LogManager {
             Logger rootLogger = context.getLogger(Logger.ROOT_LOGGER_NAME);
             rootLogger.setLevel(convertLevel(loggingConfig.getLevel()));
             rootLogger.addAppender(logConsoleAppender);
+
+            LevelChangePropagator levelChangePropagator = new LevelChangePropagator();
+            levelChangePropagator.setContext(context);
+            levelChangePropagator.setResetJUL(true);
+            context.addListener(levelChangePropagator);
+            levelChangePropagator.start();
         }
     }
 

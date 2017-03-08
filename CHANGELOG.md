@@ -1,6 +1,7 @@
 # Version 3.1.1 (2017-02-20)
 
 * [chg] Default diagnostic dump changed from JSON to YAML.
+* [fix] Fix StackOverflowError under Tomcat in Eclipse WTP when auto-configuring Logback.  
 
 # Version 3.1.0 (2017-02-16)
 
