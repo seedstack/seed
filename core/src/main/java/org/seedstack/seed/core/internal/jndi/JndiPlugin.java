@@ -12,6 +12,7 @@ import io.nuun.kernel.api.plugin.context.InitContext;
 import org.seedstack.seed.JndiConfig;
 import org.seedstack.seed.SeedException;
 import org.seedstack.seed.core.internal.AbstractSeedPlugin;
+import org.seedstack.shed.ClassLoaders;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,7 +55,7 @@ public class JndiPlugin extends AbstractSeedPlugin {
         for (Map.Entry<String, String> entry : jndiConfig.getAdditionalContexts().entrySet()) {
             Properties contextProperties = new Properties();
             String contextPropertiesPath = entry.getValue();
-            InputStream propertiesResourceStream = this.getClass().getResourceAsStream(contextPropertiesPath);
+            InputStream propertiesResourceStream = ClassLoaders.findMostCompleteClassLoader(JndiPlugin.class).getResourceAsStream(contextPropertiesPath);
 
             String contextName = entry.getKey();
             if (propertiesResourceStream != null) {
@@ -72,7 +73,8 @@ public class JndiPlugin extends AbstractSeedPlugin {
                     LOGGER.warn("Unable to close JNDI properties resource " + contextPropertiesPath, e);
                 }
             } else {
-                throw SeedException.createNew(JndiErrorCode.MISSING_JNDI_PROPERTIES).put("context", contextName).put("property", "org.seedstack.seed.core.additional-jndi-context." + contextName + " property");
+                throw SeedException.createNew(JndiErrorCode.MISSING_JNDI_PROPERTIES).put("context", contextName)
+                        .put("property", "jndi." + contextName);
             }
         }
 

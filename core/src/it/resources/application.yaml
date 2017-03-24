@@ -22,8 +22,8 @@ application:
   basePackages: some.other.pkg
 jndi:
   additionalContexts:
-    test1: /jndi-test1.properties
-    test2: /jndi-test2.properties
+    test1: jndi-test1.properties
+    test2: jndi-test2.properties
 secret1: "**I am ${person${index1}}**"
 person1: Alice
 index1: 1

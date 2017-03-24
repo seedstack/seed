@@ -29,7 +29,7 @@ public class JndiPluginTest {
         new MockUp<AbstractSeedPlugin>() {
             @Mock
             public JndiConfig getConfiguration(Class configClass, String... path) {
-                return new JndiConfig().addAdditionalContext("test1", "/jndi-test1.properties");
+                return new JndiConfig().addAdditionalContext("test1", "jndi-test1.properties");
             }
         };
         pluginUnderTest.initialize(initContext);

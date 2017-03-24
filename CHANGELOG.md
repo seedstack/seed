@@ -1,7 +1,8 @@
 # Version 3.1.1 (2017-02-20)
 
+* [fix] Fix StackOverflowError under Tomcat in Eclipse WTP when auto-configuring Logback.
 * [chg] Default diagnostic dump changed from JSON to YAML.
-* [fix] Fix StackOverflowError under Tomcat in Eclipse WTP when auto-configuring Logback.  
+* [chg] Using the application classloader to load properties for additional JNDI contexts (paths should not start with `/` anymore).
 
 # Version 3.1.0 (2017-02-16)
 
