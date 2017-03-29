@@ -14,7 +14,6 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Test;
 import org.seedstack.seed.diagnostic.DiagnosticManager;
 import org.seedstack.seed.it.AbstractSeedWebIT;
-import org.seedstack.seed.web.internal.WebPlugin;
 
 import javax.inject.Inject;
 import java.util.Map;
@@ -23,7 +22,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class WebDiagnosticsIT extends AbstractSeedWebIT {
     @Inject
-    DiagnosticManager diagnosticManager;
+    private DiagnosticManager diagnosticManager;
 
     @Deployment
     public static WebArchive createDeployment() {
@@ -37,7 +36,7 @@ public class WebDiagnosticsIT extends AbstractSeedWebIT {
         Map<String, Object> diagnosticInfo = diagnosticManager.getDiagnosticInfo(null);
 
         assertThat(diagnosticInfo).isNotNull();
-        Map<String, Object> webInfo = (Map<String, Object>) diagnosticInfo.get(WebPlugin.WEB_PLUGIN_PREFIX);
+        Map<String, Object> webInfo = (Map<String, Object>) diagnosticInfo.get("web");
 
         assertThat(webInfo).isNotEmpty();
     }

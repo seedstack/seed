@@ -139,7 +139,7 @@ public class ConfigurationIT {
     @Test
     public void properties_files_are_accessible_in_configuration() {
         Holder holder = injector.getInstance(Holder.class);
-        assertThat(holder.application.getConfiguration().get(String.class, "test\\.keyFromProperties")).isEqualTo("testValue");
+        assertThat(holder.application.getConfiguration().get(String.class, "test.keyFromProperties")).isEqualTo("testValue");
     }
 
     @Test

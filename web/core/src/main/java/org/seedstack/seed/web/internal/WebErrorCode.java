@@ -13,6 +13,7 @@ import org.seedstack.shed.exception.ErrorCode;
  * Enumerates all Web error codes.
  */
 public enum WebErrorCode implements ErrorCode {
+    CANNOT_RESOLVE_WEB_RESOURCE_LOCATION,
     ERROR_RETRIEVING_RESOURCE,
     UNABLE_TO_DETERMINE_RESOURCE_INFO,
     UNABLE_TO_SCAN_TOMCAT_JNDI_DIRECTORY,

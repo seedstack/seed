@@ -10,9 +10,9 @@ package org.seedstack.seed.web.internal.diagnostic;
 import com.google.common.collect.Lists;
 import io.nuun.kernel.api.plugin.InitState;
 import io.nuun.kernel.api.plugin.context.InitContext;
-import org.seedstack.seed.diagnostic.DiagnosticManager;
 import org.seedstack.seed.core.SeedRuntime;
 import org.seedstack.seed.core.internal.AbstractSeedPlugin;
+import org.seedstack.seed.diagnostic.DiagnosticManager;
 import org.seedstack.seed.web.WebConfig;
 import org.seedstack.seed.web.spi.FilterDefinition;
 import org.seedstack.seed.web.spi.ListenerDefinition;
@@ -24,8 +24,6 @@ import org.slf4j.LoggerFactory;
 
 import javax.servlet.ServletContext;
 import java.util.List;
-
-import static org.seedstack.seed.web.internal.WebPlugin.WEB_PLUGIN_PREFIX;
 
 public class WebDiagnosticPlugin extends AbstractSeedPlugin implements WebProvider {
     private static final Logger LOGGER = LoggerFactory.getLogger(WebDiagnosticPlugin.class);
@@ -50,7 +48,7 @@ public class WebDiagnosticPlugin extends AbstractSeedPlugin implements WebProvid
 
         if (servletContext != null) {
             diagnosticManager.registerDiagnosticInfoCollector(
-                    WEB_PLUGIN_PREFIX,
+                    "web",
                     new WebDiagnosticCollector(servletContext)
             );
         }
