@@ -100,7 +100,7 @@ public class SeedRuntime {
 
                 if (pluginPackage != null && pluginPackage.getName().startsWith(SEED_PACKAGE_PREFIX)) {
                     String pluginVersion = pluginPackage.getImplementationVersion();
-                    if (pluginVersion != null && !pluginVersion.equals(seedVersion)) {
+                    if (!seedVersion.equals(pluginVersion)) {
                         inconsistentPlugins.add(plugin.name());
                     }
                 }

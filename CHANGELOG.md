@@ -3,6 +3,7 @@
 * [fix] Fix StackOverflowError under Tomcat in Eclipse WTP when auto-configuring Logback.
 * [chg] Default diagnostic dump changed from JSON to YAML.
 * [chg] Using the application classloader to load properties for additional JNDI contexts (paths should not start with `/` anymore).
+* [fix] Fix resolution of `WEB-INF/classes` under Tomcat 8 when using resource overlay (PreResources, PostResources).
 
 # Version 3.1.0 (2017-02-16)
 

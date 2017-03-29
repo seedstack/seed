@@ -38,7 +38,7 @@
         <aopalliance.version>1.0</aopalliance.version>
         <glassfish-javax.el.version>3.0.0</glassfish-javax.el.version>
 
-        <compatibility.skip>true</compatibility.skip>
+        <compatibility.version>3.1.0</compatibility.version>
 
         <bintray.package>seed</bintray.package>
     </properties>

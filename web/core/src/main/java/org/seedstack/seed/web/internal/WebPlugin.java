@@ -13,7 +13,7 @@ import com.google.inject.servlet.GuiceFilter;
 import io.nuun.kernel.api.plugin.InitState;
 import io.nuun.kernel.api.plugin.context.Context;
 import io.nuun.kernel.api.plugin.context.InitContext;
-import org.reflections.util.ClasspathHelper;
+import org.seedstack.seed.SeedException;
 import org.seedstack.seed.core.SeedRuntime;
 import org.seedstack.seed.core.internal.AbstractSeedPlugin;
 import org.seedstack.seed.web.spi.FilterDefinition;
@@ -36,8 +36,9 @@ import java.util.Set;
  * This plugin provides support for servlet-based Web applications.
  */
 public class WebPlugin extends AbstractSeedPlugin {
-    public static final String WEB_PLUGIN_PREFIX = "org.seedstack.seed.web";
     private static final Logger LOGGER = LoggerFactory.getLogger(WebPlugin.class);
+    private static final String WEB_INF_LIB = "/WEB-INF/lib";
+    private static final String WEB_INF_CLASSES = "/WEB-INF/classes";
 
     private final List<FilterDefinition> filterDefinitions = new ArrayList<>();
     private final List<ServletDefinition> servletDefinitions = new ArrayList<>();
@@ -57,20 +58,29 @@ public class WebPlugin extends AbstractSeedPlugin {
     @Override
     public Set<URL> computeAdditionalClasspathScan() {
         Set<URL> additionalUrls = new HashSet<>();
-
         if (servletContext != null) {
-            // resource paths for WEB-INF/lib can be null when SEED run in the Undertow servlet container
-            if (servletContext.getResourcePaths("/WEB-INF/lib") != null) {
-                additionalUrls.addAll(ClasspathHelper.forWebInfLib(servletContext));
+            Set<URL> webLibraries = resolveWebLibraries();
+            if (webLibraries.isEmpty()) {
+                LOGGER.debug("No Web library found for scanning");
+            } else {
+                for (URL webLibrary : webLibraries) {
+                    LOGGER.trace("Resolved Web library {}", webLibrary);
+                }
+                LOGGER.debug("Found {} Web libraries for scanning", webLibraries.size());
             }
-            URL webInfClasses = ClasspathHelper.forWebInfClasses(servletContext);
-            if (webInfClasses != null) {
-                additionalUrls.add(webInfClasses);
+            additionalUrls.addAll(webLibraries);
+
+            Set<URL> webClassesLocations = resolveWebClassesLocations();
+            if (webClassesLocations.isEmpty()) {
+                LOGGER.debug("No {} location found for scanning", WEB_INF_CLASSES);
+            } else {
+                for (URL webClassesLocation : webClassesLocations) {
+                    LOGGER.trace("Resolved '{}' location: {}", WEB_INF_CLASSES, webClassesLocation);
+                }
+                LOGGER.debug("Found {} '{}' locations for scanning", webClassesLocations.size(), WEB_INF_CLASSES);
             }
+            additionalUrls.addAll(webClassesLocations);
         }
-
-        LOGGER.debug("{} additional URL(s) to scan were determined from Web classpath", additionalUrls.size());
-
         return additionalUrls;
     }
 
@@ -102,10 +112,10 @@ public class WebPlugin extends AbstractSeedPlugin {
             }
 
             // Sort filter according to the priority in their definition
-            Collections.sort(filterDefinitions, Collections.reverseOrder((o1, o2) -> new Integer(o1.getPriority()).compareTo(o2.getPriority())));
+            filterDefinitions.sort(Collections.reverseOrder((o1, o2) -> new Integer(o1.getPriority()).compareTo(o2.getPriority())));
 
             // Sort listeners according to the priority in their definition
-            Collections.sort(listenerDefinitions, Collections.reverseOrder((o1, o2) -> new Integer(o1.getPriority()).compareTo(o2.getPriority())));
+            listenerDefinitions.sort(Collections.reverseOrder((o1, o2) -> new Integer(o1.getPriority()).compareTo(o2.getPriority())));
         }
 
         return InitState.INITIALIZED;
@@ -148,5 +158,57 @@ public class WebPlugin extends AbstractSeedPlugin {
         guiceFilter.setAsyncSupported(true);
         guiceFilter.addMappings(new FilterDefinition.Mapping("/*"));
         return guiceFilter;
+    }
+
+    private Set<URL> resolveWebLibraries() {
+        final Set<URL> resolvedUrls = new HashSet<>();
+        Set<String> resourcePaths = servletContext.getResourcePaths(WEB_INF_LIB);
+        if (resourcePaths != null) {
+            for (String resourcePath : resourcePaths) {
+                try {
+                    URL resolvedURL = servletContext.getResource(resourcePath);
+                    if (resolvedURL != null) {
+                        resolvedUrls.add(resolvedURL);
+                    } else {
+                        LOGGER.warn("Ignoring unresolvable Web library {}", resourcePath);
+                    }
+                } catch (Exception e) {
+                    throw SeedException.wrap(e, WebErrorCode.CANNOT_RESOLVE_WEB_RESOURCE_LOCATION)
+                            .put("path", resourcePath);
+                }
+            }
+        }
+        return resolvedUrls;
+    }
+
+    private Set<URL> resolveWebClassesLocations() {
+        final Set<URL> resolvedUrls = new HashSet<>();
+        Set<String> resourcePaths = servletContext.getResourcePaths(WEB_INF_CLASSES);
+        if (resourcePaths != null) {
+            for (String resourcePath : resourcePaths) {
+                if (resourcePath.startsWith(WEB_INF_CLASSES)) {
+                    String suffix = resourcePath.substring(WEB_INF_CLASSES.length());
+                    try {
+                        URL resource = servletContext.getResource(resourcePath);
+                        if (resource != null) {
+                            String resourceAsString = resource.toExternalForm();
+                            if (resourceAsString.endsWith(suffix)) {
+                                resolvedUrls.add(new URL(resourceAsString.substring(0, resourceAsString.length() - suffix.length())));
+                            } else {
+                                LOGGER.warn("Ignoring invalid '{}' location: {}", WEB_INF_CLASSES, resourcePath);
+                            }
+                        } else {
+                            LOGGER.warn("Ignoring unresolvable '{}' location: {}", WEB_INF_CLASSES, resourcePath);
+                        }
+                    } catch (Exception e) {
+                        throw SeedException.wrap(e, WebErrorCode.CANNOT_RESOLVE_WEB_RESOURCE_LOCATION)
+                                .put("path", resourcePath);
+                    }
+                } else {
+                    LOGGER.warn("Ignoring invalid '{}' location: {}", WEB_INF_CLASSES, resourcePath);
+                }
+            }
+        }
+        return resolvedUrls;
     }
 }
