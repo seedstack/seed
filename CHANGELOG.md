@@ -1,9 +1,11 @@
-# Version 3.1.1 (2017-02-20)
+# Version 3.2.0 (2017-04-28)
 
+* [new] Add `SeedInitializer` interface that is called at Seed JVM-wide initialization and close (can be used to do early initialization). 
 * [fix] Fix StackOverflowError under Tomcat in Eclipse WTP when auto-configuring Logback.
+* [fix] Fix resolution of `WEB-INF/classes` under Tomcat 8 when using resource overlay (PreResources, PostResources).
 * [chg] Default diagnostic dump changed from JSON to YAML.
 * [chg] Using the application classloader to load properties for additional JNDI contexts (paths should not start with `/` anymore).
-* [fix] Fix resolution of `WEB-INF/classes` under Tomcat 8 when using resource overlay (PreResources, PostResources).
+* [chg] Configuration properties files are now mapped in depth (the dot-notation in the property key is used to create intermediary tree nodes).
 
 # Version 3.1.0 (2017-02-16)
 

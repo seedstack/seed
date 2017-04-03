@@ -23,9 +23,13 @@ import org.seedstack.seed.core.internal.init.KernelManager;
 import org.seedstack.seed.core.internal.init.LogManager;
 import org.seedstack.seed.core.internal.init.ProxyManager;
 import org.seedstack.seed.diagnostic.DiagnosticManager;
+import org.seedstack.seed.spi.SeedInitializer;
 
 import javax.annotation.Nullable;
 import javax.validation.ValidatorFactory;
+import java.util.HashSet;
+import java.util.ServiceLoader;
+import java.util.Set;
 
 /**
  * This class is the Seed framework entry point, which is used create and dispose kernels.
@@ -41,6 +45,7 @@ public class Seed {
     private final ValidatorFactory validatorFactory;
     private final ProxyManager proxyManager;
     private final KernelManager kernelManager;
+    private final Set<SeedInitializer> seedInitializers = new HashSet<>();
 
     private static class Holder {
         private static final Seed INSTANCE = new Seed();
@@ -120,6 +125,7 @@ public class Seed {
     public static void close() {
         if (initialized) {
             Seed instance = getInstance();
+            instance.seedInitializers.forEach(SeedInitializer::onClose);
             instance.proxyManager.uninstall();
             instance.validatorFactory.close();
             instance.consoleManager.uninstall();
@@ -173,6 +179,17 @@ public class Seed {
 
         // Nuun
         kernelManager = KernelManager.get();
+
+        // Custom initializers
+        for (SeedInitializer seedInitializer : ServiceLoader.load(SeedInitializer.class)) {
+            try {
+                seedInitializer.onInitialization(configuration);
+                seedInitializers.add(seedInitializer);
+            } catch (Exception e) {
+                throw SeedException.wrap(e, CoreErrorCode.ERROR_IN_INITIALIZER)
+                        .put("initializerClass", seedInitializer.getClass().getName());
+            }
+        }
 
         initialized = true;
     }

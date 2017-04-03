@@ -9,7 +9,6 @@ package org.seedstack.seed.core;
 
 import com.google.inject.ConfigurationException;
 import com.google.inject.Injector;
-import org.assertj.core.api.Assertions;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -17,6 +16,7 @@ import org.seedstack.seed.Logging;
 import org.seedstack.seed.core.fixtures.Service1;
 import org.seedstack.seed.core.fixtures.Service2;
 import org.seedstack.seed.core.fixtures.Service3;
+import org.seedstack.seed.core.fixtures.TestSeedInitializer;
 import org.seedstack.seed.core.rules.SeedITRule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,6 +24,8 @@ import some.other.pkg.ForeignClass;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class CorePluginIT {
     @Rule
@@ -75,12 +77,17 @@ public class CorePluginIT {
     }
 
     @Test
+    public void initializers_are_called() {
+        assertThat(TestSeedInitializer.getCallCount()).isEqualTo(1);
+    }
+
+    @Test
     public void modules_are_installed_correctly() {
         HolderNominal holder = injector.getInstance(HolderNominal.class);
 
-        Assertions.assertThat(holder).isNotNull();
-        Assertions.assertThat(holder.s1).isNotNull();
-        Assertions.assertThat(holder.s3).isNull();
+        assertThat(holder).isNotNull();
+        assertThat(holder.s1).isNotNull();
+        assertThat(holder.s3).isNull();
     }
 
     @Test(expected = ConfigurationException.class)
@@ -92,8 +99,8 @@ public class CorePluginIT {
     public void logger_injection_is_working() {
         LoggerHolder holder = injector.getInstance(LoggerHolder.class);
 
-        Assertions.assertThat(LoggerHolder.logger).isNotNull();
-        Assertions.assertThat(holder.logger1).isSameAs(LoggerHolder.logger);
+        assertThat(LoggerHolder.logger).isNotNull();
+        assertThat(holder.logger1).isSameAs(LoggerHolder.logger);
     }
 
     @Test
@@ -101,16 +108,16 @@ public class CorePluginIT {
         SubLoggerHolder1 subHolder1 = injector.getInstance(SubLoggerHolder1.class);
         SubLoggerHolder2 subHolder2 = injector.getInstance(SubLoggerHolder2.class);
 
-        Assertions.assertThat(subHolder1.logger2).isNotNull();
-        Assertions.assertThat(subHolder1.logger1).isNotNull();
-        Assertions.assertThat(subHolder2.logger2).isNotNull();
-        Assertions.assertThat(subHolder2.logger1).isNotNull();
+        assertThat(subHolder1.logger2).isNotNull();
+        assertThat(subHolder1.logger1).isNotNull();
+        assertThat(subHolder2.logger2).isNotNull();
+        assertThat(subHolder2.logger1).isNotNull();
     }
 
     @Test
     public void multiple_package_roots_can_be_used() {
         HolderNominal holder = injector.getInstance(HolderNominal.class);
 
-        Assertions.assertThat(holder.foreignClass).isNotNull();
+        assertThat(holder.foreignClass).isNotNull();
     }
 }
