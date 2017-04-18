@@ -41,15 +41,23 @@ class SecurityITRule implements TestRule {
                     userAnno = description.getTestClass().getAnnotation(WithUser.class);
                 }
 
+                Subject subject = null;
                 if (userAnno != null) {
                     ThreadContext.bind(securityManager);
-                    Subject subject = new Subject.Builder(securityManager).buildSubject();
-                    UsernamePasswordToken token = new UsernamePasswordToken(userAnno.id(), userAnno.password());
-                    subject.login(token);
+                    subject = new Subject.Builder(securityManager).buildSubject();
+                    subject.login(new UsernamePasswordToken(userAnno.id(), userAnno.password()));
                     ThreadContext.bind(subject);
                 }
 
-                base.evaluate();
+                try {
+                    base.evaluate();
+                } finally {
+                    if (subject != null) {
+                        subject.logout();
+                        ThreadContext.unbindSecurityManager();
+                        ThreadContext.unbindSubject();
+                    }
+                }
             }
         };
     }
