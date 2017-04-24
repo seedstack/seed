@@ -7,7 +7,6 @@
  */
 package org.seedstack.seed.web.internal.resources;
 
-import com.google.common.base.Optional;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
@@ -34,6 +33,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.zip.GZIPOutputStream;
 
@@ -51,6 +51,8 @@ import java.util.zip.GZIPOutputStream;
 public class WebResourcesFilter implements Filter {
     private static final String HEADER_IFMODSINCE = "If-Modified-Since";
     private static final String HEADER_LASTMOD = "Last-Modified";
+    private static final String WEB_INF = "/WEB-INF/";
+    private static final String SLASH = "/";
 
     private int bufferSize;
     private LoadingCache<ResourceRequest, Optional<ResourceInfo>> resourceInfoCache;
@@ -75,12 +77,7 @@ public class WebResourcesFilter implements Filter {
                 .build(new CacheLoader<ResourceRequest, Optional<ResourceInfo>>() {
                     @Override
                     public Optional<ResourceInfo> load(ResourceRequest key) {
-                        ResourceInfo resourceInfo = webResourceResolver.resolveResourceInfo(key);
-                        if (resourceInfo == null) {
-                            return Optional.absent();
-                        } else {
-                            return Optional.of(resourceInfo);
-                        }
+                        return java.util.Optional.ofNullable(webResourceResolver.resolveResourceInfo(key));
                     }
                 });
 
@@ -95,21 +92,18 @@ public class WebResourcesFilter implements Filter {
         String acceptEncodingHeader = httpServletRequest.getHeader("Accept-Encoding");
         boolean acceptGzip = acceptEncodingHeader != null && acceptEncodingHeader.contains("gzip");
 
-        if (path.isEmpty() || path.endsWith("/")) {
+        if (path.isEmpty() || path.endsWith(SLASH) || path.startsWith(WEB_INF)) {
             filterChain.doFilter(servletRequest, servletResponse);
         } else {
             // Find resource
-            ResourceInfo resourceInfo = null;
+            Optional<ResourceInfo> optionalResourceInfo;
             try {
-                Optional<ResourceInfo> cached = resourceInfoCache.get(new ResourceRequest(path, acceptGzip));
-                if (cached.isPresent()) {
-                    resourceInfo = cached.get();
-                }
+                optionalResourceInfo = resourceInfoCache.get(new ResourceRequest(path, acceptGzip));
             } catch (ExecutionException e) {
                 throw SeedException.wrap(e, WebErrorCode.UNABLE_TO_DETERMINE_RESOURCE_INFO).put("path", path);
             }
 
-            if (resourceInfo == null) {
+            if (!optionalResourceInfo.isPresent()) {
                 filterChain.doFilter(servletRequest, servletResponse);
             } else {
                 long ifModifiedSince = ((HttpServletRequest) servletRequest).getDateHeader(HEADER_IFMODSINCE);
@@ -118,6 +112,7 @@ public class WebResourcesFilter implements Filter {
                     httpServletResponse.setDateHeader(HEADER_LASTMOD, servletInitTime);
 
                     // Prepare response
+                    ResourceInfo resourceInfo = optionalResourceInfo.get();
                     httpServletResponse.setContentType(resourceInfo.getContentType());
                     ResourceData resourceData = prepareResourceData(resourceInfo, acceptGzip);
                     if (resourceData.gzipped) {

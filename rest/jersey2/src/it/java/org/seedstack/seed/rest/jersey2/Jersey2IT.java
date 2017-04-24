@@ -26,13 +26,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 
 public class Jersey2IT extends AbstractSeedWebIT {
-
     @ArquillianResource
     private URL baseURL;
 
     @Deployment
     public static WebArchive createDeployment() {
-        return ShrinkWrap.create(WebArchive.class);
+        return ShrinkWrap.create(WebArchive.class)
+                .addAsWebInfResource("test.jsp", "jsp/test.jsp");
     }
 
     @RunAsClient
@@ -71,5 +71,12 @@ public class Jersey2IT extends AbstractSeedWebIT {
         expect().statusCode(200).given()
                 .multiPart("file.txt", "Hello world!".getBytes())
                 .post(baseURL.toString() + "multipart");
+    }
+
+    @RunAsClient
+    @Test
+    public void viewable() throws JSONException {
+        String body = expect().statusCode(200).when().get(baseURL.toString() + "viewable?test=value1").asString();
+        assertThat(body.trim()).isEqualTo("value1");
     }
 }
