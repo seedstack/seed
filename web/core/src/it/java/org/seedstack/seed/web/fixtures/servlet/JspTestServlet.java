@@ -22,4 +22,9 @@ public class JspTestServlet extends HttpServlet {
     protected void doGet(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws ServletException, IOException {
         this.getServletContext().getRequestDispatcher("/WEB-INF/jsp/test.jsp").forward(httpServletRequest, httpServletResponse);
     }
+
+    @Override
+    protected void doPost(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws ServletException, IOException {
+        this.getServletContext().getRequestDispatcher("/WEB-INF/jsp/test.jsp").include(httpServletRequest, httpServletResponse);
+    }
 }

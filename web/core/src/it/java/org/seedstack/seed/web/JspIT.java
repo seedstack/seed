@@ -34,4 +34,11 @@ public class JspIT extends AbstractSeedWebIT {
         String body = expect().statusCode(200).when().get(baseURL.toString() + "jsp-test?test=value1").getBody().asString();
         assertThat(body.trim()).isEqualTo("value1");
     }
+
+    @Test
+    @RunAsClient
+    public void jsp_inclusion_is_working(@ArquillianResource URL baseURL) throws Exception {
+        String body = expect().statusCode(200).when().post(baseURL.toString() + "jsp-test?test=value2").getBody().asString();
+        assertThat(body.trim()).isEqualTo("value2");
+    }
 }

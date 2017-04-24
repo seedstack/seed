@@ -11,12 +11,15 @@ import com.google.inject.Injector;
 import org.seedstack.seed.web.spi.FilterDefinition;
 import org.seedstack.seed.web.spi.ListenerDefinition;
 import org.seedstack.seed.web.spi.ServletDefinition;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.servlet.FilterRegistration;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletRegistration;
 
 class ServletContextConfigurer {
+    private static final Logger LOGGER = LoggerFactory.getLogger(ServletContextConfigurer.class);
     private final ServletContext servletContext;
     private final Injector injector;
 
@@ -30,14 +33,19 @@ class ServletContextConfigurer {
                 filterDefinition.getName(),
                 injector.getInstance(filterDefinition.getFilterClass())
         );
-        filterRegistration.setAsyncSupported(filterDefinition.isAsyncSupported());
-        for (FilterDefinition.Mapping mapping : filterDefinition.getServletMappings()) {
-            filterRegistration.addMappingForServletNames(mapping.getDispatcherTypes(), mapping.isMatchAfter(), mapping.getValues());
+
+        if (filterRegistration != null) {
+            filterRegistration.setAsyncSupported(filterDefinition.isAsyncSupported());
+            for (FilterDefinition.Mapping mapping : filterDefinition.getServletMappings()) {
+                filterRegistration.addMappingForServletNames(mapping.getDispatcherTypes(), mapping.isMatchAfter(), mapping.getValues());
+            }
+            for (FilterDefinition.Mapping mapping : filterDefinition.getMappings()) {
+                filterRegistration.addMappingForUrlPatterns(mapping.getDispatcherTypes(), mapping.isMatchAfter(), mapping.getValues());
+            }
+            filterRegistration.setInitParameters(filterDefinition.getInitParameters());
+        } else {
+            LOGGER.warn("Servlet filter {} was already registered by the container: injection and interception are not available. Consider adding a web.xml file with metadata-complete=true.", filterDefinition.getName());
         }
-        for (FilterDefinition.Mapping mapping : filterDefinition.getMappings()) {
-            filterRegistration.addMappingForUrlPatterns(mapping.getDispatcherTypes(), mapping.isMatchAfter(), mapping.getValues());
-        }
-        filterRegistration.setInitParameters(filterDefinition.getInitParameters());
     }
 
     void addServlet(ServletDefinition servletDefinition) {
@@ -45,12 +53,17 @@ class ServletContextConfigurer {
                 servletDefinition.getName(),
                 injector.getInstance(servletDefinition.getServletClass())
         );
-        servletRegistration.setAsyncSupported(servletDefinition.isAsyncSupported());
-        for (String mapping : servletDefinition.getMappings()) {
-            servletRegistration.addMapping(mapping);
+
+        if (servletRegistration != null) {
+            servletRegistration.setAsyncSupported(servletDefinition.isAsyncSupported());
+            for (String mapping : servletDefinition.getMappings()) {
+                servletRegistration.addMapping(mapping);
+            }
+            servletRegistration.setLoadOnStartup(servletDefinition.getLoadOnStartup());
+            servletRegistration.setInitParameters(servletDefinition.getInitParameters());
+        } else {
+            LOGGER.warn("Servlet {} was already registered by the container: injection and interception are not available. Consider adding a web.xml file with metadata-complete=true.", servletDefinition.getName());
         }
-        servletRegistration.setLoadOnStartup(servletDefinition.getLoadOnStartup());
-        servletRegistration.setInitParameters(servletDefinition.getInitParameters());
     }
 
     void addListener(ListenerDefinition listenerDefinition) {

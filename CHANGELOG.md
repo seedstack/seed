@@ -5,6 +5,7 @@
 * [fix] Fix resolution of `WEB-INF/classes` under Tomcat 8 when using resource overlay (PreResources, PostResources).
 * [fix] Properly logout subject when testing with `@WithUser`.
 * [fix] Prevent WebResourceFilter from serving files under `/WEB-INF`, allowing JSP to be served correctly.
+* [fix] Fix NPE when a filter or a servlet was already registered by the container.
 * [chg] Default diagnostic dump changed from JSON to YAML.
 * [chg] Using the application classloader to load properties for additional JNDI contexts (paths should not start with `/` anymore).
 * [chg] Configuration properties files are now mapped in depth (the dot-notation in the property key is used to create intermediary tree nodes).
