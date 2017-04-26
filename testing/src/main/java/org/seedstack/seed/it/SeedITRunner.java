@@ -33,6 +33,7 @@ import org.seedstack.seed.it.spi.KernelRule;
 import org.seedstack.seed.it.spi.PausableStatement;
 import org.seedstack.shed.ClassLoaders;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -156,44 +157,36 @@ public class SeedITRunner extends BlockJUnit4ClassRunner {
     protected List<TestRule> getTestRules(Object target) {
         List<TestRule> testRules = super.getTestRules(target);
         for (ITRunnerPlugin plugin : plugins) {
-            List<Class<? extends TestRule>> testRulesToApply = plugin.provideTestRulesToApply(getTestClass(), target);
-            if (testRulesToApply != null) {
-                for (Class<? extends TestRule> testRuleClass : testRulesToApply) {
-                    try {
-                        TestRule testRule = instantiate(testRuleClass);
-                        if (testRule instanceof KernelRule) {
-                            ((KernelRule) testRule).acceptKernelConfiguration(provideKernelConfiguration(defaultConfiguration));
-                        }
-                        testRules.add(testRule);
-                    } catch (Exception e) {
-                        throw SeedException.wrap(e, ITErrorCode.FAILED_TO_INSTANTIATE_TEST_RULE).put("ruleClass", testRuleClass.getCanonicalName());
-                    }
-                }
-            }
+            testRules.addAll(buildRules(plugin.provideTestRulesToApply(getTestClass(), target)));
         }
         return testRules;
     }
 
     @Override
     protected List<TestRule> classRules() {
-        List<TestRule> testRules = super.classRules();
+        List<TestRule> classRules = super.classRules();
         for (ITRunnerPlugin plugin : plugins) {
-            List<Class<? extends TestRule>> classRulesToApply = plugin.provideClassRulesToApply(getTestClass());
-            if (classRulesToApply != null) {
-                for (Class<? extends TestRule> testRuleClass : classRulesToApply) {
-                    try {
-                        TestRule testRule = instantiate(testRuleClass);
-                        if (testRule instanceof KernelRule) {
-                            ((KernelRule) testRule).acceptKernelConfiguration(provideKernelConfiguration(defaultConfiguration));
-                        }
-                        testRules.add(testRule);
-                    } catch (Exception e) {
-                        throw SeedException.wrap(e, ITErrorCode.FAILED_TO_INSTANTIATE_TEST_RULE).put("ruleClass", testRuleClass.getCanonicalName());
+            classRules.addAll(buildRules(plugin.provideClassRulesToApply(getTestClass())));
+        }
+        return classRules;
+    }
+
+    private List<TestRule> buildRules(List<Class<? extends TestRule>> classRulesToApply) {
+        List<TestRule> rules = new ArrayList<>();
+        if (classRulesToApply != null) {
+            for (Class<? extends TestRule> testRuleClass : classRulesToApply) {
+                try {
+                    TestRule testRule = instantiate(testRuleClass);
+                    if (testRule instanceof KernelRule) {
+                        ((KernelRule) testRule).acceptKernelConfiguration(provideKernelConfiguration(defaultConfiguration));
                     }
+                    rules.add(testRule);
+                } catch (Exception e) {
+                    throw SeedException.wrap(e, ITErrorCode.FAILED_TO_INSTANTIATE_TEST_RULE).put("ruleClass", testRuleClass.getCanonicalName());
                 }
             }
         }
-        return testRules;
+        return rules;
     }
 
     @Override
