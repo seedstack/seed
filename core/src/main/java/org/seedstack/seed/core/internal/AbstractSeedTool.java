@@ -23,11 +23,19 @@ public abstract class AbstractSeedTool extends AbstractSeedPlugin implements See
     }
 
     @Override
+    public StartMode startMode() {
+        return StartMode.MINIMAL;
+    }
+
+    @Override
     public final Collection<Class<?>> pluginsToLoad() {
         List<Class<?>> dependencies = new ArrayList<>(toolPlugins());
-        dependencies.add(CorePlugin.class);
-        dependencies.add(ConfigurationPlugin.class);
-        dependencies.add(CliPlugin.class);
+        if (startMode() == StartMode.MINIMAL) {
+            // Even in minimal mode, we need some basic plugins
+            dependencies.add(CorePlugin.class);
+            dependencies.add(ConfigurationPlugin.class);
+            dependencies.add(CliPlugin.class);
+        }
         return dependencies;
     }
 

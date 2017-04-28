@@ -53,10 +53,13 @@ public class ToolLauncher implements SeedLauncher {
 
     @SuppressWarnings("unchecked")
     private KernelConfiguration buildKernelConfiguration(SeedTool seedTool) {
-        KernelConfiguration kernelConfiguration = NuunCore.newKernelConfiguration()
-                .param(CorePlugin.AUTODETECT_MODULES_KERNEL_PARAM, "false")
-                .withoutSpiPluginsLoader()
-                .addPlugin(seedTool.getClass());
+        KernelConfiguration kernelConfiguration = NuunCore.newKernelConfiguration();
+        if (seedTool.startMode() == SeedTool.StartMode.MINIMAL) {
+            kernelConfiguration
+                    .param(CorePlugin.AUTODETECT_MODULES_KERNEL_PARAM, "false")
+                    .withoutSpiPluginsLoader();
+        }
+        kernelConfiguration.addPlugin(seedTool.getClass());
         seedTool.pluginsToLoad().forEach(pluginClass -> kernelConfiguration.addPlugin((Class<? extends Plugin>) pluginClass));
         return kernelConfiguration;
     }

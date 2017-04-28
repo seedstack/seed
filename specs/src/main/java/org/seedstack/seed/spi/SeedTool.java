@@ -15,5 +15,12 @@ import java.util.concurrent.Callable;
 public interface SeedTool extends Callable<Integer>, Plugin {
     String toolName();
 
+    StartMode startMode();
+
     Collection<Class<?>> pluginsToLoad();
+
+    enum StartMode {
+        MINIMAL,
+        FULL
+    }
 }

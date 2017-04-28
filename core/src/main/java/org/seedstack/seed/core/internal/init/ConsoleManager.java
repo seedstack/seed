@@ -81,11 +81,15 @@ public class ConsoleManager {
     }
 
     private boolean isIntelliJ() {
-        try {
-            Class.forName("com.intellij.rt.execution.application.AppMain");
+        if (System.getProperty("java.class.path").contains("idea_rt.jar")) {
             return true;
-        } catch (ClassNotFoundException e) {
-            return false;
+        } else {
+            try {
+                Class.forName("com.intellij.rt.execution.application.AppMain");
+                return true;
+            } catch (ClassNotFoundException e) {
+                return false;
+            }
         }
     }
 
