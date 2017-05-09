@@ -30,10 +30,12 @@ public class UndertowConfig {
         this.bufferSize = Optional.of(bufferSize);
     }
 
+    @Deprecated
     public Optional<Integer> getBuffersPerRegion() {
         return buffersPerRegion;
     }
 
+    @Deprecated
     public void setBuffersPerRegion(Integer buffersPerRegion) {
         this.buffersPerRegion = Optional.of(buffersPerRegion);
     }

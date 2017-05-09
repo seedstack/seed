@@ -51,7 +51,6 @@ class ServerFactory {
 
     private Undertow.Builder configureUndertow(Undertow.Builder builder, UndertowConfig undertowConfig) {
         undertowConfig.getBufferSize().ifPresent(builder::setBufferSize);
-        undertowConfig.getBuffersPerRegion().ifPresent(builder::setBuffersPerRegion);
         undertowConfig.getIoThreads().ifPresent(builder::setIoThreads);
         undertowConfig.getWorkerThreads().ifPresent(builder::setWorkerThreads);
         undertowConfig.getDirectBuffers().ifPresent(builder::setDirectBuffers);
