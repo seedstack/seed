@@ -32,6 +32,7 @@ public class ApplicationConfig {
     private String version = "1.0.0";
     private File storage;
     private boolean packageScanWarning = true;
+    private boolean printBanner = true;
 
     public String getId() {
         return id;
@@ -92,6 +93,15 @@ public class ApplicationConfig {
 
     public ApplicationConfig setPackageScanWarning(boolean packageScanWarning) {
         this.packageScanWarning = packageScanWarning;
+        return this;
+    }
+
+    public boolean isPrintBanner() {
+        return printBanner;
+    }
+
+    public ApplicationConfig setPrintBanner(boolean printBanner) {
+        this.printBanner = printBanner;
         return this;
     }
 }

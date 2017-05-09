@@ -33,8 +33,8 @@ public class ConfigurationPluginTest {
     public void before() {
         configurationPlugin = new ConfigurationPlugin();
         Coffig coffig = mock(Coffig.class);
-        when(coffig.get(ApplicationConfig.class)).thenReturn(new ApplicationConfig());
-        Whitebox.setInternalState(configurationPlugin, "configuration", coffig);
+        Whitebox.setInternalState(configurationPlugin, "coffig", coffig);
+        Whitebox.setInternalState(configurationPlugin, "applicationConfig", new ApplicationConfig());
         SeedRuntime seedRuntime = mock(SeedRuntime.class);
         Whitebox.setInternalState(configurationPlugin, "seedRuntime", seedRuntime);
         Whitebox.setInternalState(configurationPlugin, "diagnosticManager", new DiagnosticManagerImpl());

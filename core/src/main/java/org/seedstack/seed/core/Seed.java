@@ -10,6 +10,7 @@ package org.seedstack.seed.core;
 import io.nuun.kernel.api.Kernel;
 import io.nuun.kernel.api.config.KernelConfiguration;
 import org.seedstack.coffig.Coffig;
+import org.seedstack.seed.ApplicationConfig;
 import org.seedstack.seed.LoggingConfig;
 import org.seedstack.seed.ProxyConfig;
 import org.seedstack.seed.SeedException;
@@ -24,10 +25,16 @@ import org.seedstack.seed.core.internal.init.LogManager;
 import org.seedstack.seed.core.internal.init.ProxyManager;
 import org.seedstack.seed.diagnostic.DiagnosticManager;
 import org.seedstack.seed.spi.SeedInitializer;
+import org.seedstack.shed.ClassLoaders;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
 import javax.validation.ValidatorFactory;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.HashSet;
+import java.util.Optional;
+import java.util.Scanner;
 import java.util.ServiceLoader;
 import java.util.Set;
 
@@ -36,9 +43,15 @@ import java.util.Set;
  * It handles global initialization and cleanup.
  */
 public class Seed {
+    private static final String WELCOME_MESSAGE = " ____                _ \n" +
+            "/ ___|  ___  ___  __| |\n" +
+            "\\___ \\ / _ \\/ _ \\/ _` |\n" +
+            " ___) |  __/  __/ (_| |\n" +
+            "|____/ \\___|\\___|\\____|";
     private static volatile boolean initialized = false;
     private static volatile boolean noLogs = false;
     private static final DiagnosticManager diagnosticManager = new DiagnosticManagerImpl();
+    private static final String seedVersion = Optional.ofNullable(Seed.class.getPackage()).map(Package::getImplementationVersion).orElse(null);
     private final Coffig configuration;
     private final ConsoleManager consoleManager;
     private final LogManager logManager;
@@ -83,8 +96,9 @@ public class Seed {
                 SeedRuntime.builder()
                         .context(runtimeContext)
                         .diagnosticManager(diagnosticManager)
-                        .validatorFactory(instance.validatorFactory)
                         .configuration(instance.configuration.fork())
+                        .validatorFactory(instance.validatorFactory)
+                        .version(seedVersion)
                         .build(),
                 kernelConfiguration,
                 autoStart);
@@ -168,9 +182,30 @@ public class Seed {
         // Configuration
         configuration = BaseConfiguration.get();
 
+        // Banner
+        boolean versionPrinted = false;
+        if (!noLogs && configuration.get(ApplicationConfig.class).isPrintBanner()) {
+            String banner = getBanner();
+            if (banner != null) {
+                System.out.println(banner);
+            } else {
+                if (seedVersion == null) {
+                    System.out.printf("%s%n%n", WELCOME_MESSAGE);
+                } else {
+                    System.out.printf("%s v%s%n%n", WELCOME_MESSAGE, seedVersion);
+                    versionPrinted = true;
+                }
+            }
+        }
+
         // Logging activation
         if (!noLogs) {
             logManager.configure(configuration.get(LoggingConfig.class));
+
+            // If no banner is printed and we have a version, log it instead
+            if (!versionPrinted && seedVersion != null) {
+                LoggerFactory.getLogger(Seed.class).info("Seed v{}", seedVersion);
+            }
         }
 
         // Proxy
@@ -192,5 +227,21 @@ public class Seed {
         }
 
         initialized = true;
+    }
+
+    private String getBanner() {
+        InputStream bannerStream = ClassLoaders.findMostCompleteClassLoader(Seed.class).getResourceAsStream("banner.txt");
+        if (bannerStream != null) {
+            try {
+                return new Scanner(bannerStream).useDelimiter("\\Z").next();
+            } finally {
+                try {
+                    bannerStream.close();
+                } catch (IOException e) {
+                    // nothing to do
+                }
+            }
+        }
+        return null;
     }
 }

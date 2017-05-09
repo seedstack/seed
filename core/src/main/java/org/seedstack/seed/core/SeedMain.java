@@ -50,7 +50,7 @@ public class SeedMain {
             } catch (Exception e) {
                 handleException(e);
             }
-        }));
+        }, "shutdown"));
 
         try {
             seedLauncher.launch(args);

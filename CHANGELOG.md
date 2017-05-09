@@ -1,5 +1,6 @@
 # Version 3.2.1 (2017-??-??)
 
+* [new] Print a default banner at startup in case of missing custom `banner.txt`.
 * [chg] Update Guice to [4.1.0](https://github.com/google/guice/wiki/Guice41).
 * [chg] Update Shiro to [1.3.2](https://issues.apache.org/jira/secure/ReleaseNote.jspa?version=12317961&styleName=Text&projectId=12310950).
 * [chg] Update Jersey to [2.25.1](https://jersey.java.net/release-notes/2.25.1.html).

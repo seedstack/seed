@@ -52,8 +52,9 @@ public class ConfigurationPlugin extends AbstractPlugin implements ApplicationPr
     private static final String JSON_REGEX = ".*\\.json";
     private static final String PROPERTIES_REGEX = ".*\\.properties";
     private SeedRuntime seedRuntime;
-    private Coffig configuration;
+    private Coffig coffig;
     private DiagnosticManager diagnosticManager;
+    private ApplicationConfig applicationConfig;
     private Application application;
 
     @Override
@@ -64,13 +65,13 @@ public class ConfigurationPlugin extends AbstractPlugin implements ApplicationPr
     @Override
     public void provideContainerContext(Object containerContext) {
         seedRuntime = (SeedRuntime) containerContext;
-        configuration = seedRuntime.getConfiguration();
+        coffig = seedRuntime.getConfiguration();
         diagnosticManager = seedRuntime.getDiagnosticManager();
+        applicationConfig = seedRuntime.getConfiguration().get(ApplicationConfig.class);
     }
 
     @Override
     public String pluginPackageRoot() {
-        ApplicationConfig applicationConfig = configuration.get(ApplicationConfig.class);
         if (applicationConfig.getBasePackages().isEmpty() && applicationConfig.isPackageScanWarning()) {
             LOGGER.warn("No base package configured, only classes in 'org.seedstack.*' packages will be scanned");
         }
@@ -96,8 +97,7 @@ public class ConfigurationPlugin extends AbstractPlugin implements ApplicationPr
         detectKernelParamConfig(initContext);
         detectConfigurationFiles(initContext);
 
-        // we don't reuse the ApplicationConfig object as config may have changed since pluginPackageRoot()
-        application = new ApplicationImpl(configuration.get(ApplicationConfig.class), configuration);
+        application = new ApplicationImpl(coffig, applicationConfig);
         diagnosticManager.registerDiagnosticInfoCollector("application", new ApplicationDiagnosticCollector(application));
 
         return InitState.INITIALIZED;

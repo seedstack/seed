@@ -18,6 +18,7 @@ import org.seedstack.seed.core.internal.configuration.PrioritizedProvider;
 import org.seedstack.seed.diagnostic.DiagnosticManager;
 import org.seedstack.seed.diagnostic.spi.DiagnosticInfoCollector;
 
+import javax.annotation.Nullable;
 import javax.validation.ValidatorFactory;
 import java.util.Collection;
 import java.util.HashMap;
@@ -39,12 +40,12 @@ public class SeedRuntime {
     private final String seedVersion;
     private final Set<String> inconsistentPlugins = new HashSet<>();
 
-    private SeedRuntime(Object context, DiagnosticManager diagnosticManager, Coffig configuration, ValidatorFactory validatorFactory) {
+    private SeedRuntime(Object context, DiagnosticManager diagnosticManager, Coffig configuration, ValidatorFactory validatorFactory, String seedVersion) {
         this.context = context;
         this.diagnosticManager = diagnosticManager;
         this.configuration = configuration;
         this.validatorFactory = validatorFactory;
-        this.seedVersion = SeedRuntime.class.getPackage() == null ? null : SeedRuntime.class.getPackage().getImplementationVersion();
+        this.seedVersion = seedVersion;
         this.diagnosticManager.registerDiagnosticInfoCollector("seed", new RuntimeDiagnosticCollector());
         this.prioritizedProvider = ((CompositeProvider) this.configuration.getProvider()).get(PrioritizedProvider.class);
         this.inMemoryProvider = new InMemoryProvider();
@@ -113,6 +114,7 @@ public class SeedRuntime {
         private Coffig _configuration;
         private DiagnosticManager _diagnosticManager;
         private ValidatorFactory _validatorFactory;
+        private String _seedVersion;
 
         private Builder() {
         }
@@ -137,8 +139,13 @@ public class SeedRuntime {
             return this;
         }
 
+        public Builder version(@Nullable String seedVersion) {
+            this._seedVersion = seedVersion;
+            return this;
+        }
+
         public SeedRuntime build() {
-            return new SeedRuntime(_context, _diagnosticManager, _configuration, _validatorFactory);
+            return new SeedRuntime(_context, _diagnosticManager, _configuration, _validatorFactory, _seedVersion);
         }
     }
 
