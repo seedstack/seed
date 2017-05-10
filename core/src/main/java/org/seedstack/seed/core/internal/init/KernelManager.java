@@ -8,11 +8,13 @@
 package org.seedstack.seed.core.internal.init;
 
 import io.nuun.kernel.api.Kernel;
+import io.nuun.kernel.api.Plugin;
 import io.nuun.kernel.api.config.KernelConfiguration;
 import io.nuun.kernel.core.NuunCore;
 import io.nuun.kernel.core.internal.scanner.AbstractClasspathScanner;
 import org.reflections.vfs.Vfs;
 import org.seedstack.seed.core.SeedRuntime;
+import org.seedstack.seed.core.internal.configuration.ConfigurationPlugin;
 import org.seedstack.seed.core.internal.scan.ClasspathScanHandler;
 import org.seedstack.seed.core.internal.scan.FallbackUrlType;
 import org.seedstack.seed.diagnostic.DiagnosticManager;
@@ -71,7 +73,7 @@ public class KernelManager {
         Kernel kernel = createKernel(kernelConfiguration, seedRuntime.getDiagnosticManager());
         if (autoStart) {
             kernel.start();
-            LOGGER.info("Seed started in {} second(s)", (System.currentTimeMillis() - startTime) / 1000d);
+            LOGGER.info("{} started in {} second(s)", getApplicationName(kernel), (System.currentTimeMillis() - startTime) / 1000d);
         }
 
         return kernel;
@@ -79,8 +81,9 @@ public class KernelManager {
 
     public void disposeKernel(Kernel kernel) {
         if (kernel != null && kernel.isStarted()) {
+            String applicationName = getApplicationName(kernel);
             kernel.stop();
-            LOGGER.info("Seed stopped");
+            LOGGER.info("{} stopped", applicationName);
         }
     }
 
@@ -117,5 +120,14 @@ public class KernelManager {
         });
 
         return kernel;
+    }
+
+    private String getApplicationName(Kernel kernel) {
+        Plugin plugin = kernel.plugins().get(ConfigurationPlugin.NAME);
+        if (plugin instanceof ConfigurationPlugin) {
+            return ((ConfigurationPlugin) plugin).getApplication().getName();
+        } else {
+            return "Seed";
+        }
     }
 }

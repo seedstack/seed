@@ -43,6 +43,7 @@ import java.util.stream.Collectors;
  * Core plugins that detects configuration files and adds them to the global configuration object.
  */
 public class ConfigurationPlugin extends AbstractPlugin implements ApplicationProvider {
+    public static final String NAME = "config";
     public static final String EXTERNAL_CONFIG_PREFIX = "seedstack.config.";
     private static final Logger LOGGER = LoggerFactory.getLogger(ConfigurationPlugin.class);
     private static final String CONFIGURATION_PACKAGE = "META-INF.configuration";
@@ -59,7 +60,7 @@ public class ConfigurationPlugin extends AbstractPlugin implements ApplicationPr
 
     @Override
     public String name() {
-        return "config";
+        return NAME;
     }
 
     @Override

@@ -9,6 +9,7 @@ package org.seedstack.seed.core.internal.init;
 
 import org.fusesource.jansi.AnsiConsole;
 import org.fusesource.jansi.AnsiOutputStream;
+import org.seedstack.seed.ApplicationConfig;
 
 import java.io.FilterOutputStream;
 import java.io.IOException;
@@ -31,9 +32,9 @@ public class ConsoleManager {
         // noop
     }
 
-    public synchronized void install() {
-        System.setOut(new PrintStream(wrapOutputStream(System.out)));
-        System.setErr(new PrintStream(wrapOutputStream(System.err)));
+    public synchronized void install(ApplicationConfig.ColorOutput colorOutput) {
+        System.setOut(new PrintStream(wrapOutputStream(System.out, colorOutput)));
+        System.setErr(new PrintStream(wrapOutputStream(System.err, colorOutput)));
     }
 
     public synchronized void uninstall() {
@@ -41,24 +42,28 @@ public class ConsoleManager {
         System.setErr(savedErr);
     }
 
-    private OutputStream wrapOutputStream(final OutputStream stream) {
+    private OutputStream wrapOutputStream(final OutputStream stream, ApplicationConfig.ColorOutput colorOutput) {
         try {
-            if (Boolean.getBoolean("jansi.passthrough")) {
-                // honor jansi passthrough
+            if (colorOutput == ApplicationConfig.ColorOutput.PASSTHROUGH || Boolean.getBoolean("jansi.passthrough")) {
                 return stream;
-            } else if (Boolean.getBoolean("jansi.strip")) {
-                // honor jansi strip
+            } else if (colorOutput == ApplicationConfig.ColorOutput.DISABLE || Boolean.getBoolean("jansi.strip")) {
                 return basicOutput(stream);
-            } else if (isXtermColor()) {
-                // enable color in recognized XTERM color modes
+            } else if (colorOutput == ApplicationConfig.ColorOutput.ENABLE) {
                 return ansiOutput(stream);
-            } else if (isIntelliJ()) {
-                // enable color under Intellij
-                return ansiOutput(stream);
-            } else {
-                // let Jansi handle other detection
-                return AnsiConsole.wrapOutputStream(stream);
+            } else if (colorOutput == ApplicationConfig.ColorOutput.AUTODETECT){
+                if (isXtermColor()) {
+                    // enable color in recognized XTERM color modes
+                    return ansiOutput(stream);
+                } else if (isIntelliJ()) {
+                    // enable color under Intellij
+                    return ansiOutput(stream);
+                } else {
+                    // let Jansi handle other detection
+                    return AnsiConsole.wrapOutputStream(stream);
+                }
             }
+            // Fallback to stripping ANSI codes
+            return basicOutput(stream);
         } catch (Throwable e) {
             // If any error occurs, strip ANSI codes
             return basicOutput(stream);

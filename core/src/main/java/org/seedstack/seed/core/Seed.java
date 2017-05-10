@@ -7,8 +7,10 @@
  */
 package org.seedstack.seed.core;
 
+import com.google.common.base.Strings;
 import io.nuun.kernel.api.Kernel;
 import io.nuun.kernel.api.config.KernelConfiguration;
+import org.fusesource.jansi.Ansi;
 import org.seedstack.coffig.Coffig;
 import org.seedstack.seed.ApplicationConfig;
 import org.seedstack.seed.LoggingConfig;
@@ -26,7 +28,7 @@ import org.seedstack.seed.core.internal.init.ProxyManager;
 import org.seedstack.seed.diagnostic.DiagnosticManager;
 import org.seedstack.seed.spi.SeedInitializer;
 import org.seedstack.shed.ClassLoaders;
-import org.slf4j.LoggerFactory;
+import org.seedstack.shed.reflect.Classes;
 
 import javax.annotation.Nullable;
 import javax.validation.ValidatorFactory;
@@ -43,15 +45,16 @@ import java.util.Set;
  * It handles global initialization and cleanup.
  */
 public class Seed {
-    private static final String WELCOME_MESSAGE = " ____                _ \n" +
-            "/ ___|  ___  ___  __| |\n" +
-            "\\___ \\ / _ \\/ _ \\/ _` |\n" +
-            " ___) |  __/  __/ (_| |\n" +
-            "|____/ \\___|\\___|\\____|";
+    private static final String WELCOME_MESSAGE = "\n" +
+            " ____                _ ____  _             _    \n" +
+            "/ ___|  ___  ___  __| / ___|| |_ __ _  ___| | __\n" +
+            "\\___ \\ / _ \\/ _ \\/ _  \\___ \\| __/ _  |/ __| |/ /\n" +
+            " ___) |  __/  __/ (_| |___) | || (_| | (__|   < \n" +
+            "|____/ \\___|\\___|\\____|____/ \\__\\____|\\___|_|\\_\\";
     private static volatile boolean initialized = false;
     private static volatile boolean noLogs = false;
     private static final DiagnosticManager diagnosticManager = new DiagnosticManagerImpl();
-    private static final String seedVersion = Optional.ofNullable(Seed.class.getPackage()).map(Package::getImplementationVersion).orElse(null);
+    private final String seedVersion;
     private final Coffig configuration;
     private final ConsoleManager consoleManager;
     private final LogManager logManager;
@@ -98,7 +101,7 @@ public class Seed {
                         .diagnosticManager(diagnosticManager)
                         .configuration(instance.configuration.fork())
                         .validatorFactory(instance.validatorFactory)
-                        .version(seedVersion)
+                        .version(instance.seedVersion)
                         .build(),
                 kernelConfiguration,
                 autoStart);
@@ -161,6 +164,10 @@ public class Seed {
     }
 
     private Seed() {
+        seedVersion = Optional.ofNullable(Seed.class.getPackage())
+                .map(Package::getImplementationVersion)
+                .orElse(null);
+
         Thread.setDefaultUncaughtExceptionHandler((thread, throwable) -> {
             if (throwable instanceof SeedException) {
                 throwable.printStackTrace(System.err);
@@ -172,40 +179,30 @@ public class Seed {
         // Logging initialization (should silence logs until logging activation later in the initialization)
         logManager = AutodetectLogManager.get();
 
-        // Console
-        consoleManager = ConsoleManager.get();
-        consoleManager.install();
-
         // Validation
         validatorFactory = GlobalValidatorFactory.get();
 
         // Configuration
         configuration = BaseConfiguration.get();
+        ApplicationConfig applicationConfig = configuration.get(ApplicationConfig.class);
+
+        // Console
+        consoleManager = ConsoleManager.get();
+        consoleManager.install(applicationConfig.getColorOutput());
 
         // Banner
-        boolean versionPrinted = false;
-        if (!noLogs && configuration.get(ApplicationConfig.class).isPrintBanner()) {
+        if (!noLogs && applicationConfig.isPrintBanner()) {
             String banner = getBanner();
             if (banner != null) {
                 System.out.println(banner);
             } else {
-                if (seedVersion == null) {
-                    System.out.printf("%s%n%n", WELCOME_MESSAGE);
-                } else {
-                    System.out.printf("%s v%s%n%n", WELCOME_MESSAGE, seedVersion);
-                    versionPrinted = true;
-                }
+                System.out.println(buildWelcomeMessage());
             }
         }
 
         // Logging activation
         if (!noLogs) {
             logManager.configure(configuration.get(LoggingConfig.class));
-
-            // If no banner is printed and we have a version, log it instead
-            if (!versionPrinted && seedVersion != null) {
-                LoggerFactory.getLogger(Seed.class).info("Seed v{}", seedVersion);
-            }
         }
 
         // Proxy
@@ -227,6 +224,22 @@ public class Seed {
         }
 
         initialized = true;
+    }
+
+    private String buildWelcomeMessage() {
+        Ansi welcomeMessage = Ansi.ansi().reset().fgBrightGreen().a(WELCOME_MESSAGE).reset();
+        String businessVersion = Classes.optional("org.seedstack.business.internal.BusinessSpecifications")
+                .map(Class::getPackage)
+                .map(Package::getImplementationVersion)
+                .orElse(null);
+        if (seedVersion != null) {
+            welcomeMessage.a("\n").a("Core v").a(Strings.padEnd(seedVersion, 16, ' '));
+        }
+        if (businessVersion != null) {
+            welcomeMessage.a(seedVersion != null ? "" : "\n").a("Business v").a(businessVersion);
+        }
+        welcomeMessage.a("\n");
+        return welcomeMessage.reset().toString();
     }
 
     private String getBanner() {

@@ -44,12 +44,7 @@ class DeploymentManagerFactory {
     }
 
     private <T extends ServletContainerInitializer> ServletContainerInitializerInfo createServletContainerInitializerInfo(final T servletContainerInitializer) {
-        return new ServletContainerInitializerInfo(servletContainerInitializer.getClass(), new InstanceFactory<T>() {
-            @Override
-            public InstanceHandle<T> createInstance() throws InstantiationException {
-                return new ImmediateInstanceHandle<>(servletContainerInitializer);
-            }
-        }, null);
+        return new ServletContainerInitializerInfo(servletContainerInitializer.getClass(), () -> new ImmediateInstanceHandle<>(servletContainerInitializer), null);
     }
 
     private Set<ServletContainerInitializer> loadServletContainerInitializers() {
