@@ -204,9 +204,7 @@ public class Seed {
 
         // Banner
         if (!noLogs && applicationConfig.isPrintBanner()) {
-            buildBannerMessage(applicationConfig).ifPresent(System.out::println);
-        } else {
-            System.out.println(buildWelcomeMessage());
+            System.out.println(buildBannerMessage(applicationConfig).orElseGet(this::buildWelcomeMessage));
         }
 
         // Logging activation
