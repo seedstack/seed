@@ -11,6 +11,7 @@ import com.google.common.base.Strings;
 import io.nuun.kernel.api.Kernel;
 import io.nuun.kernel.api.config.KernelConfiguration;
 import org.fusesource.jansi.Ansi;
+import org.fusesource.jansi.AnsiRenderer;
 import org.seedstack.coffig.Coffig;
 import org.seedstack.seed.ApplicationConfig;
 import org.seedstack.seed.LoggingConfig;
@@ -29,12 +30,15 @@ import org.seedstack.seed.diagnostic.DiagnosticManager;
 import org.seedstack.seed.spi.SeedInitializer;
 import org.seedstack.shed.ClassLoaders;
 import org.seedstack.shed.reflect.Classes;
+import org.seedstack.shed.text.TextTemplate;
 
 import javax.annotation.Nullable;
 import javax.validation.ValidatorFactory;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Scanner;
 import java.util.ServiceLoader;
@@ -55,6 +59,8 @@ public class Seed {
     private static volatile boolean noLogs = false;
     private static final DiagnosticManager diagnosticManager = new DiagnosticManagerImpl();
     private final String seedVersion;
+    private final String businessVersion;
+    private final ApplicationConfig applicationConfig;
     private final Coffig configuration;
     private final ConsoleManager consoleManager;
     private final LogManager logManager;
@@ -101,7 +107,9 @@ public class Seed {
                         .diagnosticManager(diagnosticManager)
                         .configuration(instance.configuration.fork())
                         .validatorFactory(instance.validatorFactory)
+                        .applicationConfig(instance.applicationConfig)
                         .version(instance.seedVersion)
+                        .businessVersion(instance.businessVersion)
                         .build(),
                 kernelConfiguration,
                 autoStart);
@@ -167,6 +175,10 @@ public class Seed {
         seedVersion = Optional.ofNullable(Seed.class.getPackage())
                 .map(Package::getImplementationVersion)
                 .orElse(null);
+        businessVersion = Classes.optional("org.seedstack.business.internal.BusinessSpecifications")
+                .map(Class::getPackage)
+                .map(Package::getImplementationVersion)
+                .orElse(null);
 
         Thread.setDefaultUncaughtExceptionHandler((thread, throwable) -> {
             if (throwable instanceof SeedException) {
@@ -184,7 +196,7 @@ public class Seed {
 
         // Configuration
         configuration = BaseConfiguration.get();
-        ApplicationConfig applicationConfig = configuration.get(ApplicationConfig.class);
+        applicationConfig = configuration.get(ApplicationConfig.class);
 
         // Console
         consoleManager = ConsoleManager.get();
@@ -192,12 +204,9 @@ public class Seed {
 
         // Banner
         if (!noLogs && applicationConfig.isPrintBanner()) {
-            String banner = getBanner();
-            if (banner != null) {
-                System.out.println(banner);
-            } else {
-                System.out.println(buildWelcomeMessage());
-            }
+            buildBannerMessage(applicationConfig).ifPresent(System.out::println);
+        } else {
+            System.out.println(buildWelcomeMessage());
         }
 
         // Logging activation
@@ -226,12 +235,23 @@ public class Seed {
         initialized = true;
     }
 
+    private Optional<String> buildBannerMessage(ApplicationConfig applicationConfig) {
+        String banner = getBanner();
+        if (banner != null) {
+            Map<String, Object> bannerReplacements = new HashMap<>();
+            bannerReplacements.put("seed.version", seedVersion);
+            bannerReplacements.put("business.version", businessVersion);
+            bannerReplacements.put("app.id", applicationConfig.getId());
+            bannerReplacements.put("app.name", applicationConfig.getName());
+            bannerReplacements.put("app.version", applicationConfig.getVersion());
+            return Optional.of(AnsiRenderer.render(new TextTemplate(banner).render(bannerReplacements)));
+        } else {
+            return Optional.empty();
+        }
+    }
+
     private String buildWelcomeMessage() {
         Ansi welcomeMessage = Ansi.ansi().reset().fgBrightGreen().a(WELCOME_MESSAGE).reset();
-        String businessVersion = Classes.optional("org.seedstack.business.internal.BusinessSpecifications")
-                .map(Class::getPackage)
-                .map(Package::getImplementationVersion)
-                .orElse(null);
         if (seedVersion != null) {
             welcomeMessage.a("\n").a("Core v").a(Strings.padEnd(seedVersion, 16, ' '));
         }

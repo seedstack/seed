@@ -68,7 +68,7 @@ public class ConfigurationPlugin extends AbstractPlugin implements ApplicationPr
         seedRuntime = (SeedRuntime) containerContext;
         coffig = seedRuntime.getConfiguration();
         diagnosticManager = seedRuntime.getDiagnosticManager();
-        applicationConfig = seedRuntime.getConfiguration().get(ApplicationConfig.class);
+        applicationConfig = seedRuntime.getApplicationConfig();
     }
 
     @Override
