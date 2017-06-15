@@ -1,5 +1,6 @@
 # Version 3.2.1 (2017-??-??)
 
+* [fix] Avoid NullPointerException when an exception occurs in a NOT_SUPPORTED local transaction.  
 * [new] Print a default banner at startup in case of missing custom `banner.txt`.
 * [new] Add `application.colorOuput` configuration property to force the color output mode (AUTODETECT, PASSTHROUGH, ENABLE, DISABLE).
 * [chg] HTTP/2 is enabled by default with Undertow.
