@@ -35,8 +35,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * A realm that is based on an X509Certificate to identify the user and provide his roles. This realm does not actually authentifies the user as this
- * process should be done by the JEE container.
+ * A realm that is based on an X509Certificate to identify the user and provide his roles. This realm does not actually
+ * authenticates the user as this process should be done by Servlet container.
  */
 public class X509CertificateRealm implements Realm {
 
@@ -54,12 +54,12 @@ public class X509CertificateRealm implements Realm {
         if (!(token instanceof X509CertificateToken)) {
             throw new UnsupportedTokenException();
         }
-        if (token.getPrincipal() == null) {
+        final X509Certificate[] certificates = ((X509CertificateToken) token).getAuthenticatingCertificates();
+        if (certificates.length == 0) {
             throw new IncorrectCredentialsException();
         }
         String uid = null;
         String cn = null;
-        final X509Certificate[] certificates = ((X509CertificateToken) token).getAuthenticatingCertificates();
         // we take the first certificate to extract username
         String dn = certificates[0].getSubjectX500Principal().getName(X500Principal.RFC2253);
         LdapName ln;
@@ -114,7 +114,7 @@ public class X509CertificateRealm implements Realm {
             try {
                 ln = new LdapName(dn);
             } catch (InvalidNameException e) {
-                LOGGER.error("Certificate issuer does not have valid DN : " + dn, e);
+                LOGGER.error("Certificate issuer does not have valid DN: " + dn, e);
                 continue;
             }
             for (Rdn rdn : ln.getRdns()) {

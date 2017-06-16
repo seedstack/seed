@@ -15,6 +15,8 @@ import java.io.FilterOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
+import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
 
 public class ConsoleManager {
     private final PrintStream savedOut = System.out;
@@ -33,8 +35,8 @@ public class ConsoleManager {
     }
 
     public synchronized void install(ApplicationConfig.ColorOutput colorOutput) {
-        System.setOut(new PrintStream(wrapOutputStream(System.out, colorOutput)));
-        System.setErr(new PrintStream(wrapOutputStream(System.err, colorOutput)));
+        System.setOut(wrapPrintStream(System.out, colorOutput));
+        System.setErr(wrapPrintStream(System.err, colorOutput));
     }
 
     public synchronized void uninstall() {
@@ -42,39 +44,48 @@ public class ConsoleManager {
         System.setErr(savedErr);
     }
 
-    private OutputStream wrapOutputStream(final OutputStream stream, ApplicationConfig.ColorOutput colorOutput) {
+    private PrintStream wrapPrintStream(final PrintStream printStream, ApplicationConfig.ColorOutput colorOutput) {
+        OutputStream outputStream;
         try {
             if (colorOutput == ApplicationConfig.ColorOutput.PASSTHROUGH || Boolean.getBoolean("jansi.passthrough")) {
-                return stream;
+                outputStream = printStream;
             } else if (colorOutput == ApplicationConfig.ColorOutput.DISABLE || Boolean.getBoolean("jansi.strip")) {
-                return basicOutput(stream);
+                outputStream = basicOutput(printStream);
             } else if (colorOutput == ApplicationConfig.ColorOutput.ENABLE) {
-                return ansiOutput(stream);
-            } else if (colorOutput == ApplicationConfig.ColorOutput.AUTODETECT){
+                outputStream = ansiOutput(printStream);
+            } else if (colorOutput == ApplicationConfig.ColorOutput.AUTODETECT) {
                 if (isXtermColor()) {
                     // enable color in recognized XTERM color modes
-                    return ansiOutput(stream);
+                    outputStream = ansiOutput(printStream);
                 } else if (isIntelliJ()) {
                     // enable color under Intellij
-                    return ansiOutput(stream);
+                    outputStream = ansiOutput(printStream);
                 } else {
                     // let Jansi handle other detection
-                    return AnsiConsole.wrapOutputStream(stream);
+                    outputStream = AnsiConsole.wrapOutputStream(printStream);
                 }
+            } else {
+                // Fallback to stripping ANSI codes
+                outputStream = basicOutput(printStream);
             }
-            // Fallback to stripping ANSI codes
-            return basicOutput(stream);
         } catch (Throwable e) {
             // If any error occurs, strip ANSI codes
-            return basicOutput(stream);
+            outputStream = basicOutput(printStream);
+        }
+
+        try {
+            return new PrintStream(outputStream, false, Charset.defaultCharset().name());
+        } catch (UnsupportedEncodingException e) {
+            // if for some reason the default encoding is unsupported, fallback to passthrough
+            return printStream;
         }
     }
 
-    private FilterOutputStream basicOutput(OutputStream stream) {
+    private FilterOutputStream basicOutput(PrintStream stream) {
         return new AnsiOutputStream(stream);
     }
 
-    private FilterOutputStream ansiOutput(OutputStream stream) {
+    private FilterOutputStream ansiOutput(PrintStream stream) {
         return new ColorOutputStream(stream);
     }
 

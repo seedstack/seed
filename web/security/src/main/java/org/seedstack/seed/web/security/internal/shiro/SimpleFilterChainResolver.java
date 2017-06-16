@@ -7,18 +7,17 @@
  */
 package org.seedstack.seed.web.security.internal.shiro;
 
-import com.google.common.base.Function;
-import com.google.common.collect.Iterators;
 import com.google.inject.Injector;
 import org.apache.shiro.util.PatternMatcher;
 import org.apache.shiro.web.filter.mgt.FilterChainResolver;
 import org.apache.shiro.web.util.WebUtils;
 
-import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
+import java.util.Arrays;
 import java.util.Map;
+import java.util.Objects;
 
 class SimpleFilterChainResolver implements FilterChainResolver {
     private final Map<String, ShiroWebModule.FilterKey[]> chains;
@@ -33,10 +32,13 @@ class SimpleFilterChainResolver implements FilterChainResolver {
 
     public FilterChain getChain(ServletRequest request, ServletResponse response, final FilterChain originalChain) {
         String path = WebUtils.getPathWithinApplication(WebUtils.toHttp(request));
-        for (final String pathPattern : chains.keySet()) {
-            if (patternMatcher.matches(pathPattern, path)) {
-                return new SimpleFilterChain(originalChain, Iterators.transform(Iterators.forArray(chains.get(pathPattern)),
-                        (Function<ShiroWebModule.FilterKey, Filter>) input -> injector.getInstance(input.getKey())));
+        for (final Map.Entry<String, ShiroWebModule.FilterKey[]> entry : chains.entrySet()) {
+            if (patternMatcher.matches(entry.getKey(), path)) {
+                return new SimpleFilterChain(originalChain, Arrays.stream(entry.getValue())
+                        .filter(Objects::nonNull)
+                        .map(input -> injector.getInstance(input.getKey()))
+                        .iterator()
+                );
             }
         }
         return null;

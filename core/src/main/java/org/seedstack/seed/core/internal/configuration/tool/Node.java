@@ -155,11 +155,11 @@ class Node implements Comparable<Node> {
             // ignore
         }
 
-        Object defaultInstance = null;
+        Object defaultInstance;
         try {
             defaultInstance = Utils.instantiateDefault(configClass);
         } catch (Exception e) {
-            // ignore
+            defaultInstance = null;
         }
 
         for (Field field : configClass.getDeclaredFields()) {

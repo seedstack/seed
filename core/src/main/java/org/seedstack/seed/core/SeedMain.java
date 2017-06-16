@@ -46,10 +46,10 @@ public class SeedMain {
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             try {
                 seedLauncher.shutdown();
-                Seed.close();
             } catch (Exception e) {
                 handleException(e);
             }
+            Seed.close();
         }, "shutdown"));
 
         try {

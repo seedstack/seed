@@ -26,6 +26,11 @@ public class WebConfig {
         return requestDiagnostic;
     }
 
+    public WebConfig setRequestDiagnostic(boolean requestDiagnostic) {
+        this.requestDiagnostic = requestDiagnostic;
+        return this;
+    }
+
     public StaticResourcesConfig staticResources() {
         return staticResources;
     }

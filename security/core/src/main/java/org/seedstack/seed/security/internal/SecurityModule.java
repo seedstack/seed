@@ -21,7 +21,6 @@ import org.seedstack.seed.security.Scope;
 import org.seedstack.seed.security.internal.securityexpr.SecurityExpressionModule;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.Map;
 
 @SecurityConcern
@@ -72,25 +71,29 @@ class SecurityModule extends AbstractModule {
     }
 
     private Module removeSecurityManager(Module module) {
-        List<Element> elements = Elements.getElements(module);
-        // ShiroModule is only a private module
-        final PrivateElements privateElements = (PrivateElements) elements.iterator().next();
+        return new ModuleWithoutSecurityManager((PrivateElements) Elements.getElements(module).iterator().next());
+    }
 
-        return new PrivateModule() {
-            @Override
-            protected void configure() {
-                for (Element element : privateElements.getElements()) {
-                    if (!(element instanceof ConstructorBinding) || !((ConstructorBinding) element).getKey().equals(SECURITY_MANAGER_KEY)) {
-                        element.applyTo(binder());
-                    }
-                }
+    private static class ModuleWithoutSecurityManager extends PrivateModule {
+        private final PrivateElements privateElements;
 
-                for (Key<?> exposedKey : privateElements.getExposedKeys()) {
-                    if (!exposedKey.equals(SECURITY_MANAGER_KEY)) {
-                        expose(exposedKey);
-                    }
+        private ModuleWithoutSecurityManager(PrivateElements privateElements) {
+            this.privateElements = privateElements;
+        }
+
+        @Override
+        protected void configure() {
+            for (Element element : privateElements.getElements()) {
+                if (!(element instanceof ConstructorBinding) || !((ConstructorBinding) element).getKey().equals(SECURITY_MANAGER_KEY)) {
+                    element.applyTo(binder());
                 }
             }
-        };
+
+            for (Key<?> exposedKey : privateElements.getExposedKeys()) {
+                if (!exposedKey.equals(SECURITY_MANAGER_KEY)) {
+                    expose(exposedKey);
+                }
+            }
+        }
     }
 }

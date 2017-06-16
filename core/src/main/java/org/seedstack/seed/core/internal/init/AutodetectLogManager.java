@@ -35,7 +35,7 @@ public class AutodetectLogManager implements LogManager {
             SLF4JBridgeHandler.removeHandlersForRootLogger();
             SLF4JBridgeHandler.install();
         } catch (Exception e) {
-            // silent error
+            System.err.println("Unable to install JUL to SLF4J bridge");
         }
     }
 

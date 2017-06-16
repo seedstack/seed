@@ -11,12 +11,12 @@ import com.google.inject.ConfigurationException;
 import com.google.inject.Injector;
 import com.google.inject.Key;
 import com.google.inject.name.Names;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.nuun.kernel.api.Kernel;
 import io.nuun.kernel.api.config.KernelConfiguration;
 import org.seedstack.seed.SeedException;
 import org.seedstack.seed.cli.CliConfig;
 import org.seedstack.seed.cli.CommandLineHandler;
-import org.seedstack.seed.cli.spi.CliContext;
 import org.seedstack.seed.core.Seed;
 import org.seedstack.seed.spi.SeedLauncher;
 import org.slf4j.Logger;
@@ -33,6 +33,7 @@ public class CliLauncher implements SeedLauncher {
     private static final Logger LOGGER = LoggerFactory.getLogger(CliLauncher.class);
 
     @Override
+    @SuppressFBWarnings(value = "DM_EXIT", justification = "CliLauncher must be able to return a code to the system")
     public void launch(String[] args) throws Exception {
         int returnCode = execute(args);
         LOGGER.info("CLI command finished with return code {}", returnCode);
@@ -71,7 +72,7 @@ public class CliLauncher implements SeedLauncher {
 
         Kernel kernel = null;
         try {
-            kernel = Seed.createKernel(new CliContext(effectiveArgs), null, true);
+            kernel = Seed.createKernel(new CliContextInternal(effectiveArgs), null, true);
             kernel.objectGraph().as(Injector.class).injectMembers(callable);
             return callable.call();
         } finally {
@@ -88,7 +89,7 @@ public class CliLauncher implements SeedLauncher {
      * @throws Exception when the CLI command fails to complete.
      */
     public static int execute(String[] args, Callable<Integer> callable) throws Exception {
-        Kernel kernel = Seed.createKernel(new CliContext(args), null, true);
+        Kernel kernel = Seed.createKernel(new CliContextInternal(args), null, true);
 
         try {
             kernel.objectGraph().as(Injector.class).injectMembers(callable);
@@ -108,7 +109,7 @@ public class CliLauncher implements SeedLauncher {
      * @throws Exception when the CLI command fails to complete.
      */
     public static int execute(String[] args, Callable<Integer> callable, KernelConfiguration kernelConfiguration) throws Exception {
-        Kernel kernel = Seed.createKernel(new CliContext(args), kernelConfiguration, true);
+        Kernel kernel = Seed.createKernel(new CliContextInternal(args), kernelConfiguration, true);
 
         try {
             kernel.objectGraph().as(Injector.class).injectMembers(callable);

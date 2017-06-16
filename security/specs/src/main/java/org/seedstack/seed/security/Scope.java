@@ -7,6 +7,8 @@
  */
 package org.seedstack.seed.security;
 
+import java.io.Serializable;
+
 /**
  * A scope is an additional verification to be made on a permission. When
  * verifying a permission, we verify if the scope given to the user includes the
@@ -22,7 +24,7 @@ package org.seedstack.seed.security;
  * can be used directly. Simple scopes are not hierarchical and are just checked
  * with strict equality.
  */
-public interface Scope {
+public interface Scope extends Serializable {
 
     /**
      * Return the name of the scope.

@@ -202,11 +202,11 @@ class DataManagerImpl implements DataManager {
 
                 jsonToken = jsonParser.nextToken();
             }
-        } catch (Exception e1) {
+        } catch (IOException e1) {
             for (DataImporter<Object> usedDataImporter : usedDataImporters) {
                 try {
                     usedDataImporter.rollback();
-                } catch (Exception e2) {
+                } catch (RuntimeException e2) {
                     e2.initCause(e1);
                     throw SeedException.wrap(e2, DataErrorCode.FAILED_TO_ROLLBACK_IMPORT)
                             .put(IMPORTER_CLASS, usedDataImporter.getClass().getName());

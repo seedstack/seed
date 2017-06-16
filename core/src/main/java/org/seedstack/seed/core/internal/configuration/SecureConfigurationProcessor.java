@@ -12,6 +12,8 @@ import org.seedstack.coffig.TreeNode;
 import org.seedstack.coffig.node.MapNode;
 import org.seedstack.coffig.spi.ConfigurationProcessor;
 
+import java.util.Locale;
+
 public class SecureConfigurationProcessor implements ConfigurationProcessor {
     @Override
     public void process(MapNode configuration) {
@@ -26,7 +28,7 @@ public class SecureConfigurationProcessor implements ConfigurationProcessor {
     }
 
     private boolean isPotentialPassword(NamedNode namedNode) {
-        String key = namedNode.name().toUpperCase();
+        String key = namedNode.name().toUpperCase(Locale.ENGLISH);
         return key.contains("PASSWORD") || key.contains("PASSWD") || key.contains("PWD");
     }
 }

@@ -9,8 +9,8 @@ package org.seedstack.seed.core.internal.diagnostic;
 
 import org.junit.Test;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.StringWriter;
 import java.util.HashMap;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -19,12 +19,12 @@ public class DefaultDiagnosticReporterTest {
     private DefaultDiagnosticReporter underTest = new DefaultDiagnosticReporter();
 
     @Test
-    public void json_output_is_valid() throws Exception {
+    public void yaml_output_is_valid() throws Exception {
         assertThat(produceReport()).isEqualTo("---\nhello:\n  subHello: \"subWorld\"\n");
     }
 
     @Test
-    public void json_output_is_pretty() throws Exception {
+    public void yaml_output_is_pretty() throws Exception {
         assertThat(produceReport()).contains("\n");
     }
 
@@ -36,8 +36,8 @@ public class DefaultDiagnosticReporterTest {
         diagnostics.put("hello", "world");
         diagnostics.put("hello", subMapDiagnostics);
 
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        underTest.writeDiagnosticReport(diagnostics, baos);
-        return baos.toString("utf-8");
+        StringWriter stringWriter = new StringWriter();
+        underTest.writeDiagnosticReport(diagnostics, stringWriter);
+        return stringWriter.toString();
     }
 }

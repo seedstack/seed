@@ -17,7 +17,6 @@ import java.util.Optional;
 @Config("web.server.undertow")
 public class UndertowConfig {
     private Optional<Integer> bufferSize = Optional.empty();
-    private Optional<Integer> buffersPerRegion = Optional.empty();
     private Optional<Integer> ioThreads = Optional.empty();
     private Optional<Integer> workerThreads = Optional.empty();
     private Optional<Boolean> directBuffers = Optional.empty();
@@ -28,16 +27,6 @@ public class UndertowConfig {
 
     public void setBufferSize(Integer bufferSize) {
         this.bufferSize = Optional.of(bufferSize);
-    }
-
-    @Deprecated
-    public Optional<Integer> getBuffersPerRegion() {
-        return buffersPerRegion;
-    }
-
-    @Deprecated
-    public void setBuffersPerRegion(Integer buffersPerRegion) {
-        this.buffersPerRegion = Optional.of(buffersPerRegion);
     }
 
     public Optional<Integer> getIoThreads() {

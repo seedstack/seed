@@ -23,9 +23,9 @@ import org.slf4j.LoggerFactory;
 import javax.validation.ValidatorFactory;
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Enumeration;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.List;
 
 public class BaseConfiguration {
     private static final Logger LOGGER = LoggerFactory.getLogger(BaseConfiguration.class);
@@ -84,8 +84,8 @@ public class BaseConfiguration {
         return propertiesProvider;
     }
 
-    private Set<URL> getResources(String... resourceNames) {
-        Set<URL> result = new HashSet<>();
+    private List<URL> getResources(String... resourceNames) {
+        List<URL> result = new ArrayList<>();
         for (String resourceName : resourceNames) {
             try {
                 Enumeration<URL> configResources = ClassLoaders.findMostCompleteClassLoader(Seed.class).getResources(resourceName);

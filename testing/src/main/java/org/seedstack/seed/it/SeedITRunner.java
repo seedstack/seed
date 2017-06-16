@@ -181,7 +181,7 @@ public class SeedITRunner extends BlockJUnit4ClassRunner {
                         ((KernelRule) testRule).acceptKernelConfiguration(provideKernelConfiguration(defaultConfiguration));
                     }
                     rules.add(testRule);
-                } catch (Exception e) {
+                } catch (InstantiationException | IllegalAccessException e) {
                     throw SeedException.wrap(e, ITErrorCode.FAILED_TO_INSTANTIATE_TEST_RULE).put("ruleClass", testRuleClass.getCanonicalName());
                 }
             }
@@ -202,7 +202,7 @@ public class SeedITRunner extends BlockJUnit4ClassRunner {
                             ((KernelRule) methodRule).acceptKernelConfiguration(provideKernelConfiguration(defaultConfiguration));
                         }
                         methodRules.add(methodRule);
-                    } catch (Exception e) {
+                    } catch (IllegalAccessException | InstantiationException e) {
                         throw SeedException.wrap(e, ITErrorCode.FAILED_TO_INSTANTIATE_TEST_RULE).put("ruleClass", methodRuleClass.getCanonicalName());
                     }
                 }

@@ -147,7 +147,7 @@ public class FilterDefinition extends AbstractDefinition {
          * @return the values of this mapping.
          */
         public String[] getValues() {
-            return values;
+            return values.clone();
         }
     }
 }

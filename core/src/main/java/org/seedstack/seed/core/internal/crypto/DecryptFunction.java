@@ -17,11 +17,13 @@ import org.seedstack.seed.crypto.CryptoConfig;
 import org.seedstack.seed.crypto.EncryptionService;
 
 import javax.xml.bind.DatatypeConverter;
+import java.nio.charset.StandardCharsets;
 import java.security.KeyStore;
 
 public class DecryptFunction implements ConfigFunctionHolder {
     private EncryptionServiceFactory encryptionServiceFactory;
     private CryptoConfig.KeyStoreConfig masterKeyStoreConfig;
+    private Exception storedException;
 
     @Override
     public void initialize(Coffig coffig) {
@@ -32,10 +34,8 @@ public class DecryptFunction implements ConfigFunctionHolder {
                 KeyStore keyStore = new KeyStoreLoader().load(CryptoConfig.MASTER_KEY_STORE_NAME, masterKeyStoreConfig);
                 encryptionServiceFactory = new EncryptionServiceFactory(cryptoConfig, keyStore);
             } catch (Exception e) {
-                encryptionServiceFactory = null;
+                storedException = e;
             }
-        } else {
-            encryptionServiceFactory = null;
         }
     }
 
@@ -47,13 +47,17 @@ public class DecryptFunction implements ConfigFunctionHolder {
     @ConfigFunction
     String decrypt(String alias, String value) {
         if (encryptionServiceFactory == null) {
-            throw SeedException.createNew(CryptoErrorCode.MISSING_MASTER_KEYSTORE);
+            if (storedException != null) {
+                throw SeedException.wrap(storedException, CryptoErrorCode.MISSING_MASTER_KEYSTORE);
+            } else {
+                throw SeedException.createNew(CryptoErrorCode.MISSING_MASTER_KEYSTORE);
+            }
         }
         CryptoConfig.KeyStoreConfig.AliasConfig aliasConfig = masterKeyStoreConfig.getAliases().get(alias);
         if (aliasConfig == null || Strings.isNullOrEmpty(aliasConfig.getPassword())) {
             throw SeedException.createNew(CryptoErrorCode.MISSING_MASTER_KEY_PASSWORD);
         }
         EncryptionService encryptionService = encryptionServiceFactory.create(alias, aliasConfig.getPassword().toCharArray());
-        return new String(encryptionService.decrypt(DatatypeConverter.parseHexBinary(value)));
+        return new String(encryptionService.decrypt(DatatypeConverter.parseHexBinary(value)), StandardCharsets.UTF_8);
     }
 }

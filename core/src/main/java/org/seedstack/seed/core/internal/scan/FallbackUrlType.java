@@ -19,7 +19,7 @@ import java.util.Set;
  * registered.
  */
 public class FallbackUrlType implements Vfs.UrlType {
-    private Set<URL> failedUrls = new HashSet<>();
+    private Set<String> failedUrls = new HashSet<>();
 
     @Override
     public boolean matches(URL url) {
@@ -37,7 +37,7 @@ public class FallbackUrlType implements Vfs.UrlType {
 
             @Override
             public Iterable<Vfs.File> getFiles() {
-                failedUrls.add(url);
+                failedUrls.add(url.toExternalForm());
                 return new ArrayList<>();
             }
 
@@ -48,7 +48,7 @@ public class FallbackUrlType implements Vfs.UrlType {
         };
     }
 
-    public Set<URL> getFailedUrls() {
+    public Set<String> getFailedUrls() {
         return failedUrls;
     }
 }
