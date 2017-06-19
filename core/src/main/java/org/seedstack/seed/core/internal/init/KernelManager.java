@@ -22,7 +22,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -105,8 +104,8 @@ public class KernelManager {
         int failedUrlCount = fallbackUrlType.getFailedUrls().size();
         if (failedUrlCount > 0) {
             LOGGER.info("{} URL(s) were not scanned, enable debug logging to see them", failedUrlCount);
-            if (LOGGER.isTraceEnabled()) {
-                for (URL failedUrl : fallbackUrlType.getFailedUrls()) {
+            if (LOGGER.isDebugEnabled()) {
+                for (String failedUrl : fallbackUrlType.getFailedUrls()) {
                     LOGGER.debug("URL not scanned: {}", failedUrl);
                 }
             }

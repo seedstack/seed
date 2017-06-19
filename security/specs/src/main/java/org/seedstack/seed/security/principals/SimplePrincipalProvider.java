@@ -7,55 +7,40 @@
  */
 package org.seedstack.seed.security.principals;
 
-import java.io.Serializable;
-
 /**
  * A named principal represented as a string.
  */
-public class SimplePrincipalProvider implements PrincipalProvider<String>, Serializable {
+public class SimplePrincipalProvider implements PrincipalProvider<String> {
+    private final String name;
+    private final String value;
 
-    /** UID */
-    private static final long serialVersionUID = 3578609358630975912L;
+    /**
+     * Constructor
+     *
+     * @param name  name
+     * @param value value
+     */
+    public SimplePrincipalProvider(String name, String value) {
+        this.name = name;
+        this.value = value;
+    }
 
-    /** name */
-	private String name;
+    /**
+     * @return the name of the principal.
+     */
+    public String getName() {
+        return name;
+    }
 
-	/** value */
-	private String value;
+    /**
+     * @return the value of the principal.
+     */
+    public String getValue() {
+        return value;
+    }
 
-	/**
-	 * Constructor
-	 * 
-	 * @param name
-	 *            name
-	 * @param value
-	 *            value
-	 */
-	public SimplePrincipalProvider(String name, String value) {
-		this.name = name;
-		this.value = value;
-	}
-
-	/**
-	 * Getter name
-	 * 
-	 * @return the name
-	 */
-	public String getName() {
-		return name;
-	}
-
-	/**
-	 * Getter value
-	 * 
-	 * @return the value
-	 */
-	public String getValue() {
-		return value;
-	}
-
-	@Override
-	public String getPrincipal() {
-		return value;
-	}
+    @Override
+    public String getPrincipal() {
+        return value;
+    }
 }

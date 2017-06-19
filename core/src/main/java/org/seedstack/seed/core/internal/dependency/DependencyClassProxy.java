@@ -15,6 +15,8 @@ import org.seedstack.seed.core.internal.CoreErrorCode;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
+import static org.seedstack.shed.reflect.ReflectUtils.makeAccessible;
+
 /**
  * Proxy to implement abstract class. Override methods to proxy.<br>
  * For example: to create a proxy for a RatioGauge abstract class
@@ -66,9 +68,7 @@ public class DependencyClassProxy<T> implements MethodHandler {
     @Override
     public Object invoke(Object self, Method thisMethod, Method proceed, Object[] args) throws Throwable {
         try {
-            Method m = substitute.getClass().getMethod(thisMethod.getName(), thisMethod.getParameterTypes());
-            m.setAccessible(true);
-            return m.invoke(substitute, args);
+            return makeAccessible(substitute.getClass().getMethod(thisMethod.getName(), thisMethod.getParameterTypes())).invoke(substitute, args);
         } catch (InvocationTargetException e) {
             throw e.getCause();
         }

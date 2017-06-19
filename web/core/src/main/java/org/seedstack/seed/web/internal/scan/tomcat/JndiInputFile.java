@@ -11,6 +11,7 @@ import org.reflections.vfs.Vfs;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 /**
@@ -40,7 +41,7 @@ class JndiInputFile implements Vfs.File {
         try {
             Method method = jndiResource.getClass().getMethod("streamContent");
             return (InputStream) method.invoke(jndiResource);
-        } catch (Exception e) {
+        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
             throw new IOException("Unable to open JNDI file " + getName(), e);
         }
     }

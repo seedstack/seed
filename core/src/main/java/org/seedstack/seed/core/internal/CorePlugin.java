@@ -18,6 +18,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
@@ -81,7 +82,7 @@ public class CorePlugin extends AbstractSeedPlugin {
                 Constructor<? extends Module> declaredConstructor = klazz.getDeclaredConstructor();
                 declaredConstructor.setAccessible(true);
                 subModules.add(declaredConstructor.newInstance());
-            } catch (Exception e) {
+            } catch (NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException e) {
                 throw SeedException.wrap(e, CoreErrorCode.UNABLE_TO_INSTANTIATE_MODULE).put("module", klazz.getCanonicalName());
             }
         }

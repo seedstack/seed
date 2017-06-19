@@ -5,20 +5,18 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-package org.seedstack.seed.cli.spi;
+package org.seedstack.seed.cli.internal;
 
-/**
- * Describes a command line context.
- */
-public class CliContext implements org.seedstack.seed.cli.CliContext {
+import static org.assertj.core.util.Preconditions.checkNotNull;
 
+class CliContextInternal implements org.seedstack.seed.cli.CliContext {
     private final String[] args;
 
-    public CliContext(String[] args) {
-        this.args = args;
+    CliContextInternal(String[] args) {
+        this.args = checkNotNull(args).clone();
     }
 
     public String[] getArgs() {
-        return args;
+        return args.clone();
     }
 }

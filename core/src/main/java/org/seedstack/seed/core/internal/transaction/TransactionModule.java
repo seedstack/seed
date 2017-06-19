@@ -41,16 +41,17 @@ class TransactionModule extends AbstractModule {
         }
 
         if (defaultTransactionHandlerClass != null) {
-            bind(new TypeLiteral<Class<? extends TransactionHandler>>() {
-            }).annotatedWith(Names.named("default")).toInstance(defaultTransactionHandlerClass);
+            bind(new DefaultTransactionHandlerTypeLiteral()).annotatedWith(Names.named("default")).toInstance(defaultTransactionHandlerClass);
         } else {
-            bind(new TypeLiteral<Class<? extends TransactionHandler>>() {
-            }).annotatedWith(Names.named("default")).toProvider(Providers.of(null));
+            bind(new DefaultTransactionHandlerTypeLiteral()).annotatedWith(Names.named("default")).toProvider(Providers.of(null));
         }
 
         requestInjection(transactionManager);
         bindInterceptor(Matchers.any(), new MethodMatcherBuilder(TransactionalResolver.INSTANCE).build(), transactionManager.getMethodInterceptor());
         bind(TransactionManager.class).toInstance(transactionManager);
         bind(TransactionMetadata.class);
+    }
+
+    private static class DefaultTransactionHandlerTypeLiteral extends TypeLiteral<Class<? extends TransactionHandler>> {
     }
 }

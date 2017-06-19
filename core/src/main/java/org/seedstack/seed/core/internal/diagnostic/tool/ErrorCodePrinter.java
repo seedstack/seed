@@ -20,6 +20,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.Optional;
 import java.util.ResourceBundle;
@@ -85,7 +86,7 @@ class ErrorCodePrinter {
 
     private String formatCamelCase(String value) {
         String result = CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, value).replace("_", " ");
-        return result.substring(0, 1).toUpperCase() + result.substring(1);
+        return result.substring(0, 1).toUpperCase(Locale.ENGLISH) + result.substring(1);
     }
 
     @Nullable

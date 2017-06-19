@@ -24,6 +24,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import static org.seedstack.shed.reflect.ReflectUtils.makeAccessible;
+
 /**
  * Guice members injector that inject logger instances.
  *
@@ -77,7 +79,7 @@ class CliMembersInjector<T> implements MembersInjector<T> {
                     try {
                         Class<?> fieldType = field.getType();
 
-                        field.setAccessible(true);
+                        makeAccessible(field);
 
                         if (String.class.isAssignableFrom(fieldType)) {
                             field.set(toInject, value[0]);
@@ -100,8 +102,7 @@ class CliMembersInjector<T> implements MembersInjector<T> {
                 }
             } else {
                 try {
-                    field.setAccessible(true);
-                    field.set(toInject, commandLine.hasOption(cliOption.name()));
+                    makeAccessible(field).set(toInject, commandLine.hasOption(cliOption.name()));
                 } catch (IllegalAccessException e) {
                     throw SeedException.wrap(e, CliErrorCode.UNABLE_TO_INJECT_OPTION)
                             .put("command", commandName)
@@ -123,9 +124,8 @@ class CliMembersInjector<T> implements MembersInjector<T> {
                         .put("required", mandatoryArgsCount)
                         .put("given", commandLine.getArgs().length);
             } else {
-                argsField.setAccessible(true);
                 try {
-                    argsField.set(object, commandLine.getArgs());
+                    makeAccessible(argsField).set(object, commandLine.getArgs());
                 } catch (IllegalAccessException e) {
                     throw SeedException.createNew(CliErrorCode.UNABLE_TO_INJECT_ARGUMENTS)
                             .put("command", commandName)

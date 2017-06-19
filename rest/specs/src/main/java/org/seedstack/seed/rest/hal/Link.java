@@ -13,6 +13,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Defines a Link representation as described by the
@@ -20,7 +21,6 @@ import java.util.Map;
  */
 @JsonInclude(JsonInclude.Include.NON_DEFAULT)
 public class Link {
-
     private String href;
     private boolean templated = false;
     private String type;
@@ -124,23 +124,19 @@ public class Link {
     }
 
     public String getHref() {
-        return isTemplated() ? href : expand();
+        if (isTemplated()) {
+            return href;
+        } else {
+            return Optional.ofNullable(href)
+                    .map(UriTemplate::fromTemplate)
+                    .map(uriTemplate -> uriTemplate.expand(hrefVars))
+                    .orElse(null);
+        }
     }
 
     public Link set(String variableName, Object value) {
         hrefVars.put(variableName, value.toString());
         return this;
-    }
-
-    /**
-     * Expand the href template with specified parameters.
-     *
-     * @return the expanded template.
-     * @deprecated use {@link #getHref()} which directly returns the correct form of the href.
-     */
-    @Deprecated
-    public String expand() {
-        return href == null ? null : UriTemplate.fromTemplate(href).expand(hrefVars);
     }
 
     public boolean isTemplated() {

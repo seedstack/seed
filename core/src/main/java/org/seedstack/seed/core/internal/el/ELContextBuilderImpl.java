@@ -14,6 +14,7 @@ import org.seedstack.seed.el.ELContextBuilder;
 import javax.el.ELContext;
 import javax.el.ExpressionFactory;
 import javax.inject.Inject;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 import static com.google.common.base.Preconditions.checkArgument;
@@ -31,14 +32,14 @@ class ELContextBuilderImpl implements ELContextBuilder {
         if (ELPlugin.EL3_OPTIONAL.isPresent()) {
             try {
                 return ELPlugin.EL3_OPTIONAL.get().getConstructor(ExpressionFactory.class).newInstance(expressionFactory);
-            } catch (Exception e) {
-                throw new RuntimeException("Unable to instantiate StandardELContext");
+            } catch (InvocationTargetException | NoSuchMethodException | IllegalAccessException | InstantiationException e) {
+                throw new RuntimeException("Unable to instantiate StandardELContext", e);
             }
         } else if (ELPlugin.JUEL_OPTIONAL.isPresent()) {
             try {
                 return ELPlugin.JUEL_OPTIONAL.get().newInstance();
-            } catch (Exception e) {
-                throw new RuntimeException("Unable to instantiate JUEL SimpleContext");
+            } catch (IllegalAccessException | InstantiationException e) {
+                throw new RuntimeException("Unable to instantiate JUEL SimpleContext", e);
             }
         } else {
             throw new UnsupportedOperationException("StandardELContext is not supported in this environment (EL level 3+ required)");
@@ -78,7 +79,7 @@ class ELContextBuilderImpl implements ELContextBuilder {
                 if (ELPlugin.JUEL_OPTIONAL.get().isAssignableFrom(elContext.getClass())) {
                     try {
                         ELPlugin.JUEL_OPTIONAL.get().getMethod("setFunction", String.class, String.class, Method.class).invoke(elContext, prefix, localName, method);
-                    } catch (Exception e) {
+                    } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
                         throw SeedException.wrap(e, ExpressionLanguageErrorCode.UNEXPECTED_EXCEPTION);
                     }
                 } else {

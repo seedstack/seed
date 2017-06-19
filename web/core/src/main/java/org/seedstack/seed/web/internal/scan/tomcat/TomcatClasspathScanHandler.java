@@ -21,29 +21,32 @@ public class TomcatClasspathScanHandler implements ClasspathScanHandler {
     @Override
     public List<Vfs.UrlType> urlTypes() {
         return Lists.newArrayList(
-                new Vfs.UrlType() {
-                    @Override
-                    public boolean matches(URL url) {
-                        return "jndi".equals(url.getProtocol()) && url.toExternalForm().contains(".jar");
-                    }
-
-                    @Override
-                    public Vfs.Dir createDir(final URL url) {
-                        return new JndiJarInputDir(url);
-                    }
-                },
-
-                new Vfs.UrlType() {
-                    @Override
-                    public boolean matches(URL url) {
-                        return "jndi".equals(url.getProtocol()) && !url.toExternalForm().contains(".jar");
-                    }
-
-                    @Override
-                    public Vfs.Dir createDir(final URL url) {
-                        return new JndiInputDir(url);
-                    }
-                }
+                new TomcatJndiJarUrlType(),
+                new TomcatJndiFileUrlType()
         );
+    }
+
+    private static class TomcatJndiJarUrlType implements Vfs.UrlType {
+        @Override
+        public boolean matches(URL url) {
+            return "jndi".equals(url.getProtocol()) && url.toExternalForm().contains(".jar");
+        }
+
+        @Override
+        public Vfs.Dir createDir(final URL url) {
+            return new JndiJarInputDir(url);
+        }
+    }
+
+    private static class TomcatJndiFileUrlType implements Vfs.UrlType {
+        @Override
+        public boolean matches(URL url) {
+            return "jndi".equals(url.getProtocol()) && !url.toExternalForm().contains(".jar");
+        }
+
+        @Override
+        public Vfs.Dir createDir(final URL url) {
+            return new JndiInputDir(url);
+        }
     }
 }

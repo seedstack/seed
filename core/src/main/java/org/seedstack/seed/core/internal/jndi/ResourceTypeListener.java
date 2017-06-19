@@ -44,7 +44,7 @@ class ResourceTypeListener implements TypeListener {
                     }
 
                     String resourceName = resourceAnnotation.name();
-                    if (resourceName != null && !resourceName.isEmpty()) {
+                    if (!resourceName.isEmpty()) {
                         try {
                             typeEncounter.register(new ResourceMembersInjector<>(field, contextToLookup.lookup(resourceName)));
                         } catch (NamingException e) {

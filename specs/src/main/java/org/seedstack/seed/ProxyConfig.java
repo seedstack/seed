@@ -18,7 +18,7 @@ public class ProxyConfig {
     private ProxyMode mode = ProxyMode.AUTO;
     @SingleValue
     private String httpProxy;
-    private String httpsProxy = httpProxy;
+    private String httpsProxy;
     private String noProxy;
 
     public ProxyMode getMode() {
@@ -40,7 +40,7 @@ public class ProxyConfig {
     }
 
     public String getHttpsProxy() {
-        return httpsProxy;
+        return httpsProxy == null ? httpProxy : httpsProxy;
     }
 
     public ProxyConfig setHttpsProxy(String httpsProxy) {

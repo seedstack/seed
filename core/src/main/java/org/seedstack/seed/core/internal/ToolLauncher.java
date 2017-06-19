@@ -8,6 +8,7 @@
 package org.seedstack.seed.core.internal;
 
 import com.google.common.collect.Lists;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.nuun.kernel.api.Kernel;
 import io.nuun.kernel.api.Plugin;
 import io.nuun.kernel.api.config.KernelConfiguration;
@@ -16,7 +17,6 @@ import org.seedstack.seed.SeedException;
 import org.seedstack.seed.core.Seed;
 import org.seedstack.seed.spi.SeedLauncher;
 import org.seedstack.seed.spi.SeedTool;
-import org.seedstack.seed.spi.ToolContext;
 
 import java.util.ServiceLoader;
 
@@ -29,6 +29,7 @@ public class ToolLauncher implements SeedLauncher {
     }
 
     @Override
+    @SuppressFBWarnings(value = "DM_EXIT", justification = "ToolLauncher must be able to return a code to the system")
     public void launch(String[] args) throws Exception {
         // no logs wanted for tools
         Seed.disableLogs();

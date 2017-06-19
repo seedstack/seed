@@ -7,6 +7,7 @@
  */
 package org.seedstack.seed.core.internal.configuration;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.seedstack.coffig.NamedNode;
 import org.seedstack.coffig.TreeNode;
 import org.seedstack.coffig.spi.ConfigurationMapper;
@@ -33,9 +34,9 @@ public class ClassConfigurationMapper implements ConfigurationMapper {
     }
 
     @Override
+    @SuppressFBWarnings(value = "BC_UNCONFIRMED_CAST", justification = "Cast is verified in canHandle() method")
     public Object map(TreeNode treeNode, Type type) {
         Class<?> rawType = Utils.getRawClass(((ParameterizedType) type).getActualTypeArguments()[0]);
-
         if (treeNode.type() == TreeNode.Type.MAP_NODE) {
             return ClassConfiguration.of(rawType, treeNode.namedNodes()
                     .filter(namedNode -> isValueNode(namedNode.node()))

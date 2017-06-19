@@ -25,17 +25,12 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * @see org.seedstack.seed.rest.internal.jsonhome.JsonHome
  */
 public class Resource {
-
     private final String rel;
-
-    private String href;
-
-    private String hrefTemplate;
-
-    private Map<String, String> pathParams = new HashMap<>();
-    private Map<String, String> queryParams = new HashMap<>();
-
-    private Hints hints;
+    private final String href;
+    private final String hrefTemplate;
+    private final Map<String, String> pathParams = new HashMap<>();
+    private final Map<String, String> queryParams = new HashMap<>();
+    private final Hints hints;
 
     /**
      * Resource constructor.
@@ -45,10 +40,9 @@ public class Resource {
      * @param hints the the resource hints
      */
     public Resource(String rel, String href, @Nullable Hints hints) {
-        checkNotNull(rel, "The rel must not be null");
-        checkNotNull(href, "The href must not be null");
-        this.rel = rel;
-        this.href = href;
+        this.rel = checkNotNull(rel, "The rel must not be null");
+        this.href = checkNotNull(href, "The href must not be null");
+        this.hrefTemplate = null;
         this.hints = hints;
     }
 
@@ -57,19 +51,18 @@ public class Resource {
      *
      * @param rel          the the relation type
      * @param hrefTemplate the href template
-     * @param pathParams     the href variables
+     * @param pathParams   the href variables
      * @param hints        the the resource hints
      */
     public Resource(String rel, String hrefTemplate, @Nullable Map<String, String> pathParams, @Nullable Map<String, String> queryParams, @Nullable Hints hints) {
-        checkNotNull(rel, "The rel must not be null");
-        checkNotNull(hrefTemplate, "The href must not be null");
-        this.rel = rel;
-        this.hrefTemplate = hrefTemplate;
-        if (this.pathParams != null) {
-            this.pathParams = pathParams;
+        this.rel = checkNotNull(rel, "The rel must not be null");
+        this.hrefTemplate = checkNotNull(hrefTemplate, "The hrefTemplate must not be null");
+        this.href = null;
+        if (pathParams != null) {
+            this.pathParams.putAll(pathParams);
         }
-        if (this.queryParams != null) {
-            this.queryParams = queryParams;
+        if (queryParams != null) {
+            this.queryParams.putAll(queryParams);
         }
         this.hints = hints;
     }
@@ -195,36 +188,36 @@ public class Resource {
         }
     }
 
-        /**
-         * Serializes the resource into a map.
-         *
-         * @return the resource map
-         */
-        public Map<String, Object> toRepresentation () {
-            Map<String, Object> representation = new HashMap<>();
-            if (templated()) {
-                representation.put("href-template", hrefTemplate);
-                representation.put("href-vars", hrefVars());
-            } else {
-                representation.put("href", href);
-            }
-            if (hints != null) {
-                Map<String, Object> hintsRepresentation = hints.toRepresentation();
-                if (!hintsRepresentation.isEmpty()) {
-                    representation.put("hints", hintsRepresentation);
-                }
-            }
-            return representation;
+    /**
+     * Serializes the resource into a map.
+     *
+     * @return the resource map
+     */
+    public Map<String, Object> toRepresentation() {
+        Map<String, Object> representation = new HashMap<>();
+        if (templated()) {
+            representation.put("href-template", hrefTemplate);
+            representation.put("href-vars", hrefVars());
+        } else {
+            representation.put("href", href);
         }
-
-        @Override
-        public String toString () {
-            return "Resource{" +
-                    "rel='" + rel + '\'' +
-                    ", href='" + href + '\'' +
-                    ", hrefTemplate='" + hrefTemplate + '\'' +
-                    ", hrefVars=" + hrefVars() +
-                    ", hints=" + hints +
-                    '}';
+        if (hints != null) {
+            Map<String, Object> hintsRepresentation = hints.toRepresentation();
+            if (!hintsRepresentation.isEmpty()) {
+                representation.put("hints", hintsRepresentation);
+            }
         }
+        return representation;
     }
+
+    @Override
+    public String toString() {
+        return "Resource{" +
+                "rel='" + rel + '\'' +
+                ", href='" + href + '\'' +
+                ", hrefTemplate='" + hrefTemplate + '\'' +
+                ", hrefVars=" + hrefVars() +
+                ", hints=" + hints +
+                '}';
+    }
+}

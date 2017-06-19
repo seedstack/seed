@@ -50,7 +50,7 @@ class ArgumentDefinition implements Comparable<ArgumentDefinition> {
 
     @Override
     public int compareTo(ArgumentDefinition o) {
-        return Integer.valueOf(argument.index()).compareTo(o.argument.index());
+        return Integer.compare(argument.index(), o.argument.index());
     }
 
     @Override

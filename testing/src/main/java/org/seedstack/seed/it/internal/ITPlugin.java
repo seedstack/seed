@@ -24,6 +24,7 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Files;
 import java.util.Collection;
 import java.util.HashSet;
@@ -124,7 +125,7 @@ public class ITPlugin extends AbstractSeedPlugin {
                 Constructor<? extends Module> declaredConstructor = klazz.getDeclaredConstructor();
                 declaredConstructor.setAccessible(true);
                 itModules.add(declaredConstructor.newInstance());
-            } catch (Exception e) {
+            } catch (NoSuchMethodException | IllegalAccessException | InstantiationException | InvocationTargetException e) {
                 throw SeedException.wrap(e, ITErrorCode.UNABLE_TO_INSTANTIATE_IT_MODULE).put("moduleClass", klazz.getCanonicalName());
             }
         }

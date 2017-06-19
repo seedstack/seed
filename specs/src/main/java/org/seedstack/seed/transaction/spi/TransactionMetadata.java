@@ -7,6 +7,7 @@
  */
 package org.seedstack.seed.transaction.spi;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.seedstack.seed.transaction.Propagation;
 import org.seedstack.seed.transaction.Transactional;
 
@@ -95,8 +96,9 @@ public class TransactionMetadata {
      *
      * @return the exception classes array.
      */
+    @SuppressFBWarnings(value = "PZLA_PREFER_ZERO_LENGTH_ARRAYS", justification = "Null is used here to denote an undetermined value")
     public Class<? extends Exception>[] getRollbackOn() {
-        return rollbackOn.clone();
+        return rollbackOn != null ? rollbackOn.clone() : null;
     }
 
     /**
@@ -113,8 +115,9 @@ public class TransactionMetadata {
      *
      * @return the exception classes array.
      */
+    @SuppressFBWarnings(value = "PZLA_PREFER_ZERO_LENGTH_ARRAYS", justification = "Null is used here to denote an undetermined value")
     public Class<? extends Exception>[] getNoRollbackFor() {
-        return noRollbackFor.clone();
+        return noRollbackFor != null ? noRollbackFor.clone() : null;
     }
 
     /**

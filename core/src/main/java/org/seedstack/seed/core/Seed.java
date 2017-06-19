@@ -36,6 +36,7 @@ import javax.annotation.Nullable;
 import javax.validation.ValidatorFactory;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -56,8 +57,9 @@ public class Seed {
             " ___) |  __/  __/ (_| |___) | || (_| | (__|   < \n" +
             "|____/ \\___|\\___|\\____|____/ \\__\\____|\\___|_|\\_\\";
     private static volatile boolean initialized = false;
+    private static volatile boolean disposed = false;
     private static volatile boolean noLogs = false;
-    private static final DiagnosticManager diagnosticManager = new DiagnosticManagerImpl();
+    private final DiagnosticManager diagnosticManager;
     private final String seedVersion;
     private final String businessVersion;
     private final ApplicationConfig applicationConfig;
@@ -104,7 +106,7 @@ public class Seed {
         return instance.kernelManager.createKernel(
                 SeedRuntime.builder()
                         .context(runtimeContext)
-                        .diagnosticManager(diagnosticManager)
+                        .diagnosticManager(instance.diagnosticManager)
                         .configuration(instance.configuration.fork())
                         .validatorFactory(instance.validatorFactory)
                         .applicationConfig(instance.applicationConfig)
@@ -130,7 +132,7 @@ public class Seed {
      * @return the default diagnostic manager.
      */
     public static DiagnosticManager diagnostic() {
-        return diagnosticManager;
+        return getInstance().diagnosticManager;
     }
 
     /**
@@ -148,19 +150,15 @@ public class Seed {
      * Seed is no longer usable in the current JVM.
      */
     public static void close() {
-        if (initialized) {
-            Seed instance = getInstance();
-            instance.seedInitializers.forEach(SeedInitializer::onClose);
-            instance.proxyManager.uninstall();
-            instance.validatorFactory.close();
-            instance.consoleManager.uninstall();
-            instance.logManager.close();
-            Thread.setDefaultUncaughtExceptionHandler(null);
-            initialized = false;
+        if (initialized && !disposed) {
+            getInstance().dispose();
         }
     }
 
     private static Seed getInstance() {
+        if (disposed) {
+            throw new IllegalStateException("Seed is no longer usable after having called close()");
+        }
         try {
             return Holder.INSTANCE;
         } catch (Throwable t) {
@@ -172,6 +170,8 @@ public class Seed {
     }
 
     private Seed() {
+        diagnosticManager = new DiagnosticManagerImpl();
+
         seedVersion = Optional.ofNullable(Seed.class.getPackage())
                 .map(Package::getImplementationVersion)
                 .orElse(null);
@@ -230,6 +230,10 @@ public class Seed {
             }
         }
 
+        markInitialized();
+    }
+
+    private static void markInitialized() {
         initialized = true;
     }
 
@@ -264,7 +268,7 @@ public class Seed {
         InputStream bannerStream = ClassLoaders.findMostCompleteClassLoader(Seed.class).getResourceAsStream("banner.txt");
         if (bannerStream != null) {
             try {
-                return new Scanner(bannerStream).useDelimiter("\\Z").next();
+                return new Scanner(bannerStream, StandardCharsets.UTF_8.name()).useDelimiter("\\Z").next();
             } finally {
                 try {
                     bannerStream.close();
@@ -274,5 +278,20 @@ public class Seed {
             }
         }
         return null;
+    }
+
+    private void dispose() {
+        seedInitializers.forEach(SeedInitializer::onClose);
+        proxyManager.uninstall();
+        validatorFactory.close();
+        consoleManager.uninstall();
+        logManager.close();
+        Thread.setDefaultUncaughtExceptionHandler(null);
+        markDisposed();
+    }
+
+    private static void markDisposed() {
+        initialized = false;
+        disposed = true;
     }
 }
