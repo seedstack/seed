@@ -102,6 +102,8 @@ public class Role implements Serializable {
     }
 
     private static final class UnmodifiableRole extends Role {
+        private static final long serialVersionUID = 1L;
+
         private UnmodifiableRole(Role role) {
             super(role.getName());
             super.scopes.addAll(role.getScopes());

@@ -7,33 +7,79 @@
  */
 package org.seedstack.seed.core;
 
-import io.nuun.kernel.api.Kernel;
+import com.google.inject.Injector;
+import com.google.inject.Module;
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Rule;
 import org.junit.Test;
-import org.seedstack.seed.core.fixtures.TestLifecycleListener;
+import org.seedstack.seed.LifecycleListener;
+import org.seedstack.seed.core.rules.SeedITRule;
 
-import java.util.UUID;
+import javax.inject.Singleton;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class LifecycleIT {
+public class LifecycleIT implements LifecycleListener {
+    @Rule
+    public SeedITRule rule = new SeedITRule(this);
+    private static boolean startedWasCalled;
+    private static boolean stoppingWasCalled;
+    private static boolean closedWasCalled;
+
+    @BeforeClass
+    public static void setUpClass() throws Exception {
+        startedWasCalled = false;
+        stoppingWasCalled = false;
+        closedWasCalled = false;
+    }
+
+    @Before
+    public void setUp() throws Exception {
+        rule.getKernel().objectGraph().as(Injector.class).createChildInjector((Module) binder -> binder.bind(AutoCloseableFixture.class));
+        assertThat(startedWasCalled).isTrue();
+        assertThat(stoppingWasCalled).isFalse();
+        assertThat(closedWasCalled).isFalse();
+    }
+
+    @After
+    public void tearDown() throws Exception {
+        assertThat(startedWasCalled).isTrue();
+        assertThat(stoppingWasCalled).isFalse();
+        assertThat(closedWasCalled).isFalse();
+    }
+
+    @AfterClass
+    public static void tearDownClass() throws Exception {
+        assertThat(startedWasCalled).isTrue();
+        assertThat(stoppingWasCalled).isTrue();
+        assertThat(closedWasCalled).isTrue();
+    }
+
     @Test
     public void lifecycle_callbacks_are_invoked() {
-        String token = UUID.randomUUID().toString();
-        TestLifecycleListener.setToken(token);
+        assertThat(startedWasCalled).isTrue();
+        assertThat(stoppingWasCalled).isFalse();
+        assertThat(closedWasCalled).isFalse();
+    }
 
-        Kernel kernel = Seed.createKernel(null, null, false);
+    @Override
+    public void started() {
+        startedWasCalled = true;
+    }
 
-        assertThat(TestLifecycleListener.isStartHasBeenCalled(token)).isFalse();
-        assertThat(TestLifecycleListener.isStopHasBeenCalled(token)).isFalse();
+    @Override
+    public void stopping() {
+        stoppingWasCalled = true;
+    }
 
-        kernel.start();
-
-        assertThat(TestLifecycleListener.isStartHasBeenCalled(token)).isTrue();
-        assertThat(TestLifecycleListener.isStopHasBeenCalled(token)).isFalse();
-
-        Seed.disposeKernel(kernel);
-
-        assertThat(TestLifecycleListener.isStartHasBeenCalled(token)).isTrue();
-        assertThat(TestLifecycleListener.isStopHasBeenCalled(token)).isTrue();
+    @Singleton
+    private static class AutoCloseableFixture implements AutoCloseable {
+        @Override
+        public void close() throws Exception {
+            closedWasCalled = true;
+        }
     }
 }

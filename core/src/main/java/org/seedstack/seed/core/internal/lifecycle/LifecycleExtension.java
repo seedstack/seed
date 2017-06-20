@@ -8,63 +8,41 @@
 package org.seedstack.seed.core.internal.lifecycle;
 
 import io.nuun.kernel.spi.KernelExtension;
-import org.seedstack.seed.LifecycleListener;
-import org.seedstack.seed.SeedException;
-import org.seedstack.seed.core.internal.CoreErrorCode;
 
 import java.util.Collection;
 
-public class LifecycleExtension implements KernelExtension<LifecycleListenerScanner> {
-
+public class LifecycleExtension implements KernelExtension<LifecycleManager> {
     @Override
-    public void initializing(Collection<LifecycleListenerScanner> extendedPlugins) {
-
+    public void initializing(Collection<LifecycleManager> lifecycleManagers) {
+        // this phase is not supported by LifecycleManager
     }
 
     @Override
-    public void initialized(Collection<LifecycleListenerScanner> extendedPlugins) {
+    public void initialized(Collection<LifecycleManager> lifecycleManagers) {
+        // this phase is not supported by LifecycleManager
     }
 
     @Override
-    public void starting(Collection<LifecycleListenerScanner> extendedPlugins) {
-
+    public void starting(Collection<LifecycleManager> lifecycleManagers) {
+        // this phase is not supported by LifecycleManager
     }
 
     @Override
-    public void started(Collection<LifecycleListenerScanner> extendedPlugins) {
-        for (LifecycleListenerScanner extendedPlugin : extendedPlugins) {
-            for (LifecycleListener lifecycleListener : extendedPlugin.get()) {
-                try {
-                    lifecycleListener.started();
-                } catch (Exception e) {
-                    throw SeedException
-                            .wrap(e, CoreErrorCode.ERROR_DURING_LIFECYCLE_CALLBACK)
-                            .put("lifecycleListenerClass", lifecycleListener.getClass().getCanonicalName())
-                            .put("phase", "start");
-                }
-            }
+    public void started(Collection<LifecycleManager> lifecycleManagers) {
+        for (LifecycleManager lifecycleManager : lifecycleManagers) {
+            lifecycleManager.started();
         }
     }
 
     @Override
-    public void stopping(Collection<LifecycleListenerScanner> extendedPlugins) {
-        for (LifecycleListenerScanner extendedPlugin : extendedPlugins) {
-            for (LifecycleListener lifecycleListener : extendedPlugin.get()) {
-                try {
-                    lifecycleListener.stopping();
-                } catch (Exception e) {
-                    throw SeedException
-                            .wrap(e, CoreErrorCode.ERROR_DURING_LIFECYCLE_CALLBACK)
-                            .put("lifecycleListenerClass", lifecycleListener.getClass().getCanonicalName())
-                            .put("phase", "stop");
-
-                }
-            }
+    public void stopping(Collection<LifecycleManager> lifecycleManagers) {
+        for (LifecycleManager lifecycleManager : lifecycleManagers) {
+            lifecycleManager.stopping();
         }
     }
 
     @Override
-    public void stopped(Collection<LifecycleListenerScanner> extendedPlugins) {
-
+    public void stopped(Collection<LifecycleManager> lifecycleManagers) {
+        // this phase is not supported by LifecycleManager
     }
 }
