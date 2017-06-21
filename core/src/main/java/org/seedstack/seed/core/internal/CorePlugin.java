@@ -71,12 +71,14 @@ public class CorePlugin extends AbstractSeedPlugin {
                 .filter(Module.class::isAssignableFrom)
                 .forEach(candidate -> {
                     Install annotation = candidate.getAnnotation(Install.class);
-                    if (annotation.override()) {
-                        seedOverridingModules.add((Class<Module>) candidate);
-                        LOGGER.trace("Detected overriding module to install {}", candidate.getCanonicalName());
-                    } else {
-                        seedModules.add((Class<Module>) candidate);
-                        LOGGER.trace("Detected module to install {}", candidate.getCanonicalName());
+                    if (annotation != null) {
+                        if (annotation.override()) {
+                            seedOverridingModules.add((Class<Module>) candidate);
+                            LOGGER.trace("Detected overriding module to install {}", candidate.getCanonicalName());
+                        } else {
+                            seedModules.add((Class<Module>) candidate);
+                            LOGGER.trace("Detected module to install {}", candidate.getCanonicalName());
+                        }
                     }
                 });
         LOGGER.debug("Detected {} module(s) to install", seedModules.size());

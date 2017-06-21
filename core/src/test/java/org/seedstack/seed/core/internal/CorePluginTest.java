@@ -16,6 +16,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.seedstack.coffig.Coffig;
 import org.seedstack.seed.Application;
+import org.seedstack.seed.Ignore;
 import org.seedstack.seed.Install;
 import org.seedstack.seed.spi.ApplicationProvider;
 
@@ -30,7 +31,17 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class CorePluginTest {
+    @Install
+    @Ignore
     private static class TestModule extends AbstractModule {
+        @Override
+        protected void configure() {
+        }
+    }
+
+    @Install(override = true)
+    @Ignore
+    private static class TestOverridingModule extends AbstractModule {
         @Override
         protected void configure() {
         }
@@ -56,13 +67,24 @@ public class CorePluginTest {
     }
 
     @Test
-    public void initCorePluginTest() {
+    public void installModule() {
         InitContext initContext = mockInitContextForCore(TestModule.class);
         corePlugin.init(initContext);
         Object object = corePlugin.nativeUnitModule();
         Assertions.assertThat(object).isInstanceOf(CoreModule.class);
         @SuppressWarnings("unchecked")
         Set<Class<? extends Module>> seedModules = Reflection.field("seedModules").ofType(Set.class).in(corePlugin).get();
+        Assertions.assertThat(seedModules).hasSize(1);
+    }
+
+    @Test
+    public void installOverridingModule() {
+        InitContext initContext = mockInitContextForCore(TestOverridingModule.class);
+        corePlugin.init(initContext);
+        Object object = corePlugin.nativeUnitModule();
+        Assertions.assertThat(object).isInstanceOf(CoreModule.class);
+        @SuppressWarnings("unchecked")
+        Set<Class<? extends Module>> seedModules = Reflection.field("seedOverridingModules").ofType(Set.class).in(corePlugin).get();
         Assertions.assertThat(seedModules).hasSize(1);
     }
 

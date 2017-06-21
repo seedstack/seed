@@ -178,7 +178,7 @@ public class Seed {
                     return exceptionTranslator.translate(exception);
                 }
             }
-            throw SeedException.wrap(exception, CoreErrorCode.UNEXPECTED_EXCEPTION);
+            return SeedException.wrap(exception, CoreErrorCode.UNEXPECTED_EXCEPTION);
         }
     }
 

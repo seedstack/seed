@@ -27,7 +27,7 @@ public interface SeedTool extends Callable<Integer>, Plugin {
      * <ul>
      * <li>MINIMAL will disable plugin auto-detection and only enable plugins returned by the {@link #pluginsToLoad()} method.</li>
      * <li>FULL will start the application normally with plugin auto-detection enabled. Plugins returned by the {@link #pluginsToLoad()}
-     * method will also be loaded.</li>.
+     * method will also be loaded.</li>
      * </ul>
      *
      * @return the start mode of the tool.
