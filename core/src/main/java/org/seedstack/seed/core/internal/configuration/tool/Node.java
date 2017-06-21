@@ -27,6 +27,8 @@ import java.util.ResourceBundle;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
+import static org.seedstack.shed.reflect.ReflectUtils.makeAccessible;
+
 class Node implements Comparable<Node> {
     private final String name;
     private final Class<?> configClass;
@@ -170,6 +172,8 @@ class Node implements Comparable<Node> {
                 continue;
             }
 
+            makeAccessible(field);
+
             PropertyInfo propertyInfo = new PropertyInfo();
             Config configAnnotation = field.getAnnotation(Config.class);
             String name;
@@ -178,7 +182,6 @@ class Node implements Comparable<Node> {
             } else {
                 name = field.getName();
             }
-            field.setAccessible(true);
 
             propertyInfo.setName(name);
             propertyInfo.setShortDescription(getMessage(bundle, "No description.", buildKey(name)));

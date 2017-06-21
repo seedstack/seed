@@ -31,6 +31,8 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import static org.seedstack.shed.reflect.ReflectUtils.makeAccessible;
+
 /**
  * This plugin automatically enable integration tests to be managed by SEED.
  */
@@ -123,7 +125,7 @@ public class ITPlugin extends AbstractSeedPlugin {
         for (Class<? extends Module> klazz : itInstallModules) {
             try {
                 Constructor<? extends Module> declaredConstructor = klazz.getDeclaredConstructor();
-                declaredConstructor.setAccessible(true);
+                makeAccessible(declaredConstructor);
                 itModules.add(declaredConstructor.newInstance());
             } catch (NoSuchMethodException | IllegalAccessException | InstantiationException | InvocationTargetException e) {
                 throw SeedException.wrap(e, ITErrorCode.UNABLE_TO_INSTANTIATE_IT_MODULE).put("moduleClass", klazz.getCanonicalName());

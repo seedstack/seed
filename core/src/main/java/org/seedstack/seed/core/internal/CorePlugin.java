@@ -23,6 +23,8 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
+import static org.seedstack.shed.reflect.ReflectUtils.makeAccessible;
+
 /**
  * Core plugin that configures base package roots and detects diagnostic collectors, dependency providers, Guice modules
  * and configuration files.
@@ -32,6 +34,7 @@ public class CorePlugin extends AbstractSeedPlugin {
     private static final Logger LOGGER = LoggerFactory.getLogger(CorePlugin.class);
     private static final String SEEDSTACK_PACKAGE = "org.seedstack";
     private final Set<Class<? extends Module>> seedModules = new HashSet<>();
+    private final Set<Class<? extends Module>> seedOverridingModules = new HashSet<>();
 
     @Override
     public String name() {
@@ -67,26 +70,40 @@ public class CorePlugin extends AbstractSeedPlugin {
                 .stream()
                 .filter(Module.class::isAssignableFrom)
                 .forEach(candidate -> {
-                    seedModules.add((Class<Module>) candidate);
-                    LOGGER.trace("Detected module to install {}", candidate.getCanonicalName());
+                    Install annotation = candidate.getAnnotation(Install.class);
+                    if (annotation.override()) {
+                        seedOverridingModules.add((Class<Module>) candidate);
+                        LOGGER.trace("Detected overriding module to install {}", candidate.getCanonicalName());
+                    } else {
+                        seedModules.add((Class<Module>) candidate);
+                        LOGGER.trace("Detected module to install {}", candidate.getCanonicalName());
+                    }
                 });
         LOGGER.debug("Detected {} module(s) to install", seedModules.size());
+        LOGGER.debug("Detected {} overriding module(s) to install", seedOverridingModules.size());
     }
 
     @Override
     public Object nativeUnitModule() {
-        Collection<Module> subModules = new HashSet<>();
+        return new CoreModule(instantiateModules(seedModules));
+    }
 
-        for (Class<? extends Module> klazz : seedModules) {
+    @Override
+    public Object nativeOverridingUnitModule() {
+        return new CoreModule(instantiateModules(seedOverridingModules));
+    }
+
+    private Collection<Module> instantiateModules(Collection<Class<? extends Module>> moduleClasses) {
+        Collection<Module> modules = new HashSet<>();
+        for (Class<? extends Module> moduleClass : moduleClasses) {
             try {
-                Constructor<? extends Module> declaredConstructor = klazz.getDeclaredConstructor();
-                declaredConstructor.setAccessible(true);
-                subModules.add(declaredConstructor.newInstance());
+                Constructor<? extends Module> declaredConstructor = moduleClass.getDeclaredConstructor();
+                makeAccessible(declaredConstructor);
+                modules.add(declaredConstructor.newInstance());
             } catch (NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException e) {
-                throw SeedException.wrap(e, CoreErrorCode.UNABLE_TO_INSTANTIATE_MODULE).put("module", klazz.getCanonicalName());
+                throw SeedException.wrap(e, CoreErrorCode.UNABLE_TO_INSTANTIATE_MODULE).put("module", moduleClass.getCanonicalName());
             }
         }
-
-        return new CoreModule(subModules);
+        return modules;
     }
 }

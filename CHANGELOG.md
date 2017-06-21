@@ -1,10 +1,11 @@
 # Version 3.2.1 (2017-??-??)
 
-* [brk] Deprecated `expand()` method of `org.seedstack.seed.rest.hal.Link` has been removed (use getHref() instead). 
 * [new] Print a default banner at startup in case of missing custom `banner.txt`.
 * [new] Add `application.colorOuput` configuration property to force the color output mode (AUTODETECT, PASSTHROUGH, ENABLE, DISABLE).
-* [new] Any singleton implementing `AutoCloseable` will have its `close()` method invoked at application shutdown. 
-* [fix] Avoid NullPointerException when an exception occurs in a NOT_SUPPORTED local transaction.  
+* [new] Any singleton implementing `AutoCloseable` will have its `close()` method invoked at application shutdown.
+* [new] Overriding Guice modules can be installed by using `@Install(override = true)`. 
+* [brk] Deprecated `expand()` method of `org.seedstack.seed.rest.hal.Link` has been removed (use getHref() instead). 
+* [fix] Avoid NullPointerException when an exception occurs in a `NOT_SUPPORTED` local transaction.  
 * [chg] HTTP/2 is enabled by default with Undertow.
 * [chg] Update Guice to [4.1.0](https://github.com/google/guice/wiki/Guice41).
 * [chg] Update Shiro to [1.3.2](https://issues.apache.org/jira/secure/ReleaseNote.jspa?version=12317961&styleName=Text&projectId=12310950).
@@ -21,7 +22,7 @@
 * [fix] Fix resolution of `WEB-INF/classes` under Tomcat 8 when using resource overlay (PreResources, PostResources).
 * [fix] Properly logout subject when testing with `@WithUser`.
 * [fix] Prevent WebResourceFilter from serving files under `/WEB-INF`, allowing JSP to be served correctly.
-* [fix] Fix NPE when a filter or a servlet was already registered by the container.
+* [fix] Fix NPE when a filter or a servlet wa*s already registered by the container.
 * [chg] Default diagnostic dump changed from JSON to YAML.
 * [chg] Using the application classloader to load properties for additional JNDI contexts (paths should not start with `/` anymore).
 * [chg] Configuration properties files are now mapped in depth (the dot-notation in the property key is used to create intermediary tree nodes).

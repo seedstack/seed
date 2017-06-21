@@ -13,6 +13,7 @@ import org.seedstack.seed.SeedException;
 import org.seedstack.seed.core.internal.CoreErrorCode;
 import org.seedstack.seed.core.internal.ToolLauncher;
 import org.seedstack.seed.spi.SeedLauncher;
+import org.seedstack.shed.exception.BaseException;
 
 import java.util.List;
 import java.util.ServiceLoader;
@@ -89,11 +90,8 @@ public class SeedMain {
     }
 
     private static void handleException(Exception e) {
-        Seed.diagnostic().dumpDiagnosticReport(e);
-        if (e instanceof SeedException) {
-            e.printStackTrace(System.err);
-        } else {
-            SeedException.wrap(e, CoreErrorCode.UNEXPECTED_EXCEPTION).printStackTrace(System.err);
-        }
+        BaseException translated = Seed.translateException(e);
+        Seed.diagnostic().dumpDiagnosticReport(translated);
+        translated.printStackTrace(System.err);
     }
 }

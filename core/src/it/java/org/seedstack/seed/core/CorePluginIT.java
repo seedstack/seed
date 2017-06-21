@@ -13,6 +13,10 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.seedstack.seed.Logging;
+import org.seedstack.seed.core.fixtures.DummyService1;
+import org.seedstack.seed.core.fixtures.DummyService2;
+import org.seedstack.seed.core.fixtures.DummyService3;
+import org.seedstack.seed.core.fixtures.Service;
 import org.seedstack.seed.core.fixtures.Service1;
 import org.seedstack.seed.core.fixtures.Service2;
 import org.seedstack.seed.core.fixtures.Service3;
@@ -24,6 +28,7 @@ import some.other.pkg.ForeignClass;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
+import javax.inject.Named;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -56,6 +61,15 @@ public class CorePluginIT {
         @Nullable
         Service3 s3;
         @Inject
+        @Named("Service3Bis")
+        Service s3bis;
+        @Inject
+        @Named("Overriding")
+        Service overriding;
+        @Inject
+        @Named("OverridingNothing")
+        Service overridingNothing;
+        @Inject
         ForeignClass foreignClass;
     }
 
@@ -86,8 +100,11 @@ public class CorePluginIT {
         HolderNominal holder = injector.getInstance(HolderNominal.class);
 
         assertThat(holder).isNotNull();
-        assertThat(holder.s1).isNotNull();
+        assertThat(holder.s1).isInstanceOf(DummyService1.class);
         assertThat(holder.s3).isNull();
+        assertThat(holder.s3bis).isInstanceOf(DummyService1.class);
+        assertThat(holder.overriding).isInstanceOf(DummyService2.class);
+        assertThat(holder.overridingNothing).isInstanceOf(DummyService3.class);
     }
 
     @Test(expected = ConfigurationException.class)

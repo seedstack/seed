@@ -11,8 +11,8 @@ import com.google.inject.Injector;
 import io.nuun.kernel.api.Kernel;
 import io.nuun.kernel.api.config.KernelConfiguration;
 import io.nuun.kernel.core.NuunCore;
-import org.seedstack.seed.SeedException;
 import org.seedstack.seed.core.Seed;
+import org.seedstack.shed.exception.BaseException;
 
 import javax.servlet.ServletContainerInitializer;
 import javax.servlet.ServletContext;
@@ -72,12 +72,9 @@ public class SeedServletContainerInitializer implements ServletContainerInitiali
         return kernelConfiguration;
     }
 
-    private void handleException(Exception e) throws SeedException {
-        Seed.diagnostic().dumpDiagnosticReport(e);
-        if (e instanceof SeedException) {
-            throw (SeedException) e;
-        } else {
-            throw SeedException.wrap(e, WebErrorCode.UNEXPECTED_EXCEPTION);
-        }
+    private void handleException(Exception e) throws BaseException {
+        BaseException translated = Seed.translateException(e);
+        Seed.diagnostic().dumpDiagnosticReport(translated);
+        throw translated;
     }
 }

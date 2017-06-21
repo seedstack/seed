@@ -14,7 +14,7 @@ import org.seedstack.coffig.provider.CompositeProvider;
 import org.seedstack.coffig.provider.InMemoryProvider;
 import org.seedstack.coffig.spi.ConfigurationProvider;
 import org.seedstack.seed.ApplicationConfig;
-import org.seedstack.seed.core.internal.configuration.ConfigurationPriority;
+import org.seedstack.seed.spi.ConfigurationPriority;
 import org.seedstack.seed.core.internal.configuration.PrioritizedProvider;
 import org.seedstack.seed.diagnostic.DiagnosticManager;
 import org.seedstack.seed.diagnostic.spi.DiagnosticInfoCollector;

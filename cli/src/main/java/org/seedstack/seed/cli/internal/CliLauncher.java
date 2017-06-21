@@ -124,7 +124,7 @@ public class CliLauncher implements SeedLauncher {
         @Inject
         private Injector injector;
 
-        public SeedCallable(String cliCommand) {
+        SeedCallable(String cliCommand) {
             this.cliCommand = cliCommand;
         }
 

@@ -8,6 +8,7 @@
 package org.seedstack.seed.core;
 
 import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
 import io.nuun.kernel.api.Kernel;
 import io.nuun.kernel.api.config.KernelConfiguration;
 import org.fusesource.jansi.Ansi;
@@ -27,18 +28,24 @@ import org.seedstack.seed.core.internal.init.KernelManager;
 import org.seedstack.seed.core.internal.init.LogManager;
 import org.seedstack.seed.core.internal.init.ProxyManager;
 import org.seedstack.seed.diagnostic.DiagnosticManager;
+import org.seedstack.seed.spi.SeedExceptionTranslator;
 import org.seedstack.seed.spi.SeedInitializer;
 import org.seedstack.shed.ClassLoaders;
+import org.seedstack.shed.exception.BaseException;
 import org.seedstack.shed.reflect.Classes;
 import org.seedstack.shed.text.TextTemplate;
 
 import javax.annotation.Nullable;
+import javax.annotation.Priority;
 import javax.validation.ValidatorFactory;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Scanner;
@@ -59,6 +66,7 @@ public class Seed {
     private static volatile boolean initialized = false;
     private static volatile boolean disposed = false;
     private static volatile boolean noLogs = false;
+    private static final List<SeedExceptionTranslator> exceptionTranslators;
     private final DiagnosticManager diagnosticManager;
     private final String seedVersion;
     private final String businessVersion;
@@ -70,6 +78,16 @@ public class Seed {
     private final ProxyManager proxyManager;
     private final KernelManager kernelManager;
     private final Set<SeedInitializer> seedInitializers = new HashSet<>();
+
+    static {
+        exceptionTranslators = Lists.newArrayList(ServiceLoader.load(SeedExceptionTranslator.class));
+        exceptionTranslators.sort(Collections.reverseOrder(Comparator.comparingInt(Seed::getPriority)));
+    }
+
+    private static int getPriority(SeedExceptionTranslator t) {
+        Priority annotation = t.getClass().getAnnotation(Priority.class);
+        return annotation != null ? annotation.value() : 0;
+    }
 
     private static class Holder {
         private static final Seed INSTANCE = new Seed();
@@ -146,6 +164,25 @@ public class Seed {
     }
 
     /**
+     * Translates any exception that occurred in the application using an extensible exception mechanism.
+     *
+     * @param exception the exception to handle.
+     * @return the translated exception.
+     */
+    public static BaseException translateException(Exception exception) {
+        if (exception instanceof BaseException) {
+            return (BaseException) exception;
+        } else {
+            for (SeedExceptionTranslator exceptionTranslator : exceptionTranslators) {
+                if (exceptionTranslator.canTranslate(exception)) {
+                    return exceptionTranslator.translate(exception);
+                }
+            }
+            throw SeedException.wrap(exception, CoreErrorCode.UNEXPECTED_EXCEPTION);
+        }
+    }
+
+    /**
      * Cleanup Seed JVM-global state explicitly. Should be done before exiting the JVM. After calling this method
      * Seed is no longer usable in the current JVM.
      */
@@ -157,7 +194,7 @@ public class Seed {
 
     private static Seed getInstance() {
         if (disposed) {
-            throw new IllegalStateException("Seed is no longer usable after having called close()");
+            throw new IllegalStateException("Seed is no longer usable after close() has been called");
         }
         try {
             return Holder.INSTANCE;
@@ -181,11 +218,14 @@ public class Seed {
                 .orElse(null);
 
         Thread.setDefaultUncaughtExceptionHandler((thread, throwable) -> {
-            if (throwable instanceof SeedException) {
-                throwable.printStackTrace(System.err);
+            Throwable translated;
+            if (throwable instanceof Exception) {
+                translated = Seed.translateException((Exception) throwable);
             } else {
-                SeedException.wrap(throwable, CoreErrorCode.UNEXPECTED_EXCEPTION).printStackTrace(System.err);
+                translated = throwable;
             }
+            diagnosticManager.dumpDiagnosticReport(throwable);
+            translated.printStackTrace(System.err);
         });
 
         // Logging initialization (should silence logs until logging activation later in the initialization)

@@ -23,6 +23,7 @@ import org.seedstack.seed.core.SeedRuntime;
 import org.seedstack.seed.core.internal.CoreErrorCode;
 import org.seedstack.seed.diagnostic.DiagnosticManager;
 import org.seedstack.seed.spi.ApplicationProvider;
+import org.seedstack.seed.spi.ConfigurationPriority;
 import org.seedstack.shed.ClassLoaders;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

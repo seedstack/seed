@@ -9,6 +9,7 @@ package org.seedstack.seed.it;
 
 import com.google.inject.Injector;
 import com.google.inject.ProvisionException;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.nuun.kernel.api.Kernel;
 import io.nuun.kernel.api.config.KernelConfiguration;
 import io.nuun.kernel.core.NuunCore;
@@ -171,44 +172,32 @@ public class SeedITRunner extends BlockJUnit4ClassRunner {
         return classRules;
     }
 
-    private List<TestRule> buildRules(List<Class<? extends TestRule>> classRulesToApply) {
-        List<TestRule> rules = new ArrayList<>();
-        if (classRulesToApply != null) {
-            for (Class<? extends TestRule> testRuleClass : classRulesToApply) {
-                try {
-                    TestRule testRule = instantiate(testRuleClass);
-                    if (testRule instanceof KernelRule) {
-                        ((KernelRule) testRule).acceptKernelConfiguration(provideKernelConfiguration(defaultConfiguration));
-                    }
-                    rules.add(testRule);
-                } catch (InstantiationException | IllegalAccessException e) {
-                    throw SeedException.wrap(e, ITErrorCode.FAILED_TO_INSTANTIATE_TEST_RULE).put("ruleClass", testRuleClass.getCanonicalName());
-                }
-            }
-        }
-        return rules;
-    }
-
     @Override
     protected List<MethodRule> rules(Object target) {
         List<MethodRule> methodRules = super.rules(target);
         for (ITRunnerPlugin plugin : plugins) {
-            List<Class<? extends MethodRule>> methodRulesToApply = plugin.provideMethodRulesToApply(getTestClass(), target);
-            if (methodRulesToApply != null) {
-                for (Class<? extends MethodRule> methodRuleClass : methodRulesToApply) {
-                    try {
-                        MethodRule methodRule = instantiate(methodRuleClass);
-                        if (methodRule instanceof KernelRule) {
-                            ((KernelRule) methodRule).acceptKernelConfiguration(provideKernelConfiguration(defaultConfiguration));
-                        }
-                        methodRules.add(methodRule);
-                    } catch (IllegalAccessException | InstantiationException e) {
-                        throw SeedException.wrap(e, ITErrorCode.FAILED_TO_INSTANTIATE_TEST_RULE).put("ruleClass", methodRuleClass.getCanonicalName());
+            methodRules.addAll(buildRules(plugin.provideMethodRulesToApply(getTestClass(), target)));
+        }
+        return methodRules;
+    }
+
+    @SuppressFBWarnings(value = "REC_CATCH_EXCEPTION", justification = "We want to catch all exception to wrap them")
+    private <T> List<T> buildRules(List<Class<? extends T>> rulesToApply) {
+        List<T> rules = new ArrayList<>();
+        if (rulesToApply != null) {
+            for (Class<? extends T> ruleClass : rulesToApply) {
+                try {
+                    T ruleInstance = instantiate(ruleClass);
+                    if (ruleInstance instanceof KernelRule) {
+                        ((KernelRule) ruleInstance).acceptKernelConfiguration(provideKernelConfiguration(defaultConfiguration));
                     }
+                    rules.add(ruleInstance);
+                } catch (Exception e) {
+                    throw SeedException.wrap(e, ITErrorCode.FAILED_TO_INSTANTIATE_TEST_RULE).put("ruleClass", ruleClass.getCanonicalName());
                 }
             }
         }
-        return methodRules;
+        return rules;
     }
 
     @Override
@@ -265,6 +254,11 @@ public class SeedITRunner extends BlockJUnit4ClassRunner {
         }
     }
 
+    /**
+     * Initialize the kernel with the specified configuration.
+     *
+     * @param configuration the configuration.
+     */
     private void initKernel(Map<String, String> configuration) {
         List<FrameworkMethod> beforeKernelMethods = getTestClass().getAnnotatedMethods(BeforeKernel.class);
         for (FrameworkMethod beforeKernelMethod : beforeKernelMethods) {
@@ -331,18 +325,12 @@ public class SeedITRunner extends BlockJUnit4ClassRunner {
         }
 
         if (expectedClass == null && unwrappedThrowable != null) {
-            if (unwrappedThrowable instanceof SeedException) {
-                throw (SeedException) unwrappedThrowable;
-            } else {
-                throw SeedException.wrap(unwrappedThrowable, ITErrorCode.UNEXPECTED_EXCEPTION_OCCURRED).put("occurredClass", unwrappedThrowable.getClass().getCanonicalName());
-            }
+            throw SeedException.wrap(unwrappedThrowable, ITErrorCode.UNEXPECTED_EXCEPTION_OCCURRED).put("occurredClass", unwrappedThrowable.getClass().getCanonicalName());
         }
 
-        if (expectedClass != null) {
+        if (expectedClass != null && expectedTestingStep == testingStep) {
             if (unwrappedThrowable == null) {
-                if (expectedTestingStep == testingStep) {
-                    throw SeedException.createNew(ITErrorCode.EXPECTED_EXCEPTION_DID_NOT_OCCURRED).put("expectedClass", expectedClass.getCanonicalName());
-                }
+                throw SeedException.createNew(ITErrorCode.EXPECTED_EXCEPTION_DID_NOT_OCCURRED).put("expectedClass", expectedClass.getCanonicalName());
             } else if (!expectedClass.isAssignableFrom(unwrappedThrowable.getClass())) {
                 throw SeedException.createNew(ITErrorCode.ANOTHER_EXCEPTION_THAN_EXPECTED_OCCURRED).put("expectedClass", expectedClass.getCanonicalName()).put("occurredClass", unwrappedThrowable.getClass().getCanonicalName());
             }

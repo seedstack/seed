@@ -10,17 +10,15 @@ package org.seedstack.seed.core.fixtures;
 import com.google.inject.AbstractModule;
 import com.google.inject.Key;
 import com.google.inject.name.Names;
-import com.google.inject.util.Providers;
 import org.seedstack.seed.Install;
 
-@Install
-class Module3 extends AbstractModule {
+@Install(override = true)
+class OverridingModule3 extends AbstractModule {
 
     @Override
     protected void configure() {
-        bind(Service3.class).toProvider(Providers.of(null));
-        bind(Key.get(Service.class, Names.named("Service3Bis"))).to(Key.get(Service1.class));
-        bind(Key.get(Service.class, Names.named("Overriding"))).to(Key.get(Service1.class));
+        bind(Key.get(Service.class, Names.named("OverridingNothing"))).to(DummyService3.class);
+        bind(Key.get(Service.class, Names.named("Overriding"))).to(DummyService2.class);
     }
 
 }

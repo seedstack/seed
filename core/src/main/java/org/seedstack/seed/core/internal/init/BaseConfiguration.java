@@ -14,7 +14,7 @@ import org.seedstack.coffig.provider.PrefixProvider;
 import org.seedstack.coffig.provider.PropertiesProvider;
 import org.seedstack.coffig.provider.SystemPropertiesProvider;
 import org.seedstack.seed.core.Seed;
-import org.seedstack.seed.core.internal.configuration.ConfigurationPriority;
+import org.seedstack.seed.spi.ConfigurationPriority;
 import org.seedstack.seed.core.internal.configuration.PrioritizedProvider;
 import org.seedstack.shed.ClassLoaders;
 import org.slf4j.Logger;
