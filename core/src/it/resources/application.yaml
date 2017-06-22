@@ -30,7 +30,8 @@ index1: 1
 someEnum: FOO
 someShorts: [ 2, 3, 4 ]
 anInt: 5
-empty:
+empty: ""
+null:
 debugMode: off
 debugMode<debug>: on
 testProperty<dev>: devValue

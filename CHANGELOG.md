@@ -1,4 +1,4 @@
-# Version 3.2.1 (2017-??-??)
+# Version 3.3.0 (2017-07-??)
 
 * [new] Print a default banner at startup in case of missing custom `banner.txt`.
 * [new] Add `application.colorOuput` configuration property to force the color output mode (AUTODETECT, PASSTHROUGH, ENABLE, DISABLE).

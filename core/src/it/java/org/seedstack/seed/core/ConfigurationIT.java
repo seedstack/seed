@@ -148,10 +148,21 @@ public class ConfigurationIT {
         assertThat(holder.application.getConfiguration().getMandatory(String.class, "empty")).isEqualTo("");
     }
 
+    @Test
+    public void non_existent_configuration_values_are_empty() {
+        assertThat(injector.getInstance(Application.class).getConfiguration().getOptional(Object.class, "nonExistent")).isEmpty();
+        assertThat(injector.getInstance(Application.class).getConfiguration().getOptional(String.class, "nonExistent")).isEmpty();
+    }
+
+    @Test
+    public void null_configuration_values_are_empty() {
+        assertThat(injector.getInstance(Application.class).getConfiguration().getOptional(Object.class, "null")).isEmpty();
+        assertThat(injector.getInstance(Application.class).getConfiguration().getOptional(String.class, "null")).isEmpty();
+    }
+
     @Test(expected = ConfigurationException.class)
     public void non_existent_configuration_values_throws_exception() {
-        Holder holder = injector.getInstance(Holder.class);
-        holder.application.getConfiguration().getMandatory(String.class, "nonExistent");
+        injector.getInstance(Application.class).getConfiguration().getMandatory(Object.class, "nonExistent");
     }
 
     @Test
