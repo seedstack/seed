@@ -5,7 +5,8 @@
 * [new] Any singleton implementing `AutoCloseable` will have its `close()` method invoked at application shutdown.
 * [new] Overriding Guice modules can be installed by using `@Install(override = true)`. 
 * [brk] Deprecated `expand()` method of `org.seedstack.seed.rest.hal.Link` has been removed (use getHref() instead). 
-* [fix] Avoid NullPointerException when an exception occurs in a `NOT_SUPPORTED` local transaction.  
+* [fix] Avoid NullPointerException when an exception occurs in a `NOT_SUPPORTED` local transaction.
+* [chg] Overriding an more general class configuration attribute with a more specific null-valued one, completely removes the attribute.
 * [chg] HTTP/2 is enabled by default with Undertow.
 * [chg] Update Guice to [4.1.0](https://github.com/google/guice/wiki/Guice41).
 * [chg] Update Shiro to [1.3.2](https://issues.apache.org/jira/secure/ReleaseNote.jspa?version=12317961&styleName=Text&projectId=12310950).

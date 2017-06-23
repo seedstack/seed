@@ -11,6 +11,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.function.BiConsumer;
 
@@ -83,6 +84,7 @@ public abstract class ClassConfiguration<T> {
             throw new IllegalArgumentException("Cannot merge class configurations: " + targetClass.getName() + " is not assignable to " + other.targetClass.getName());
         }
         map.putAll(other.map);
+        map.values().removeIf(Objects::isNull);
         return this;
     }
 

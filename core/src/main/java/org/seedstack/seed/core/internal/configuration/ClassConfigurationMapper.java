@@ -8,7 +8,6 @@
 package org.seedstack.seed.core.internal.configuration;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-import org.seedstack.coffig.NamedNode;
 import org.seedstack.coffig.TreeNode;
 import org.seedstack.coffig.spi.ConfigurationMapper;
 import org.seedstack.coffig.util.Utils;
@@ -18,8 +17,8 @@ import org.seedstack.seed.core.internal.CoreErrorCode;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-
-import static java.util.stream.Collectors.toMap;
+import java.util.HashMap;
+import java.util.Map;
 
 public class ClassConfigurationMapper implements ConfigurationMapper {
     @Override
@@ -38,13 +37,11 @@ public class ClassConfigurationMapper implements ConfigurationMapper {
     public Object map(TreeNode treeNode, Type type) {
         Class<?> rawType = Utils.getRawClass(((ParameterizedType) type).getActualTypeArguments()[0]);
         if (treeNode.type() == TreeNode.Type.MAP_NODE) {
-            return ClassConfiguration.of(rawType, treeNode.namedNodes()
+            Map<String, String> result = new HashMap<>();
+            treeNode.namedNodes()
                     .filter(namedNode -> isValueNode(namedNode.node()))
-                    .collect(toMap(
-                            NamedNode::name,
-                            namedNode -> namedNode.node().value()
-                    ))
-            );
+                    .forEach(namedNode -> result.put(namedNode.name(), namedNode.node().value()));
+            return ClassConfiguration.of(rawType, result);
         } else {
             throw SeedException.createNew(CoreErrorCode.INVALID_CLASS_CONFIGURATION)
                     .put("nodeType", treeNode.type())

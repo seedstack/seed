@@ -19,8 +19,10 @@ import org.seedstack.seed.Application;
 import org.seedstack.seed.ApplicationConfig;
 import org.seedstack.seed.ClassConfiguration;
 import org.seedstack.seed.Configuration;
+import org.seedstack.seed.core.fixtures.Service;
 import org.seedstack.seed.core.fixtures.SomeEnum;
 import org.seedstack.seed.core.rules.SeedITRule;
+import some.other.pkg.ForeignClass;
 
 import javax.inject.Inject;
 
@@ -189,6 +191,21 @@ public class ConfigurationIT {
         assertThat(configuration.get("key1")).isEqualTo("value1");
         assertThat(configuration.get("key2")).isEqualTo("value2bis");
         assertThat(configuration.get("key3")).isEqualTo("value3");
+    }
+
+    @Test
+    public void class_without_configuration() {
+        Application application = injector.getInstance(Application.class);
+        ClassConfiguration<ForeignClass> configuration = application.getConfiguration(ForeignClass.class);
+        assertThat(configuration.entrySet()).isEmpty();
+    }
+
+    @Test
+    public void class_with_null_override_configuration() {
+        Application application = injector.getInstance(Application.class);
+        ClassConfiguration<Service> configuration = application.getConfiguration(Service.class);
+        assertThat(configuration.keySet()).containsExactly("key1");
+        assertThat(configuration.get("key1")).isEqualTo("value1");
     }
 
     @Test

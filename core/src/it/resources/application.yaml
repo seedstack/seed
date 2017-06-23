@@ -13,6 +13,9 @@ classes:
       seed:
         core:
           key2: value2
+          fixtures:
+            Service:
+              key2:
           ConfigurationIT:
             key2: value2bis
             key3: value3
