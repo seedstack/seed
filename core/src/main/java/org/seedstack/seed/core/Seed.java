@@ -67,7 +67,7 @@ public class Seed {
     private static volatile boolean disposed = false;
     private static volatile boolean noLogs = false;
     private static final List<SeedExceptionTranslator> exceptionTranslators;
-    private final DiagnosticManager diagnosticManager;
+    private static final DiagnosticManager diagnosticManager;
     private final String seedVersion;
     private final String businessVersion;
     private final ApplicationConfig applicationConfig;
@@ -82,6 +82,7 @@ public class Seed {
     static {
         exceptionTranslators = Lists.newArrayList(ServiceLoader.load(SeedExceptionTranslator.class));
         exceptionTranslators.sort(Collections.reverseOrder(Comparator.comparingInt(Seed::getPriority)));
+        diagnosticManager = new DiagnosticManagerImpl();
     }
 
     private static int getPriority(SeedExceptionTranslator t) {
@@ -124,7 +125,7 @@ public class Seed {
         return instance.kernelManager.createKernel(
                 SeedRuntime.builder()
                         .context(runtimeContext)
-                        .diagnosticManager(instance.diagnosticManager)
+                        .diagnosticManager(diagnosticManager)
                         .configuration(instance.configuration.fork())
                         .validatorFactory(instance.validatorFactory)
                         .applicationConfig(instance.applicationConfig)
@@ -150,7 +151,7 @@ public class Seed {
      * @return the default diagnostic manager.
      */
     public static DiagnosticManager diagnostic() {
-        return getInstance().diagnosticManager;
+        return diagnosticManager;
     }
 
     /**
@@ -207,8 +208,6 @@ public class Seed {
     }
 
     private Seed() {
-        diagnosticManager = new DiagnosticManagerImpl();
-
         seedVersion = Optional.ofNullable(Seed.class.getPackage())
                 .map(Package::getImplementationVersion)
                 .orElse(null);
