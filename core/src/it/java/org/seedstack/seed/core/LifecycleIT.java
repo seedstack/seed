@@ -15,6 +15,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
+import org.seedstack.seed.Ignore;
 import org.seedstack.seed.LifecycleListener;
 import org.seedstack.seed.core.rules.SeedITRule;
 
@@ -28,6 +29,7 @@ public class LifecycleIT implements LifecycleListener {
     private static boolean startedWasCalled;
     private static boolean stoppingWasCalled;
     private static boolean closedWasCalled;
+    private static boolean ignoredClosedWasCalled;
 
     @BeforeClass
     public static void setUpClass() throws Exception {
@@ -42,6 +44,7 @@ public class LifecycleIT implements LifecycleListener {
         assertThat(startedWasCalled).isTrue();
         assertThat(stoppingWasCalled).isFalse();
         assertThat(closedWasCalled).isFalse();
+        assertThat(ignoredClosedWasCalled).isFalse();
     }
 
     @After
@@ -49,6 +52,7 @@ public class LifecycleIT implements LifecycleListener {
         assertThat(startedWasCalled).isTrue();
         assertThat(stoppingWasCalled).isFalse();
         assertThat(closedWasCalled).isFalse();
+        assertThat(ignoredClosedWasCalled).isFalse();
     }
 
     @AfterClass
@@ -56,6 +60,7 @@ public class LifecycleIT implements LifecycleListener {
         assertThat(startedWasCalled).isTrue();
         assertThat(stoppingWasCalled).isTrue();
         assertThat(closedWasCalled).isTrue();
+        assertThat(ignoredClosedWasCalled).isFalse();
     }
 
     @Test
@@ -63,6 +68,7 @@ public class LifecycleIT implements LifecycleListener {
         assertThat(startedWasCalled).isTrue();
         assertThat(stoppingWasCalled).isFalse();
         assertThat(closedWasCalled).isFalse();
+        assertThat(ignoredClosedWasCalled).isFalse();
     }
 
     @Override
@@ -80,6 +86,15 @@ public class LifecycleIT implements LifecycleListener {
         @Override
         public void close() throws Exception {
             closedWasCalled = true;
+        }
+    }
+
+    @Singleton
+    @Ignore
+    private static class IgnoredAutoCloseableFixture implements AutoCloseable {
+        @Override
+        public void close() throws Exception {
+            ignoredClosedWasCalled = true;
         }
     }
 }

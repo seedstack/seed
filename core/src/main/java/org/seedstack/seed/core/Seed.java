@@ -31,18 +31,16 @@ import org.seedstack.seed.diagnostic.DiagnosticManager;
 import org.seedstack.seed.spi.SeedExceptionTranslator;
 import org.seedstack.seed.spi.SeedInitializer;
 import org.seedstack.shed.ClassLoaders;
+import org.seedstack.shed.PriorityUtils;
 import org.seedstack.shed.exception.BaseException;
 import org.seedstack.shed.reflect.Classes;
 import org.seedstack.shed.text.TextTemplate;
 
 import javax.annotation.Nullable;
-import javax.annotation.Priority;
 import javax.validation.ValidatorFactory;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -51,6 +49,8 @@ import java.util.Optional;
 import java.util.Scanner;
 import java.util.ServiceLoader;
 import java.util.Set;
+
+import static org.seedstack.shed.PriorityUtils.sortByPriority;
 
 /**
  * This class is the Seed framework entry point, which is used create and dispose kernels.
@@ -81,13 +81,8 @@ public class Seed {
 
     static {
         exceptionTranslators = Lists.newArrayList(ServiceLoader.load(SeedExceptionTranslator.class));
-        exceptionTranslators.sort(Collections.reverseOrder(Comparator.comparingInt(Seed::getPriority)));
+        sortByPriority(exceptionTranslators, PriorityUtils::priorityOfClassOf);
         diagnosticManager = new DiagnosticManagerImpl();
-    }
-
-    private static int getPriority(SeedExceptionTranslator t) {
-        Priority annotation = t.getClass().getAnnotation(Priority.class);
-        return annotation != null ? annotation.value() : 0;
     }
 
     private static class Holder {

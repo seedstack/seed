@@ -116,7 +116,7 @@ public class ConsoleManager {
 
         @Override
         public void close() throws IOException {
-            write(AnsiOutputStream.REST_CODE);
+            write(AnsiOutputStream.RESET_CODE);
             flush();
             super.close();
         }

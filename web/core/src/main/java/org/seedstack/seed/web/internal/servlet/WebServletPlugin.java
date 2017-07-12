@@ -19,7 +19,6 @@ import org.seedstack.seed.web.spi.ListenerDefinition;
 import org.seedstack.seed.web.spi.ServletDefinition;
 import org.seedstack.seed.web.spi.WebProvider;
 
-import javax.annotation.Priority;
 import javax.servlet.DispatcherType;
 import javax.servlet.Filter;
 import javax.servlet.Servlet;
@@ -36,6 +35,8 @@ import java.util.EventListener;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static org.seedstack.shed.PriorityUtils.priorityOf;
 
 /**
  * This plugin detects {@link WebServlet}, {@link WebFilter} and {@link WebListener} annotated classes and provides their
@@ -84,11 +85,7 @@ public class WebServletPlugin extends AbstractSeedPlugin implements WebProvider 
             if (EventListener.class.isAssignableFrom(candidate)) {
                 Class<? extends EventListener> listenerClass = (Class<? extends EventListener>) candidate;
                 ListenerDefinition listenerDefinition = new ListenerDefinition(listenerClass);
-                Priority priority = listenerClass.getAnnotation(Priority.class);
-                if (priority != null) {
-                    listenerDefinition.setPriority(priority.value());
-                }
-
+                listenerDefinition.setPriority(priorityOf(listenerClass));
                 listenerDefinitions.add(listenerDefinition);
             }
         }
@@ -117,10 +114,7 @@ public class WebServletPlugin extends AbstractSeedPlugin implements WebProvider 
                     filterDefinition.addMappings(convert(annotation.dispatcherTypes(), false, annotation.urlPatterns()));
                 }
                 filterDefinition.addInitParameters(convert(annotation.initParams()));
-                Priority priority = filterClass.getAnnotation(Priority.class);
-                if (priority != null) {
-                    filterDefinition.setPriority(priority.value());
-                }
+                filterDefinition.setPriority(priorityOf(filterClass));
 
                 filterDefinitions.add(filterDefinition);
             }

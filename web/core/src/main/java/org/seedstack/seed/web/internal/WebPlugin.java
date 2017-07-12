@@ -28,11 +28,11 @@ import javax.servlet.ServletContext;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import static org.seedstack.shed.PriorityUtils.sortByPriority;
 
 /**
  * This plugin provides support for servlet-based Web applications.
@@ -115,10 +115,10 @@ public class WebPlugin extends AbstractSeedPlugin {
             }
 
             // Sort filter according to the priority in their definition
-            filterDefinitions.sort(Collections.reverseOrder(Comparator.comparingInt(FilterDefinition::getPriority)));
+            sortByPriority(filterDefinitions, FilterDefinition::getPriority);
 
             // Sort listeners according to the priority in their definition
-            listenerDefinitions.sort(Collections.reverseOrder(Comparator.comparingInt(ListenerDefinition::getPriority)));
+            sortByPriority(listenerDefinitions, ListenerDefinition::getPriority);
         }
 
         return InitState.INITIALIZED;

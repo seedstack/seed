@@ -9,7 +9,6 @@ package org.seedstack.seed.core.internal.configuration.tool;
 
 import org.seedstack.coffig.Config;
 import org.seedstack.coffig.SingleValue;
-import org.seedstack.coffig.util.Utils;
 import org.seedstack.shed.reflect.Annotations;
 
 import javax.validation.constraints.NotNull;
@@ -27,7 +26,9 @@ import java.util.ResourceBundle;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
+import static org.seedstack.shed.reflect.Classes.instantiateDefault;
 import static org.seedstack.shed.reflect.ReflectUtils.makeAccessible;
+import static org.seedstack.shed.reflect.Types.simpleNameOf;
 
 class Node implements Comparable<Node> {
     private final String name;
@@ -159,7 +160,7 @@ class Node implements Comparable<Node> {
 
         Object defaultInstance;
         try {
-            defaultInstance = Utils.instantiateDefault(configClass);
+            defaultInstance = instantiateDefault(configClass);
         } catch (Exception e) {
             defaultInstance = null;
         }
@@ -186,7 +187,7 @@ class Node implements Comparable<Node> {
             propertyInfo.setName(name);
             propertyInfo.setShortDescription(getMessage(bundle, "No description.", buildKey(name)));
             propertyInfo.setLongDescription(getMessage(bundle, null, buildKey(name, "long")));
-            propertyInfo.setType(Utils.getSimpleTypeName(field.getGenericType()));
+            propertyInfo.setType(simpleNameOf(field.getGenericType()));
             propertyInfo.setSingleValue(field.isAnnotationPresent(SingleValue.class));
             if (defaultInstance != null) {
                 try {

@@ -19,6 +19,7 @@ import java.lang.reflect.Field;
 import java.util.Optional;
 import java.util.Set;
 
+import static org.seedstack.shed.reflect.Classes.instantiateDefault;
 import static org.seedstack.shed.reflect.ReflectUtils.makeAccessible;
 
 /**
@@ -50,7 +51,7 @@ class ConfigurationMembersInjector<T> implements MembersInjector<T> {
                     throw SeedException.createNew(CoreErrorCode.MISSING_CONFIGURATION_KEY)
                             .put("key", computeConfigKey(configuration, fieldType));
                 } else if (field.get(t) == null && configuration.injectDefault()) {
-                    field.set(t, Utils.instantiateDefault(fieldType));
+                    field.set(t, instantiateDefault(fieldType));
                 }
             } catch (IllegalAccessException e) {
                 throw SeedException.wrap(e, CoreErrorCode.UNABLE_TO_INJECT_CONFIGURATION_VALUE)
