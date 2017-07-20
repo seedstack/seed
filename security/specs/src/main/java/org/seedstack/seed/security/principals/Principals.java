@@ -17,11 +17,11 @@ import java.util.Collection;
  * Utility class to create and manipulate common principals.
  */
 public final class Principals {
-    private static final String IDENTITY = "userId";
-    private static final String LOCALE = "locale";
-    private static final String FIRST_NAME = "firstName";
-    private static final String LAST_NAME = "lastName";
-    private static final String FULL_NAME = "fullName";
+    public static final String IDENTITY = "userId";
+    public static final String LOCALE = "locale";
+    public static final String FIRST_NAME = "firstName";
+    public static final String LAST_NAME = "lastName";
+    public static final String FULL_NAME = "fullName";
 
     private Principals() {
         // no instantiation allowed
