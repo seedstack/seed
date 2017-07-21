@@ -78,9 +78,9 @@ public class CorePlugin extends AbstractSeedPlugin {
                 .filter(Module.class::isAssignableFrom)
                 .forEach(candidate -> InstallResolver.INSTANCE.apply(candidate).ifPresent(annotation -> {
                     if (annotation.override()) {
-                        overridingModules.add((Class<Module>) candidate);
+                        overridingModules.add((Class<? extends Module>) candidate);
                     } else {
-                        modules.add((Class<Module>) candidate);
+                        modules.add((Class<? extends Module>) candidate);
                     }
                 }));
     }

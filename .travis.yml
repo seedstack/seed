@@ -2,10 +2,10 @@ sudo: false
 
 language: java
 
-jdk: oraclejdk8
-
-notifications:
-  irc: chat.freenode.net#seedstack-dev
+addons:
+  apt:
+    packages:
+      - oracle-java8-installer
 
 cache:
   directories: $HOME/.m2/repository
