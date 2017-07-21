@@ -13,6 +13,12 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.seedstack.seed.Logging;
+import org.seedstack.seed.core.fixtures.BoundFromInterface;
+import org.seedstack.seed.core.fixtures.BoundFromInterfaceWithName;
+import org.seedstack.seed.core.fixtures.BoundFromItself;
+import org.seedstack.seed.core.fixtures.BoundInterface;
+import org.seedstack.seed.core.fixtures.BoundOverrideFromInterfaceWithAnnotation;
+import org.seedstack.seed.core.fixtures.Dummy;
 import org.seedstack.seed.core.fixtures.DummyService1;
 import org.seedstack.seed.core.fixtures.DummyService2;
 import org.seedstack.seed.core.fixtures.DummyService3;
@@ -71,6 +77,16 @@ public class CorePluginIT {
         Service overridingNothing;
         @Inject
         ForeignClass foreignClass;
+        @Inject
+        BoundFromItself boundFromItself;
+        @Inject
+        BoundInterface boundFromInterface;
+        @Inject
+        @Named("toto")
+        BoundInterface boundFromInterfaceWithName;
+        @Inject
+        @Dummy
+        BoundInterface boundFromInterfaceWithAnnotation;
     }
 
     private static class HolderException {
@@ -136,5 +152,14 @@ public class CorePluginIT {
         HolderNominal holder = injector.getInstance(HolderNominal.class);
 
         assertThat(holder.foreignClass).isNotNull();
+    }
+
+    @Test
+    public void explicit_bindings_are_working() {
+        HolderNominal holder = injector.getInstance(HolderNominal.class);
+        assertThat(holder.boundFromItself).isInstanceOf(BoundFromItself.class);
+        assertThat(holder.boundFromInterface).isInstanceOf(BoundFromInterface.class);
+        assertThat(holder.boundFromInterfaceWithName).isInstanceOf(BoundFromInterfaceWithName.class);
+        assertThat(holder.boundFromInterfaceWithAnnotation).isInstanceOf(BoundOverrideFromInterfaceWithAnnotation.class);
     }
 }

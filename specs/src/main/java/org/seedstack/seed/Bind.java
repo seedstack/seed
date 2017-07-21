@@ -5,7 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-package org.seedstack.seed.it;
+package org.seedstack.seed;
 
 import java.lang.annotation.Annotation;
 import java.lang.annotation.Documented;
@@ -16,14 +16,14 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * This annotation can be used to declare simple test bindings. Since these bindings are processed by the testing
- * module they are only available when the testing plugin is enabled (typically in the test classpath of a project).
+ * This annotation can be used to declare simple bindings. It must be used on the implementation, optionally referencing
+ * another class to be used as injection .
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Inherited
-public @interface ITBind {
+public @interface Bind {
     /**
      * If specified, this class will be used as the binding key, meaning that the implementation will be injectable
      * through this class only (from which the implementation must be assignable). If not specified, the

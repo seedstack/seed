@@ -58,6 +58,7 @@ public class ToolLauncher implements SeedLauncher {
         if (seedTool.startMode() == SeedTool.StartMode.MINIMAL) {
             kernelConfiguration
                     .param(CorePlugin.AUTODETECT_MODULES_KERNEL_PARAM, "false")
+                    .param(CorePlugin.AUTODETECT_BINDINGS_KERNEL_PARAM, "false")
                     .withoutSpiPluginsLoader();
         }
         kernelConfiguration.addPlugin(seedTool.getClass());

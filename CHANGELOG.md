@@ -3,7 +3,9 @@
 * [new] Print a default banner at startup in case of missing custom `banner.txt`.
 * [new] Add `application.colorOuput` configuration property to force the color output mode (AUTODETECT, PASSTHROUGH, ENABLE, DISABLE).
 * [new] Any singleton implementing `AutoCloseable` will have its `close()` method invoked at application shutdown (can be ignored with @Ignore).
-* [new] Overriding Guice modules can be installed by using `@Install(override = true)`. 
+* [new] Overriding Guice modules can be installed by using `@Install(override = true)`.
+* [new] The `@Bind` annotation allows to easily define arbitrary bindings by annotating implementations.  
+* [new] The `@ITBind` and `@ITInstall` annotations have been updated to allow the same options as `@Bind` and `@Install`.  
 * [brk] Deprecated `expand()` method of `org.seedstack.seed.rest.hal.Link` has been removed (use getHref() instead). 
 * [fix] Avoid NullPointerException when an exception occurs in a `NOT_SUPPORTED` local transaction.
 * [chg] Overriding an more general class configuration attribute with a more specific null-valued one, completely removes the attribute.

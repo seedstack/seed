@@ -15,12 +15,21 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * This annotation can be used in integration tests to mark modules for automatic installations.
+ * This annotation marks Guice test modules that will be detected and automatically installed. Since these modules are
+ * processed by the testing module they are only available when the testing plugin is enabled (typically in the test
+ * classpath of a project).
  */
-@Target(ElementType.TYPE)
-@Retention(RetentionPolicy.RUNTIME)
 @Documented
+@Retention(RetentionPolicy.RUNTIME)
+@Target({ElementType.TYPE})
 @Inherited
 public @interface ITInstall {
-
+    /**
+     * If true the module will be installed as an overriding module, meaning that every binding defined in it will
+     * potentially override (replace) any similar binding already defined. If false, the module will be installed as
+     * a normal one.
+     *
+     * @return if true the module is an overriding module, if false a normal module.
+     */
+    boolean override() default false;
 }

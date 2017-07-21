@@ -15,7 +15,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * This annotation marks modules that will be automatically installed by SEED.
+ * This annotation marks Guice modules that will be detected and automatically installed.
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
@@ -27,7 +27,7 @@ public @interface Install {
      * potentially override (replace) any similar binding already defined. If false, the module will be installed as
      * a normal one.
      *
-     * @return if true the module is an overriding module, false otherwise.
+     * @return if true the module is an overriding module, if false a normal module.
      */
     boolean override() default false;
 }

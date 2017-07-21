@@ -13,25 +13,24 @@ import io.nuun.kernel.api.plugin.PluginException;
 import io.nuun.kernel.api.plugin.context.InitContext;
 import io.nuun.kernel.api.plugin.request.ClasspathScanRequest;
 import org.kametic.specifications.Specification;
-import org.seedstack.seed.SeedException;
 import org.seedstack.seed.core.SeedRuntime;
 import org.seedstack.seed.core.internal.AbstractSeedPlugin;
-import org.seedstack.seed.it.ITBind;
-import org.seedstack.seed.it.ITInstall;
+import org.seedstack.seed.core.internal.BindingDefinition;
+import org.seedstack.seed.core.internal.utils.SpecificationBuilder;
+import org.seedstack.shed.reflect.Classes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
+import java.lang.annotation.Annotation;
 import java.nio.file.Files;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
-import static org.seedstack.shed.reflect.ReflectUtils.makeAccessible;
+import static com.google.common.base.Strings.isNullOrEmpty;
 
 /**
  * This plugin automatically enable integration tests to be managed by SEED.
@@ -39,16 +38,14 @@ import static org.seedstack.shed.reflect.ReflectUtils.makeAccessible;
 public class ITPlugin extends AbstractSeedPlugin {
     public static final String IT_CLASS_NAME = "seedstack.it.className";
     private static final Logger LOGGER = LoggerFactory.getLogger(ITPlugin.class);
-
-    private final Set<Class<?>> itBindClasses = new HashSet<>();
-    private final Set<Class<? extends Module>> itInstallModules = new HashSet<>();
+    private static final Specification<Class<?>> installSpecification = new SpecificationBuilder<>(ITInstallResolver.INSTANCE).build();
+    private static final Specification<Class<?>> bindSpecification = new SpecificationBuilder<>(ITBindResolver.INSTANCE).build();
+    private final Set<Class<? extends Module>> modules = new HashSet<>();
+    private final Set<Class<? extends Module>> overridingModules = new HashSet<>();
+    private final Set<BindingDefinition> bindings = new HashSet<>();
+    private final Set<BindingDefinition> overridingBindings = new HashSet<>();
     private File temporaryAppStorage;
     private Class<?> testClass;
-
-    @SuppressWarnings("unchecked")
-    private final Specification<Class<?>> itBindingSpec = or(classAnnotatedWith(ITBind.class));
-    @SuppressWarnings("unchecked")
-    private final Specification<Class<?>> itInstallSpec = or(classAnnotatedWith(ITInstall.class));
 
     @Override
     public String name() {
@@ -57,7 +54,10 @@ public class ITPlugin extends AbstractSeedPlugin {
 
     @Override
     public Collection<ClasspathScanRequest> classpathScanRequests() {
-        return classpathScanRequestBuilder().specification(itBindingSpec).specification(itInstallSpec).build();
+        return classpathScanRequestBuilder()
+                .specification(installSpecification)
+                .specification(bindSpecification)
+                .build();
     }
 
     @Override
@@ -73,28 +73,12 @@ public class ITPlugin extends AbstractSeedPlugin {
     }
 
     @Override
-    @SuppressWarnings({"rawtypes", "unchecked"})
     public InitState initialize(InitContext initContext) {
         String itClassName = initContext.kernelParam(IT_CLASS_NAME);
-        Map<Specification, Collection<Class<?>>> scannedTypesBySpecification = initContext.scannedTypesBySpecification();
 
-        // For @ITBind
-        Collection<Class<?>> itBindClassCandidates = scannedTypesBySpecification.get(itBindingSpec);
-        if (itBindClassCandidates != null) {
-            itBindClasses.addAll(itBindClassCandidates);
-        }
+        detectModules(initContext);
+        detectBindings(initContext);
 
-        // For @ITInstall
-        Collection<Class<?>> itInstallClassCandidates = scannedTypesBySpecification.get(itInstallSpec);
-        if (itInstallClassCandidates != null) {
-            for (Class<?> itInstallClassCandidate : itInstallClassCandidates) {
-                if (Module.class.isAssignableFrom(itInstallClassCandidate)) {
-                    itInstallModules.add((Class<? extends Module>) itInstallClassCandidate);
-                }
-            }
-        }
-
-        // For test class binding
         if (itClassName != null) {
             try {
                 testClass = Class.forName(itClassName);
@@ -104,6 +88,42 @@ public class ITPlugin extends AbstractSeedPlugin {
         }
 
         return InitState.INITIALIZED;
+    }
+
+    @SuppressWarnings("unchecked")
+    private void detectModules(InitContext initContext) {
+        initContext.scannedTypesBySpecification().get(installSpecification)
+                .stream()
+                .filter(Module.class::isAssignableFrom)
+                .forEach(candidate -> ITInstallResolver.INSTANCE.apply(candidate).ifPresent(annotation -> {
+                    if (annotation.override()) {
+                        overridingModules.add((Class<Module>) candidate);
+                    } else {
+                        modules.add((Class<Module>) candidate);
+                    }
+                }));
+    }
+
+    @SuppressWarnings("unchecked")
+    private void detectBindings(InitContext initContext) {
+        initContext.scannedTypesBySpecification().get(bindSpecification)
+                .forEach(candidate -> ITBindResolver.INSTANCE.apply(candidate).ifPresent(annotation -> {
+                    if (annotation.override()) {
+                        overridingBindings.add(new BindingDefinition<>(
+                                (Class<Object>) (annotation.from() == Object.class ? null : annotation.from()),
+                                (annotation.annotated() == Annotation.class ? null : annotation.annotated()),
+                                isNullOrEmpty(annotation.named()) ? null : annotation.named(),
+                                candidate
+                        ));
+                    } else {
+                        bindings.add(new BindingDefinition<>(
+                                (Class<Object>) (annotation.from() == Object.class ? null : annotation.from()),
+                                (annotation.annotated() == Annotation.class ? null : annotation.annotated()),
+                                isNullOrEmpty(annotation.named()) ? null : annotation.named(),
+                                candidate
+                        ));
+                    }
+                }));
     }
 
     @Override
@@ -120,19 +140,22 @@ public class ITPlugin extends AbstractSeedPlugin {
 
     @Override
     public Object nativeUnitModule() {
-        Set<Module> itModules = new HashSet<>();
+        return new ITModule(
+                testClass,
+                modules.stream().map(Classes::instantiateDefault).collect(Collectors.toSet()),
+                bindings,
+                false
+        );
+    }
 
-        for (Class<? extends Module> klazz : itInstallModules) {
-            try {
-                Constructor<? extends Module> declaredConstructor = klazz.getDeclaredConstructor();
-                makeAccessible(declaredConstructor);
-                itModules.add(declaredConstructor.newInstance());
-            } catch (NoSuchMethodException | IllegalAccessException | InstantiationException | InvocationTargetException e) {
-                throw SeedException.wrap(e, ITErrorCode.UNABLE_TO_INSTANTIATE_IT_MODULE).put("moduleClass", klazz.getCanonicalName());
-            }
-        }
-
-        return new ITModule(testClass, itBindClasses, itModules);
+    @Override
+    public Object nativeOverridingUnitModule() {
+        return new ITModule(
+                null,
+                overridingModules.stream().map(Classes::instantiateDefault).collect(Collectors.toSet()),
+                overridingBindings,
+                true
+        );
     }
 
     private void deleteRecursively(final File file) throws IOException {

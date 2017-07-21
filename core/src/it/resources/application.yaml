@@ -19,7 +19,8 @@ classes:
           ConfigurationIT:
             key2: value2bis
             key3: value3
-logging: WARN
+logging:
+  level: WARN
 application:
   id: seed-it
   basePackages: some.other.pkg
