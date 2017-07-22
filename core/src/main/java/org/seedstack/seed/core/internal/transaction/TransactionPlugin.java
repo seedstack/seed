@@ -16,12 +16,15 @@ import org.seedstack.seed.transaction.TransactionConfig;
 import org.seedstack.seed.transaction.spi.TransactionHandler;
 import org.seedstack.seed.transaction.spi.TransactionManager;
 import org.seedstack.seed.transaction.spi.TransactionMetadataResolver;
+import org.seedstack.shed.reflect.Classes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.transaction.Transactional;
 import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -35,6 +38,7 @@ import java.util.Set;
 public class TransactionPlugin extends AbstractSeedPlugin {
     private static final Logger LOGGER = LoggerFactory.getLogger(TransactionPlugin.class);
     private final Set<Class<? extends TransactionMetadataResolver>> transactionMetadataResolvers = new HashSet<>();
+    static final Optional<Class<Transactional>> JTA_12_OPTIONAL = Classes.optional("javax.transaction.Transactional");
     private TransactionManager transactionManager;
     private Class<? extends TransactionHandler> defaultTransactionHandlerClass;
 

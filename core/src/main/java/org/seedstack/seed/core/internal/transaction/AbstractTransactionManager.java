@@ -13,6 +13,7 @@ import com.google.inject.name.Names;
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
 import org.seedstack.seed.SeedException;
+import org.seedstack.seed.transaction.Propagation;
 import org.seedstack.seed.transaction.Transactional;
 import org.seedstack.seed.transaction.spi.ExceptionHandler;
 import org.seedstack.seed.transaction.spi.TransactionHandler;
@@ -24,6 +25,8 @@ import javax.inject.Inject;
 import java.lang.reflect.Method;
 import java.util.Optional;
 import java.util.Set;
+
+import static com.google.common.base.Preconditions.checkArgument;
 
 /**
  * Base class for common transaction manager behavior.
@@ -146,11 +149,25 @@ public abstract class AbstractTransactionManager implements TransactionManager {
             transactionMetadata.mergeFrom(transactionMetadataResolver.resolve(methodInvocation, transactionMetadataDefaults));
         }
 
-        transactionMetadata.mergeFrom(deepGetAnnotation(method));
+        Optional<Transactional> nativeTransactional = TransactionalResolver.INSTANCE.apply(method);
+        if (nativeTransactional.isPresent()) {
+            transactionMetadata.mergeFrom(nativeTransactional.get());
+        } else if (TransactionPlugin.JTA_12_OPTIONAL.isPresent()) {
+            Optional<javax.transaction.Transactional> transactionalOptional = JtaTransactionalResolver.INSTANCE.apply(method);
+            if (transactionalOptional.isPresent()) {
+                javax.transaction.Transactional transactional = transactionalOptional.get();
+                transactionMetadata.setPropagation(Propagation.valueOf(transactional.value().name()));
+                if (transactional.rollbackOn().length > 0) {
+                    transactionMetadata.setRollbackOn(asExceptions(transactional.rollbackOn()));
+                }
+                if (transactional.dontRollbackOn().length > 0) {
+                    transactionMetadata.setNoRollbackFor(asExceptions(transactional.dontRollbackOn()));
+                }
+            }
+        }
 
         return transactionMetadata;
     }
-
 
     private <T extends TransactionHandler> T getTransactionHandler(Class<T> handlerClass, String resource) {
         if (handlerClass == null) {
@@ -170,8 +187,11 @@ public abstract class AbstractTransactionManager implements TransactionManager {
         }
     }
 
-    private Transactional deepGetAnnotation(final Method method) {
-        Optional<Transactional> transactional = TransactionalResolver.INSTANCE.apply(method);
-        return transactional.isPresent() ? transactional.get() : null;
+    @SuppressWarnings("unchecked")
+    private Class<? extends Exception>[] asExceptions(Class<?>[] classes) {
+        for (Class<?> aClass : classes) {
+            checkArgument(Exception.class.isAssignableFrom(aClass), "Class " + aClass.getName() + " is not an exception and is not supported in rollbackOn/noRollbackFor parameters");
+        }
+        return (Class<? extends Exception>[]) classes;
     }
 }

@@ -9,6 +9,7 @@ package org.seedstack.seed.core.internal.transaction;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.TypeLiteral;
+import com.google.inject.matcher.Matcher;
 import com.google.inject.matcher.Matchers;
 import com.google.inject.multibindings.Multibinder;
 import com.google.inject.name.Names;
@@ -19,6 +20,7 @@ import org.seedstack.seed.transaction.spi.TransactionManager;
 import org.seedstack.seed.transaction.spi.TransactionMetadata;
 import org.seedstack.seed.transaction.spi.TransactionMetadataResolver;
 
+import java.lang.reflect.Method;
 import java.util.Set;
 
 @TransactionConcern
@@ -47,9 +49,17 @@ class TransactionModule extends AbstractModule {
         }
 
         requestInjection(transactionManager);
-        bindInterceptor(Matchers.any(), new MethodMatcherBuilder(TransactionalResolver.INSTANCE).build(), transactionManager.getMethodInterceptor());
+        bindInterceptor(Matchers.any(), buildMethodMatcher(), transactionManager.getMethodInterceptor());
         bind(TransactionManager.class).toInstance(transactionManager);
         bind(TransactionMetadata.class);
+    }
+
+    private static Matcher<Method> buildMethodMatcher() {
+        MethodMatcherBuilder methodMatcherBuilder = new MethodMatcherBuilder(TransactionalResolver.INSTANCE);
+        if (TransactionPlugin.JTA_12_OPTIONAL.isPresent()) {
+            methodMatcherBuilder.or(JtaTransactionalResolver.INSTANCE);
+        }
+        return methodMatcherBuilder.build();
     }
 
     private static class DefaultTransactionHandlerTypeLiteral extends TypeLiteral<Class<? extends TransactionHandler>> {

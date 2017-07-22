@@ -10,8 +10,8 @@ package org.seedstack.seed.core.internal.transaction;
 import com.google.inject.matcher.Matcher;
 import org.junit.Before;
 import org.junit.Test;
-import org.seedstack.seed.transaction.Transactional;
 
+import javax.transaction.Transactional;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -22,7 +22,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.seedstack.shed.reflect.ReflectUtils.invoke;
 import static org.seedstack.shed.reflect.ReflectUtils.makeAccessible;
 
-public class TransactionalAnnotationTest {
+public class JtaTransactionalAnnotationTest {
     private Matcher<Method> methodMatcher;
 
     @Retention(RetentionPolicy.RUNTIME)
@@ -110,6 +110,7 @@ public class TransactionalAnnotationTest {
     }
 
     @Before
+    @SuppressWarnings("unchecked")
     public void setUp() throws Exception {
         methodMatcher = invoke(makeAccessible(TransactionModule.class.getDeclaredMethod("buildMethodMatcher")), null);
     }

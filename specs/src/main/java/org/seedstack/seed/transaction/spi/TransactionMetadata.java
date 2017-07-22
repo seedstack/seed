@@ -213,7 +213,7 @@ public class TransactionMetadata {
         this.propagation = Propagation.REQUIRED;
         this.readOnly = false;
         this.rollbackOnParticipationFailure = true;
-        this.rollbackOn = new Class[]{RuntimeException.class};
+        this.rollbackOn = new Class[]{Exception.class};
         this.noRollbackFor = new Class[]{};
         this.handler = defaultTransactionHandler;
         this.exceptionHandler = null;

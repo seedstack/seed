@@ -100,7 +100,7 @@
         </dependency>
         <dependency>
             <groupId>javax.transaction</groupId>
-            <artifactId>jta</artifactId>
+            <artifactId>javax.transaction-api</artifactId>
             <version>${jta.version}</version>
             <scope>provided</scope>
         </dependency>
