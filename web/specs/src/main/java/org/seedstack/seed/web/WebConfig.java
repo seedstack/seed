@@ -18,6 +18,7 @@ import java.util.Map;
 @Config("web")
 public class WebConfig {
     private boolean requestDiagnostic;
+    private SessionTrackingMode sessionTrackingMode = SessionTrackingMode.COOKIE;
     private StaticResourcesConfig staticResources = new StaticResourcesConfig();
     private CORSConfig cors = new CORSConfig();
     private ServerConfig serverConfig = new ServerConfig();
@@ -28,6 +29,15 @@ public class WebConfig {
 
     public WebConfig setRequestDiagnostic(boolean requestDiagnostic) {
         this.requestDiagnostic = requestDiagnostic;
+        return this;
+    }
+
+    public SessionTrackingMode getSessionTrackingMode() {
+        return sessionTrackingMode;
+    }
+
+    public WebConfig setSessionTrackingMode(SessionTrackingMode sessionTrackingMode) {
+        this.sessionTrackingMode = sessionTrackingMode;
         return this;
     }
 
@@ -183,5 +193,11 @@ public class WebConfig {
             this.http2 = http2;
             return this;
         }
+    }
+
+    public enum SessionTrackingMode {
+        COOKIE,
+        SSL,
+        URL
     }
 }

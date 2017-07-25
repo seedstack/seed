@@ -7,7 +7,10 @@
 * [new] The `@Bind` annotation allows to easily define arbitrary bindings by annotating implementations.  
 * [new] The `@ITBind` and `@ITInstall` annotations have been updated to allow the same options as `@Bind` and `@Install`.  
 * [new] Can now read transaction metadata from JTA 1.2 `@Transactional` annotation.  
-* [brk] Deprecated `expand()` method of `org.seedstack.seed.rest.hal.Link` has been removed (use getHref() instead). 
+* [new] Web session tracking mode is now set to COOKIE by default (a `web.sessionTrackingMode` configuration option allows to change it).
+* [new] Add `security.web.successUrl` and `security.web.logoutUrl` configuration options to configure redirection after, respectively, successful login and logout.
+* [new] Add `security.web.form` configuration object to configure form-based authentication.
+* [brk] Deprecated `expand()` method of `org.seedstack.seed.rest.hal.Link` has been removed (use getHref() instead).
 * [fix] Avoid NullPointerException when an exception occurs in a `NOT_SUPPORTED` local transaction.
 * [chg] Overriding an more general class configuration attribute with a more specific null-valued one, completely removes the attribute.
 * [chg] HTTP/2 is enabled by default with Undertow.

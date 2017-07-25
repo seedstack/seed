@@ -19,6 +19,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.MissingResourceException;
@@ -149,7 +150,7 @@ class Node implements Comparable<Node> {
     }
 
     private Map<String, PropertyInfo> buildPropertyInfo() {
-        Map<String, PropertyInfo> result = new HashMap<>();
+        Map<String, PropertyInfo> result = new LinkedHashMap<>();
 
         ResourceBundle bundle = null;
         try {
