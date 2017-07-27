@@ -8,14 +8,9 @@
 package org.seedstack.seed.core;
 
 import com.google.common.base.Strings;
-import com.google.common.collect.Lists;
-import org.seedstack.seed.SeedException;
-import org.seedstack.seed.core.internal.CoreErrorCode;
-import org.seedstack.seed.core.internal.ToolLauncher;
 import org.seedstack.seed.spi.SeedLauncher;
 import org.seedstack.shed.exception.BaseException;
 
-import java.util.List;
 import java.util.ServiceLoader;
 
 /**
@@ -30,7 +25,7 @@ import java.util.ServiceLoader;
  */
 public class SeedMain {
     /**
-     * Entry point of Seed standalone applications (launched from the command-line).
+     * Entry point of SeedStack non-managed applications (launched from the command-line).
      *
      * @param args The command-line arguments.
      */
@@ -39,9 +34,9 @@ public class SeedMain {
         SeedLauncher seedLauncher;
 
         if (!Strings.isNullOrEmpty(toolName)) {
-            seedLauncher = getToolLauncher(toolName);
+            seedLauncher = Seed.getToolLauncher(toolName);
         } else {
-            seedLauncher = getLauncher();
+            seedLauncher = Seed.getLauncher();
         }
 
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
@@ -59,34 +54,6 @@ public class SeedMain {
             handleException(e);
             System.exit(-1);
         }
-    }
-
-    /**
-     * Discover implementations of {@link SeedLauncher} through the {@link ServiceLoader} mechanism and if exactly one
-     * implementation is available, returns it. Otherwise, throws an exception.
-     *
-     * @return an instance of the unique {@link SeedLauncher} implementation.
-     */
-    public static SeedLauncher getLauncher() {
-        List<SeedLauncher> entryPointServices = Lists.newArrayList(ServiceLoader.load(SeedLauncher.class));
-
-        if (entryPointServices.size() < 1) {
-            throw SeedException.createNew(CoreErrorCode.MISSING_SEED_LAUNCHER);
-        } else if (entryPointServices.size() > 1) {
-            throw SeedException.createNew(CoreErrorCode.MULTIPLE_SEED_LAUNCHERS);
-        }
-
-        return entryPointServices.get(0);
-    }
-
-    /**
-     * Returns an instance of the {@link ToolLauncher} configured for the specified tool.
-     *
-     * @param toolName the tool to execute.
-     * @return the {@link ToolLauncher} instance.
-     */
-    public static SeedLauncher getToolLauncher(String toolName) {
-        return new ToolLauncher(toolName);
     }
 
     private static void handleException(Exception e) {

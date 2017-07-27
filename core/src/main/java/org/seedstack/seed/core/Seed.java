@@ -19,6 +19,7 @@ import org.seedstack.seed.LoggingConfig;
 import org.seedstack.seed.ProxyConfig;
 import org.seedstack.seed.SeedException;
 import org.seedstack.seed.core.internal.CoreErrorCode;
+import org.seedstack.seed.core.internal.ToolLauncher;
 import org.seedstack.seed.core.internal.diagnostic.DiagnosticManagerImpl;
 import org.seedstack.seed.core.internal.init.AutodetectLogManager;
 import org.seedstack.seed.core.internal.init.BaseConfiguration;
@@ -30,6 +31,7 @@ import org.seedstack.seed.core.internal.init.ProxyManager;
 import org.seedstack.seed.diagnostic.DiagnosticManager;
 import org.seedstack.seed.spi.SeedExceptionTranslator;
 import org.seedstack.seed.spi.SeedInitializer;
+import org.seedstack.seed.spi.SeedLauncher;
 import org.seedstack.shed.ClassLoaders;
 import org.seedstack.shed.PriorityUtils;
 import org.seedstack.shed.exception.BaseException;
@@ -95,6 +97,35 @@ public class Seed {
     public static void disableLogs() {
         noLogs = true;
     }
+
+    /**
+     * Discover implementations of {@link SeedLauncher} through the {@link ServiceLoader} mechanism and if exactly one
+     * implementation is available, returns it. Otherwise, throws an exception.
+     *
+     * @return an instance of the unique {@link SeedLauncher} implementation.
+     */
+    public static SeedLauncher getLauncher() {
+        List<SeedLauncher> entryPointServices = Lists.newArrayList(ServiceLoader.load(SeedLauncher.class));
+
+        if (entryPointServices.size() < 1) {
+            throw SeedException.createNew(CoreErrorCode.MISSING_SEED_LAUNCHER);
+        } else if (entryPointServices.size() > 1) {
+            throw SeedException.createNew(CoreErrorCode.MULTIPLE_SEED_LAUNCHERS);
+        }
+
+        return entryPointServices.get(0);
+    }
+
+    /**
+     * Returns an instance of the {@link ToolLauncher} configured for the specified tool.
+     *
+     * @param toolName the tool to execute.
+     * @return the {@link ToolLauncher} instance.
+     */
+    public static SeedLauncher getToolLauncher(String toolName) {
+        return new ToolLauncher(toolName);
+    }
+
 
     /**
      * Create and start a basic kernel without specifying a runtime context, nor a configuration. Seed JVM-global

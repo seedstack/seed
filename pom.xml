@@ -108,6 +108,7 @@
                         <parameter>
                             <excludes>
                                 <exclude>*.internal.*</exclude>
+                                <exclude>org.seedstack.seed.core.SeedMain</exclude>
                                 <exclude>org.seedstack.seed.spi.ToolContext</exclude>
                                 <exclude>org.seedstack.seed.cli.spi.CliContext</exclude>
                                 <exclude>org.seedstack.seed.security.principals.SimplePrincipalProvider</exclude>
