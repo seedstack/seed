@@ -13,7 +13,7 @@ import org.assertj.core.api.Assertions;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.seedstack.seed.core.SeedMain;
+import org.seedstack.seed.core.Seed;
 import org.seedstack.seed.spi.SeedLauncher;
 
 import static com.jayway.restassured.RestAssured.expect;
@@ -23,7 +23,7 @@ import static com.jayway.restassured.RestAssured.expect;
  */
 public class UndertowIT {
     private static final String BASE_HTTPS_URL = "localhost:9001/";
-    private final SeedLauncher launcher = SeedMain.getLauncher();
+    private final SeedLauncher launcher = Seed.getLauncher();
 
     @Before
     public void before() throws Exception {
