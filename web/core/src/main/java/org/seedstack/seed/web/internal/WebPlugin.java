@@ -10,6 +10,7 @@ package org.seedstack.seed.web.internal;
 import com.google.common.collect.Lists;
 import com.google.inject.Injector;
 import com.google.inject.servlet.GuiceFilter;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.nuun.kernel.api.plugin.InitState;
 import io.nuun.kernel.api.plugin.context.Context;
 import io.nuun.kernel.api.plugin.context.InitContext;
@@ -27,10 +28,11 @@ import javax.servlet.ServletContext;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import static org.seedstack.shed.PriorityUtils.sortByPriority;
 
 /**
  * This plugin provides support for servlet-based Web applications.
@@ -56,6 +58,7 @@ public class WebPlugin extends AbstractSeedPlugin {
     }
 
     @Override
+    @SuppressFBWarnings(value = "DMI_COLLECTION_OF_URLS", justification = "Those URLs are denoting local resources without DNS resolution")
     public Set<URL> computeAdditionalClasspathScan() {
         Set<URL> additionalUrls = new HashSet<>();
         if (servletContext != null) {
@@ -112,10 +115,10 @@ public class WebPlugin extends AbstractSeedPlugin {
             }
 
             // Sort filter according to the priority in their definition
-            filterDefinitions.sort(Collections.reverseOrder((o1, o2) -> new Integer(o1.getPriority()).compareTo(o2.getPriority())));
+            sortByPriority(filterDefinitions, FilterDefinition::getPriority);
 
             // Sort listeners according to the priority in their definition
-            listenerDefinitions.sort(Collections.reverseOrder((o1, o2) -> new Integer(o1.getPriority()).compareTo(o2.getPriority())));
+            sortByPriority(listenerDefinitions, ListenerDefinition::getPriority);
         }
 
         return InitState.INITIALIZED;
@@ -160,6 +163,7 @@ public class WebPlugin extends AbstractSeedPlugin {
         return guiceFilter;
     }
 
+    @SuppressFBWarnings(value = "DMI_COLLECTION_OF_URLS", justification = "Those URLs are denoting local resources without DNS resolution")
     private Set<URL> resolveWebLibraries() {
         final Set<URL> resolvedUrls = new HashSet<>();
         Set<String> resourcePaths = servletContext.getResourcePaths(WEB_INF_LIB);
@@ -181,6 +185,7 @@ public class WebPlugin extends AbstractSeedPlugin {
         return resolvedUrls;
     }
 
+    @SuppressFBWarnings(value = "DMI_COLLECTION_OF_URLS", justification = "Those URLs are denoting local resources without DNS resolution")
     private Set<URL> resolveWebClassesLocations() {
         final Set<URL> resolvedUrls = new HashSet<>();
         Set<String> resourcePaths = servletContext.getResourcePaths(WEB_INF_CLASSES);

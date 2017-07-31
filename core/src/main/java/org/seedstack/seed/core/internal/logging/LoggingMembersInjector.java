@@ -8,12 +8,14 @@
 package org.seedstack.seed.core.internal.logging;
 
 import com.google.inject.MembersInjector;
-import org.seedstack.seed.core.internal.CoreErrorCode;
 import org.seedstack.seed.SeedException;
+import org.seedstack.seed.core.internal.CoreErrorCode;
 import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Field;
 import java.util.Set;
+
+import static org.seedstack.shed.reflect.ReflectUtils.makeAccessible;
 
 /**
  * Guice members injector that inject logger instances.
@@ -24,10 +26,10 @@ class LoggingMembersInjector<T> implements MembersInjector<T> {
     private final Set<Field> fields;
 
     LoggingMembersInjector(Set<Field> fields) {
-        this.fields = fields;
         for (Field field : fields) {
-            field.setAccessible(true);
+            makeAccessible(field);
         }
+        this.fields = fields;
     }
 
     @Override

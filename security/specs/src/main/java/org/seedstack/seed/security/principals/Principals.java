@@ -8,7 +8,6 @@
 package org.seedstack.seed.security.principals;
 
 import java.io.Serializable;
-import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -18,18 +17,14 @@ import java.util.Collection;
  * Utility class to create and manipulate common principals.
  */
 public final class Principals {
-
     public static final String IDENTITY = "userId";
-
     public static final String LOCALE = "locale";
-
     public static final String FIRST_NAME = "firstName";
-
     public static final String LAST_NAME = "lastName";
-
     public static final String FULL_NAME = "fullName";
 
     private Principals() {
+        // no instantiation allowed
     }
 
     private static SimplePrincipalProvider simplePrincipal(String name, String value) {
@@ -38,7 +33,7 @@ public final class Principals {
 
     /**
      * Simple principal to store the identity as a string
-     * 
+     *
      * @param identity the identity
      * @return the built principal
      */
@@ -48,7 +43,7 @@ public final class Principals {
 
     /**
      * Simple principal to store the locale as a string
-     * 
+     *
      * @param locale the locale
      * @return the built principal
      */
@@ -58,7 +53,7 @@ public final class Principals {
 
     /**
      * Simple principal to store the firstName as a string
-     * 
+     *
      * @param firstName the firstName
      * @return the built principal
      */
@@ -68,7 +63,7 @@ public final class Principals {
 
     /**
      * Simple principal to store the lastName as a string
-     * 
+     *
      * @param lastName the lastName
      * @return the built principal
      */
@@ -78,7 +73,7 @@ public final class Principals {
 
     /**
      * Simple principal to store the fullName as a string
-     * 
+     *
      * @param fullName the fullName
      * @return the built principal
      */
@@ -95,15 +90,14 @@ public final class Principals {
      * Then on the first element of the collection : <br>
      * <code>LDAPUser user =
      * ldapUserPrincipalProvider.getPrincipal()</code>.
-     * 
-     * @param <T> type of the PrincipalProvider
+     *
+     * @param <T>                type of the PrincipalProvider
      * @param principalProviders the principals to find the type.
-     * @param principalClass the PrincipalProvider type, not null
+     * @param principalClass     the PrincipalProvider type, not null
      * @return A collection of the user's PrincipalProviders of type principalProviderClass. Not null.
      */
     @SuppressWarnings("unchecked")
-    public static <T extends Serializable> Collection<PrincipalProvider<T>> getPrincipalsByType(Collection<PrincipalProvider<?>> principalProviders,
-            Class<T> principalClass) {
+    public static <T extends Serializable> Collection<PrincipalProvider<T>> getPrincipalsByType(Collection<PrincipalProvider<?>> principalProviders, Class<T> principalClass) {
         Collection<PrincipalProvider<T>> principals = new ArrayList<>();
         for (PrincipalProvider<?> principal : principalProviders) {
             for (Type principalInterface : principal.getClass().getGenericInterfaces()) {
@@ -114,16 +108,8 @@ public final class Principals {
                         if (principalClass.equals(currentType)) {
                             principals.add((PrincipalProvider<T>) principal);
                         }
-                    } else {
-                        if (currentType instanceof GenericArrayType
-                                && principalClass.getComponentType().equals(((GenericArrayType) currentType).getGenericComponentType())) {
-                            // JDK 5,6
-                            principals.add((PrincipalProvider<T>) principal);
-                        } else if (currentType instanceof Class
-                                && principalClass.getComponentType().equals(((Class<?>) currentType).getComponentType())) {
-                            // JDK 7
-                            principals.add((PrincipalProvider<T>) principal);
-                        }
+                    } else if (currentType instanceof Class && principalClass.getComponentType().equals(((Class<?>) currentType).getComponentType())) {
+                        principals.add((PrincipalProvider<T>) principal);
                     }
                 }
             }
@@ -140,14 +126,13 @@ public final class Principals {
      * Then : <br>
      * <code>LDAPUser user =
      * ldapUserPrincipalProvider.getPrincipal()</code>.
-     * 
-     * @param <T> type of the PrincipalProvider
+     *
+     * @param <T>                type of the PrincipalProvider
      * @param principalProviders the principals to find the type.
-     * @param principalClass the PrincipalProvider type, not null
+     * @param principalClass     the PrincipalProvider type, not null
      * @return The user's PrincipalProvider of type principalProviderClass. Null if none.
      */
-    public static <T extends Serializable> PrincipalProvider<T> getOnePrincipalByType(Collection<PrincipalProvider<?>> principalProviders,
-            Class<T> principalClass) {
+    public static <T extends Serializable> PrincipalProvider<T> getOnePrincipalByType(Collection<PrincipalProvider<?>> principalProviders, Class<T> principalClass) {
         Collection<PrincipalProvider<T>> pps = getPrincipalsByType(principalProviders, principalClass);
         if (!pps.isEmpty()) {
             return pps.iterator().next();
@@ -158,7 +143,7 @@ public final class Principals {
 
     /**
      * Extracts the simple principals of the collection of principals
-     * 
+     *
      * @param principalProviders the principals to extract from
      * @return the simple principals
      */
@@ -174,9 +159,9 @@ public final class Principals {
 
     /**
      * Gives the simple principal with the given name from the given collection of principals
-     * 
+     *
      * @param principalProviders the principals to search
-     * @param principalName the name to search
+     * @param principalName      the name to search
      * @return the simple principal with the name
      */
     public static SimplePrincipalProvider getSimplePrincipalByName(Collection<PrincipalProvider<?>> principalProviders, String principalName) {

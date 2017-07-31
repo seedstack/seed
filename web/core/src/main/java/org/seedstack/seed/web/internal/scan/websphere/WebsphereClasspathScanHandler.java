@@ -7,11 +7,11 @@
  */
 package org.seedstack.seed.web.internal.scan.websphere;
 
+import com.google.common.collect.Lists;
 import org.reflections.vfs.Vfs;
 import org.seedstack.seed.core.internal.scan.ClasspathScanHandler;
 
 import java.net.URL;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -20,17 +20,18 @@ import java.util.List;
 public class WebsphereClasspathScanHandler implements ClasspathScanHandler {
     @Override
     public List<Vfs.UrlType> urlTypes() {
-        Vfs.UrlType type = new Vfs.UrlType() {
-            @Override
-            public boolean matches(URL url) {
-                return "wsjar".equals(url.getProtocol()) && !url.toExternalForm().contains(".jar");
-            }
+        return Lists.newArrayList(new WebSphereJarUrlType());
+    }
 
-            @Override
-            public Vfs.Dir createDir(final URL url) {
-                return new WsInputDir(url);
-            }
-        };
-        return Arrays.asList(type);
+    private static class WebSphereJarUrlType implements Vfs.UrlType {
+        @Override
+        public boolean matches(URL url) {
+            return "wsjar".equals(url.getProtocol()) && !url.toExternalForm().contains(".jar");
+        }
+
+        @Override
+        public Vfs.Dir createDir(final URL url) {
+            return new WsInputDir(url);
+        }
     }
 }

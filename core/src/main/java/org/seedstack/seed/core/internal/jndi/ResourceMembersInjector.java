@@ -11,20 +11,20 @@ import com.google.inject.MembersInjector;
 
 import java.lang.reflect.Field;
 
+import static org.seedstack.shed.reflect.ReflectUtils.makeAccessible;
+
 /**
  * Custom field injector for JNDI resources.
  *
- * @param <T>
- *         The type to inject.
+ * @param <T> The type to inject.
  */
 class ResourceMembersInjector<T> implements MembersInjector<T> {
     private final Field field;
     private final Object toInject;
 
     ResourceMembersInjector(Field field, Object toInject) {
-        this.field = field;
+        this.field = makeAccessible(field);
         this.toInject = toInject;
-        field.setAccessible(true);
     }
 
     @Override

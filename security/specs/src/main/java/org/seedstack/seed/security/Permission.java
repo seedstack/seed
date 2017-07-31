@@ -7,6 +7,8 @@
  */
 package org.seedstack.seed.security;
 
+import java.io.Serializable;
+
 /**
  * A Permission is represented by a String witch describes actions that can be
  * done on a type of objects. A Permission can be limited to one or more
@@ -19,18 +21,14 @@ package org.seedstack.seed.security;
  * <li>user:modify:user-id</li>
  * </ul>
  */
-public class Permission {
-
-    private String permission;
-
-    private Permission() {
-    }
+public class Permission implements Serializable {
+    private static final long serialVersionUID = 1L;
+    private final String permission;
 
     /**
      * New Permission given its String representation
-     * 
-     * @param permission
-     *            the string representation
+     *
+     * @param permission the string representation
      */
     public Permission(String permission) {
         this.permission = permission;
@@ -38,7 +36,7 @@ public class Permission {
 
     /**
      * Getter permission
-     * 
+     *
      * @return the String representation of the permission
      */
     public String getPermission() {

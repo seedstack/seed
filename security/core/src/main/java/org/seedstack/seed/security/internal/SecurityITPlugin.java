@@ -7,7 +7,6 @@
  */
 package org.seedstack.seed.security.internal;
 
-import com.google.common.collect.Lists;
 import org.junit.rules.MethodRule;
 import org.junit.rules.TestRule;
 import org.junit.runners.model.FrameworkMethod;
@@ -16,6 +15,7 @@ import org.seedstack.seed.it.spi.ITKernelMode;
 import org.seedstack.seed.it.spi.ITRunnerPlugin;
 import org.seedstack.seed.security.WithUser;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -31,7 +31,9 @@ public class SecurityITPlugin implements ITRunnerPlugin {
     @Override
     public List<Class<? extends TestRule>> provideTestRulesToApply(TestClass testClass, Object target) {
         if (!testClass.getAnnotatedMethods(WithUser.class).isEmpty() || testClass.getJavaClass().getAnnotation(WithUser.class) != null) {
-            return Lists.newArrayList(SecurityITRule.class);
+            List<Class<? extends TestRule>> rules = new ArrayList<>();
+            rules.add(SecurityITRule.class);
+            return rules;
         } else {
             return null;
         }

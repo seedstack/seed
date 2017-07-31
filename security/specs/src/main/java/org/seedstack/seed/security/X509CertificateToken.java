@@ -9,16 +9,13 @@ package org.seedstack.seed.security;
 
 import java.security.cert.X509Certificate;
 
+import static java.util.Objects.requireNonNull;
+
 /**
  * An authentication token based on certificates.
  */
 public class X509CertificateToken implements AuthenticationToken {
-
-    /**
-     * UID
-     */
     private static final long serialVersionUID = -4213910900796170384L;
-
     private final X509Certificate[] certificates;
 
     /**
@@ -27,11 +24,7 @@ public class X509CertificateToken implements AuthenticationToken {
      * @param x509Certificates the certificates
      */
     public X509CertificateToken(X509Certificate[] x509Certificates) {
-        if (x509Certificates == null) {
-            this.certificates = null;
-        } else {
-            this.certificates = x509Certificates.clone();
-        }
+        this.certificates = requireNonNull(x509Certificates, "X509 certificates array should not be null").clone();
     }
 
     /**
@@ -40,21 +33,16 @@ public class X509CertificateToken implements AuthenticationToken {
      * @return the certificates.
      */
     public X509Certificate[] getAuthenticatingCertificates() {
-        if (certificates == null) {
-            return null;
-        }
-
         return certificates.clone();
     }
 
     @Override
     public Object getPrincipal() {
-        return certificates;
+        return getAuthenticatingCertificates();
     }
 
     @Override
     public Object getCredentials() {
-        return certificates;
+        return getAuthenticatingCertificates();
     }
-
 }

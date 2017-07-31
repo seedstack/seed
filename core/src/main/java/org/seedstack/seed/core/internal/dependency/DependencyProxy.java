@@ -15,6 +15,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 
+import static org.seedstack.shed.reflect.ReflectUtils.makeAccessible;
+
 /**
  * Proxy to implement interfaces. Override each method to proxy (method from the interface).<br>
  * For example: to create a proxy for a Gauge interface
@@ -56,7 +58,7 @@ public class DependencyProxy<T> implements InvocationHandler {
         Method m;
         try {
             m = substitute.getClass().getMethod(method.getName(), method.getParameterTypes());
-            m.setAccessible(true);
+            makeAccessible(m);
         } catch (Exception e) {
             throw new UnsupportedOperationException(method.toString(), e);
         }

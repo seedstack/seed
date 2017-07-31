@@ -7,6 +7,8 @@
  */
 package org.seedstack.seed.core.internal.transaction;
 
+import com.google.inject.matcher.Matcher;
+import org.junit.Before;
 import org.junit.Test;
 import org.seedstack.seed.transaction.Transactional;
 
@@ -14,10 +16,15 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import java.lang.reflect.Method;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.seedstack.shed.reflect.ReflectUtils.invoke;
+import static org.seedstack.shed.reflect.ReflectUtils.makeAccessible;
 
 public class TransactionalAnnotationTest {
+    private Matcher<Method> methodMatcher;
+
     @Retention(RetentionPolicy.RUNTIME)
     @Target({ElementType.TYPE, ElementType.METHOD})
     @Transactional
@@ -102,46 +109,50 @@ public class TransactionalAnnotationTest {
         }
     }
 
+    @Before
+    public void setUp() throws Exception {
+        methodMatcher = invoke(makeAccessible(TransactionModule.class.getDeclaredMethod("buildMethodMatcher")), null);
+    }
 
     @Test
     public void metaAnnotation() throws Exception {
-        assertThat(TransactionalResolver.INSTANCE.test(MetaTransactionalClass.class.getMethod("someMethod"))).isTrue();
-        assertThat(TransactionalResolver.INSTANCE.test(NotTransactionalClass.class.getMethod("metaTransactionalMethod"))).isTrue();
+        assertThat(methodMatcher.matches(MetaTransactionalClass.class.getMethod("someMethod"))).isTrue();
+        assertThat(methodMatcher.matches(NotTransactionalClass.class.getMethod("metaTransactionalMethod"))).isTrue();
     }
 
     @Test
     public void annotationOnMethod() throws Exception {
-        assertThat(TransactionalResolver.INSTANCE.test(NotTransactionalClass.class.getMethod("transactionalMethod"))).isTrue();
-        assertThat(TransactionalResolver.INSTANCE.test(NotTransactionalInterface.class.getMethod("transactionalMethod"))).isTrue();
+        assertThat(methodMatcher.matches(NotTransactionalClass.class.getMethod("transactionalMethod"))).isTrue();
+        assertThat(methodMatcher.matches(NotTransactionalInterface.class.getMethod("transactionalMethod"))).isTrue();
     }
 
     @Test
     public void annotationOnClass() throws Exception {
-        assertThat(TransactionalResolver.INSTANCE.test(TransactionalClass.class.getMethod("someMethod"))).isTrue();
-        assertThat(TransactionalResolver.INSTANCE.test(TransactionalInterface.class.getMethod("someMethod"))).isTrue();
+        assertThat(methodMatcher.matches(TransactionalClass.class.getMethod("someMethod"))).isTrue();
+        assertThat(methodMatcher.matches(TransactionalInterface.class.getMethod("someMethod"))).isTrue();
     }
 
     @Test
     public void annotationOnInheritedInterfaceMethod() throws Exception {
-        assertThat(TransactionalResolver.INSTANCE.test(InterfaceMethodInherited.class.getMethod("transactionalMethod"))).isTrue();
-        assertThat(TransactionalResolver.INSTANCE.test(InterfaceMethodInherited.class.getMethod("localMethod"))).isFalse();
+        assertThat(methodMatcher.matches(InterfaceMethodInherited.class.getMethod("transactionalMethod"))).isTrue();
+        assertThat(methodMatcher.matches(InterfaceMethodInherited.class.getMethod("localMethod"))).isFalse();
     }
 
     @Test
     public void annotationOnInheritedInterface() throws Exception {
-        assertThat(TransactionalResolver.INSTANCE.test(InterfaceInherited.class.getMethod("someMethod"))).isTrue();
-        assertThat(TransactionalResolver.INSTANCE.test(InterfaceInherited.class.getMethod("localMethod"))).isFalse();
+        assertThat(methodMatcher.matches(InterfaceInherited.class.getMethod("someMethod"))).isTrue();
+        assertThat(methodMatcher.matches(InterfaceInherited.class.getMethod("localMethod"))).isFalse();
     }
 
     @Test
     public void annotationOnInheritedClassMethod() throws Exception {
-        assertThat(TransactionalResolver.INSTANCE.test(ClassMethodInherited.class.getMethod("transactionalMethod"))).isTrue();
-        assertThat(TransactionalResolver.INSTANCE.test(ClassMethodInherited.class.getMethod("localMethod"))).isFalse();
+        assertThat(methodMatcher.matches(ClassMethodInherited.class.getMethod("transactionalMethod"))).isTrue();
+        assertThat(methodMatcher.matches(ClassMethodInherited.class.getMethod("localMethod"))).isFalse();
     }
 
     @Test
     public void annotationOnInheritedClass() throws Exception {
-        assertThat(TransactionalResolver.INSTANCE.test(ClassInherited.class.getMethod("someMethod"))).isTrue();
-        assertThat(TransactionalResolver.INSTANCE.test(ClassInherited.class.getMethod("localMethod"))).isTrue();
+        assertThat(methodMatcher.matches(ClassInherited.class.getMethod("someMethod"))).isTrue();
+        assertThat(methodMatcher.matches(ClassInherited.class.getMethod("localMethod"))).isTrue();
     }
 }

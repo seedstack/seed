@@ -30,6 +30,9 @@ public class X509CertificateFilter extends AuthenticatingFilter {
     @Override
     protected AuthenticationToken createToken(ServletRequest request, ServletResponse response) throws Exception {
         X509Certificate[] certificates = (X509Certificate[]) request.getAttribute("javax.servlet.request.X509Certificate");
+        if (certificates == null) {
+            certificates = new X509Certificate[0];
+        }
         return new AuthenticationTokenWrapper(new X509CertificateToken(certificates));
     }
 

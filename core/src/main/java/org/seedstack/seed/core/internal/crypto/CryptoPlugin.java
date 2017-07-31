@@ -74,42 +74,37 @@ public class CryptoPlugin extends AbstractSeedPlugin implements SSLProvider {
 
         // init SSL context if possible
         this.sslConfig = cryptoConfig.ssl();
-        this.sslContext = configureSSL(this.sslConfig);
+        this.sslContext = configureSSL(this.sslConfig).orElse(null);
 
         return InitState.INITIALIZED;
     }
 
-    private SSLContext configureSSL(CryptoConfig.SSLConfig sslConfig) {
+    private Optional<SSLContext> configureSSL(CryptoConfig.SSLConfig sslConfig) {
         SSLLoader sslLoader = new SSLLoader();
 
         TrustManager[] trustManagers;
         KeyStore trustStore = keyStores.get(sslConfig.getTrustStore());
         if (trustStore == null) {
-            return null;
+            return Optional.empty();
         } else {
             trustManagers = sslLoader.getTrustManager(trustStore);
         }
 
-        KeyManager[] keyManagers = configureKeyManagers(sslConfig);
-        if (keyManagers != null) {
-            return sslLoader.getSSLContext(this.sslConfig.getProtocol(), keyManagers, trustManagers);
-        } else {
-            return null;
-        }
+        return configureKeyManagers(sslConfig).map(keyManagers1 -> sslLoader.getSSLContext(this.sslConfig.getProtocol(), keyManagers1, trustManagers));
     }
 
-    private KeyManager[] configureKeyManagers(CryptoConfig.SSLConfig sslConfig) {
+    private Optional<KeyManager[]> configureKeyManagers(CryptoConfig.SSLConfig sslConfig) {
         String keyStoreName = sslConfig.getKeyStore();
         CryptoConfig.KeyStoreConfig keyStoreConfig = keyStoreConfigs.get(keyStoreName);
 
         if (keyStoreConfig == null) {
-            return null;
+            return Optional.empty();
         }
 
         String aliasName = sslConfig.getAlias();
         CryptoConfig.KeyStoreConfig.AliasConfig aliasConfig = keyStoreConfig.getAliases().get(aliasName);
         if (aliasConfig == null) {
-            return null;
+            return Optional.empty();
         }
         if (Strings.isNullOrEmpty(aliasConfig.getPassword())) {
             throw SeedException.createNew(CryptoErrorCode.MISSING_ALIAS_PASSWORD)
@@ -117,7 +112,7 @@ public class CryptoPlugin extends AbstractSeedPlugin implements SSLProvider {
                     .put("ksName", keyStoreName);
         }
 
-        return new SSLLoader().getKeyManagers(keyStores.get(keyStoreName), aliasConfig.getPassword().toCharArray());
+        return Optional.of(new SSLLoader().getKeyManagers(keyStores.get(keyStoreName), aliasConfig.getPassword().toCharArray()));
     }
 
     @Override

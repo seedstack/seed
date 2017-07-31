@@ -51,7 +51,7 @@ class WsInputDir implements Vfs.Dir {
                     classesPath = path.substring(path.indexOf(warExtension) + warExtension.length() + 1, path.length());
                     jarInputStream = new JarInputStream(new URL(warfile).openStream());
 
-                } catch (Exception e) {
+                } catch (IOException e) {
                     LOGGER.warn("Unable to open WAR at {}, ignoring it", url.toExternalForm(), e);
                 }
             }

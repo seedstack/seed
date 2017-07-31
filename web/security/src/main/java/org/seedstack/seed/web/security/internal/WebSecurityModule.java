@@ -14,6 +14,7 @@ import org.apache.shiro.config.ConfigurationException;
 import org.apache.shiro.guice.web.GuiceShiroFilter;
 import org.apache.shiro.util.StringUtils;
 import org.apache.shiro.web.filter.PathMatchingFilter;
+import org.apache.shiro.web.filter.authc.LogoutFilter;
 import org.seedstack.seed.security.internal.SecurityGuiceConfigurer;
 import org.seedstack.seed.web.SecurityFilter;
 import org.seedstack.seed.web.security.WebSecurityConfig;
@@ -79,6 +80,7 @@ class WebSecurityModule extends ShiroWebModule {
 
         // Bind filters which are not PatchMatchingFilters
         bind(AntiXsrfFilter.class);
+        bind(LogoutFilter.class);
 
         // Bind custom filters not extending PathMatchingFilter as Shiro doesn't do it
         for (Class<? extends Filter> customFilter : customFilters) {
@@ -89,7 +91,19 @@ class WebSecurityModule extends ShiroWebModule {
 
         // Additional web security bindings
         bind(AntiXsrfService.class).to(StatelessAntiXsrfService.class);
+
+        // General configuration attributes
         bindConstant().annotatedWith(Names.named("shiro.applicationName")).to(applicationName);
+        bindConstant().annotatedWith(Names.named("shiro.successUrl")).to(securityConfig.getSuccessUrl());
+        bindConstant().annotatedWith(Names.named("shiro.redirectUrl")).to(securityConfig.getLogoutUrl());
+
+        // Form configuration attributes
+        WebSecurityConfig.FormConfig formConfig = securityConfig.form();
+        bindConstant().annotatedWith(Names.named("shiro.loginUrl")).to(formConfig.getLoginUrl());
+        bindConstant().annotatedWith(Names.named("shiro.usernameParam")).to(formConfig.getUsernameParameter());
+        bindConstant().annotatedWith(Names.named("shiro.passwordParam")).to(formConfig.getPasswordParameter());
+        bindConstant().annotatedWith(Names.named("shiro.rememberMeParam")).to(formConfig.getRememberMeParameter());
+        bindConstant().annotatedWith(Names.named("shiro.failureAttribute")).to(formConfig.getFailureAttribute());
 
         // Shiro global configuration
         securityGuiceConfigurer.configure(binder());

@@ -13,11 +13,17 @@ import org.aopalliance.intercept.MethodInvocation;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.internal.util.reflection.Whitebox;
+import org.seedstack.seed.transaction.Propagation;
 import org.seedstack.seed.transaction.spi.ExceptionHandler;
 import org.seedstack.seed.transaction.spi.TransactionHandler;
 import org.seedstack.seed.transaction.spi.TransactionManager;
 import org.seedstack.seed.transaction.spi.TransactionMetadata;
 import org.seedstack.seed.transaction.spi.TransactionMetadataResolver;
+import org.seedstack.shed.reflect.ReflectUtils;
+
+import javax.transaction.Transactional;
+import java.lang.reflect.AccessibleObject;
+import java.lang.reflect.Method;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
@@ -25,6 +31,7 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.seedstack.shed.reflect.ReflectUtils.makeAccessible;
 
 @SuppressWarnings("unchecked")
 public abstract class AbstractTransactionManagerTest {
@@ -172,6 +179,69 @@ public abstract class AbstractTransactionManagerTest {
         doAssertRollbackOccurred();
     }
 
-    private class MyException extends Exception {}
-    private class MyError extends Error {}
+    @Test
+    public void can_read_jta_transactional() throws Throwable {
+        testReadTransactional("someJtaAnnotatedMethod");
+    }
+
+    @Test
+    public void can_read_seed_transactional() throws Throwable {
+        testReadTransactional("someSeedAnnotatedMethod");
+    }
+
+    private void testReadTransactional(String methodName) throws NoSuchMethodException {
+        Method readTransactionMetadata = AbstractTransactionManager.class.getDeclaredMethod("readTransactionMetadata", MethodInvocation.class);
+        makeAccessible(readTransactionMetadata);
+        TransactionMetadata transactionMetadata = ReflectUtils.invoke(readTransactionMetadata, underTest, buildMethodInvocation(methodName));
+        assertThat(transactionMetadata.getPropagation()).isEqualTo(Propagation.MANDATORY);
+        assertThat(transactionMetadata.getRollbackOn()).containsExactly(MyException.class);
+        assertThat(transactionMetadata.getNoRollbackFor()).containsExactly(MyException.class);
+    }
+
+    private MethodInvocation buildMethodInvocation(String name) {
+        return new MethodInvocation() {
+            @Override
+            public Method getMethod() {
+                try {
+                    return AbstractTransactionManagerTest.class.getDeclaredMethod(name);
+                } catch (NoSuchMethodException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+
+            @Override
+            public Object[] getArguments() {
+                return new Object[0];
+            }
+
+            @Override
+            public Object proceed() throws Throwable {
+                return null;
+            }
+
+            @Override
+            public Object getThis() {
+                return null;
+            }
+
+            @Override
+            public AccessibleObject getStaticPart() {
+                return null;
+            }
+        };
+    }
+
+    @Transactional(value = Transactional.TxType.MANDATORY, dontRollbackOn = MyException.class, rollbackOn = MyException.class)
+    private void someJtaAnnotatedMethod() {
+    }
+
+    @org.seedstack.seed.transaction.Transactional(propagation = Propagation.MANDATORY, noRollbackFor = MyException.class, rollbackOn = MyException.class)
+    private void someSeedAnnotatedMethod() {
+    }
+
+    private class MyException extends Exception {
+    }
+
+    private class MyError extends Error {
+    }
 }

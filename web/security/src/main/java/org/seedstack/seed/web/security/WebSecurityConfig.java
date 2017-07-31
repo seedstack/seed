@@ -18,6 +18,9 @@ import java.util.List;
 public class WebSecurityConfig {
     private List<UrlConfig> urls = new ArrayList<>();
     private XSRFConfig xsrf = new XSRFConfig();
+    private FormConfig form = new FormConfig();
+    private String successUrl = "/";
+    private String logoutUrl = "/";
 
     public List<UrlConfig> getUrls() {
         return Collections.unmodifiableList(urls);
@@ -30,6 +33,28 @@ public class WebSecurityConfig {
 
     public XSRFConfig xsrf() {
         return xsrf;
+    }
+
+    public FormConfig form() {
+        return form;
+    }
+
+    public String getSuccessUrl() {
+        return successUrl;
+    }
+
+    public WebSecurityConfig setSuccessUrl(String successUrl) {
+        this.successUrl = successUrl;
+        return this;
+    }
+
+    public String getLogoutUrl() {
+        return logoutUrl;
+    }
+
+    public WebSecurityConfig setLogoutUrl(String logoutUrl) {
+        this.logoutUrl = logoutUrl;
+        return this;
     }
 
     public static class UrlConfig {
@@ -51,6 +76,60 @@ public class WebSecurityConfig {
 
         public UrlConfig addFilters(String... filters) {
             this.filters.addAll(Arrays.asList(filters));
+            return this;
+        }
+    }
+
+    @Config("form")
+    public static class FormConfig {
+        private String loginUrl = "/login.html";
+        private String usernameParameter = "username";
+        private String passwordParameter = "password";
+        private String rememberMeParameter = "rememberMe";
+        private String failureAttribute = "shiroLoginFailure";
+
+        public String getLoginUrl() {
+            return loginUrl;
+        }
+
+        public FormConfig setLoginUrl(String loginUrl) {
+            this.loginUrl = loginUrl;
+            return this;
+        }
+
+        public String getUsernameParameter() {
+            return usernameParameter;
+        }
+
+        public FormConfig setUsernameParameter(String usernameParameter) {
+            this.usernameParameter = usernameParameter;
+            return this;
+        }
+
+        public String getPasswordParameter() {
+            return passwordParameter;
+        }
+
+        public FormConfig setPasswordParameter(String passwordParameter) {
+            this.passwordParameter = passwordParameter;
+            return this;
+        }
+
+        public String getRememberMeParameter() {
+            return rememberMeParameter;
+        }
+
+        public FormConfig setRememberMeParameter(String rememberMeParameter) {
+            this.rememberMeParameter = rememberMeParameter;
+            return this;
+        }
+
+        public String getFailureAttribute() {
+            return failureAttribute;
+        }
+
+        public FormConfig setFailureAttribute(String failureAttribute) {
+            this.failureAttribute = failureAttribute;
             return this;
         }
     }

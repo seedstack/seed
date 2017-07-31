@@ -26,23 +26,14 @@ import java.io.File;
 class ApplicationImpl implements Application {
     private static final Logger LOGGER = LoggerFactory.getLogger(ApplicationImpl.class);
     private static final String CLASSES_CONFIGURATION_PREFIX = "classes";
-    private final ApplicationConfig applicationConfig;
-    private final Coffig configuration;
+    private final Coffig coffig;
     private final File storageDirectory;
+    private final ApplicationConfig applicationConfig;
 
-    ApplicationImpl(ApplicationConfig applicationConfig, Coffig configuration) {
+    ApplicationImpl(Coffig coffig, ApplicationConfig applicationConfig) {
+        this.coffig = coffig;
         this.applicationConfig = applicationConfig;
-        this.configuration = configuration;
-
-        LOGGER.info("Application info: {} v{}", applicationConfig.getName(), applicationConfig.getVersion());
-
-        if (applicationConfig.isStorageEnabled()) {
-            storageDirectory = applicationConfig.getStorage();
-            ensureWritableDirectory(storageDirectory);
-            LOGGER.info("Application local storage at {}", storageDirectory.getAbsolutePath());
-        } else {
-            storageDirectory = null;
-        }
+        this.storageDirectory = configureLocalStorage(applicationConfig);
     }
 
     @Override
@@ -78,7 +69,7 @@ class ApplicationImpl implements Application {
 
     @Override
     public Coffig getConfiguration() {
-        return configuration;
+        return coffig;
     }
 
     @Override
@@ -88,7 +79,7 @@ class ApplicationImpl implements Application {
         StringBuilder sb = new StringBuilder(CLASSES_CONFIGURATION_PREFIX);
         for (String part : aClass.getName().split("\\.")) {
             sb.append(".").append(part);
-            configuration.getOptional(Types.newParameterizedType(ClassConfiguration.class, aClass), sb.toString())
+            coffig.getOptional(Types.newParameterizedType(ClassConfiguration.class, aClass), sb.toString())
                     .ifPresent(o -> classConfiguration.merge((ClassConfiguration<T>) o));
         }
         return classConfiguration;
@@ -96,7 +87,19 @@ class ApplicationImpl implements Application {
 
     @Override
     public String substituteWithConfiguration(String value) {
-        return (String) configuration.getMapper().map(new ValueNode(value), String.class);
+        return (String) coffig.getMapper().map(new ValueNode(value), String.class);
+    }
+
+    private File configureLocalStorage(ApplicationConfig applicationConfig) {
+        File storageDirectory;
+        if (applicationConfig.isStorageEnabled()) {
+            storageDirectory = applicationConfig.getStorage();
+            ensureWritableDirectory(storageDirectory);
+            LOGGER.info("Application local storage at {}", storageDirectory.getAbsolutePath());
+        } else {
+            storageDirectory = null;
+        }
+        return storageDirectory;
     }
 
     private void ensureWritableDirectory(File location) {

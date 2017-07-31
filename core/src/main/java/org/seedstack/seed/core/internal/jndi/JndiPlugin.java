@@ -63,7 +63,7 @@ public class JndiPlugin extends AbstractSeedPlugin {
                     contextProperties.load(propertiesResourceStream);
                     additionalJndiContexts.put(contextName, new InitialContext(contextProperties));
                     LOGGER.debug("JNDI context " + contextName + " has been configured from " + contextPropertiesPath);
-                } catch (Exception e) {
+                } catch (IOException | NamingException e) {
                     throw SeedException.wrap(e, JndiErrorCode.UNABLE_TO_CONFIGURE_ADDITIONAL_JNDI_CONTEXT).put("context", contextName);
                 }
 

@@ -1,1 +1,2 @@
 org.seedstack.seed.core.internal.configuration.ClassConfigurationMapper
+org.seedstack.seed.core.internal.configuration.HostAndPortMapper

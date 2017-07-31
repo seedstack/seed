@@ -12,15 +12,17 @@ import com.google.inject.Module;
 import io.nuun.kernel.api.plugin.InitState;
 import io.nuun.kernel.api.plugin.context.InitContext;
 import io.nuun.kernel.api.plugin.request.ClasspathScanRequest;
-import org.seedstack.seed.Install;
-import org.seedstack.seed.SeedException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.kametic.specifications.Specification;
+import org.seedstack.seed.core.internal.utils.SpecificationBuilder;
+import org.seedstack.shed.reflect.Classes;
 
-import java.lang.reflect.Constructor;
+import java.lang.annotation.Annotation;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
+
+import static com.google.common.base.Strings.isNullOrEmpty;
 
 /**
  * Core plugin that configures base package roots and detects diagnostic collectors, dependency providers, Guice modules
@@ -28,9 +30,14 @@ import java.util.Set;
  */
 public class CorePlugin extends AbstractSeedPlugin {
     static final String AUTODETECT_MODULES_KERNEL_PARAM = "seedstack.autodetectModules";
-    private static final Logger LOGGER = LoggerFactory.getLogger(CorePlugin.class);
+    static final String AUTODETECT_BINDINGS_KERNEL_PARAM = "seedstack.autodetectBindings";
     private static final String SEEDSTACK_PACKAGE = "org.seedstack";
-    private final Set<Class<? extends Module>> seedModules = new HashSet<>();
+    private static final Specification<Class<?>> installSpecification = new SpecificationBuilder<>(InstallResolver.INSTANCE).build();
+    private static final Specification<Class<?>> bindSpecification = new SpecificationBuilder<>(BindResolver.INSTANCE).build();
+    private final Set<Class<? extends Module>> modules = new HashSet<>();
+    private final Set<Class<? extends Module>> overridingModules = new HashSet<>();
+    private final Set<BindingDefinition> bindings = new HashSet<>();
+    private final Set<BindingDefinition> overridingBindings = new HashSet<>();
 
     @Override
     public String name() {
@@ -45,7 +52,8 @@ public class CorePlugin extends AbstractSeedPlugin {
     @Override
     public Collection<ClasspathScanRequest> classpathScanRequests() {
         return classpathScanRequestBuilder()
-                .annotationType(Install.class)
+                .specification(installSpecification)
+                .specification(bindSpecification)
                 .build();
     }
 
@@ -56,36 +64,64 @@ public class CorePlugin extends AbstractSeedPlugin {
         if (Strings.isNullOrEmpty(autodetectModules) || Boolean.parseBoolean(autodetectModules)) {
             detectModules(initContext);
         }
-
+        String autodetectBindings = initContext.kernelParam(AUTODETECT_BINDINGS_KERNEL_PARAM);
+        if (Strings.isNullOrEmpty(autodetectBindings) || Boolean.parseBoolean(autodetectBindings)) {
+            detectBindings(initContext);
+        }
         return InitState.INITIALIZED;
     }
 
     @SuppressWarnings("unchecked")
     private void detectModules(InitContext initContext) {
-        initContext.scannedClassesByAnnotationClass().get(Install.class)
+        initContext.scannedTypesBySpecification().get(installSpecification)
                 .stream()
                 .filter(Module.class::isAssignableFrom)
-                .forEach(candidate -> {
-                    seedModules.add((Class<Module>) candidate);
-                    LOGGER.trace("Detected module to install {}", candidate.getCanonicalName());
-                });
-        LOGGER.debug("Detected {} module(s) to install", seedModules.size());
+                .forEach(candidate -> InstallResolver.INSTANCE.apply(candidate).ifPresent(annotation -> {
+                    if (annotation.override()) {
+                        overridingModules.add((Class<? extends Module>) candidate);
+                    } else {
+                        modules.add((Class<? extends Module>) candidate);
+                    }
+                }));
+    }
+
+    @SuppressWarnings("unchecked")
+    private void detectBindings(InitContext initContext) {
+        initContext.scannedTypesBySpecification().get(bindSpecification)
+                .forEach(candidate -> BindResolver.INSTANCE.apply(candidate).ifPresent(annotation -> {
+                    if (annotation.override()) {
+                        overridingBindings.add(new BindingDefinition<>(
+                                (Class<Object>) (annotation.from() == Object.class ? null : annotation.from()),
+                                (annotation.annotated() == Annotation.class ? null : annotation.annotated()),
+                                isNullOrEmpty(annotation.named()) ? null : annotation.named(),
+                                candidate
+                        ));
+                    } else {
+                        bindings.add(new BindingDefinition<>(
+                                (Class<Object>) (annotation.from() == Object.class ? null : annotation.from()),
+                                (annotation.annotated() == Annotation.class ? null : annotation.annotated()),
+                                isNullOrEmpty(annotation.named()) ? null : annotation.named(),
+                                candidate
+                        ));
+                    }
+                }));
     }
 
     @Override
     public Object nativeUnitModule() {
-        Collection<Module> subModules = new HashSet<>();
+        return new CoreModule(
+                modules.stream().map(Classes::instantiateDefault).collect(Collectors.toSet()),
+                bindings,
+                false
+        );
+    }
 
-        for (Class<? extends Module> klazz : seedModules) {
-            try {
-                Constructor<? extends Module> declaredConstructor = klazz.getDeclaredConstructor();
-                declaredConstructor.setAccessible(true);
-                subModules.add(declaredConstructor.newInstance());
-            } catch (Exception e) {
-                throw SeedException.wrap(e, CoreErrorCode.UNABLE_TO_INSTANTIATE_MODULE).put("module", klazz.getCanonicalName());
-            }
-        }
-
-        return new CoreModule(subModules);
+    @Override
+    public Object nativeOverridingUnitModule() {
+        return new CoreModule(
+                overridingModules.stream().map(Classes::instantiateDefault).collect(Collectors.toSet()),
+                overridingBindings,
+                true
+        );
     }
 }

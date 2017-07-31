@@ -64,7 +64,7 @@ public class JtaTransactionManager extends AbstractTransactionManager {
                 transactionHandler.doInitialize(transactionMetadata);
             }
 
-            Object result = null;
+            Object result;
             try {
                 if (propagationResult.isNewTransactionNeeded()) {
                     transactionLogger.log("beginning the JTA transaction");

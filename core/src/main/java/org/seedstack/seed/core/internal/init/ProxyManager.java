@@ -20,6 +20,8 @@ import java.net.Proxy;
 import java.net.ProxySelector;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
+import java.util.Optional;
 import java.util.regex.Pattern;
 
 import static java.util.stream.Collectors.toList;
@@ -87,7 +89,7 @@ public class ProxyManager {
         if (Strings.isNullOrEmpty(configuredValue) && auto) {
             String value = System.getenv(variable);
             if (Strings.isNullOrEmpty(value)) {
-                value = System.getenv(variable.toUpperCase());
+                value = System.getenv(variable.toUpperCase(Locale.ENGLISH));
             }
             return value;
         } else {
@@ -103,21 +105,15 @@ public class ProxyManager {
     }
 
     private Proxy buildProxy(String value, int defaultPort) {
-        String[] httpProxyInfo = parseProxy(value, String.valueOf(defaultPort));
-        if (httpProxyInfo != null) {
-            return new Proxy(Proxy.Type.HTTP, new InetSocketAddress(httpProxyInfo[0], Integer.parseInt(httpProxyInfo[1])));
-        } else {
-            return Proxy.NO_PROXY;
-        }
+        return parseProxy(value, String.valueOf(defaultPort))
+                .map(hostAndPort -> new Proxy(Proxy.Type.HTTP, new InetSocketAddress(hostAndPort[0], Integer.parseInt(hostAndPort[1]))))
+                .orElse(Proxy.NO_PROXY);
     }
 
     private PasswordAuthentication buildPasswordAuthentication(String value) {
-        String[] httpCredentials = parseCredentials(value);
-        if (httpCredentials != null) {
-            return new PasswordAuthentication(httpCredentials[0], httpCredentials[1].toCharArray());
-        } else {
-            return null;
-        }
+        return parseCredentials(value)
+                .map(credentials -> new PasswordAuthentication(credentials[0], credentials[1].toCharArray()))
+                .orElse(null);
     }
 
     /**
@@ -125,32 +121,27 @@ public class ProxyManager {
      * of the array is null if no password is specified.
      *
      * @param url The proxy host URL.
-     * @return An array containing the user name and the password or null when none are present or the url is empty.
+     * @return An optional containing an array of the user name and the password or empty when none are present or the url is empty.
      */
-    private String[] parseCredentials(String url) {
-        String[] result = new String[2];
-
-        if (url == null || url.isEmpty())
-            return null;
-
-        int p = url.indexOf("://");
-        if (p != -1)
-            url = url.substring(p + 3);
-
-        if ((p = url.indexOf('@')) != -1) {
-            String credentials = url.substring(0, p);
-
-            if ((p = credentials.indexOf(':')) != -1) {
-                result[0] = credentials.substring(0, p);
-                result[1] = credentials.substring(p + 1);
-            } else {
-                result[0] = credentials;
+    private Optional<String[]> parseCredentials(String url) {
+        if (!Strings.isNullOrEmpty(url)) {
+            int p;
+            if ((p = url.indexOf("://")) != -1) {
+                url = url.substring(p + 3);
             }
-        } else {
-            return null;
+            if ((p = url.indexOf('@')) != -1) {
+                String[] result = new String[2];
+                String credentials = url.substring(0, p);
+                if ((p = credentials.indexOf(':')) != -1) {
+                    result[0] = credentials.substring(0, p);
+                    result[1] = credentials.substring(p + 1);
+                } else {
+                    result[0] = credentials;
+                }
+                return Optional.of(result);
+            }
         }
-
-        return result;
+        return Optional.empty();
     }
 
     /**
@@ -158,42 +149,40 @@ public class ProxyManager {
      *
      * @param url     The proxy host URL.
      * @param defPort The default proxy port
-     * @return An array containing the host name and the proxy port or null when url is empty
+     * @return An optional containing an array of the host name and the proxy port or empty when url is empty.
      */
-    private String[] parseProxy(String url, String defPort) {
-        String[] result = new String[2];
+    private Optional<String[]> parseProxy(String url, String defPort) {
+        if (!Strings.isNullOrEmpty(url)) {
+            String[] result = new String[2];
+            int p = url.indexOf("://");
+            if (p != -1)
+                url = url.substring(p + 3);
 
-        if (url == null || url.isEmpty())
-            return null;
+            if ((p = url.indexOf('@')) != -1)
+                url = url.substring(p + 1);
 
-        int p = url.indexOf("://");
-        if (p != -1)
-            url = url.substring(p + 3);
+            if ((p = url.indexOf(':')) != -1) {
+                result[0] = url.substring(0, p);
+                result[1] = url.substring(p + 1);
+            } else {
+                result[0] = url;
+                result[1] = defPort;
+            }
 
-        if ((p = url.indexOf('@')) != -1)
-            url = url.substring(p + 1);
+            // remove trailing slash from the host name
+            p = result[0].indexOf('/');
+            if (p != -1) {
+                result[0] = result[0].substring(0, p);
+            }
 
-        if ((p = url.indexOf(':')) != -1) {
-            result[0] = url.substring(0, p);
-            result[1] = url.substring(p + 1);
-        } else {
-            result[0] = url;
-            result[1] = defPort;
+            // remove trailing slash from the port number
+            p = result[1].indexOf('/');
+            if (p != -1) {
+                result[1] = result[1].substring(0, p);
+            }
+            return Optional.of(result);
         }
-
-        // remove trailing slash from the host name
-        p = result[0].indexOf("/");
-        if (p != -1) {
-            result[0] = result[0].substring(0, p);
-        }
-
-        // remove trailing slash from the port number
-        p = result[1].indexOf("/");
-        if (p != -1) {
-            result[1] = result[1].substring(0, p);
-        }
-
-        return result;
+        return Optional.empty();
     }
 
     /**

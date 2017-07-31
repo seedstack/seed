@@ -166,6 +166,7 @@ public class GuiceComponentProviderTest {
     class MyProviderImpl implements MyProvider { }
 
     @Test
+    @SuppressWarnings("unchecked")
     public void testBind() throws Exception {
         givenServiceLocator();
         givenInjections();

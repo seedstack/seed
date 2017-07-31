@@ -7,17 +7,15 @@
  */
 package org.seedstack.seed.security.principals;
 
-import java.io.Serializable;
 import java.security.cert.X509Certificate;
+
+import static java.util.Objects.requireNonNull;
 
 /**
  * Principal provider that stores the user X509Certificates used for his
  * authentication.
  */
-public class X509CertificatePrincipalProvider implements PrincipalProvider<X509Certificate[]>, Serializable {
-
-    private static final long serialVersionUID = -437306763922586396L;
-
+public class X509CertificatePrincipalProvider implements PrincipalProvider<X509Certificate[]> {
     private X509Certificate[] certificates;
 
     /**
@@ -26,19 +24,11 @@ public class X509CertificatePrincipalProvider implements PrincipalProvider<X509C
      * @param x509Certificates the user certificates.
      */
     public X509CertificatePrincipalProvider(X509Certificate[] x509Certificates) {
-        if (x509Certificates == null) {
-            this.certificates = null;
-        } else {
-            this.certificates = x509Certificates.clone();
-        }
+        this.certificates = requireNonNull(x509Certificates, "X509 certificates array should not be null").clone();
     }
 
     @Override
     public X509Certificate[] getPrincipal() {
-        if (certificates == null) {
-            return null;
-        }
-
         return certificates.clone();
     }
 }

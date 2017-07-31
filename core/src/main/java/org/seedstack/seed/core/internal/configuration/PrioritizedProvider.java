@@ -11,6 +11,7 @@ import org.seedstack.coffig.node.MapNode;
 import org.seedstack.coffig.spi.ConfigurationComponent;
 import org.seedstack.coffig.spi.ConfigurationProvider;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -22,7 +23,7 @@ public class PrioritizedProvider implements ConfigurationProvider {
     @Override
     public MapNode provide() {
         MapNode mapNode = providers.stream()
-                .sorted(PrioritizedConfigurationProvider::compareTo)
+                .sorted(Comparator.comparingInt(o -> o.priority))
                 .map(PrioritizedConfigurationProvider::getConfigurationProvider)
                 .map(ConfigurationProvider::provide)
                 .reduce((conf1, conf2) -> (MapNode) conf1.merge(conf2))
@@ -51,18 +52,13 @@ public class PrioritizedProvider implements ConfigurationProvider {
         return this;
     }
 
-    private static class PrioritizedConfigurationProvider implements Comparable<PrioritizedConfigurationProvider> {
+    private static class PrioritizedConfigurationProvider {
         private final int priority;
         private final ConfigurationProvider configurationProvider;
 
         private PrioritizedConfigurationProvider(int priority, ConfigurationProvider configurationProvider) {
             this.priority = priority;
             this.configurationProvider = configurationProvider;
-        }
-
-        @Override
-        public int compareTo(PrioritizedConfigurationProvider o) {
-            return Integer.compare(priority, o.priority);
         }
 
         int getPriority() {

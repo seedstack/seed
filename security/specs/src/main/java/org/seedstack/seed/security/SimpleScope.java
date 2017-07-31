@@ -9,11 +9,14 @@ package org.seedstack.seed.security;
 
 import org.seedstack.seed.security.spi.SecurityScope;
 
+import java.util.Locale;
+
 /**
  * A simple kind of scope that can be described as a String which matches in an all or nothing fashion (strict equality).
  */
 @SecurityScope("scope")
 public class SimpleScope implements Scope {
+    private static final long serialVersionUID = 1L;
 
     /**
      * The value of the simple scope
@@ -51,7 +54,7 @@ public class SimpleScope implements Scope {
         if (annotation != null) {
             return annotation.value();
         } else {
-            return scopeClass.getSimpleName().toLowerCase();
+            return scopeClass.getSimpleName().toLowerCase(Locale.ENGLISH);
         }
     }
 

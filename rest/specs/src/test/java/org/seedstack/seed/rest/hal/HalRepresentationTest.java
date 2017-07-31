@@ -16,8 +16,8 @@ import org.junit.Test;
 import java.io.ByteArrayOutputStream;
 import java.util.List;
 
-
 public class HalRepresentationTest {
+    private static final String EXPECTED = "{\"_links\":{\"objects\":{\"href\":\"/pok\"}},\"_embedded\":{\"objects\":[{\"name\":\"toto\"}]}}";
 
     @Test
     public void test_hal_links() {
@@ -26,20 +26,9 @@ public class HalRepresentationTest {
         Assertions.assertThat(halRepresentation.getLink("curies")).isInstanceOf(Link.class);
         halRepresentation.link("curies", new Link("http://example.org/{rel}").templated().name("example"));
         Assertions.assertThat(halRepresentation.getLink("curies")).isInstanceOf(List.class);
-        Assertions.assertThat(((List<?>) halRepresentation.getLink("curies"))).hasSize(2);
+        Assertions.assertThat(((List) halRepresentation.getLink("curies"))).hasSize(2);
         halRepresentation.link("curies", new Link("http://example2.org/{rel}").templated().name("example2"));
-        Assertions.assertThat(((List<?>) halRepresentation.getLink("curies"))).hasSize(3);
-    }
-
-    private static final String EXPECTED = "{\"_links\":{\"objects\":{\"href\":\"/pok\"}},\"_embedded\":{\"objects\":[{\"name\":\"toto\"}]}}";
-
-    static class Person {
-        @JsonProperty("name")
-        private String name;
-
-        public Person(String name) {
-            this.name = name;
-        }
+        Assertions.assertThat(((List) halRepresentation.getLink("curies"))).hasSize(3);
     }
 
     @Test
@@ -54,5 +43,14 @@ public class HalRepresentationTest {
         outputStream.flush();
 
         Assertions.assertThat(outputStream.toString()).isEqualTo(EXPECTED);
+    }
+
+    static class Person {
+        @JsonProperty("name")
+        private String name;
+
+        Person(String name) {
+            this.name = name;
+        }
     }
 }

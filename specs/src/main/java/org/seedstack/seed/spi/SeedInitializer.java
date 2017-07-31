@@ -11,7 +11,7 @@ import org.seedstack.coffig.Coffig;
 
 /**
  * This interface defines two methods that are called at Seed JVM initialization and close.
- * It must be declared as a {@link java.util.ServiceLoader} service in META-INF/services to be detected.
+ * Implementations must be declared as a {@link java.util.ServiceLoader} service in META-INF/services to be detected.
  */
 public interface SeedInitializer {
     /**

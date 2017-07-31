@@ -36,7 +36,7 @@ import java.util.concurrent.ConcurrentMap;
 public class DiagnosticManagerImpl implements DiagnosticManager {
     private static final String REPORTER_SYSTEM_PROPERTY = "seedstack.diagnostic";
     private static final Logger LOGGER = LoggerFactory.getLogger(DiagnosticManagerImpl.class);
-    private static final DateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss.SSS");
+    private static final String DATE_FORMAT = "yyyy-MM-dd-HH-mm-ss.SSS";
 
     private final ConcurrentMap<String, DiagnosticInfoCollector> diagnosticCollectors = new ConcurrentHashMap<>();
     private final DiagnosticReporter diagnosticReporter;
@@ -126,7 +126,7 @@ public class DiagnosticManagerImpl implements DiagnosticManager {
     private Map<String, Object> collectSystemInfo() {
         Map<String, Object> result = new HashMap<>();
 
-        result.put("diagnosticTime", DATE_FORMAT.format(new Date()));
+        result.put("diagnosticTime", new SimpleDateFormat(DiagnosticManagerImpl.DATE_FORMAT).format(new Date()));
         result.put("properties", buildSystemPropertiesList());
         result.put("threads", buildThreadList());
 
@@ -136,7 +136,7 @@ public class DiagnosticManagerImpl implements DiagnosticManager {
 
         RuntimeMXBean runtimeMXBean = ManagementFactory.getRuntimeMXBean();
         result.put("args", runtimeMXBean.getInputArguments());
-        result.put("startTime", DATE_FORMAT.format(runtimeMXBean.getStartTime()));
+        result.put("startTime", new SimpleDateFormat(DiagnosticManagerImpl.DATE_FORMAT).format(runtimeMXBean.getStartTime()));
 
         return result;
     }

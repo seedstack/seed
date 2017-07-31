@@ -72,7 +72,7 @@ public class DependencyPlugin extends AbstractSeedPlugin {
                     LOGGER.debug("Found a new optional provider [{}] for [{}]", providerClass.getName(), provider.getClassToCheck());
                     optionalDependency = Optional.of(provider);
                 }
-            } catch (Exception e) {
+            } catch (InstantiationException | IllegalAccessException e) {
                 throw SeedException.wrap(e, CoreErrorCode.UNABLE_TO_INSTANTIATE_CLASS).put("class", providerClass.getCanonicalName());
             }
             dependencies.put(providerClass, optionalDependency);

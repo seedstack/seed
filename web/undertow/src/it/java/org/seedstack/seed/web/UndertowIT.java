@@ -13,7 +13,7 @@ import org.assertj.core.api.Assertions;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.seedstack.seed.core.SeedMain;
+import org.seedstack.seed.core.Seed;
 import org.seedstack.seed.spi.SeedLauncher;
 
 import static com.jayway.restassured.RestAssured.expect;
@@ -22,8 +22,8 @@ import static com.jayway.restassured.RestAssured.expect;
  * Tests an undertow server exposing a simple hello world servlet.
  */
 public class UndertowIT {
-    private static final String BASE_URL = "localhost:9001/";
-    private final SeedLauncher launcher = SeedMain.getLauncher();
+    private static final String BASE_HTTPS_URL = "localhost:9001/";
+    private final SeedLauncher launcher = Seed.getLauncher();
 
     @Before
     public void before() throws Exception {
@@ -38,7 +38,7 @@ public class UndertowIT {
     @Test
     public void test_run_seed_app_with_SSL() throws Exception {
         RestAssured.useRelaxedHTTPSValidation();
-        Response response = expect().statusCode(200).when().get("https://" + BASE_URL + "hello");
+        Response response = expect().statusCode(200).when().get("https://" + BASE_HTTPS_URL + "hello");
         Assertions.assertThat(response.asString()).isEqualTo("Hello World! value1");
     }
 }

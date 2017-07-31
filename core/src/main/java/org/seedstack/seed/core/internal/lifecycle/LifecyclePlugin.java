@@ -7,13 +7,14 @@
  */
 package org.seedstack.seed.core.internal.lifecycle;
 
-import com.google.inject.AbstractModule;
-import com.google.inject.multibindings.Multibinder;
+import com.google.common.collect.Sets;
 import io.nuun.kernel.api.plugin.InitState;
 import io.nuun.kernel.api.plugin.context.InitContext;
 import io.nuun.kernel.api.plugin.request.ClasspathScanRequest;
 import org.seedstack.seed.LifecycleListener;
+import org.seedstack.seed.SeedException;
 import org.seedstack.seed.core.internal.AbstractSeedPlugin;
+import org.seedstack.seed.core.internal.CoreErrorCode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,9 +23,12 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-public class LifecyclePlugin extends AbstractSeedPlugin implements LifecycleListenerScanner {
+public class LifecyclePlugin extends AbstractSeedPlugin implements LifecycleManager {
     private static final Logger LOGGER = LoggerFactory.getLogger(LifecyclePlugin.class);
     private final Set<Class<? extends LifecycleListener>> lifecycleListenerClasses = new HashSet<>();
+    private final Set<AutoCloseable> autoCloseableObjects = Sets.newConcurrentHashSet();
+    @Inject
+    private Set<LifecycleListener> lifecycleListeners;
 
     @Override
     public String name() {
@@ -51,22 +55,47 @@ public class LifecyclePlugin extends AbstractSeedPlugin implements LifecycleList
 
     @Override
     public Object nativeUnitModule() {
-        return new AbstractModule() {
-            @Override
-            protected void configure() {
-                Multibinder<LifecycleListener> lifecycleListenerMultibinder = Multibinder.newSetBinder(binder(), LifecycleListener.class);
-                for (Class<? extends LifecycleListener> lifecycleListenerClass : lifecycleListenerClasses) {
-                    lifecycleListenerMultibinder.addBinding().to(lifecycleListenerClass);
-                }
-            }
-        };
+        return new LifecycleModule(lifecycleListenerClasses, this);
     }
 
-    @Inject
-    private Set<LifecycleListener> lifecycleListeners;
+    @Override
+    public void started() {
+        for (LifecycleListener lifecycleListener : lifecycleListeners) {
+            try {
+                lifecycleListener.started();
+            } catch (Exception e) {
+                throw SeedException
+                        .wrap(e, CoreErrorCode.ERROR_IN_LIFECYCLE_LISTENER)
+                        .put("lifecycleListenerClass", lifecycleListener.getClass().getCanonicalName())
+                        .put("phase", "start");
+            }
+        }
+    }
 
     @Override
-    public Collection<LifecycleListener> get() {
-        return lifecycleListeners;
+    public void stopping() {
+        autoCloseableObjects.forEach(closeable -> {
+            try {
+                LOGGER.info("Closing {}", closeable.getClass().getName());
+                closeable.close();
+            } catch (Exception e) {
+                LOGGER.error("An exception occurred in the close() method of auto-closeable {}", closeable.getClass().getName(), e);
+            }
+        });
+
+        for (LifecycleListener lifecycleListener : lifecycleListeners) {
+            try {
+                lifecycleListener.stopping();
+            } catch (Exception e) {
+                LOGGER.error("An exception occurred in the stopping() method of lifecycle listener {}", lifecycleListener.getClass().getName(), e);
+            }
+        }
+    }
+
+    @Override
+    public void registerAutoCloseable(AutoCloseable autoCloseable) {
+        if (autoCloseableObjects.add(autoCloseable)) {
+            LOGGER.info("Registered auto-closeable {} for closing at shutdown", autoCloseable.getClass().getName());
+        }
     }
 }

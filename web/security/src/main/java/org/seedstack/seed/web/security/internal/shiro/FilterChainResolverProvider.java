@@ -23,9 +23,7 @@ import java.util.Set;
 @Singleton
 class FilterChainResolverProvider implements ProviderWithDependencies<FilterChainResolver> {
     @Inject
-    Injector injector;
-
-
+    private Injector injector;
     private final Map<String, ShiroWebModule.FilterKey[]> chains;
     private final Set<Dependency<?>> dependencies;
 
@@ -34,8 +32,8 @@ class FilterChainResolverProvider implements ProviderWithDependencies<FilterChai
     public FilterChainResolverProvider(Map<String, ShiroWebModule.FilterKey[]> chains) {
         this.chains = chains;
         ImmutableSet.Builder<Dependency<?>> dependenciesBuilder = ImmutableSet.builder();
-        for (String chain : chains.keySet()) {
-            for (ShiroWebModule.FilterKey filterKey : chains.get(chain)) {
+        for (ShiroWebModule.FilterKey[] values : chains.values()) {
+            for (ShiroWebModule.FilterKey filterKey : values) {
                 dependenciesBuilder.add(Dependency.get(filterKey.getKey()));
             }
         }

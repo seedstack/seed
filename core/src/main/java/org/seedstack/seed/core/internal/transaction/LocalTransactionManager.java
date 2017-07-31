@@ -28,7 +28,7 @@ public class LocalTransactionManager extends AbstractTransactionManager {
             transactionHandler.doInitialize(transactionMetadata);
         }
 
-        Object result = null;
+        Object result;
         try {
             if (propagationResult.isNewTransactionNeeded()) {
                 transactionLogger.log("creating a new transaction");
@@ -49,7 +49,7 @@ public class LocalTransactionManager extends AbstractTransactionManager {
                     if (propagationResult.isNewTransactionNeeded()) {
                         transactionLogger.log("rolling back the transaction after invocation exception");
                         transactionHandler.doRollbackTransaction(currentTransaction);
-                    } else if (transactionMetadata.isRollbackOnParticipationFailure()) {
+                    } else if (currentTransaction != null && transactionMetadata.isRollbackOnParticipationFailure()) {
                         transactionLogger.log("marking the transaction as rollback-only after invocation exception");
                         transactionHandler.doMarkTransactionAsRollbackOnly(currentTransaction);
                     }

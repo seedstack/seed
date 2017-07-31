@@ -7,10 +7,10 @@
  */
 package org.seedstack.seed.web.internal.diagnostic;
 
+import org.seedstack.seed.core.Seed;
 import org.seedstack.seed.diagnostic.DiagnosticManager;
-import org.seedstack.seed.SeedException;
 import org.seedstack.seed.web.internal.ServletContextUtils;
-import org.seedstack.seed.web.internal.WebErrorCode;
+import org.seedstack.shed.exception.BaseException;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -32,12 +32,10 @@ public class WebDiagnosticFilter implements Filter {
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         try {
             chain.doFilter(request, response);
-        } catch (SeedException e) {
-            diagnosticManager.dumpDiagnosticReport(e);
-            throw e;
         } catch (Exception e) {
-            diagnosticManager.dumpDiagnosticReport(e);
-            throw SeedException.wrap(e, WebErrorCode.UNEXPECTED_EXCEPTION);
+            BaseException translated = Seed.translateException(e);
+            diagnosticManager.dumpDiagnosticReport(translated);
+            throw translated;
         }
     }
 

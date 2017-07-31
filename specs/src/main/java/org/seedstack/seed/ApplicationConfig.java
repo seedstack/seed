@@ -32,6 +32,8 @@ public class ApplicationConfig {
     private String version = "1.0.0";
     private File storage;
     private boolean packageScanWarning = true;
+    private boolean printBanner = true;
+    private ColorOutput colorOutput = ColorOutput.AUTODETECT;
 
     public String getId() {
         return id;
@@ -93,5 +95,30 @@ public class ApplicationConfig {
     public ApplicationConfig setPackageScanWarning(boolean packageScanWarning) {
         this.packageScanWarning = packageScanWarning;
         return this;
+    }
+
+    public boolean isPrintBanner() {
+        return printBanner;
+    }
+
+    public ApplicationConfig setPrintBanner(boolean printBanner) {
+        this.printBanner = printBanner;
+        return this;
+    }
+
+    public ColorOutput getColorOutput() {
+        return colorOutput;
+    }
+
+    public ApplicationConfig setColorOutput(ColorOutput colorOutput) {
+        this.colorOutput = colorOutput;
+        return this;
+    }
+
+    public enum ColorOutput {
+        AUTODETECT,
+        PASSTHROUGH,
+        ENABLE,
+        DISABLE
     }
 }

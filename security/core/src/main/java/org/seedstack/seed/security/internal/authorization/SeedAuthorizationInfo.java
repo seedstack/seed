@@ -18,18 +18,13 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * AuthorizationInfo that keeps the Roles and Permissions from SEED api.
+ * AuthorizationInfo that keeps the Roles and Permissions from Seed API.
  */
 public class SeedAuthorizationInfo implements AuthorizationInfo {
-
-    private static final long serialVersionUID = 8949548650667096378L;
-
+    private static final long serialVersionUID = 1L;
     private Set<Role> apiRoles = new HashSet<>();
-
     private Set<String> roles = new HashSet<>();
-
     private Set<String> stringPermissions = new HashSet<>();
-
     private Set<Permission> objectPermissions = new HashSet<>();
 
     @Override
@@ -48,19 +43,16 @@ public class SeedAuthorizationInfo implements AuthorizationInfo {
     }
 
     /**
-     * Gives the SEED roles
-     * 
      * @return a Set of {@link Role}
      */
-    public Set<Role> getSeedRoles() {
+    public Set<Role> getObjectRoles() {
         return Collections.unmodifiableSet(apiRoles);
     }
 
     /**
-     * Adds a role and its permissions
-     * 
-     * @param role
-     *            the role to add
+     * Adds a role and its permissions to the authorization info.
+     *
+     * @param role the role to add.
      */
     public void addRole(Role role) {
         apiRoles.add(role);
@@ -71,7 +63,7 @@ public class SeedAuthorizationInfo implements AuthorizationInfo {
                     ScopePermission sp = new ScopePermission(permission.getPermission(), scope);
                     objectPermissions.add(sp);
                 }
-            }else{
+            } else {
                 stringPermissions.add(permission.getPermission());
             }
         }

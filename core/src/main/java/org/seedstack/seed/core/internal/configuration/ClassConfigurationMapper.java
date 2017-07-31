@@ -7,18 +7,19 @@
  */
 package org.seedstack.seed.core.internal.configuration;
 
-import org.seedstack.coffig.NamedNode;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.seedstack.coffig.TreeNode;
 import org.seedstack.coffig.spi.ConfigurationMapper;
-import org.seedstack.coffig.util.Utils;
 import org.seedstack.seed.ClassConfiguration;
 import org.seedstack.seed.SeedException;
 import org.seedstack.seed.core.internal.CoreErrorCode;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.util.HashMap;
+import java.util.Map;
 
-import static java.util.stream.Collectors.toMap;
+import static org.seedstack.shed.reflect.Types.rawClassOf;
 
 public class ClassConfigurationMapper implements ConfigurationMapper {
     @Override
@@ -33,17 +34,15 @@ public class ClassConfigurationMapper implements ConfigurationMapper {
     }
 
     @Override
+    @SuppressFBWarnings(value = "BC_UNCONFIRMED_CAST", justification = "Cast is verified in canHandle() method")
     public Object map(TreeNode treeNode, Type type) {
-        Class<?> rawType = Utils.getRawClass(((ParameterizedType) type).getActualTypeArguments()[0]);
-
+        Class<?> rawType = rawClassOf(((ParameterizedType) type).getActualTypeArguments()[0]);
         if (treeNode.type() == TreeNode.Type.MAP_NODE) {
-            return ClassConfiguration.of(rawType, treeNode.namedNodes()
+            Map<String, String> result = new HashMap<>();
+            treeNode.namedNodes()
                     .filter(namedNode -> isValueNode(namedNode.node()))
-                    .collect(toMap(
-                            NamedNode::name,
-                            namedNode -> namedNode.node().value()
-                    ))
-            );
+                    .forEach(namedNode -> result.put(namedNode.name(), namedNode.node().value()));
+            return ClassConfiguration.of(rawType, result);
         } else {
             throw SeedException.createNew(CoreErrorCode.INVALID_CLASS_CONFIGURATION)
                     .put("nodeType", treeNode.type())

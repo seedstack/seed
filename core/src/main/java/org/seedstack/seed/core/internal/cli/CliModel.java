@@ -54,11 +54,6 @@ class CliModel {
                 argsField = field;
             }
         }
-
-        optionFields.forEach(field -> field.setAccessible(true));
-        if (argsField != null) {
-            argsField.setAccessible(true);
-        }
     }
 
     Options getOptions() {

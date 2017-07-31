@@ -12,22 +12,33 @@ import org.seedstack.coffig.SingleValue;
 
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @Config("web")
 public class WebConfig {
     private boolean requestDiagnostic;
+    private SessionTrackingMode sessionTrackingMode = SessionTrackingMode.COOKIE;
     private StaticResourcesConfig staticResources = new StaticResourcesConfig();
     private CORSConfig cors = new CORSConfig();
     private ServerConfig serverConfig = new ServerConfig();
 
     public boolean isRequestDiagnosticEnabled() {
         return requestDiagnostic;
+    }
+
+    public WebConfig setRequestDiagnostic(boolean requestDiagnostic) {
+        this.requestDiagnostic = requestDiagnostic;
+        return this;
+    }
+
+    public SessionTrackingMode getSessionTrackingMode() {
+        return sessionTrackingMode;
+    }
+
+    public WebConfig setSessionTrackingMode(SessionTrackingMode sessionTrackingMode) {
+        this.sessionTrackingMode = sessionTrackingMode;
+        return this;
     }
 
     public StaticResourcesConfig staticResources() {
@@ -126,8 +137,8 @@ public class WebConfig {
         private static final String DEFAULT_HOST = "0.0.0.0";
         private static final int DEFAULT_PORT = 8080;
         private static final String DEFAULT_CONTEXT_PATH = "/";
+        private static final boolean DEFAULT_HTTP2_ACTIVATION = true;
         private static final boolean DEFAULT_HTTPS_ACTIVATION = false;
-        private static final boolean DEFAULT_HTTP2_ACTIVATION = false;
 
         private String host = DEFAULT_HOST;
         @SingleValue
@@ -135,8 +146,8 @@ public class WebConfig {
         @Max(65535)
         private int port = DEFAULT_PORT;
         private String contextPath = DEFAULT_CONTEXT_PATH;
-        private boolean https = DEFAULT_HTTPS_ACTIVATION;
         private boolean http2 = DEFAULT_HTTP2_ACTIVATION;
+        private boolean https = DEFAULT_HTTPS_ACTIVATION;
 
         public String getHost() {
             return host;
@@ -182,5 +193,11 @@ public class WebConfig {
             this.http2 = http2;
             return this;
         }
+    }
+
+    public enum SessionTrackingMode {
+        COOKIE,
+        SSL,
+        URL
     }
 }

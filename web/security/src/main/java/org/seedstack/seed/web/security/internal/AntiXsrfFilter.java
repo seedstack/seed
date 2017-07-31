@@ -23,12 +23,12 @@ class AntiXsrfFilter extends AdviceFilter {
     private static final Logger LOGGER = LoggerFactory.getLogger(AntiXsrfFilter.class);
 
     @Inject
-    private AntiXsrfService AntiXsrfService;
+    private AntiXsrfService antiXsrfService;
 
     @Override
     protected boolean preHandle(ServletRequest request, ServletResponse response) throws Exception {
         try {
-            AntiXsrfService.applyXsrfProtection((HttpServletRequest) request, (HttpServletResponse) response);
+            antiXsrfService.applyXsrfProtection((HttpServletRequest) request, (HttpServletResponse) response);
             return true;
         } catch (SeedException e) {
             switch ((WebSecurityErrorCode) e.getErrorCode()) {
@@ -49,6 +49,6 @@ class AntiXsrfFilter extends AdviceFilter {
     }
 
     protected void postHandle(ServletRequest request, ServletResponse response) throws Exception {
-        AntiXsrfService.cleanXsrfProtection((HttpServletRequest) request, (HttpServletResponse) response);
+        antiXsrfService.cleanXsrfProtection((HttpServletRequest) request, (HttpServletResponse) response);
     }
 }

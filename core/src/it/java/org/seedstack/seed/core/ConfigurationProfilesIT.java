@@ -7,7 +7,6 @@
  */
 package org.seedstack.seed.core;
 
-import net.jcip.annotations.NotThreadSafe;
 import org.assertj.core.api.Assertions;
 import org.junit.Rule;
 import org.junit.Test;
@@ -15,6 +14,7 @@ import org.seedstack.seed.Application;
 import org.seedstack.seed.core.rules.SeedITRule;
 import org.seedstack.seed.core.rules.SystemProperties;
 
+import javax.annotation.concurrent.NotThreadSafe;
 import javax.inject.Inject;
 
 @NotThreadSafe

@@ -9,11 +9,14 @@ package org.seedstack.seed.core.internal.init;
 
 import org.fusesource.jansi.AnsiConsole;
 import org.fusesource.jansi.AnsiOutputStream;
+import org.seedstack.seed.ApplicationConfig;
 
 import java.io.FilterOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
+import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
 
 public class ConsoleManager {
     private final PrintStream savedOut = System.out;
@@ -31,9 +34,9 @@ public class ConsoleManager {
         // noop
     }
 
-    public synchronized void install() {
-        System.setOut(new PrintStream(wrapOutputStream(System.out)));
-        System.setErr(new PrintStream(wrapOutputStream(System.err)));
+    public synchronized void install(ApplicationConfig.ColorOutput colorOutput) {
+        System.setOut(wrapPrintStream(System.out, colorOutput));
+        System.setErr(wrapPrintStream(System.err, colorOutput));
     }
 
     public synchronized void uninstall() {
@@ -41,35 +44,48 @@ public class ConsoleManager {
         System.setErr(savedErr);
     }
 
-    private OutputStream wrapOutputStream(final OutputStream stream) {
+    private PrintStream wrapPrintStream(final PrintStream printStream, ApplicationConfig.ColorOutput colorOutput) {
+        OutputStream outputStream;
         try {
-            if (Boolean.getBoolean("jansi.passthrough")) {
-                // honor jansi passthrough
-                return stream;
-            } else if (Boolean.getBoolean("jansi.strip")) {
-                // honor jansi strip
-                return basicOutput(stream);
-            } else if (isXtermColor()) {
-                // enable color in recognized XTERM color modes
-                return ansiOutput(stream);
-            } else if (isIntelliJ()) {
-                // enable color under Intellij
-                return ansiOutput(stream);
+            if (colorOutput == ApplicationConfig.ColorOutput.PASSTHROUGH || Boolean.getBoolean("jansi.passthrough")) {
+                outputStream = printStream;
+            } else if (colorOutput == ApplicationConfig.ColorOutput.DISABLE || Boolean.getBoolean("jansi.strip")) {
+                outputStream = basicOutput(printStream);
+            } else if (colorOutput == ApplicationConfig.ColorOutput.ENABLE) {
+                outputStream = ansiOutput(printStream);
+            } else if (colorOutput == ApplicationConfig.ColorOutput.AUTODETECT) {
+                if (isXtermColor()) {
+                    // enable color in recognized XTERM color modes
+                    outputStream = ansiOutput(printStream);
+                } else if (isIntelliJ()) {
+                    // enable color under Intellij
+                    outputStream = ansiOutput(printStream);
+                } else {
+                    // let Jansi handle other detection
+                    outputStream = AnsiConsole.wrapOutputStream(printStream);
+                }
             } else {
-                // let Jansi handle other detection
-                return AnsiConsole.wrapOutputStream(stream);
+                // Fallback to stripping ANSI codes
+                outputStream = basicOutput(printStream);
             }
         } catch (Throwable e) {
             // If any error occurs, strip ANSI codes
-            return basicOutput(stream);
+            outputStream = basicOutput(printStream);
+        }
+
+        try {
+            return new PrintStream(outputStream, false, Charset.defaultCharset().name());
+        } catch (UnsupportedEncodingException e) {
+            // if for some reason the default encoding is unsupported, fallback to passthrough
+            return printStream;
         }
     }
 
-    private FilterOutputStream basicOutput(OutputStream stream) {
+    private FilterOutputStream basicOutput(PrintStream stream) {
         return new AnsiOutputStream(stream);
     }
 
-    private FilterOutputStream ansiOutput(OutputStream stream) {
+    private FilterOutputStream ansiOutput(PrintStream stream) {
         return new ColorOutputStream(stream);
     }
 
@@ -100,7 +116,7 @@ public class ConsoleManager {
 
         @Override
         public void close() throws IOException {
-            write(AnsiOutputStream.REST_CODE);
+            write(AnsiOutputStream.RESET_CODE);
             flush();
             super.close();
         }

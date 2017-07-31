@@ -34,7 +34,6 @@ class ConfigurationTypeListener implements TypeListener {
             for (Field field : c.getDeclaredFields()) {
                 Configuration annotation = field.getAnnotation(Configuration.class);
                 if (annotation != null) {
-                    field.setAccessible(true);
                     fields.add(new ConfigurationMembersInjector.ConfigurableField(field, annotation));
                 }
             }

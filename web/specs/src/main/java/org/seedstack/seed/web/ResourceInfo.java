@@ -13,19 +13,21 @@ import java.net.URL;
  * This immutable class holds information relative to a static web resource.
  */
 public class ResourceInfo {
-    final private URL url;
-    final private boolean gzipped;
-    final private String contentType;
+    private final URL url;
+    private final String externalForm;
+    private final boolean gzipped;
+    private final String contentType;
 
     /**
      * Creates a resource information instance.
      *
-     * @param url the resource contents URL.
-     * @param gzipped if the resource can be gzipped.
+     * @param url         the resource contents URL.
+     * @param gzipped     if the resource can be gzipped.
      * @param contentType the content type of the resource.
      */
     public ResourceInfo(URL url, boolean gzipped, String contentType) {
         this.url = url;
+        this.externalForm = url.toExternalForm();
         this.gzipped = gzipped;
         this.contentType = contentType;
     }
@@ -41,13 +43,13 @@ public class ResourceInfo {
 
         ResourceInfo that = (ResourceInfo) o;
 
-        return gzipped == that.gzipped && contentType.equals(that.contentType) && url.equals(that.url);
+        return gzipped == that.gzipped && contentType.equals(that.contentType) && externalForm.equals(that.externalForm);
 
     }
 
     @Override
     public int hashCode() {
-        int result = url.hashCode();
+        int result = externalForm.hashCode();
         result = 31 * result + (gzipped ? 1 : 0);
         result = 31 * result + contentType.hashCode();
         return result;

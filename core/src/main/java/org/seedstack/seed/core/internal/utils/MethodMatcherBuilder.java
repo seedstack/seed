@@ -41,12 +41,19 @@ public class MethodMatcherBuilder {
     }
 
     public Matcher<Method> build() {
-        final Predicate<Method> effectivePredicate = ExecutablePredicates.<Method>executableIsSynthetic().negate().and(predicate);
-        return new AbstractMatcher<Method>() {
-            @Override
-            public boolean matches(Method executable) {
-                return effectivePredicate.test(executable);
-            }
-        };
+        return new PredicateMatcherAdapter(ExecutablePredicates.<Method>executableIsSynthetic().negate().and(predicate));
+    }
+
+    private static class PredicateMatcherAdapter extends AbstractMatcher<Method> {
+        private final Predicate<Method> effectivePredicate;
+
+        private PredicateMatcherAdapter(Predicate<Method> effectivePredicate) {
+            this.effectivePredicate = effectivePredicate;
+        }
+
+        @Override
+        public boolean matches(Method executable) {
+            return effectivePredicate.test(executable);
+        }
     }
 }
