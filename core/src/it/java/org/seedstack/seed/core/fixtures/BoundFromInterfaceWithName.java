@@ -9,6 +9,9 @@ package org.seedstack.seed.core.fixtures;
 
 import org.seedstack.seed.Bind;
 
-@Bind(from = BoundInterface.class, named = "toto")
+import javax.inject.Named;
+
+@Bind(from = BoundInterface.class)
+@Named("toto")
 public class BoundFromInterfaceWithName implements BoundInterface {
 }

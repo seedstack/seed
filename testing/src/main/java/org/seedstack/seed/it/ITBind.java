@@ -7,7 +7,6 @@
  */
 package org.seedstack.seed.it;
 
-import java.lang.annotation.Annotation;
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Inherited;
@@ -16,8 +15,11 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * This annotation can be used to declare simple test bindings. Since these bindings are processed by the testing
- * module they are only available when the testing plugin is enabled (typically in the test classpath of a project).
+ * This annotation makes the class on which it is applied, injectable during testing only (i.e. when the testing plugin
+ * is present, typically in the test classpath). It is the testing-only equivalent of the {@link org.seedstack.seed.Bind}
+ * annotation.
+ *
+ * @see org.seedstack.seed.Bind
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
@@ -27,28 +29,12 @@ public @interface ITBind {
     /**
      * If specified, this class will be used as the binding key, meaning that the implementation will be injectable
      * through this class only (from which the implementation must be assignable). If not specified, the
-     * implementation will be bound to itself, meaning that it will be injectable directly.
+     * implementation will be bound to itself, meaning that it will be injectable directly. When this parameter is
+     * specified, a qualifier annotation can optionally be applied on the implementation to define a qualifier key.
      *
      * @return the class to be used as injection key.
      */
     Class<?> from() default Object.class;
-
-    /**
-     * Only applicable when {@link #from()} is specified. Further qualify the key with an annotation, meaning that the
-     * implementation will be injectable through the {@link #from()} class annotated with this annotation.
-     *
-     * @return the injection qualifier (must be meta-annotated with {@link javax.inject.Qualifier}).
-     */
-    Class<? extends Annotation> annotated() default Annotation.class;
-
-    /**
-     * Only applicable when {@link #from()} is specified. Further qualify the key with a name, meaning that the
-     * implementation will be injectable through the {@link #from()} class annotated with {@link javax.inject.Named}
-     * with a corresponding value.
-     *
-     * @return the string qualifying the injection.
-     */
-    String named() default "";
 
     /**
      * If true the binding will be defined as an overriding one, meaning that it will override an identical binding

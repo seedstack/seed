@@ -16,13 +16,10 @@ import org.kametic.specifications.Specification;
 import org.seedstack.seed.core.internal.utils.SpecificationBuilder;
 import org.seedstack.shed.reflect.Classes;
 
-import java.lang.annotation.Annotation;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
-
-import static com.google.common.base.Strings.isNullOrEmpty;
 
 /**
  * Core plugin that configures base package roots and detects diagnostic collectors, dependency providers, Guice modules
@@ -91,17 +88,13 @@ public class CorePlugin extends AbstractSeedPlugin {
                 .forEach(candidate -> BindResolver.INSTANCE.apply(candidate).ifPresent(annotation -> {
                     if (annotation.override()) {
                         overridingBindings.add(new BindingDefinition<>(
-                                (Class<Object>) (annotation.from() == Object.class ? null : annotation.from()),
-                                (annotation.annotated() == Annotation.class ? null : annotation.annotated()),
-                                isNullOrEmpty(annotation.named()) ? null : annotation.named(),
-                                candidate
+                                candidate,
+                                (Class<Object>) (annotation.from() == Object.class ? null : annotation.from())
                         ));
                     } else {
                         bindings.add(new BindingDefinition<>(
-                                (Class<Object>) (annotation.from() == Object.class ? null : annotation.from()),
-                                (annotation.annotated() == Annotation.class ? null : annotation.annotated()),
-                                isNullOrEmpty(annotation.named()) ? null : annotation.named(),
-                                candidate
+                                candidate,
+                                (Class<Object>) (annotation.from() == Object.class ? null : annotation.from())
                         ));
                     }
                 }));

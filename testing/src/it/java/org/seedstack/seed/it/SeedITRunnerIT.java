@@ -23,7 +23,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @RunWith(TestingITRunner.class)
 public class SeedITRunnerIT {
     @Inject
-    Injector injector;
+    private Injector injector;
 
     @Configuration("custom-property")
     private String customConfiguration;

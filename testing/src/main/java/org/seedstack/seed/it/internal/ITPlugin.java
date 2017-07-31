@@ -23,14 +23,11 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.annotation.Annotation;
 import java.nio.file.Files;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
-
-import static com.google.common.base.Strings.isNullOrEmpty;
 
 /**
  * This plugin automatically enable integration tests to be managed by SEED.
@@ -110,17 +107,13 @@ public class ITPlugin extends AbstractSeedPlugin {
                 .forEach(candidate -> ITBindResolver.INSTANCE.apply(candidate).ifPresent(annotation -> {
                     if (annotation.override()) {
                         overridingBindings.add(new BindingDefinition<>(
-                                (Class<Object>) (annotation.from() == Object.class ? null : annotation.from()),
-                                (annotation.annotated() == Annotation.class ? null : annotation.annotated()),
-                                isNullOrEmpty(annotation.named()) ? null : annotation.named(),
-                                candidate
+                                candidate,
+                                (Class<Object>) (annotation.from() == Object.class ? null : annotation.from())
                         ));
                     } else {
                         bindings.add(new BindingDefinition<>(
-                                (Class<Object>) (annotation.from() == Object.class ? null : annotation.from()),
-                                (annotation.annotated() == Annotation.class ? null : annotation.annotated()),
-                                isNullOrEmpty(annotation.named()) ? null : annotation.named(),
-                                candidate
+                                candidate,
+                                (Class<Object>) (annotation.from() == Object.class ? null : annotation.from())
                         ));
                     }
                 }));

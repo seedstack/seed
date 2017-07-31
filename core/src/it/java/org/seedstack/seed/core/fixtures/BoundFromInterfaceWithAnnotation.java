@@ -9,6 +9,7 @@ package org.seedstack.seed.core.fixtures;
 
 import org.seedstack.seed.Bind;
 
-@Bind(from = BoundInterface.class, annotated = Dummy.class)
+@Bind(from = BoundInterface.class)
+@Dummy
 public class BoundFromInterfaceWithAnnotation implements BoundInterface {
 }
