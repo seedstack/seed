@@ -8,13 +8,15 @@
 package org.seedstack.seed.security.internal;
 
 import com.google.inject.AbstractModule;
+import com.google.inject.Binding;
 import com.google.inject.Key;
 import com.google.inject.Module;
 import com.google.inject.PrivateModule;
-import com.google.inject.spi.ConstructorBinding;
 import com.google.inject.spi.Element;
 import com.google.inject.spi.Elements;
 import com.google.inject.spi.PrivateElements;
+import org.apache.commons.lang.ArrayUtils;
+import org.apache.shiro.event.EventBus;
 import org.apache.shiro.mgt.SecurityManager;
 import org.seedstack.seed.SeedException;
 import org.seedstack.seed.security.Scope;
@@ -25,7 +27,10 @@ import java.util.Map;
 
 @SecurityConcern
 class SecurityModule extends AbstractModule {
-    private static final Key<org.apache.shiro.mgt.SecurityManager> SECURITY_MANAGER_KEY = Key.get(SecurityManager.class);
+    private static final Key<?>[] excludedKeys = new Key<?>[]{
+            Key.get(SecurityManager.class),
+            Key.get(EventBus.class)
+    };
     private final Map<String, Class<? extends Scope>> scopeClasses;
     private final SecurityConfigurer securityConfigurer;
     private final boolean elAvailable;
@@ -84,15 +89,17 @@ class SecurityModule extends AbstractModule {
         @Override
         protected void configure() {
             for (Element element : privateElements.getElements()) {
-                if (!(element instanceof ConstructorBinding) || !((ConstructorBinding) element).getKey().equals(SECURITY_MANAGER_KEY)) {
-                    element.applyTo(binder());
+                if (element instanceof Binding && ArrayUtils.contains(excludedKeys, ((Binding) element).getKey())) {
+                    continue;
                 }
+                element.applyTo(binder());
             }
 
             for (Key<?> exposedKey : privateElements.getExposedKeys()) {
-                if (!exposedKey.equals(SECURITY_MANAGER_KEY)) {
-                    expose(exposedKey);
+                if (ArrayUtils.contains(excludedKeys, exposedKey)) {
+                    continue;
                 }
+                expose(exposedKey);
             }
         }
     }

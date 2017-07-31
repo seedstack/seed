@@ -7,18 +7,19 @@
  */
 package org.seedstack.seed.web.security.internal;
 
+import com.google.common.base.Strings;
 import com.google.inject.Key;
 import com.google.inject.Scopes;
 import com.google.inject.name.Names;
 import org.apache.shiro.config.ConfigurationException;
 import org.apache.shiro.guice.web.GuiceShiroFilter;
+import org.apache.shiro.guice.web.ShiroWebModule;
 import org.apache.shiro.util.StringUtils;
 import org.apache.shiro.web.filter.PathMatchingFilter;
 import org.apache.shiro.web.filter.authc.LogoutFilter;
 import org.seedstack.seed.security.internal.SecurityGuiceConfigurer;
 import org.seedstack.seed.web.SecurityFilter;
 import org.seedstack.seed.web.security.WebSecurityConfig;
-import org.seedstack.seed.web.security.internal.shiro.ShiroWebModule;
 import org.seedstack.seed.web.spi.AntiXsrfService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -116,20 +117,24 @@ class WebSecurityModule extends ShiroWebModule {
     }
 
     @SuppressWarnings("unchecked")
-    private FilterKey[] getFilterKeys(List<String> filters) {
-        FilterKey[] keys = new FilterKey[filters.size()];
+    private FilterConfig<?>[] getFilterKeys(List<String> filters) {
+        FilterConfig<?>[] filterConfig = new FilterConfig<?>[filters.size()];
         int index = 0;
         for (String filter : filters) {
             String[] nameConfig = toNameConfigPair(filter);
-            Key<? extends Filter> key = findKey(nameConfig[0]);
-            if (key != null) {
-                keys[index] = new FilterKey(key, nameConfig[1] == null ? "" : nameConfig[1]);
+            Key<? extends Filter> currentKey = findKey(nameConfig[0]);
+            if (currentKey != null) {
+                if (!Strings.isNullOrEmpty(nameConfig[1])) {
+                    filterConfig[index] = filterConfig(currentKey, nameConfig[1]);
+                } else {
+                    filterConfig[index] = filterConfig(currentKey);
+                }
             } else {
                 addError("The filter [" + nameConfig[0] + "] could not be found as a default filter or as a class annotated with SecurityFilter");
             }
             index++;
         }
-        return keys;
+        return filterConfig;
     }
 
     private Key<? extends Filter> findKey(String filterName) {
@@ -151,7 +156,6 @@ class WebSecurityModule extends ShiroWebModule {
      * This method is copied from the same method in Shiro in class DefaultFilterChainManager.
      */
     private String[] toNameConfigPair(String token) throws ConfigurationException {
-
         String[] pair = token.split("\\[", 2);
         String name = StringUtils.clean(pair[0]);
 

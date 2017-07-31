@@ -15,7 +15,7 @@
 * [chg] Overriding an more general class configuration attribute with a more specific null-valued one, completely removes the attribute.
 * [chg] HTTP/2 is enabled by default with Undertow.
 * [chg] Update Guice to [4.1.0](https://github.com/google/guice/wiki/Guice41).
-* [chg] Update Shiro to [1.3.2](https://issues.apache.org/jira/secure/ReleaseNote.jspa?version=12317961&styleName=Text&projectId=12310950).
+* [chg] Update Shiro to [1.4.0](https://issues.apache.org/jira/secure/ReleaseNote.jspa?version=12317961&styleName=Text&projectId=12310950).
 * [chg] Update Jersey to [2.25.1](https://jersey.java.net/release-notes/2.25.1.html).
 * [chg] Update Hibernate validator to [5.4.1.Final](https://github.com/hibernate/hibernate-validator/blob/5.4.1.Final/changelog.txt).
 * [chg] Update Commons CLI to [1.4](https://commons.apache.org/proper/commons-cli/changes-report.html#a1.4).
