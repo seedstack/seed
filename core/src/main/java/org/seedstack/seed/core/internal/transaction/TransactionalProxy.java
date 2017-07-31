@@ -7,6 +7,7 @@
  */
 package org.seedstack.seed.core.internal.transaction;
 
+import org.seedstack.seed.Ignore;
 import org.seedstack.seed.transaction.spi.TransactionalLink;
 
 import java.lang.reflect.InvocationHandler;
@@ -20,6 +21,7 @@ import java.lang.reflect.Proxy;
  *
  * @param <T> the type of the transactional object.
  */
+@Ignore
 public final class TransactionalProxy<T> implements InvocationHandler {
     private final TransactionalLink<T> transactionalLink;
 
@@ -50,6 +52,12 @@ public final class TransactionalProxy<T> implements InvocationHandler {
      */
     @SuppressWarnings("unchecked")
     public static <T> T create(Class<T> clazz, TransactionalLink<T> transactionalLink) {
-        return (T) Proxy.newProxyInstance(TransactionalProxy.class.getClassLoader(), new Class<?>[]{clazz}, new TransactionalProxy<>(transactionalLink));
+        return (T) Proxy.newProxyInstance(TransactionalProxy.class.getClassLoader(), new Class<?>[]{IgnoreAutoCloseable.class, clazz}, new TransactionalProxy<>(transactionalLink));
+    }
+
+    private interface IgnoreAutoCloseable extends AutoCloseable {
+        @Override
+        @Ignore
+        void close() throws Exception;
     }
 }

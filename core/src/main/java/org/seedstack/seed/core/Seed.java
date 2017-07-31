@@ -33,8 +33,8 @@ import org.seedstack.seed.spi.SeedExceptionTranslator;
 import org.seedstack.seed.spi.SeedInitializer;
 import org.seedstack.seed.spi.SeedLauncher;
 import org.seedstack.shed.ClassLoaders;
-import org.seedstack.shed.PriorityUtils;
 import org.seedstack.shed.exception.BaseException;
+import org.seedstack.shed.misc.PriorityUtils;
 import org.seedstack.shed.reflect.Classes;
 import org.seedstack.shed.text.TextTemplate;
 
@@ -52,7 +52,7 @@ import java.util.Scanner;
 import java.util.ServiceLoader;
 import java.util.Set;
 
-import static org.seedstack.shed.PriorityUtils.sortByPriority;
+import static org.seedstack.shed.misc.PriorityUtils.sortByPriority;
 
 /**
  * This class is the Seed framework entry point, which is used create and dispose kernels.

@@ -32,7 +32,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import static org.seedstack.shed.PriorityUtils.sortByPriority;
+import static org.seedstack.shed.misc.PriorityUtils.sortByPriority;
 
 /**
  * This plugin provides support for servlet-based Web applications.

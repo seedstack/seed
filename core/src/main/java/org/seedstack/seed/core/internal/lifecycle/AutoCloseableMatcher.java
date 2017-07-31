@@ -12,7 +12,6 @@ import com.google.inject.Scope;
 import com.google.inject.Scopes;
 import com.google.inject.matcher.AbstractMatcher;
 import com.google.inject.spi.BindingScopingVisitor;
-import org.seedstack.seed.Ignore;
 
 import javax.inject.Singleton;
 import java.lang.annotation.Annotation;
@@ -22,8 +21,8 @@ class AutoCloseableMatcher extends AbstractMatcher<Binding<?>> {
 
     @Override
     public boolean matches(Binding<?> binding) {
-        Class<?> rawType = binding.getKey().getTypeLiteral().getRawType();
-        return !rawType.isAnnotationPresent(Ignore.class) && AutoCloseable.class.isAssignableFrom(rawType) && binding.acceptScopingVisitor(autoCloseableScopingVisitor);
+        Class<?> keyRawType = binding.getKey().getTypeLiteral().getRawType();
+        return AutoCloseable.class.isAssignableFrom(keyRawType) && binding.acceptScopingVisitor(autoCloseableScopingVisitor);
     }
 
     private static class AutoCloseableScopingVisitor implements BindingScopingVisitor<Boolean> {

@@ -36,7 +36,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.seedstack.shed.PriorityUtils.priorityOf;
+import static org.seedstack.shed.misc.PriorityUtils.priorityOf;
 
 /**
  * This plugin detects {@link WebServlet}, {@link WebFilter} and {@link WebListener} annotated classes and provides their

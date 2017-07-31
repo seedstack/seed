@@ -10,7 +10,6 @@ package org.seedstack.seed.core.internal.configuration;
 import com.google.common.base.Joiner;
 import com.google.inject.MembersInjector;
 import org.seedstack.coffig.Coffig;
-import org.seedstack.coffig.util.Utils;
 import org.seedstack.seed.Configuration;
 import org.seedstack.seed.SeedException;
 import org.seedstack.seed.core.internal.CoreErrorCode;
@@ -63,7 +62,7 @@ class ConfigurationMembersInjector<T> implements MembersInjector<T> {
     }
 
     private String computeConfigKey(Configuration configuration, Class<?> fieldType) {
-        return configuration.value().length > 0 ? Joiner.on(".").join(configuration.value()) : Utils.resolvePath(fieldType);
+        return configuration.value().length > 0 ? Joiner.on(".").join(configuration.value()) : Coffig.pathOf(fieldType);
     }
 
     static class ConfigurableField {

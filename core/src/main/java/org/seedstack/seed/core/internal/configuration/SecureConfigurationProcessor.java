@@ -7,9 +7,9 @@
  */
 package org.seedstack.seed.core.internal.configuration;
 
-import org.seedstack.coffig.NamedNode;
 import org.seedstack.coffig.TreeNode;
 import org.seedstack.coffig.node.MapNode;
+import org.seedstack.coffig.node.NamedNode;
 import org.seedstack.coffig.spi.ConfigurationProcessor;
 
 import java.util.Locale;

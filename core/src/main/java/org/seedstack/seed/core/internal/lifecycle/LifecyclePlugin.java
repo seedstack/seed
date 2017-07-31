@@ -11,14 +11,17 @@ import com.google.common.collect.Sets;
 import io.nuun.kernel.api.plugin.InitState;
 import io.nuun.kernel.api.plugin.context.InitContext;
 import io.nuun.kernel.api.plugin.request.ClasspathScanRequest;
+import org.seedstack.seed.Ignore;
 import org.seedstack.seed.LifecycleListener;
 import org.seedstack.seed.SeedException;
 import org.seedstack.seed.core.internal.AbstractSeedPlugin;
 import org.seedstack.seed.core.internal.CoreErrorCode;
+import org.seedstack.shed.reflect.Annotations;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
+import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
@@ -94,8 +97,17 @@ public class LifecyclePlugin extends AbstractSeedPlugin implements LifecycleMana
 
     @Override
     public void registerAutoCloseable(AutoCloseable autoCloseable) {
-        if (autoCloseableObjects.add(autoCloseable)) {
-            LOGGER.info("Registered auto-closeable {} for closing at shutdown", autoCloseable.getClass().getName());
+        try {
+            Method closeMethod = autoCloseable.getClass().getMethod("close");
+            if (!Annotations.on(closeMethod).traversingOverriddenMembers().find(Ignore.class).isPresent()) {
+                if (autoCloseableObjects.add(autoCloseable)) {
+                    LOGGER.info("Registered auto-closeable {} for closing at shutdown", autoCloseable.getClass().getName());
+                }
+            } else {
+                LOGGER.debug("Ignored registration of auto-closeable {} for closing at shutdown", autoCloseable.getClass().getName());
+            }
+        } catch (NoSuchMethodException e) {
+            throw SeedException.wrap(e, CoreErrorCode.UNEXPECTED_EXCEPTION);
         }
     }
 }
