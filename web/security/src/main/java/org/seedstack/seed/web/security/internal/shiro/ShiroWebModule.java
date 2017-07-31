@@ -96,6 +96,7 @@ public abstract class ShiroWebModule extends ShiroModule {
         bindWebEnvironment(bind(WebEnvironment.class));
         bind(GuiceShiroFilter.class).asEagerSingleton();
         expose(GuiceShiroFilter.class);
+        expose(WebSecurityManager.class);
 
         this.configureShiroWeb();
 
