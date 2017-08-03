@@ -9,7 +9,6 @@ package org.seedstack.seed.core.internal.configuration.tool;
 
 import org.seedstack.coffig.Config;
 import org.seedstack.coffig.SingleValue;
-import org.seedstack.coffig.util.Utils;
 import org.seedstack.shed.reflect.Annotations;
 
 import javax.validation.constraints.NotNull;
@@ -20,12 +19,17 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 import java.util.SortedMap;
 import java.util.TreeMap;
+
+import static org.seedstack.shed.reflect.Classes.instantiateDefault;
+import static org.seedstack.shed.reflect.ReflectUtils.makeAccessible;
+import static org.seedstack.shed.reflect.Types.simpleNameOf;
 
 class Node implements Comparable<Node> {
     private final String name;
@@ -146,7 +150,7 @@ class Node implements Comparable<Node> {
     }
 
     private Map<String, PropertyInfo> buildPropertyInfo() {
-        Map<String, PropertyInfo> result = new HashMap<>();
+        Map<String, PropertyInfo> result = new LinkedHashMap<>();
 
         ResourceBundle bundle = null;
         try {
@@ -155,11 +159,11 @@ class Node implements Comparable<Node> {
             // ignore
         }
 
-        Object defaultInstance = null;
+        Object defaultInstance;
         try {
-            defaultInstance = Utils.instantiateDefault(configClass);
+            defaultInstance = instantiateDefault(configClass);
         } catch (Exception e) {
-            // ignore
+            defaultInstance = null;
         }
 
         for (Field field : configClass.getDeclaredFields()) {
@@ -170,6 +174,8 @@ class Node implements Comparable<Node> {
                 continue;
             }
 
+            makeAccessible(field);
+
             PropertyInfo propertyInfo = new PropertyInfo();
             Config configAnnotation = field.getAnnotation(Config.class);
             String name;
@@ -178,12 +184,11 @@ class Node implements Comparable<Node> {
             } else {
                 name = field.getName();
             }
-            field.setAccessible(true);
 
             propertyInfo.setName(name);
             propertyInfo.setShortDescription(getMessage(bundle, "No description.", buildKey(name)));
             propertyInfo.setLongDescription(getMessage(bundle, null, buildKey(name, "long")));
-            propertyInfo.setType(Utils.getSimpleTypeName(field.getGenericType()));
+            propertyInfo.setType(simpleNameOf(field.getGenericType()));
             propertyInfo.setSingleValue(field.isAnnotationPresent(SingleValue.class));
             if (defaultInstance != null) {
                 try {

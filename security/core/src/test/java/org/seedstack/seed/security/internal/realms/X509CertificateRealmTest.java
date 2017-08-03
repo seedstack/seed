@@ -59,7 +59,7 @@ public class X509CertificateRealmTest {
     @Test
     public void getAuthenticationInfo_should_return_authentication_info() {
         String id = "a123456";
-        AuthenticationToken token = new X509CertificateToken(new X509Certificate[] { x509Certificate });
+        AuthenticationToken token = new X509CertificateToken(new X509Certificate[]{x509Certificate});
         X500Principal x500Principal = new X500Principal("CN=John Doe, OU=SI, O=PSA, UID=" + id + ", C=foo");
         when(x509Certificate.getSubjectX500Principal()).thenReturn(x500Principal);
         AuthenticationInfo authInfo = underTest.getAuthenticationInfo(token);
@@ -76,13 +76,13 @@ public class X509CertificateRealmTest {
 
     @Test(expected = IncorrectCredentialsException.class)
     public void getAuthenticationInfo_should_throw_exception_if_token_empty() {
-        X509CertificateToken token = new X509CertificateToken(null);
+        X509CertificateToken token = new X509CertificateToken(new X509Certificate[0]);
         underTest.getAuthenticationInfo(token);
     }
 
     @Test
     public void getAuthenticationInfo_no_uid() {
-        AuthenticationToken token = new X509CertificateToken(new X509Certificate[] { x509Certificate });
+        AuthenticationToken token = new X509CertificateToken(new X509Certificate[]{x509Certificate});
         X500Principal x500Principal = new X500Principal("CN=John Doe, OU=SI, O=PSA");
         when(x509Certificate.getSubjectX500Principal()).thenReturn(x500Principal);
         AuthenticationInfo authInfo = underTest.getAuthenticationInfo(token);
@@ -103,12 +103,12 @@ public class X509CertificateRealmTest {
         X509Certificate x509Certificate2 = mock(X509Certificate.class);
         when(x509Certificate2.getIssuerX500Principal()).thenReturn(x500Principal2);
         certificates[1] = x509Certificate2;
-        
+
         X509CertificatePrincipalProvider x509CertificatePp = new X509CertificatePrincipalProvider(certificates);
         Collection<PrincipalProvider<?>> list = new ArrayList<>();
         list.add(x509CertificatePp);
         Set<String> roles = underTest.getRealmRoles(Principals.identityPrincipal("uid"), list);
-        
+
         assertThat(roles).containsOnly(cn1, cn2);
     }
 }

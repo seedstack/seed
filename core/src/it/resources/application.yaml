@@ -13,10 +13,14 @@ classes:
       seed:
         core:
           key2: value2
+          fixtures:
+            Service:
+              key2:
           ConfigurationIT:
             key2: value2bis
             key3: value3
-logging: WARN
+logging:
+  level: WARN
 application:
   id: seed-it
   basePackages: some.other.pkg
@@ -30,7 +34,8 @@ index1: 1
 someEnum: FOO
 someShorts: [ 2, 3, 4 ]
 anInt: 5
-empty:
+empty: ""
+null:
 debugMode: off
 debugMode<debug>: on
 testProperty<dev>: devValue

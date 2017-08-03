@@ -10,11 +10,11 @@ package org.seedstack.seed.cli.internal;
 import io.nuun.kernel.api.plugin.InitState;
 import io.nuun.kernel.api.plugin.context.InitContext;
 import io.nuun.kernel.api.plugin.request.ClasspathScanRequest;
-import io.nuun.kernel.core.AbstractPlugin;
 import org.seedstack.seed.cli.CliCommand;
+import org.seedstack.seed.cli.CliContext;
 import org.seedstack.seed.cli.CommandLineHandler;
-import org.seedstack.seed.cli.spi.CliContext;
 import org.seedstack.seed.core.SeedRuntime;
+import org.seedstack.seed.core.internal.AbstractSeedPlugin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,7 +26,7 @@ import java.util.Map;
  * This plugin enables to run {@link CommandLineHandler} through
  * {@link CliLauncher}.
  */
-public class CommandLinePlugin extends AbstractPlugin {
+public class CommandLinePlugin extends AbstractSeedPlugin {
     private static final Logger LOGGER = LoggerFactory.getLogger(CommandLinePlugin.class);
     private final Map<String, Class<? extends CommandLineHandler>> cliHandlers = new HashMap<>();
 
@@ -38,8 +38,8 @@ public class CommandLinePlugin extends AbstractPlugin {
     }
 
     @Override
-    public void provideContainerContext(Object containerContext) {
-        cliContext = ((SeedRuntime) containerContext).contextAs(CliContext.class);
+    public void setup(SeedRuntime seedRuntime) {
+        cliContext = seedRuntime.contextAs(CliContext.class);
     }
 
     @Override
@@ -49,7 +49,7 @@ public class CommandLinePlugin extends AbstractPlugin {
 
     @Override
     @SuppressWarnings("unchecked")
-    public InitState init(InitContext initContext) {
+    public InitState initialize(InitContext initContext) {
         if (cliContext == null) {
             LOGGER.info("No command line environment detected, CLI support disabled");
             return InitState.INITIALIZED;

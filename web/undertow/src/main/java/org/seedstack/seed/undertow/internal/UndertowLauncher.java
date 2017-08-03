@@ -13,18 +13,17 @@ import io.undertow.Undertow;
 import io.undertow.servlet.api.DeploymentManager;
 import io.undertow.servlet.spec.ServletContextImpl;
 import org.seedstack.coffig.Coffig;
+import org.seedstack.seed.SeedException;
 import org.seedstack.seed.core.Seed;
 import org.seedstack.seed.spi.SeedLauncher;
 import org.seedstack.seed.web.WebConfig;
 import org.seedstack.seed.web.internal.ServletContextUtils;
-import org.seedstack.seed.SeedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 
 public class UndertowLauncher implements SeedLauncher {
     private static final Logger LOGGER = LoggerFactory.getLogger(UndertowLauncher.class);
-
     private DeploymentManager deploymentManager;
     private Undertow undertow;
 
@@ -41,20 +40,14 @@ public class UndertowLauncher implements SeedLauncher {
         UndertowPlugin undertowPlugin = getUndertowPlugin(kernel);
         WebConfig.ServerConfig serverConfig = undertowPlugin.getServerConfig();
 
-        try {
-            undertow = new ServerFactory().createServer(
-                    deploymentManager,
-                    serverConfig,
-                    undertowPlugin.getUndertowConfig(),
-                    undertowPlugin.getSslProvider()
-            );
-            undertow.start();
-            LOGGER.info("Undertow Web server listening on {}:{}", serverConfig.getHost(), serverConfig.getPort());
-        } catch (SeedException e) {
-            throw e;
-        } catch (Exception e) {
-            throw SeedException.wrap(e, UndertowErrorCode.UNEXPECTED_EXCEPTION);
-        }
+        undertow = new ServerFactory().createServer(
+                deploymentManager,
+                serverConfig,
+                undertowPlugin.getUndertowConfig(),
+                undertowPlugin.getSslProvider()
+        );
+        undertow.start();
+        LOGGER.info("Undertow Web server listening on {}:{}", serverConfig.getHost(), serverConfig.getPort());
     }
 
     private UndertowPlugin getUndertowPlugin(Kernel kernel) {
@@ -71,17 +64,13 @@ public class UndertowLauncher implements SeedLauncher {
 
     @Override
     public void shutdown() throws Exception {
-        try {
-            if (undertow != null) {
-                undertow.stop();
-                LOGGER.info("Undertow Web server stopped");
-            }
-            if (deploymentManager != null) {
-                // should done at last for diagnostic purpose
-                deploymentManager.undeploy();
-            }
-        } catch (Exception e) {
-            throw SeedException.wrap(e, UndertowErrorCode.UNEXPECTED_EXCEPTION);
+        if (undertow != null) {
+            undertow.stop();
+            LOGGER.info("Undertow Web server stopped");
+        }
+        if (deploymentManager != null) {
+            // should done at last for diagnostic purpose
+            deploymentManager.undeploy();
         }
     }
 }

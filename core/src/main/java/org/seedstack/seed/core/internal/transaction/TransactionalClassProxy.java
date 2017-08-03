@@ -9,8 +9,9 @@ package org.seedstack.seed.core.internal.transaction;
 
 import javassist.util.proxy.MethodHandler;
 import javassist.util.proxy.ProxyFactory;
-import org.seedstack.seed.transaction.spi.TransactionalLink;
+import org.seedstack.seed.Ignore;
 import org.seedstack.seed.SeedException;
+import org.seedstack.seed.transaction.spi.TransactionalLink;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -51,10 +52,17 @@ public class TransactionalClassProxy<T> implements MethodHandler {
         try {
             ProxyFactory factory = new ProxyFactory();
             factory.setSuperclass(clazz);
+            factory.setInterfaces(new Class<?>[]{IgnoreAutoCloseable.class});
             factory.setFilter(method -> !method.getDeclaringClass().equals(Object.class));
             return (T) factory.create(new Class<?>[0], new Object[0], new TransactionalClassProxy<>(transactionalLink));
         } catch (Exception e) {
             throw SeedException.wrap(e, TransactionErrorCode.UNABLE_TO_CREATE_TRANSACTIONAL_PROXY).put("class", clazz.getName());
         }
+    }
+
+    public interface IgnoreAutoCloseable extends AutoCloseable {
+        @Override
+        @Ignore
+        void close() throws Exception;
     }
 }

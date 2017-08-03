@@ -73,6 +73,7 @@ public class GuiceComponentProvider implements ComponentProvider {
         return component.isAnnotationPresent(Path.class) || component.isAnnotationPresent(Provider.class);
     }
 
+    @SuppressWarnings("unchecked")
     private void registerBindingsInHK2(Class<?> componentClass, Set<Class<?>> providerContracts) {
         ServiceBindingBuilder componentBindingBuilder = getBindingBuilder(componentClass);
         //noinspection unchecked

@@ -40,28 +40,22 @@ class SecurityInternalModule extends PrivateModule {
     @SuppressWarnings({"unchecked", "rawtypes"})
     @Override
     public void configure() {
-        bind(SecurityConfig.class).toInstance(securityConfigurer.getSecurityConfiguration());
-
         bind(ShiroRealmAdapter.class);
-
-        bind(new TypeLiteral<Map<String, Class<? extends Scope>>>() {
-        }).toInstance(scopeClasses);
-
-        bind(SecuritySupport.class).to(ShiroSecuritySupport.class);
-
+        bind(new ScopeClassesTypeLiteral()).toInstance(scopeClasses);
         bindRealms();
+        bindPrincipalCustomizers();
+        bind(SecurityConfig.class).toInstance(securityConfigurer.getSecurityConfiguration());
+        expose(SecurityConfig.class);
+        bind(SecuritySupport.class).to(ShiroSecuritySupport.class);
+        expose(SecuritySupport.class);
+    }
 
+    private void bindPrincipalCustomizers() {
         Multibinder<PrincipalCustomizer> principalCustomizers = Multibinder.newSetBinder(binder(), PrincipalCustomizer.class);
         for (Class<? extends PrincipalCustomizer> customizerClass : securityConfigurer.getPrincipalCustomizers()) {
             principalCustomizers.addBinding().to(customizerClass);
         }
-
-        expose(new TypeLiteral<Set<Realm>>() {
-        });
-        expose(new TypeLiteral<Set<PrincipalCustomizer>>() {
-        });
-        expose(SecuritySupport.class);
-        expose(SecurityConfig.class);
+        expose(new PrincipalCustomizersTypeLiteral());
     }
 
     private void bindRealms() {
@@ -75,10 +69,9 @@ class SecurityInternalModule extends PrivateModule {
             bind(RoleMapping.class).annotatedWith(Names.named(realm.getName() + "-role-mapping")).to(realm.getRoleMappingClass());
         }
 
-        bind(new TypeLiteral<Set<Class<? extends org.seedstack.seed.security.Realm>>>() {
-        }).toInstance(apiRealmClasses);
-        bind(new TypeLiteral<Set<Realm>>() {
-        }).toProvider(new RealmProvider(securityConfigurer.getSecurityConfiguration())).asEagerSingleton();
+        bind(new RealmClassesTypeLiteral()).toInstance(apiRealmClasses);
+        bind(new RealmsTypeLiteral()).toProvider(new RealmProvider(securityConfigurer.getSecurityConfiguration())).asEagerSingleton();
+        expose(new RealmsTypeLiteral());
     }
 
     static class RealmProvider implements Provider<Set<Realm>> {
@@ -126,5 +119,17 @@ class SecurityInternalModule extends PrivateModule {
             }
             return realms;
         }
+    }
+
+    private static class ScopeClassesTypeLiteral extends TypeLiteral<Map<String, Class<? extends Scope>>> {
+    }
+
+    private static class PrincipalCustomizersTypeLiteral extends TypeLiteral<Set<PrincipalCustomizer>> {
+    }
+
+    private static class RealmClassesTypeLiteral extends TypeLiteral<Set<Class<? extends org.seedstack.seed.security.Realm>>> {
+    }
+
+    private static class RealmsTypeLiteral extends TypeLiteral<Set<Realm>> {
     }
 }

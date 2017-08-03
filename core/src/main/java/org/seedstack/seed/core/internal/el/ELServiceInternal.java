@@ -32,23 +32,20 @@ class ELServiceInternal implements ELService {
     @Override
     public ELContextProvider withExpression(String el, Class returnType) {
         checkArgument(!Strings.isNullOrEmpty(el), "An expression is required");
-        checkNotNull(returnType, "The return type must not be null");
-        return new ELInstance(expressionFactory, el, returnType);
+        return new ELInstance(expressionFactory, el, checkNotNull(returnType, "The return type must not be null"));
     }
 
     @Override
     public ValueExpressionProvider withValueExpression(ValueExpression valueExpression) {
-        checkNotNull(valueExpression, "The value expression must not be null");
         ELInstance elInstance = new ELInstance(expressionFactory);
-        elInstance.setValueExpression(valueExpression);
+        elInstance.setValueExpression(checkNotNull(valueExpression, "The value expression must not be null"));
         return elInstance;
     }
 
     @Override
     public MethodExpressionProvider withMethodExpression(MethodExpression methodExpression) {
-        checkNotNull(methodExpression, "The method expression must not be null");
         ELInstance elInstance = new ELInstance(expressionFactory);
-        elInstance.setMethodExpression(methodExpression);
+        elInstance.setMethodExpression(checkNotNull(methodExpression, "The method expression must not be null"));
         return elInstance;
     }
 
@@ -72,8 +69,7 @@ class ELServiceInternal implements ELService {
 
         @Override
         public ELExpressionProvider withContext(ELContext elContext) {
-            checkNotNull(elContext, "The context must not be null");
-            context = elContext;
+            context = checkNotNull(elContext, "The context must not be null");
             return this;
         }
 
@@ -109,7 +105,7 @@ class ELServiceInternal implements ELService {
         public Object eval() {
             Object value;
             try {
-                value = valueExpression.getValue(context);
+                value = checkNotNull(valueExpression, "Not a value expression: cannot evaluate").getValue(context);
             } catch (PropertyNotFoundException e) {
                 throw SeedException.wrap(e, ExpressionLanguageErrorCode.PROPERTY_NOT_FOUND).put("el", el);
             } catch (ELException e) {
@@ -122,7 +118,7 @@ class ELServiceInternal implements ELService {
         public Object invoke(Object[] args) {
             Object value;
             try {
-                value = methodExpression.invoke(context, args);
+                value = checkNotNull(methodExpression, "Not a method expression: cannot invoke").invoke(context, args);
             } catch (PropertyNotFoundException e) {
                 throw SeedException.wrap(e, ExpressionLanguageErrorCode.PROPERTY_NOT_FOUND).put("el", el);
             } catch (ELException e) {

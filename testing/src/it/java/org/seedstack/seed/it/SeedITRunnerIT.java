@@ -14,7 +14,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.seedstack.seed.Application;
 import org.seedstack.seed.Configuration;
-import org.seedstack.seed.it.fixtures.BoundThroughITInstalledModule;
 import org.seedstack.seed.it.fixtures.ITBound;
 
 import javax.inject.Inject;
@@ -24,7 +23,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @RunWith(TestingITRunner.class)
 public class SeedITRunnerIT {
     @Inject
-    Injector injector;
+    private Injector injector;
 
     @Configuration("custom-property")
     private String customConfiguration;
@@ -87,11 +86,6 @@ public class SeedITRunnerIT {
     @Test
     public void it_bound_classes_are_bound() {
         assertThat(injector.getInstance(ITBound.class)).isNotNull();
-    }
-
-    @Test
-    public void it_install_modules_are_installed() {
-        assertThat(injector.getInstance(BoundThroughITInstalledModule.class)).isNotNull();
     }
 
     @Test

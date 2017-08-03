@@ -30,8 +30,8 @@ class DataModule extends PrivateModule {
 
     @Override
     protected void configure() {
-        bind(new TypeLiteral<Map<String, Map<String, DataExporterDefinition<Object>>>>() {}).toInstance(allDataExporters);
-        bind(new TypeLiteral<Map<String, Map<String, DataImporterDefinition<Object>>>>() {}).toInstance(allDataImporters);
+        bind(new DataExportersTypeLiteral()).toInstance(allDataExporters);
+        bind(new DataImportersTypeLiteral()).toInstance(allDataImporters);
 
         bind(DataManager.class).to(DataManagerImpl.class);
 
@@ -50,5 +50,11 @@ class DataModule extends PrivateModule {
         }
 
         expose(DataManager.class);
+    }
+
+    private static class DataExportersTypeLiteral extends TypeLiteral<Map<String, Map<String, DataExporterDefinition<Object>>>> {
+    }
+
+    private static class DataImportersTypeLiteral extends TypeLiteral<Map<String, Map<String, DataImporterDefinition<Object>>>> {
     }
 }

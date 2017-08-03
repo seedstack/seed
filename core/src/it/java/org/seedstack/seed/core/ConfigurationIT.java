@@ -13,14 +13,16 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.seedstack.coffig.Config;
-import org.seedstack.coffig.ConfigurationException;
 import org.seedstack.coffig.SingleValue;
+import org.seedstack.coffig.internal.ConfigurationException;
 import org.seedstack.seed.Application;
 import org.seedstack.seed.ApplicationConfig;
 import org.seedstack.seed.ClassConfiguration;
 import org.seedstack.seed.Configuration;
+import org.seedstack.seed.core.fixtures.Service;
 import org.seedstack.seed.core.fixtures.SomeEnum;
 import org.seedstack.seed.core.rules.SeedITRule;
+import some.other.pkg.ForeignClass;
 
 import javax.inject.Inject;
 
@@ -148,10 +150,21 @@ public class ConfigurationIT {
         assertThat(holder.application.getConfiguration().getMandatory(String.class, "empty")).isEqualTo("");
     }
 
+    @Test
+    public void non_existent_configuration_values_are_empty() {
+        assertThat(injector.getInstance(Application.class).getConfiguration().getOptional(Object.class, "nonExistent")).isEmpty();
+        assertThat(injector.getInstance(Application.class).getConfiguration().getOptional(String.class, "nonExistent")).isEmpty();
+    }
+
+    @Test
+    public void null_configuration_values_are_empty() {
+        assertThat(injector.getInstance(Application.class).getConfiguration().getOptional(Object.class, "null")).isEmpty();
+        assertThat(injector.getInstance(Application.class).getConfiguration().getOptional(String.class, "null")).isEmpty();
+    }
+
     @Test(expected = ConfigurationException.class)
     public void non_existent_configuration_values_throws_exception() {
-        Holder holder = injector.getInstance(Holder.class);
-        holder.application.getConfiguration().getMandatory(String.class, "nonExistent");
+        injector.getInstance(Application.class).getConfiguration().getMandatory(Object.class, "nonExistent");
     }
 
     @Test
@@ -178,6 +191,21 @@ public class ConfigurationIT {
         assertThat(configuration.get("key1")).isEqualTo("value1");
         assertThat(configuration.get("key2")).isEqualTo("value2bis");
         assertThat(configuration.get("key3")).isEqualTo("value3");
+    }
+
+    @Test
+    public void class_without_configuration() {
+        Application application = injector.getInstance(Application.class);
+        ClassConfiguration<ForeignClass> configuration = application.getConfiguration(ForeignClass.class);
+        assertThat(configuration.entrySet()).isEmpty();
+    }
+
+    @Test
+    public void class_with_null_override_configuration() {
+        Application application = injector.getInstance(Application.class);
+        ClassConfiguration<Service> configuration = application.getConfiguration(Service.class);
+        assertThat(configuration.keySet()).containsExactly("key1");
+        assertThat(configuration.get("key1")).isEqualTo("value1");
     }
 
     @Test

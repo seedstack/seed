@@ -20,11 +20,14 @@ import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+
+import static org.seedstack.shed.reflect.ReflectUtils.makeAccessible;
 
 /**
  * Resolve the role mappings from a Configuration:
@@ -55,25 +58,9 @@ import java.util.Set;
  * local role within the FR scope only.
  */
 public class ConfigurationRoleMapping implements RoleMapping {
-
-    /**
-     * wildcard used to give role to every user
-     */
     private final static String GLOBAL_WILDCARD = "*";
-
-    /**
-     * logger
-     */
     private static final Logger LOGGER = LoggerFactory.getLogger(ConfigurationRoleMapping.class);
-
-    /**
-     * map : role = mapped roles
-     */
     private final Map<String, Set<String>> map = new HashMap<>();
-
-    /**
-     * roles given to every user
-     */
     private final Set<String> everybodyRoles = new HashSet<>();
 
     @Inject
@@ -95,26 +82,26 @@ public class ConfigurationRoleMapping implements RoleMapping {
             } else {
                 // maybe a scoped auth
                 for (Map.Entry<String, Class<? extends Scope>> scopeClass : scopeClasses.entrySet()) {
-                    for (String mapKey : map.keySet()) {
+                    for (Map.Entry<String, Set<String>> entry : map.entrySet()) {
+                        String mapKey = entry.getKey();
                         String wildcard = String.format("{%s}", scopeClass.getKey());
 
 
                         if (mapKey.contains(wildcard) && auth.matches(convertToRegex(mapKey, wildcard))) {
                             String scopeValue = findScope(wildcard, mapKey, auth);
-                            Set<String> foundRoleNames = map.get(mapKey);
 
-                            for (String foundRoleName : foundRoleNames) {
-                                Role currentRole = getOrCreateRoleInMap(foundRoleName, roleMap);
+                            for (String foundRoleName : entry.getValue()) {
                                 Scope scope;
 
                                 try {
                                     Constructor<? extends Scope> constructor = scopeClass.getValue().getConstructor(String.class);
+                                    makeAccessible(constructor);
                                     scope = constructor.newInstance(scopeValue);
-                                } catch (Exception e) {
+                                } catch (IllegalAccessException | InstantiationException | InvocationTargetException | NoSuchMethodException e) {
                                     throw SeedException.wrap(e, SecurityErrorCode.UNABLE_TO_CREATE_SCOPE).put("scopeName", scopeClass.getValue().getName());
                                 }
 
-                                currentRole.getScopes().add(scope);
+                                getOrCreateRoleInMap(foundRoleName, roleMap).getScopes().add(scope);
                             }
                         }
                     }

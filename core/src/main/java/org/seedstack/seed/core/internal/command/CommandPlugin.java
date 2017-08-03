@@ -14,6 +14,7 @@ import org.seedstack.seed.core.internal.AbstractSeedPlugin;
 import org.seedstack.seed.command.Argument;
 import org.seedstack.seed.command.Command;
 import org.seedstack.seed.command.Option;
+import org.seedstack.shed.reflect.ReflectUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,6 +23,8 @@ import java.lang.reflect.Field;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+
+import static org.seedstack.shed.reflect.ReflectUtils.makeAccessible;
 
 /**
  * Nuun plugin in charge of collecting all commands definitions.
@@ -51,7 +54,7 @@ public class CommandPlugin extends AbstractSeedPlugin {
                         Argument argumentAnnotation = field.getAnnotation(Argument.class);
                         Option optionAnnotation = field.getAnnotation(Option.class);
 
-                        field.setAccessible(true);
+                        makeAccessible(field);
 
                         if (argumentAnnotation != null) {
                             commandDefinition.addArgumentField(argumentAnnotation, field);

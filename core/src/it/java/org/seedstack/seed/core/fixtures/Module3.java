@@ -16,10 +16,11 @@ import org.seedstack.seed.Install;
 @Install
 class Module3 extends AbstractModule {
 
-	@Override
-	protected void configure() {
-		bind(Service3.class).toProvider(Providers.of(null));
-        bind(Key.get(Service.class, Names.named("Service3"))).to(Key.get(Service1.class));
-	}
+    @Override
+    protected void configure() {
+        bind(Service3.class).toProvider(Providers.of(null));
+        bind(Key.get(Service.class, Names.named("Service3Bis"))).to(Key.get(Service1.class));
+        bind(Key.get(Service.class, Names.named("Overriding"))).to(Key.get(Service1.class));
+    }
 
 }

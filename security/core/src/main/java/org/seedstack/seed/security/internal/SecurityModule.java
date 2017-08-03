@@ -8,25 +8,29 @@
 package org.seedstack.seed.security.internal;
 
 import com.google.inject.AbstractModule;
+import com.google.inject.Binding;
 import com.google.inject.Key;
 import com.google.inject.Module;
 import com.google.inject.PrivateModule;
-import com.google.inject.spi.ConstructorBinding;
 import com.google.inject.spi.Element;
 import com.google.inject.spi.Elements;
 import com.google.inject.spi.PrivateElements;
+import org.apache.commons.lang.ArrayUtils;
+import org.apache.shiro.event.EventBus;
 import org.apache.shiro.mgt.SecurityManager;
 import org.seedstack.seed.SeedException;
 import org.seedstack.seed.security.Scope;
 import org.seedstack.seed.security.internal.securityexpr.SecurityExpressionModule;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.Map;
 
 @SecurityConcern
 class SecurityModule extends AbstractModule {
-    private static final Key<org.apache.shiro.mgt.SecurityManager> SECURITY_MANAGER_KEY = Key.get(SecurityManager.class);
+    private static final Key<?>[] excludedKeys = new Key<?>[]{
+            Key.get(SecurityManager.class),
+            Key.get(EventBus.class)
+    };
     private final Map<String, Class<? extends Scope>> scopeClasses;
     private final SecurityConfigurer securityConfigurer;
     private final boolean elAvailable;
@@ -72,25 +76,31 @@ class SecurityModule extends AbstractModule {
     }
 
     private Module removeSecurityManager(Module module) {
-        List<Element> elements = Elements.getElements(module);
-        // ShiroModule is only a private module
-        final PrivateElements privateElements = (PrivateElements) elements.iterator().next();
+        return new ModuleWithoutSecurityManager((PrivateElements) Elements.getElements(module).iterator().next());
+    }
 
-        return new PrivateModule() {
-            @Override
-            protected void configure() {
-                for (Element element : privateElements.getElements()) {
-                    if (!(element instanceof ConstructorBinding) || !((ConstructorBinding) element).getKey().equals(SECURITY_MANAGER_KEY)) {
-                        element.applyTo(binder());
-                    }
-                }
+    private static class ModuleWithoutSecurityManager extends PrivateModule {
+        private final PrivateElements privateElements;
 
-                for (Key<?> exposedKey : privateElements.getExposedKeys()) {
-                    if (!exposedKey.equals(SECURITY_MANAGER_KEY)) {
-                        expose(exposedKey);
-                    }
+        private ModuleWithoutSecurityManager(PrivateElements privateElements) {
+            this.privateElements = privateElements;
+        }
+
+        @Override
+        protected void configure() {
+            for (Element element : privateElements.getElements()) {
+                if (element instanceof Binding && ArrayUtils.contains(excludedKeys, ((Binding) element).getKey())) {
+                    continue;
                 }
+                element.applyTo(binder());
             }
-        };
+
+            for (Key<?> exposedKey : privateElements.getExposedKeys()) {
+                if (ArrayUtils.contains(excludedKeys, exposedKey)) {
+                    continue;
+                }
+                expose(exposedKey);
+            }
+        }
     }
 }

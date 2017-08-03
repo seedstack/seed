@@ -1,3 +1,26 @@
+# Version 3.3.0 (2017-07-31)
+
+* [new] Print a default banner at startup in case of missing custom `banner.txt`.
+* [new] Add `application.colorOuput` configuration property to force the color output mode (AUTODETECT, PASSTHROUGH, ENABLE, DISABLE).
+* [new] Any singleton implementing `AutoCloseable` will have its `close()` method invoked at application shutdown (can be ignored with @Ignore).
+* [new] Overriding Guice modules can be installed by using `@Install(override = true)`.
+* [new] The `@Bind` annotation allows to easily define arbitrary bindings by annotating implementations.  
+* [new] The `@ITBind` and `@ITInstall` annotations have been updated to allow the same options as `@Bind` and `@Install`.  
+* [new] Can now read transaction metadata from JTA 1.2 `@Transactional` annotation.  
+* [new] Web session tracking mode is now set to COOKIE by default (a `web.sessionTrackingMode` configuration option allows to change it).
+* [new] Add `security.web.successUrl` and `security.web.logoutUrl` configuration options to configure redirection after, respectively, successful login and logout.
+* [new] Add `security.web.form` configuration object to configure form-based authentication.
+* [brk] Deprecated `expand()` method of `org.seedstack.seed.rest.hal.Link` has been removed (use getHref() instead).
+* [fix] Avoid NullPointerException when an exception occurs in a `NOT_SUPPORTED` local transaction.
+* [chg] Overriding an more general class configuration attribute with a more specific null-valued one, completely removes the attribute.
+* [chg] HTTP/2 is enabled by default with Undertow.
+* [chg] Update Guice to [4.1.0](https://github.com/google/guice/wiki/Guice41).
+* [chg] Update Shiro to [1.4.0](https://issues.apache.org/jira/secure/ReleaseNote.jspa?projectId=12310950&version=12338814).
+* [chg] Update Jersey to [2.25.1](https://jersey.java.net/release-notes/2.25.1.html).
+* [chg] Update Hibernate validator to [5.4.1.Final](https://github.com/hibernate/hibernate-validator/blob/5.4.1.Final/changelog.txt).
+* [chg] Update Commons CLI to [1.4](https://commons.apache.org/proper/commons-cli/changes-report.html#a1.4).
+* [chg] Update Undertow to 1.4.14.
+
 # Version 3.2.0 (2017-04-28)
 
 * [new] Add `SeedInitializer` interface that is called at Seed JVM-wide initialization and close (can be used to do early initialization). 
@@ -6,7 +29,7 @@
 * [fix] Fix resolution of `WEB-INF/classes` under Tomcat 8 when using resource overlay (PreResources, PostResources).
 * [fix] Properly logout subject when testing with `@WithUser`.
 * [fix] Prevent WebResourceFilter from serving files under `/WEB-INF`, allowing JSP to be served correctly.
-* [fix] Fix NPE when a filter or a servlet was already registered by the container.
+* [fix] Fix NPE when a filter or a servlet wa*s already registered by the container.
 * [chg] Default diagnostic dump changed from JSON to YAML.
 * [chg] Using the application classloader to load properties for additional JNDI contexts (paths should not start with `/` anymore).
 * [chg] Configuration properties files are now mapped in depth (the dot-notation in the property key is used to create intermediary tree nodes).

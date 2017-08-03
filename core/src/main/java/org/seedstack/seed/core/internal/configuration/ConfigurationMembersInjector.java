@@ -10,7 +10,6 @@ package org.seedstack.seed.core.internal.configuration;
 import com.google.common.base.Joiner;
 import com.google.inject.MembersInjector;
 import org.seedstack.coffig.Coffig;
-import org.seedstack.coffig.util.Utils;
 import org.seedstack.seed.Configuration;
 import org.seedstack.seed.SeedException;
 import org.seedstack.seed.core.internal.CoreErrorCode;
@@ -18,6 +17,9 @@ import org.seedstack.seed.core.internal.CoreErrorCode;
 import java.lang.reflect.Field;
 import java.util.Optional;
 import java.util.Set;
+
+import static org.seedstack.shed.reflect.Classes.instantiateDefault;
+import static org.seedstack.shed.reflect.ReflectUtils.makeAccessible;
 
 /**
  * Guice members injector that inject logger instances.
@@ -48,9 +50,9 @@ class ConfigurationMembersInjector<T> implements MembersInjector<T> {
                     throw SeedException.createNew(CoreErrorCode.MISSING_CONFIGURATION_KEY)
                             .put("key", computeConfigKey(configuration, fieldType));
                 } else if (field.get(t) == null && configuration.injectDefault()) {
-                    field.set(t, Utils.instantiateDefault(fieldType));
+                    field.set(t, instantiateDefault(fieldType));
                 }
-            } catch (Exception e) {
+            } catch (IllegalAccessException e) {
                 throw SeedException.wrap(e, CoreErrorCode.UNABLE_TO_INJECT_CONFIGURATION_VALUE)
                         .put("class", field.getDeclaringClass().getCanonicalName())
                         .put("field", field.getName())
@@ -60,7 +62,7 @@ class ConfigurationMembersInjector<T> implements MembersInjector<T> {
     }
 
     private String computeConfigKey(Configuration configuration, Class<?> fieldType) {
-        return configuration.value().length > 0 ? Joiner.on(".").join(configuration.value()) : Utils.resolvePath(fieldType);
+        return configuration.value().length > 0 ? Joiner.on(".").join(configuration.value()) : Coffig.pathOf(fieldType);
     }
 
     static class ConfigurableField {
@@ -68,7 +70,7 @@ class ConfigurationMembersInjector<T> implements MembersInjector<T> {
         private final Configuration configuration;
 
         ConfigurableField(Field field, Configuration configuration) {
-            this.field = field;
+            this.field = makeAccessible(field);
             this.configuration = configuration;
         }
 

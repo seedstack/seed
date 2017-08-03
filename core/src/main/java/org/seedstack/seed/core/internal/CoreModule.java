@@ -9,18 +9,33 @@ package org.seedstack.seed.core.internal;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Module;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Collection;
+import java.util.Set;
 
 class CoreModule extends AbstractModule {
-    private final Collection<Module> subModules;
+    private final Logger LOGGER = LoggerFactory.getLogger(CoreModule.class);
+    private final Collection<? extends Module> modules;
+    private final Set<BindingDefinition> bindings;
+    private final boolean overriding;
 
-    CoreModule(Collection<Module> subModules) {
-        this.subModules = subModules;
+    CoreModule(Collection<? extends Module> modules, Set<BindingDefinition> bindings, boolean overriding) {
+        this.modules = modules;
+        this.bindings = bindings;
+        this.overriding = overriding;
     }
 
     @Override
     protected void configure() {
-        subModules.forEach(this::install);
+        modules.forEach(module -> {
+            LOGGER.trace("Installing module {}", module.getClass().getName());
+            install(module);
+        });
+        LOGGER.debug("Installed {}{} module(s)", modules.size(), overriding ? " overriding" : "");
+
+        bindings.forEach(binding -> binding.apply(binder()));
+        LOGGER.debug("Created {}{} binding(s)", bindings.size(), overriding ? " overriding" : "");
     }
 }

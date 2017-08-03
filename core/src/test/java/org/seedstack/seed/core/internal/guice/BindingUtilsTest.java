@@ -29,6 +29,7 @@ import static org.seedstack.seed.core.internal.guice.BindingUtils.resolveBinding
 
 public class BindingUtilsTest {
     @Test
+    @SuppressWarnings("unchecked")
     public void binding_definitions_on_interface_injectee_with_type_variable_should_work() {
         assertBindingDefinitions(IType.class, StringType.class, IntegerType.class)
                 .keyIsAssociatedTo(Key.get(new TypeLiteral<IType<String>>() {
@@ -37,12 +38,14 @@ public class BindingUtilsTest {
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     public void binding_definitions_on_injectee_with_raw_type_should_work() {
         assertBindingDefinitions(Object.class, String.class).keyIsAssociatedTo(Key.get(new TypeLiteral<Object>() {
         }), String.class);
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     public void binding_definitions_on_class_injectee_with_type_variable_should_work() {
         assertBindingDefinitions(TestType.class, ObjectStringTestType.class, ObjectIntegerTestType.class).keyIsAssociatedTo(
                 Key.get(new TypeLiteral<TestType<Object, String>>() {
@@ -51,12 +54,14 @@ public class BindingUtilsTest {
     }
 
     @Test(expected = SeedException.class)
+    @SuppressWarnings("unchecked")
     public void binding_definitions_with_duplicate_keys_via_typevariable_should_not_work() {
         resolveBindingDefinitions(TestType.class, ObjectStringTestType.class, (new TestType<Object, String>() {
         }).getClass(), ObjectIntegerTestType.class);
     }
 
     @Test(expected = SeedException.class)
+    @SuppressWarnings("unchecked")
     public void binding_definitions_with_duplicate_keys_via_qualifier_should_not_work() {
         resolveBindingDefinitions(TestType.class, CollectionQualifiedTestType2.class, CollectionQualifiedTestType2.class);
     }
@@ -68,6 +73,7 @@ public class BindingUtilsTest {
      * @param implClasses   the associated class to bind
      * @return the BindableKeyMapProvider of the DSL
      */
+    @SuppressWarnings("unchecked")
     private static <T> KeyAssociationProvider assertBindingDefinitions(Class<T> injecteeClass, Class<? extends T>... implClasses) {
         return new KeyAssociationProvider<>(resolveBindingDefinitions(injecteeClass, null, implClasses));
     }

@@ -228,7 +228,7 @@ class ShiroSecuritySupport implements SecuritySupport {
         for (Realm realm : realms) {
             SeedAuthorizationInfo authzInfo = getAuthorizationInfo(realm);
             if (authzInfo != null) {
-                for (Role role : authzInfo.getSeedRoles()) {
+                for (Role role : authzInfo.getObjectRoles()) {
                     roles.add(Role.unmodifiableRole(role));
                 }
             }

@@ -23,6 +23,7 @@ import org.seedstack.seed.core.SeedRuntime;
 import org.seedstack.seed.core.internal.CoreErrorCode;
 import org.seedstack.seed.diagnostic.DiagnosticManager;
 import org.seedstack.seed.spi.ApplicationProvider;
+import org.seedstack.seed.spi.ConfigurationPriority;
 import org.seedstack.shed.ClassLoaders;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,6 +44,7 @@ import java.util.stream.Collectors;
  * Core plugins that detects configuration files and adds them to the global configuration object.
  */
 public class ConfigurationPlugin extends AbstractPlugin implements ApplicationProvider {
+    public static final String NAME = "config";
     public static final String EXTERNAL_CONFIG_PREFIX = "seedstack.config.";
     private static final Logger LOGGER = LoggerFactory.getLogger(ConfigurationPlugin.class);
     private static final String CONFIGURATION_PACKAGE = "META-INF.configuration";
@@ -52,25 +54,26 @@ public class ConfigurationPlugin extends AbstractPlugin implements ApplicationPr
     private static final String JSON_REGEX = ".*\\.json";
     private static final String PROPERTIES_REGEX = ".*\\.properties";
     private SeedRuntime seedRuntime;
-    private Coffig configuration;
+    private Coffig coffig;
     private DiagnosticManager diagnosticManager;
+    private ApplicationConfig applicationConfig;
     private Application application;
 
     @Override
     public String name() {
-        return "config";
+        return NAME;
     }
 
     @Override
     public void provideContainerContext(Object containerContext) {
         seedRuntime = (SeedRuntime) containerContext;
-        configuration = seedRuntime.getConfiguration();
+        coffig = seedRuntime.getConfiguration();
         diagnosticManager = seedRuntime.getDiagnosticManager();
+        applicationConfig = seedRuntime.getApplicationConfig();
     }
 
     @Override
     public String pluginPackageRoot() {
-        ApplicationConfig applicationConfig = configuration.get(ApplicationConfig.class);
         if (applicationConfig.getBasePackages().isEmpty() && applicationConfig.isPackageScanWarning()) {
             LOGGER.warn("No base package configured, only classes in 'org.seedstack.*' packages will be scanned");
         }
@@ -96,8 +99,7 @@ public class ConfigurationPlugin extends AbstractPlugin implements ApplicationPr
         detectKernelParamConfig(initContext);
         detectConfigurationFiles(initContext);
 
-        // we don't reuse the ApplicationConfig object as config may have changed since pluginPackageRoot()
-        application = new ApplicationImpl(configuration.get(ApplicationConfig.class), configuration);
+        application = new ApplicationImpl(coffig, applicationConfig);
         diagnosticManager.registerDiagnosticInfoCollector("application", new ApplicationDiagnosticCollector(application));
 
         return InitState.INITIALIZED;

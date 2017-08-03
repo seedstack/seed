@@ -38,11 +38,14 @@ class ServerFactory {
             LOGGER.error(e.getMessage(), e);
         }
 
-        Undertow.Builder builder;
+        Undertow.Builder builder = Undertow.builder();
         if (serverConfig.isHttps()) {
-            builder = createHttpsBuilder(serverConfig, sslProvider);
+            configureHttps(builder, serverConfig, sslProvider);
         } else {
-            builder = createHttpBuilder(serverConfig);
+            configureHttp(builder, serverConfig);
+        }
+        if (serverConfig.isHttp2()) {
+            LOGGER.info("HTTP/2 support is enabled");
             builder.setServerOption(UndertowOptions.ENABLE_HTTP2, serverConfig.isHttp2());
         }
 
@@ -51,22 +54,21 @@ class ServerFactory {
 
     private Undertow.Builder configureUndertow(Undertow.Builder builder, UndertowConfig undertowConfig) {
         undertowConfig.getBufferSize().ifPresent(builder::setBufferSize);
-        undertowConfig.getBuffersPerRegion().ifPresent(builder::setBuffersPerRegion);
         undertowConfig.getIoThreads().ifPresent(builder::setIoThreads);
         undertowConfig.getWorkerThreads().ifPresent(builder::setWorkerThreads);
         undertowConfig.getDirectBuffers().ifPresent(builder::setDirectBuffers);
         return builder;
     }
 
-    private Undertow.Builder createHttpBuilder(WebConfig.ServerConfig serverConfig) {
-        return Undertow.builder().addHttpListener(serverConfig.getPort(), serverConfig.getHost());
+    private Undertow.Builder configureHttp(Undertow.Builder builder, WebConfig.ServerConfig serverConfig) {
+        return builder.addHttpListener(serverConfig.getPort(), serverConfig.getHost());
     }
 
-    private Undertow.Builder createHttpsBuilder(WebConfig.ServerConfig serverConfig, SSLProvider sslProvider) {
+    private Undertow.Builder configureHttps(Undertow.Builder builder, WebConfig.ServerConfig serverConfig, SSLProvider sslProvider) {
         Optional<SSLContext> sslContext = sslProvider.sslContext();
         CryptoConfig.SSLConfig sslConfig = sslProvider.sslConfig();
         if (sslContext.isPresent()) {
-            return Undertow.builder()
+            return builder
                     .addHttpsListener(serverConfig.getPort(), serverConfig.getHost(), sslContext.get())
                     .setSocketOption(Options.SSL_CLIENT_AUTH_MODE, SslClientAuthMode.valueOf(sslConfig.getClientAuthMode().toString()));
         } else {

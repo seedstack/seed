@@ -16,7 +16,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @Expect(RuntimeException.class)
 public class InheritanceInitializationFailureIT extends AbstractSeedIT {
     @Inject
-    Object object;
+    private Object object;
 
     @Test
     public void injection_should_not_work() {

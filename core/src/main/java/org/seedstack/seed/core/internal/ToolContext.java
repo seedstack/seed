@@ -5,24 +5,23 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-package org.seedstack.seed.spi;
+package org.seedstack.seed.core.internal;
 
 import org.seedstack.seed.cli.CliContext;
 
-/**
- * Describes a tool execution context.
- */
-public class ToolContext implements CliContext {
+import static java.util.Objects.requireNonNull;
+
+class ToolContext implements CliContext {
     private final String toolName;
     private final String[] args;
 
-    public ToolContext(String toolName, String[] args) {
-        this.toolName = toolName;
-        this.args = args;
+    ToolContext(String toolName, String[] args) {
+        this.toolName = requireNonNull(toolName);
+        this.args = requireNonNull(args).clone();
     }
 
     public String[] getArgs() {
-        return args;
+        return args.clone();
     }
 
     public String getToolName() {

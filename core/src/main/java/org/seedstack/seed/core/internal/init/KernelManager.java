@@ -8,28 +8,24 @@
 package org.seedstack.seed.core.internal.init;
 
 import io.nuun.kernel.api.Kernel;
+import io.nuun.kernel.api.Plugin;
 import io.nuun.kernel.api.config.KernelConfiguration;
 import io.nuun.kernel.core.NuunCore;
 import io.nuun.kernel.core.internal.scanner.AbstractClasspathScanner;
 import org.reflections.vfs.Vfs;
-import org.seedstack.seed.diagnostic.DiagnosticManager;
-import org.seedstack.seed.core.Seed;
 import org.seedstack.seed.core.SeedRuntime;
+import org.seedstack.seed.core.internal.configuration.ConfigurationPlugin;
 import org.seedstack.seed.core.internal.scan.ClasspathScanHandler;
 import org.seedstack.seed.core.internal.scan.FallbackUrlType;
-import org.seedstack.shed.ClassLoaders;
+import org.seedstack.seed.diagnostic.DiagnosticManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Scanner;
 import java.util.ServiceLoader;
 
 public class KernelManager {
@@ -68,20 +64,7 @@ public class KernelManager {
     }
 
     public Kernel createKernel(SeedRuntime seedRuntime, @Nullable KernelConfiguration kernelConfiguration, boolean autoStart) {
-        // Startup message
-        StringBuilder startMessage = new StringBuilder("Starting Seed");
-        if (seedRuntime.getVersion() != null) {
-            startMessage.append(" v").append(seedRuntime.getVersion());
-        }
-        LOGGER.info(startMessage.toString());
-
-        // Banner
-        String banner = getBanner();
-        if (banner != null) {
-            System.out.println(banner);
-        }
-
-        // Kernel
+        long startTime = System.currentTimeMillis();
         if (kernelConfiguration == null) {
             kernelConfiguration = NuunCore.newKernelConfiguration();
         }
@@ -89,7 +72,7 @@ public class KernelManager {
         Kernel kernel = createKernel(kernelConfiguration, seedRuntime.getDiagnosticManager());
         if (autoStart) {
             kernel.start();
-            LOGGER.info("Seed started");
+            LOGGER.info("{} started in {} second(s)", getApplicationName(kernel), (System.currentTimeMillis() - startTime) / 1000d);
         }
 
         return kernel;
@@ -97,9 +80,9 @@ public class KernelManager {
 
     public void disposeKernel(Kernel kernel) {
         if (kernel != null && kernel.isStarted()) {
-            LOGGER.info("Stopping Seed");
+            String applicationName = getApplicationName(kernel);
             kernel.stop();
-            LOGGER.info("Seed stopped");
+            LOGGER.info("{} stopped", applicationName);
         }
     }
 
@@ -121,8 +104,8 @@ public class KernelManager {
         int failedUrlCount = fallbackUrlType.getFailedUrls().size();
         if (failedUrlCount > 0) {
             LOGGER.info("{} URL(s) were not scanned, enable debug logging to see them", failedUrlCount);
-            if (LOGGER.isTraceEnabled()) {
-                for (URL failedUrl : fallbackUrlType.getFailedUrls()) {
+            if (LOGGER.isDebugEnabled()) {
+                for (String failedUrl : fallbackUrlType.getFailedUrls()) {
                     LOGGER.debug("URL not scanned: {}", failedUrl);
                 }
             }
@@ -138,19 +121,12 @@ public class KernelManager {
         return kernel;
     }
 
-    private String getBanner() {
-        InputStream bannerStream = ClassLoaders.findMostCompleteClassLoader(Seed.class).getResourceAsStream("banner.txt");
-        if (bannerStream != null) {
-            try {
-                return new Scanner(bannerStream).useDelimiter("\\Z").next();
-            } finally {
-                try {
-                    bannerStream.close();
-                } catch (IOException e) {
-                    // nothing to do
-                }
-            }
+    private String getApplicationName(Kernel kernel) {
+        Plugin plugin = kernel.plugins().get(ConfigurationPlugin.NAME);
+        if (plugin instanceof ConfigurationPlugin) {
+            return ((ConfigurationPlugin) plugin).getApplication().getName();
+        } else {
+            return "Seed";
         }
-        return null;
     }
 }

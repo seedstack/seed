@@ -65,13 +65,11 @@ public class DataPlugin extends AbstractSeedPlugin {
     public InitState initialize(InitContext initContext) {
         DataConfig dataConfig = getConfiguration(DataConfig.class);
 
-        switch (dataConfig.getImportMode()) {
-            case FORCE:
-                forceInitializationData = true;
-                // falls through
-            case AUTO:
-                loadInitializationData = true;
-                break;
+        if (dataConfig.getImportMode() != DataConfig.ImportMode.DISABLED) {
+            loadInitializationData = true;
+        }
+        if (dataConfig.getImportMode() == DataConfig.ImportMode.FORCE) {
+            forceInitializationData = true;
         }
 
         Collection<Class<?>> scannedDataExporterClasses = initContext.scannedTypesBySpecification().get(dataExporterSpecification);

@@ -21,6 +21,12 @@ security:
     jedi: ['lightSaber:*', 'academy:*']
     padawan: 'academy:learn'
   web:
+    successUrl: /success.html
+    logoutUrl: /logout.html
+    form:
+      loginUrl: /login.html
+      usernameParameter: user
+      passwordParameter: pw
     urls:
       -
         pattern: /testServlet1
@@ -48,10 +54,22 @@ security:
         filters: [authcBasic, 'perms[lightSaber:wield, academy:learn]']
       -
         pattern: /jediAcademy.html
-        filters: ['authcBasic', 'perms[academy:learn]']
+        filters: [authcBasic, 'perms[academy:learn]']
+      -
+        pattern: /protected
+        filters: authc
+      -
+        pattern: /login.html
+        filters: authc
+      -
+        pattern: /success.html
+        filters: authc
       -
         pattern: /logout
         filters: logout
+      -
+        pattern: /logout.html
+        filters: anon
       -
         pattern: /teapot
         filters: 'teapot[param]'

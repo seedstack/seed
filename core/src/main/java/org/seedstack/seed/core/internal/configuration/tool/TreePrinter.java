@@ -34,7 +34,7 @@ class TreePrinter {
                 .newline()
                 .a("(*) mandatory property")
                 .newline()
-                .a("(~) default property")
+                .a("(~) default property (can be specified as single value)")
                 .newline();
 
         stream.print(ansi.toString());

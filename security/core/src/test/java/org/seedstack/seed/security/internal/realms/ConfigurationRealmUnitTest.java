@@ -85,8 +85,19 @@ public class ConfigurationRealmUnitTest {
     }
 
     @Test(expected = UnknownAccountException.class)
-    public void getAuthenticationInfo_throws_exception_if_null_user() {
-        UsernamePasswordToken token = new UsernamePasswordToken(null, password);
+    public void getAuthenticationInfo_throws_exception_if_unknown_user() {
+        UsernamePasswordToken token = new UsernamePasswordToken("", password);
+        underTest.getAuthenticationInfo(token);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void null_user_is_invalid() {
+        new UsernamePasswordToken(null, password);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void null_password_is_invalid() {
+        UsernamePasswordToken token = new UsernamePasswordToken(username, (String) null);
         underTest.getAuthenticationInfo(token);
     }
 

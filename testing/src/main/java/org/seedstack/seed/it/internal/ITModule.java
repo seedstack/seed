@@ -9,20 +9,26 @@ package org.seedstack.seed.it.internal;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Module;
+import org.seedstack.seed.core.internal.BindingDefinition;
 import org.seedstack.seed.it.internal.arquillian.InjectionEnricher;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Collection;
 import java.util.Set;
 
 class ITModule extends AbstractModule {
-    private final Collection<Class<?>> iTs;
+    private final Logger LOGGER = LoggerFactory.getLogger(ITModule.class);
     private final Class<?> testClass;
-    private final Set<Module> itInstallModules;
+    private final Collection<? extends Module> modules;
+    private final Set<BindingDefinition> bindings;
+    private final boolean overriding;
 
-    ITModule(Class<?> testClass, Collection<Class<?>> iTs, Set<Module> itInstallModules) {
-        this.iTs = iTs;
+    ITModule(Class<?> testClass, Collection<? extends Module> modules, Set<BindingDefinition> bindings, boolean overriding) {
         this.testClass = testClass;
-        this.itInstallModules = itInstallModules;
+        this.modules = modules;
+        this.bindings = bindings;
+        this.overriding = overriding;
     }
 
     @Override
@@ -33,16 +39,13 @@ class ITModule extends AbstractModule {
             bind(testClass);
         }
 
-        if (itInstallModules != null) {
-            for (Module itInstallModule : itInstallModules) {
-                install(itInstallModule);
-            }
-        }
+        modules.forEach(module -> {
+            LOGGER.trace("Installing module {}", module.getClass().getName());
+            install(module);
+        });
+        LOGGER.debug("Installed {}{} test module(s)", modules.size(), overriding ? " overriding" : "");
 
-        if (iTs != null) {
-            for (Class<?> iT : iTs) {
-                bind(iT);
-            }
-        }
+        bindings.forEach(binding -> binding.apply(binder()));
+        LOGGER.debug("Created {}{} test binding(s)", bindings.size(), overriding ? " overriding" : "");
     }
 }

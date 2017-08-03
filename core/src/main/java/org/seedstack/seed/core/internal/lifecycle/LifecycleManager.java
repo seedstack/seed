@@ -7,10 +7,11 @@
  */
 package org.seedstack.seed.core.internal.lifecycle;
 
-import org.seedstack.seed.LifecycleListener;
+interface LifecycleManager {
+    void started();
 
-import java.util.Collection;
+    void stopping();
 
-interface LifecycleListenerScanner {
-    Collection<LifecycleListener> get();
+    void registerAutoCloseable(AutoCloseable autoCloseable);
+
 }

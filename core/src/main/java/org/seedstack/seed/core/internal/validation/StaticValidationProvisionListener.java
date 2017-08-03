@@ -10,20 +10,21 @@ package org.seedstack.seed.core.internal.validation;
 import com.google.inject.spi.ProvisionListener;
 
 import javax.validation.ConstraintViolation;
+import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 import java.util.Set;
 
 class StaticValidationProvisionListener implements ProvisionListener {
-    private ValidatorFactory validatorFactory;
+    private final Validator validator;
 
     StaticValidationProvisionListener(ValidatorFactory validatorFactory) {
-        this.validatorFactory = validatorFactory;
+        this.validator = validatorFactory.getValidator();
     }
 
     @Override
     public <A> void onProvision(ProvisionInvocation<A> provision) {
         A provisioned = provision.provision();
-        Set<ConstraintViolation<A>> constraintViolations = validatorFactory.getValidator().validate(provisioned);
+        Set<ConstraintViolation<A>> constraintViolations = validator.validate(provisioned);
         if (!constraintViolations.isEmpty()) {
             throw new VerboseConstraintViolationException(constraintViolations);
         }

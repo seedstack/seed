@@ -10,8 +10,8 @@ package org.seedstack.seed.core.internal.command;
 import com.google.inject.PrivateModule;
 import com.google.inject.TypeLiteral;
 import com.google.inject.name.Names;
-import org.seedstack.seed.command.CommandRegistry;
 import org.seedstack.seed.command.Command;
+import org.seedstack.seed.command.CommandRegistry;
 
 import java.util.Map;
 
@@ -29,10 +29,14 @@ class CommandModule extends PrivateModule {
             bind(Command.class).annotatedWith(Names.named(commandEntry.getKey())).to(commandEntry.getValue().getCommandActionClass());
         }
 
-        bind(new TypeLiteral<Map<String, CommandDefinition>>() {}).toInstance(commandDefinitions);
-        bind(CommandRegistry.class).to(CommandRegistryImpl.class);
+        CommandDefinitionsTypeLiteral commandDefinitionsTypeLiteral = new CommandDefinitionsTypeLiteral();
+        bind(commandDefinitionsTypeLiteral).toInstance(commandDefinitions);
+        expose(commandDefinitionsTypeLiteral);
 
-        expose(new TypeLiteral<Map<String, CommandDefinition>>() {});
+        bind(CommandRegistry.class).to(CommandRegistryImpl.class);
         expose(CommandRegistry.class);
+    }
+
+    private static class CommandDefinitionsTypeLiteral extends TypeLiteral<Map<String, CommandDefinition>> {
     }
 }
