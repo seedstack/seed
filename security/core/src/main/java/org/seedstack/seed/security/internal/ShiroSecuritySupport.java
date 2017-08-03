@@ -82,6 +82,13 @@ class ShiroSecuritySupport implements SecuritySupport {
     public boolean isAuthenticated() {
         return SecurityUtils.getSubject().isAuthenticated();
     }
+    
+    @Override
+    public boolean isRememberedAuthentication() {
+        Subject subject = SecurityUtils.getSubject();
+        return subject.isAuthenticated() || subject.isRemembered();
+    }
+    
 
     @Override
     public boolean isPermitted(String permission) {
@@ -246,4 +253,6 @@ class ShiroSecuritySupport implements SecuritySupport {
         }
         return s.getHost();
     }
+
+   
 }
