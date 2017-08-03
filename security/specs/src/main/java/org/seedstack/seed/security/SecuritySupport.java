@@ -236,7 +236,7 @@ public interface SecuritySupport {
      * Check if the current user is authenticated.
      * 
      * Authenticated on Shiro means that subject has successfully logged in on the current session
-     * @see org.seedstack.seed.security.SecuritySupport#isRememberedAuthentication()
+     * @see org.seedstack.seed.security.SecuritySupport#isRemembered()
      *  
      * @return true if authenticated, false otherwise.
      */
@@ -248,7 +248,7 @@ public interface SecuritySupport {
      * 
      * @return true if remembered, false otherwise.
      */
-    boolean isRememberedAuthentication();
+    boolean isRemembered();
     
     /**
      * Returns the host name or IP string of the host of the connected user, or {@code null} if the host is unknown.

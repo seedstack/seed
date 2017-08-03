@@ -84,9 +84,8 @@ class ShiroSecuritySupport implements SecuritySupport {
     }
     
     @Override
-    public boolean isRememberedAuthentication() {
-        Subject subject = SecurityUtils.getSubject();
-        return subject.isAuthenticated() || subject.isRemembered();
+    public boolean isRemembered() {
+        return SecurityUtils.getSubject().isRemembered();
     }
     
 
