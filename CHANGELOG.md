@@ -1,3 +1,8 @@
+# Version 3.3.1 (2017-09-15)
+
+* [new] Configuration dump (config tool) now dumps inner properties for maps, collections, arrays and complex objects.
+* [new] Add `isRemembered()` on `SecuritySupport`.
+ 
 # Version 3.3.0 (2017-07-31)
 
 * [new] Print a default banner at startup in case of missing custom `banner.txt`.

@@ -7,6 +7,10 @@
  */
 package org.seedstack.seed.core.internal.configuration.tool;
 
+import java.util.Collections;
+import java.util.Map;
+import java.util.TreeMap;
+
 class PropertyInfo {
     private String name;
     private String type;
@@ -15,6 +19,7 @@ class PropertyInfo {
     private boolean singleValue;
     private boolean mandatory;
     private Object defaultValue;
+    private Map<String, PropertyInfo> innerPropertyInfo = new TreeMap<>();
 
     String getName() {
         return name;
@@ -70,5 +75,13 @@ class PropertyInfo {
 
     void setDefaultValue(Object defaultValue) {
         this.defaultValue = defaultValue;
+    }
+
+    Map<String, PropertyInfo> getInnerPropertyInfo() {
+        return Collections.unmodifiableMap(innerPropertyInfo);
+    }
+
+    void addInnerPropertyInfo(Map<String, PropertyInfo> innerPropertyInfo) {
+        this.innerPropertyInfo.putAll(innerPropertyInfo);
     }
 }

@@ -7,13 +7,19 @@
  */
 package org.seedstack.seed.core.internal.configuration.tool;
 
+import org.seedstack.coffig.Coffig;
 import org.seedstack.coffig.Config;
 import org.seedstack.coffig.SingleValue;
 import org.seedstack.shed.reflect.Annotations;
+import org.seedstack.shed.reflect.ReflectUtils;
+import org.seedstack.shed.reflect.Types;
 
+import javax.annotation.Nullable;
 import javax.validation.constraints.NotNull;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -24,7 +30,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
-import java.util.SortedMap;
 import java.util.TreeMap;
 
 import static org.seedstack.shed.reflect.Classes.instantiateDefault;
@@ -32,29 +37,33 @@ import static org.seedstack.shed.reflect.ReflectUtils.makeAccessible;
 import static org.seedstack.shed.reflect.Types.simpleNameOf;
 
 class Node implements Comparable<Node> {
-    private final String name;
     private final Class<?> configClass;
+    private final Coffig coffig;
+    private final String name;
     private final Class<?> outermostClass;
     private final int outermostLevel;
     private final String[] path;
+    private final ResourceBundle bundle;
     private final Map<String, PropertyInfo> propertyInfo;
-    private final SortedMap<String, Node> children = new TreeMap<>();
+    private final Map<String, Node> children = new TreeMap<>();
 
     Node() {
-        this.name = "";
         this.configClass = null;
+        this.coffig = null;
+        this.name = "";
         this.outermostClass = null;
         this.outermostLevel = 0;
         this.path = new String[0];
+        this.bundle = null;
         this.propertyInfo = new HashMap<>();
     }
 
-    Node(Class<?> configClass) {
+    Node(Class<?> configClass, Coffig coffig) {
         this.configClass = configClass;
+        this.coffig = coffig;
 
         List<String> path = new ArrayList<>();
         Class<?> previousClass = configClass;
-        int nestingLevel = -1;
         do {
             Config annotation = configClass.getAnnotation(Config.class);
             if (annotation == null) {
@@ -64,7 +73,6 @@ class Node implements Comparable<Node> {
             Collections.reverse(splitPath);
             path.addAll(splitPath);
             previousClass = configClass;
-            nestingLevel++;
         } while ((configClass = configClass.getDeclaringClass()) != null);
 
         Collections.reverse(path);
@@ -72,7 +80,8 @@ class Node implements Comparable<Node> {
         this.outermostLevel = this.outermostClass.getAnnotation(Config.class).value().split("\\.").length;
         this.path = path.toArray(new String[path.size()]);
         this.name = this.path[this.path.length - 1];
-        this.propertyInfo = buildPropertyInfo();
+        this.bundle = getResourceBundle();
+        this.propertyInfo = buildPropertyInfo(this.configClass, "", null);
     }
 
     String getName() {
@@ -149,35 +158,31 @@ class Node implements Comparable<Node> {
         return 0;
     }
 
-    private Map<String, PropertyInfo> buildPropertyInfo() {
+    private Map<String, PropertyInfo> buildPropertyInfo(Class<?> configClass, String parentPropertyName, Object defaultInstance) {
         Map<String, PropertyInfo> result = new LinkedHashMap<>();
 
-        ResourceBundle bundle = null;
-        try {
-            bundle = ResourceBundle.getBundle(outermostClass.getName());
-        } catch (MissingResourceException e) {
-            // ignore
-        }
-
-        Object defaultInstance;
-        try {
-            defaultInstance = instantiateDefault(configClass);
-        } catch (Exception e) {
-            defaultInstance = null;
+        if (defaultInstance == null) {
+            try {
+                defaultInstance = instantiateDefault(configClass);
+            } catch (Exception e) {
+                defaultInstance = null;
+            }
         }
 
         for (Field field : configClass.getDeclaredFields()) {
             if (Modifier.isStatic(field.getModifiers())) {
+                // Skip static fields (not used for configuration)
                 continue;
             }
             if (field.getType().isAnnotationPresent(Config.class)) {
+                // Skip fields of type annotated with @Config as they are already detected
                 continue;
             }
 
             makeAccessible(field);
 
-            PropertyInfo propertyInfo = new PropertyInfo();
             Config configAnnotation = field.getAnnotation(Config.class);
+            Type genericType = field.getGenericType();
             String name;
             if (configAnnotation != null) {
                 name = configAnnotation.value();
@@ -185,19 +190,37 @@ class Node implements Comparable<Node> {
                 name = field.getName();
             }
 
+            PropertyInfo propertyInfo = new PropertyInfo();
             propertyInfo.setName(name);
-            propertyInfo.setShortDescription(getMessage(bundle, "No description.", buildKey(name)));
-            propertyInfo.setLongDescription(getMessage(bundle, null, buildKey(name, "long")));
-            propertyInfo.setType(simpleNameOf(field.getGenericType()));
+            propertyInfo.setShortDescription(getMessage("", buildKey(parentPropertyName, name)));
+            propertyInfo.setLongDescription(getMessage(null, buildKey(parentPropertyName, name, "long")));
+            propertyInfo.setType(simpleNameOf(genericType));
             propertyInfo.setSingleValue(field.isAnnotationPresent(SingleValue.class));
+            propertyInfo.setMandatory(isNotNull(field));
             if (defaultInstance != null) {
-                try {
-                    propertyInfo.setDefaultValue(field.get(defaultInstance));
-                } catch (IllegalAccessException e) {
-                    // ignore
-                }
+                propertyInfo.setDefaultValue(ReflectUtils.getValue(field, defaultInstance));
             }
-            propertyInfo.setMandatory(propertyInfo.getDefaultValue() == null && Annotations.on(field).includingMetaAnnotations().find(NotNull.class).isPresent());
+
+            Class<?> rawClass = Types.rawClassOf(genericType);
+            Type itemType;
+            if (Collection.class.isAssignableFrom(rawClass) && genericType instanceof ParameterizedType) {
+                itemType = Types.rawClassOf(((ParameterizedType) genericType).getActualTypeArguments()[0]);
+            } else if (Map.class.isAssignableFrom(rawClass) && genericType instanceof ParameterizedType) {
+                itemType = Types.rawClassOf(((ParameterizedType) genericType).getActualTypeArguments()[1]);
+            } else if (genericType instanceof Class<?> && ((Class<?>) genericType).isArray()) {
+                itemType = ((Class<?>) genericType).getComponentType();
+            } else {
+                itemType = genericType;
+            }
+            if (!coffig.getMapper().canHandle(itemType)) {
+                propertyInfo.addInnerPropertyInfo(
+                        buildPropertyInfo(
+                                Types.rawClassOf(itemType),
+                                parentPropertyName.isEmpty() ? name : parentPropertyName + "." + name,
+                                itemType.equals(genericType) ? ReflectUtils.getValue(field, defaultInstance) : null
+                        )
+                );
+            }
 
             result.put(name, propertyInfo);
         }
@@ -205,12 +228,16 @@ class Node implements Comparable<Node> {
         return result;
     }
 
-    private String getMessage(ResourceBundle resourceBundle, String defaultMessage, String key) {
-        if (resourceBundle == null) {
+    private boolean isNotNull(Field field) {
+        return Annotations.on(field).includingMetaAnnotations().find(NotNull.class).isPresent();
+    }
+
+    private String getMessage(String defaultMessage, String key) {
+        if (bundle == null) {
             return defaultMessage;
         }
         try {
-            return resourceBundle.getString(key);
+            return bundle.getString(key);
         } catch (MissingResourceException e) {
             return defaultMessage;
         }
@@ -227,11 +254,24 @@ class Node implements Comparable<Node> {
             }
         }
         for (int i = 0; i < parts.length; i++) {
-            sb.append(parts[i]);
-            if (i < parts.length - 1) {
-                sb.append(".");
+            if (!parts[i].isEmpty()) {
+                sb.append(parts[i]);
+                if (i < parts.length - 1) {
+                    sb.append(".");
+                }
             }
         }
         return sb.toString();
+    }
+
+    @Nullable
+    private ResourceBundle getResourceBundle() {
+        ResourceBundle bundle;
+        try {
+            bundle = ResourceBundle.getBundle(outermostClass.getName());
+        } catch (MissingResourceException e) {
+            bundle = null;
+        }
+        return bundle;
     }
 }
