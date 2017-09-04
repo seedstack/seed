@@ -15,19 +15,39 @@ import java.util.concurrent.atomic.AtomicInteger;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class TestSeedInitializer implements SeedInitializer {
-    private static AtomicInteger callCount = new AtomicInteger(0);
+    private static AtomicInteger beforeCallCount = new AtomicInteger(0);
+    private static AtomicInteger onCallCount = new AtomicInteger(0);
+    private static AtomicInteger afterCallCount = new AtomicInteger(0);
+
+    @Override
+    public void beforeInitialization() {
+        assertThat(beforeCallCount.getAndIncrement()).isEqualTo(0);
+    }
 
     @Override
     public void onInitialization(Coffig configuration) {
-        assertThat(callCount.getAndIncrement()).isEqualTo(0);
+        assertThat(onCallCount.getAndIncrement()).isEqualTo(0);
+    }
+
+    @Override
+    public void afterInitialization() {
+        assertThat(afterCallCount.getAndIncrement()).isEqualTo(0);
     }
 
     @Override
     public void onClose() {
-        assertThat(callCount.getAndDecrement()).isEqualTo(1);
+        throw new IllegalStateException("Should not be called from tests");
     }
 
-    public static int getCallCount() {
-        return callCount.get();
+    public static int getBeforeCallCount() {
+        return beforeCallCount.get();
+    }
+
+    public static int getOnCallCount() {
+        return onCallCount.get();
+    }
+
+    public static int getAfterCallCount() {
+        return afterCallCount.get();
     }
 }
