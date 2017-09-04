@@ -43,8 +43,7 @@ public class TransactionConfig {
 
     @Config("jta")
     public static class JtaConfig {
-            private static final String DEFAULT_USER_TRANSACTION_NAME = "java:comp/UserTransaction";
-
+        private static final String DEFAULT_USER_TRANSACTION_NAME = "java:comp/UserTransaction";
         @SingleValue
         private String txManagerName;
         private String userTxName = DEFAULT_USER_TRANSACTION_NAME;

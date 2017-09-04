@@ -44,18 +44,17 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Scanner;
 import java.util.ServiceLoader;
-import java.util.Set;
 
+import static com.google.common.base.Preconditions.checkState;
 import static org.seedstack.shed.misc.PriorityUtils.sortByPriority;
 
 /**
- * This class is the Seed framework entry point, which is used create and dispose kernels.
+ * This class is the SeedStack framework entry point, which is used create and dispose kernels.
  * It handles global initialization and cleanup.
  */
 public class Seed {
@@ -68,10 +67,11 @@ public class Seed {
     private static volatile boolean initialized = false;
     private static volatile boolean disposed = false;
     private static volatile boolean noLogs = false;
+    private static final List<SeedInitializer> seedInitializers;
     private static final List<SeedExceptionTranslator> exceptionTranslators;
     private static final DiagnosticManager diagnosticManager;
-    private final String seedVersion;
-    private final String businessVersion;
+    private static final String seedVersion;
+    private static final String businessVersion;
     private final ApplicationConfig applicationConfig;
     private final Coffig configuration;
     private final ConsoleManager consoleManager;
@@ -79,12 +79,24 @@ public class Seed {
     private final ValidatorFactory validatorFactory;
     private final ProxyManager proxyManager;
     private final KernelManager kernelManager;
-    private final Set<SeedInitializer> seedInitializers = new HashSet<>();
 
     static {
+        diagnosticManager = new DiagnosticManagerImpl();
+
+        seedInitializers = Lists.newArrayList(ServiceLoader.load(SeedInitializer.class));
+        sortByPriority(seedInitializers, PriorityUtils::priorityOfClassOf);
+
         exceptionTranslators = Lists.newArrayList(ServiceLoader.load(SeedExceptionTranslator.class));
         sortByPriority(exceptionTranslators, PriorityUtils::priorityOfClassOf);
-        diagnosticManager = new DiagnosticManagerImpl();
+
+        seedVersion = Optional.ofNullable(Seed.class.getPackage())
+                .map(Package::getImplementationVersion)
+                .orElse(null);
+
+        businessVersion = Classes.optional("org.seedstack.business.internal.BusinessSpecifications")
+                .map(Class::getPackage)
+                .map(Package::getImplementationVersion)
+                .orElse(null);
     }
 
     private static class Holder {
@@ -126,51 +138,6 @@ public class Seed {
         return new ToolLauncher(toolName);
     }
 
-
-    /**
-     * Create and start a basic kernel without specifying a runtime context, nor a configuration. Seed JVM-global
-     * state is automatically initialized before the first time a kernel is created.
-     *
-     * @return the {@link Kernel} instance.
-     */
-    public static Kernel createKernel() {
-        return createKernel(null, null, true);
-    }
-
-    /**
-     * Create, initialize and optionally start a kernel with the specified runtime context and configuration. Seed JVM-global
-     * state is automatically initialized before the first time a kernel is created.
-     *
-     * @param runtimeContext      the runtime context object, which will be accessible from plugins.
-     * @param kernelConfiguration the kernel configuration.
-     * @param autoStart           if true, the kernel is started automatically.
-     * @return the {@link Kernel} instance.
-     */
-    public static Kernel createKernel(@Nullable Object runtimeContext, @Nullable KernelConfiguration kernelConfiguration, boolean autoStart) {
-        Seed instance = getInstance();
-        return instance.kernelManager.createKernel(
-                SeedRuntime.builder()
-                        .context(runtimeContext)
-                        .diagnosticManager(diagnosticManager)
-                        .configuration(instance.configuration.fork())
-                        .validatorFactory(instance.validatorFactory)
-                        .applicationConfig(instance.applicationConfig)
-                        .version(instance.seedVersion)
-                        .businessVersion(instance.businessVersion)
-                        .build(),
-                kernelConfiguration,
-                autoStart);
-    }
-
-    /**
-     * Stops and dispose a running {@link Kernel} instance.
-     *
-     * @param kernel the kernel to dispose.
-     */
-    public static void disposeKernel(Kernel kernel) {
-        KernelManager.get().disposeKernel(kernel);
-    }
-
     /**
      * Provides the default {@link DiagnosticManager} instance to dump diagnostics outside a running kernel.
      *
@@ -178,16 +145,6 @@ public class Seed {
      */
     public static DiagnosticManager diagnostic() {
         return diagnosticManager;
-    }
-
-    /**
-     * Provides the application base configuration (i.e. not including configuration sources discovered after kernel
-     * startup).
-     *
-     * @return the {@link Coffig} object for application base configuration.
-     */
-    public static Coffig baseConfiguration() {
-        return getInstance().configuration;
     }
 
     /**
@@ -210,8 +167,73 @@ public class Seed {
     }
 
     /**
-     * Cleanup Seed JVM-global state explicitly. Should be done before exiting the JVM. After calling this method
-     * Seed is no longer usable in the current JVM.
+     * Provides the application base configuration (i.e. not including configuration sources discovered after kernel
+     * startup).
+     *
+     * <p>Cannot be called from {@link SeedInitializer} methods.</p>
+     *
+     * @return the {@link Coffig} object for application base configuration.
+     */
+    public static Coffig baseConfiguration() {
+        return getInstance().configuration;
+    }
+
+    /**
+     * Create and start a basic kernel without specifying a runtime context, nor a configuration. Seed JVM-global
+     * state is automatically initialized before the first time a kernel is created.
+     *
+     * <p>Cannot be called from {@link SeedInitializer} methods.</p>
+     *
+     * @return the {@link Kernel} instance.
+     */
+    public static Kernel createKernel() {
+        return createKernel(null, null, true);
+    }
+
+    /**
+     * Create, initialize and optionally start a kernel with the specified runtime context and configuration. Seed JVM-global
+     * state is automatically initialized before the first time a kernel is created.
+     *
+     * <p>Cannot be called from {@link SeedInitializer} methods.</p>
+     *
+     * @param runtimeContext      the runtime context object, which will be accessible from plugins.
+     * @param kernelConfiguration the kernel configuration.
+     * @param autoStart           if true, the kernel is started automatically.
+     * @return the {@link Kernel} instance.
+     */
+    public static Kernel createKernel(@Nullable Object runtimeContext, @Nullable KernelConfiguration kernelConfiguration, boolean autoStart) {
+        Seed instance = getInstance();
+        return instance.kernelManager.createKernel(
+                SeedRuntime.builder()
+                        .context(runtimeContext)
+                        .diagnosticManager(diagnosticManager)
+                        .configuration(instance.configuration.fork())
+                        .validatorFactory(instance.validatorFactory)
+                        .applicationConfig(instance.applicationConfig)
+                        .version(seedVersion)
+                        .businessVersion(businessVersion)
+                        .build(),
+                kernelConfiguration,
+                autoStart);
+    }
+
+    /**
+     * Stops and dispose a running {@link Kernel} instance.
+     *
+     * <p>Cannot be called from {@link SeedInitializer} methods.</p>
+     *
+     * @param kernel the kernel to dispose.
+     */
+    public static void disposeKernel(Kernel kernel) {
+        getInstance().kernelManager.disposeKernel(kernel);
+    }
+
+    /**
+     * Explicitly cleanup SeedStack global state. After calling this method, SeedStack is no longer usable in the current
+     * classloader and cannot be reinitialized. Only call this method in standalone JVM environments, just before exiting,
+     * typically in a shutdown hook.
+     *
+     * <p>Has no effect if called from {@link SeedInitializer} methods or after the first call.</p>
      */
     public static void close() {
         if (initialized && !disposed) {
@@ -220,11 +242,11 @@ public class Seed {
     }
 
     private static Seed getInstance() {
-        if (disposed) {
-            throw new IllegalStateException("Seed is no longer usable after close() has been called");
-        }
+        checkState(!disposed, "SeedStack cannot be used during or after shutdown");
         try {
-            return Holder.INSTANCE;
+            Seed instance = Holder.INSTANCE;
+            checkState(initialized, "SeedStack cannot be used before or during initialization");
+            return instance;
         } catch (Throwable t) {
             if (t instanceof ExceptionInInitializerError) {
                 t = t.getCause();
@@ -234,14 +256,17 @@ public class Seed {
     }
 
     private Seed() {
-        seedVersion = Optional.ofNullable(Seed.class.getPackage())
-                .map(Package::getImplementationVersion)
-                .orElse(null);
-        businessVersion = Classes.optional("org.seedstack.business.internal.BusinessSpecifications")
-                .map(Class::getPackage)
-                .map(Package::getImplementationVersion)
-                .orElse(null);
+        // Trigger beforeInitialization() in custom initializers
+        for (SeedInitializer seedInitializer : seedInitializers) {
+            try {
+                seedInitializer.beforeInitialization();
+            } catch (Exception e) {
+                throw SeedException.wrap(e, CoreErrorCode.ERROR_IN_INITIALIZER)
+                        .put("initializerClass", seedInitializer.getClass().getName());
+            }
+        }
 
+        // Setup a default exception handler that translates exceptions
         Thread.setDefaultUncaughtExceptionHandler((thread, throwable) -> {
             Throwable translated;
             if (throwable instanceof Exception) {
@@ -253,21 +278,33 @@ public class Seed {
             translated.printStackTrace(System.err);
         });
 
-        // Logging initialization (should silence logs until logging activation later in the initialization)
+        // Initialize logging subsystem (should silence logs until logging activation later in the initialization)
         logManager = AutodetectLogManager.get();
 
-        // Validation
+        // Create global validator factory
         validatorFactory = GlobalValidatorFactory.get();
 
-        // Configuration
+        // Create base configuration
         configuration = BaseConfiguration.get();
+
+        // Trigger onInitialization() in custom initializers
+        for (SeedInitializer seedInitializer : seedInitializers) {
+            try {
+                seedInitializer.onInitialization(configuration);
+            } catch (Exception e) {
+                throw SeedException.wrap(e, CoreErrorCode.ERROR_IN_INITIALIZER)
+                        .put("initializerClass", seedInitializer.getClass().getName());
+            }
+        }
+
+        // Access application configuration
         applicationConfig = configuration.get(ApplicationConfig.class);
 
-        // Console
+        // Install console enhancements
         consoleManager = ConsoleManager.get();
         consoleManager.install(applicationConfig.getColorOutput());
 
-        // Banner
+        // Print banner
         if (!noLogs && applicationConfig.isPrintBanner()) {
             System.out.println(buildBannerMessage(applicationConfig).orElseGet(this::buildWelcomeMessage));
         }
@@ -277,18 +314,17 @@ public class Seed {
             logManager.configure(configuration.get(LoggingConfig.class));
         }
 
-        // Proxy
+        // Install global proxy handling
         proxyManager = ProxyManager.get();
         proxyManager.install(configuration.get(ProxyConfig.class));
 
-        // Nuun
+        // Create kernel manager
         kernelManager = KernelManager.get();
 
-        // Custom initializers
-        for (SeedInitializer seedInitializer : ServiceLoader.load(SeedInitializer.class)) {
+        // Trigger afterInitialization() in custom initializers
+        for (SeedInitializer seedInitializer : seedInitializers) {
             try {
-                seedInitializer.onInitialization(configuration);
-                seedInitializers.add(seedInitializer);
+                seedInitializer.afterInitialization();
             } catch (Exception e) {
                 throw SeedException.wrap(e, CoreErrorCode.ERROR_IN_INITIALIZER)
                         .put("initializerClass", seedInitializer.getClass().getName());
@@ -346,13 +382,32 @@ public class Seed {
     }
 
     private void dispose() {
-        seedInitializers.forEach(SeedInitializer::onClose);
-        proxyManager.uninstall();
-        validatorFactory.close();
-        consoleManager.uninstall();
-        logManager.close();
-        Thread.setDefaultUncaughtExceptionHandler(null);
         markDisposed();
+
+        // Trigger onClose() in custom initializers
+        for (SeedInitializer seedInitializer : seedInitializers) {
+            try {
+                seedInitializer.onClose();
+            } catch (Exception e) {
+                throw SeedException.wrap(e, CoreErrorCode.ERROR_IN_INITIALIZER)
+                        .put("initializerClass", seedInitializer.getClass().getName());
+            }
+        }
+
+        // Uninstall global proxy handling
+        proxyManager.uninstall();
+
+        // Close validator factory
+        validatorFactory.close();
+
+        // Uninstall console enhancements
+        consoleManager.uninstall();
+
+        // Close logging subsystem
+        logManager.close();
+
+        // Remove default uncaught exception handler
+        Thread.setDefaultUncaughtExceptionHandler(null);
     }
 
     private static void markDisposed() {

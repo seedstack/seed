@@ -8,6 +8,7 @@
 package org.seedstack.seed.core.internal.configuration.tool;
 
 import org.fusesource.jansi.Ansi;
+import org.fusesource.jansi.AnsiRenderer;
 
 import java.io.PrintStream;
 
@@ -65,13 +66,36 @@ class TreePrinter {
                 .a(propertyInfo.isSingleValue() ? "~" : "")
                 .a(propertyInfo.isMandatory() ? "*" : "")
                 .a(propertyInfo.getName())
+                .reset();
+
+        Object defaultValue = propertyInfo.getDefaultValue();
+        if (defaultValue != null) {
+            String stringDefaultValue = String.valueOf(defaultValue);
+            if (!defaultToString(defaultValue).equals(stringDefaultValue)) {
+                ansi
+                        .a(" = ")
+                        .fgBright(Ansi.Color.GREEN)
+                        .a(defaultValue instanceof String ? String.format("\"%s\"", stringDefaultValue) : stringDefaultValue)
+                        .reset();
+            }
+        }
+
+        ansi
+                .fgBright(Ansi.Color.MAGENTA)
+                .a(" (")
+                .a(propertyInfo.getType())
+                .a(")")
                 .reset()
                 .a(": ")
-                .fgBright(Ansi.Color.MAGENTA)
-                .a(propertyInfo.getType())
-                .reset()
-                .a(". ")
-                .a(propertyInfo.getShortDescription())
+                .a(AnsiRenderer.render(propertyInfo.getShortDescription()))
                 .newline();
+
+        for (PropertyInfo child : propertyInfo.getInnerPropertyInfo().values()) {
+            printProperty(child, leftPadding + INDENTATION, ansi);
+        }
+    }
+
+    private static String defaultToString(Object o) {
+        return o.getClass().getName() + "@" + Integer.toHexString(o.hashCode());
     }
 }

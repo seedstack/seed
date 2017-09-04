@@ -7,20 +7,21 @@
  */
 package org.seedstack.seed.security.internal.fixtures;
 
+import org.seedstack.seed.it.ITBind;
 import org.seedstack.seed.security.RequiresPermissions;
 import org.seedstack.seed.security.RequiresRoles;
 
+@ITBind
 public class AnnotatedClass4Security {
+    final String place = "coruscant";
 
-	final String place = "coruscant";
-	
-	@RequiresRoles("jedi")
-	public boolean callTheForce() {
-		return true;
-	}
-	
-	@RequiresPermissions("academy:teach")
-	public boolean teach(){
-		return true;
-	}
+    @RequiresRoles("jedi")
+    public boolean callTheForce() {
+        return true;
+    }
+
+    @RequiresPermissions("academy:teach")
+    public boolean teach() {
+        return true;
+    }
 }

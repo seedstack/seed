@@ -108,7 +108,9 @@ public class CorePluginIT {
 
     @Test
     public void initializers_are_called() {
-        assertThat(TestSeedInitializer.getCallCount()).isEqualTo(1);
+        assertThat(TestSeedInitializer.getBeforeCallCount()).isEqualTo(1);
+        assertThat(TestSeedInitializer.getOnCallCount()).isEqualTo(1);
+        assertThat(TestSeedInitializer.getAfterCallCount()).isEqualTo(1);
     }
 
     @Test

@@ -14,12 +14,17 @@ import static java.lang.annotation.ElementType.METHOD;
 import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
+
 /**
- * Annotation that marks classes and methods which should be intercepted and checked for subject permissions.
+ * Annotation that marks classes and methods which should be intercepted and checked for subject permissions associated with
+ * an automatically inferred {@link CrudAction}. The CRUD action is added at the end of the permission. For instance, checking
+ * for permission "admin:users" will effectively check for "admin:users:create" if the inferred CRUD action of the method is
+ * {@link CrudAction#CREATE}.
  */
-@Target({TYPE, METHOD})
 @Retention(RUNTIME)
-public @interface RequiresPermissions {
+@Target({METHOD, TYPE})
+public @interface RequiresCrudPermissions {
+
     /**
      * @return the permissions to check for.
      */

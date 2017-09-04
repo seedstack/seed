@@ -7,7 +7,6 @@
  */
 package org.seedstack.seed.security.internal;
 
-import com.google.inject.AbstractModule;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.UsernamePasswordToken;
@@ -16,7 +15,6 @@ import org.apache.shiro.subject.Subject;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.seedstack.seed.Install;
 import org.seedstack.seed.it.SeedITRunner;
 import org.seedstack.seed.security.AuthorizationException;
 import org.seedstack.seed.security.SecuritySupport;
@@ -113,15 +111,5 @@ public class SecurityIT {
     @WithUser(id = "Anakin", password = "imsodark")
     public void Anakin_should_have_customized_principal() {
         Assertions.assertThat(Principals.getSimplePrincipalByName(securitySupport.getOtherPrincipals(), "foo").getValue()).isEqualTo("bar");
-    }
-
-    @Install
-    public static class securityTestModule extends AbstractModule {
-
-        @Override
-        protected void configure() {
-            bind(AnnotatedClass4Security.class);
-        }
-
     }
 }
