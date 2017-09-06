@@ -1,6 +1,6 @@
-# Version 3.3.1 (2017-09-15)
+# Version 3.3.1 (2017-09-06)
 
-* [new] Configuration dump (config tool) now dumps inner properties for maps, collections, arrays and complex objects.
+* [new] Configuration dump (`config` tool) now dumps inner properties for maps, collections, arrays and complex objects.
 * [new] Add `beforeInitialization()` and `afterInitialization()` methods on `SeedInitializer` interface.
 * [new] Add `isRemembered()` on `SecuritySupport` interface.
  
