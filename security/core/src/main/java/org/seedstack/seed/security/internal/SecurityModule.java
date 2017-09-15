@@ -21,6 +21,7 @@ import org.apache.shiro.mgt.SecurityManager;
 import org.seedstack.seed.SeedException;
 import org.seedstack.seed.security.Scope;
 import org.seedstack.seed.security.internal.securityexpr.SecurityExpressionModule;
+import org.seedstack.seed.security.spi.CrudActionResolver;
 
 import java.util.Collection;
 import java.util.Map;
@@ -35,18 +36,20 @@ class SecurityModule extends AbstractModule {
     private final SecurityConfigurer securityConfigurer;
     private final boolean elAvailable;
     private final Collection<SecurityProvider> securityProviders;
+    private final Collection<Class<? extends CrudActionResolver>> crudActionResolvers;
 
-    SecurityModule(SecurityConfigurer securityConfigurer, Map<String, Class<? extends Scope>> scopeClasses, boolean elAvailable, Collection<SecurityProvider> securityProviders) {
+    SecurityModule(SecurityConfigurer securityConfigurer, Map<String, Class<? extends Scope>> scopeClasses, boolean elAvailable, Collection<SecurityProvider> securityProviders, Collection<Class<? extends CrudActionResolver>> crudActionResolvers) {
         this.securityConfigurer = securityConfigurer;
         this.scopeClasses = scopeClasses;
         this.elAvailable = elAvailable;
         this.securityProviders = securityProviders;
+        this.crudActionResolvers = crudActionResolvers;
     }
 
     @Override
     protected void configure() {
         install(new SecurityInternalModule(securityConfigurer, scopeClasses));
-        install(new SecurityAopModule());
+        install(new SecurityAopModule(crudActionResolvers));
 
         if (elAvailable) {
             install(new SecurityExpressionModule());
@@ -71,7 +74,6 @@ class SecurityModule extends AbstractModule {
                 install(removeSecurityManager(additionalSecurityModule));
             }
         }
-
         install(mainModuleToInstall);
     }
 

@@ -15,6 +15,12 @@ security:
     Anakin:
       password: imsodark
       roles: [SEED.PADAWAN, OTHER.UNKNOWN.ROLE]
+    R2D2:
+      password: beep
+      roles: [SEED.RESTBOT]
+    C3P0:
+      password: ewokgod
+      roles: [SEED.RESTBOT.INTERPRETER]
     ThePoltergeist:
       password: bouh
       roles: [SEED.JEDI, SEED.MU.GHOST, SEED.SX.GHOST]
@@ -22,9 +28,13 @@ security:
   roles:
     padawan: SEED.PADAWAN
     jedi: SEED.JEDI
+    restbot: SEED.RESTBOT
+    interpreter: SEED.RESTBOT.INTERPRETER
     ghost: SEED.{scope}.GHOST
     nothing: '*'
   permissions:
     jedi: ['lightSaber:*', 'academy:*']
     padawan: 'academy:learn'
+    restbot: ['*:read', '*:update', '*:create', '*:delete' ] 
+    interpreter: '*:read'
     ghost: 'site:haunt'

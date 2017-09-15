@@ -7,102 +7,124 @@
  */
 package org.seedstack.seed.security.internal.authorization;
 
+import static org.mockito.Mockito.when;
+
 import org.aopalliance.intercept.MethodInvocation;
+import org.apache.shiro.subject.Subject;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.seedstack.seed.security.AuthorizationException;
 import org.seedstack.seed.security.Logical;
 import org.seedstack.seed.security.RequiresPermissions;
-import org.seedstack.seed.security.SecuritySupport;
+import org.seedstack.seed.security.internal.shiro.AbstractShiroTest;
 
-import static org.mockito.Mockito.when;
+public class RequiresPermissionsInterceptorTest extends AbstractShiroTest {
 
+  private RequiresPermissionsInterceptor underTest;
+  private Subject subjectUnderTest;
 
-public class RequiresPermissionsInterceptorTest {
+  @Before
+  public void setup() throws Exception {
+    subjectUnderTest = Mockito.mock(Subject.class);
+    setSubject(subjectUnderTest);
+  }
 
-    private RequiresPermissionsInterceptor underTest;
+  @After
+  public void tearDownSubject() {
+    clearSubject();
+  }
 
-    @Test
-    public void test_one_permission_ok() throws Throwable {
-        SecuritySupport securitySupport = Mockito.mock(SecuritySupport.class);
-        underTest = new RequiresPermissionsInterceptor(securitySupport);
+  @Test
+  public void test_one_permission_ok() throws Throwable {
 
-        MethodInvocation methodInvocation = Mockito.mock(MethodInvocation.class);
-        when(methodInvocation.getMethod()).thenReturn(RequiresPermissionsInterceptorTest.class.getMethod("securedMethod"));
+    underTest = new RequiresPermissionsInterceptor();
 
-        underTest.invoke(methodInvocation);
-    }
+    MethodInvocation methodInvocation = Mockito.mock(MethodInvocation.class);
+    when(methodInvocation.getMethod())
+        .thenReturn(RequiresPermissionsInterceptorTest.class.getMethod("securedMethod"));
 
-    @Test(expected = AuthorizationException.class)
-    public void test_one_permission_fail() throws Throwable {
-        SecuritySupport securitySupport = Mockito.mock(SecuritySupport.class);
-        Mockito.doThrow(new AuthorizationException()).when(securitySupport).checkPermission("CODE");
+    underTest.invoke(methodInvocation);
+  }
 
-        underTest = new RequiresPermissionsInterceptor(securitySupport);
-        MethodInvocation methodInvocation = Mockito.mock(MethodInvocation.class);
+  @Test(expected = AuthorizationException.class)
+  public void test_one_permission_fail() throws Throwable {
 
-        when(methodInvocation.getMethod()).thenReturn(RequiresPermissionsInterceptorTest.class.getMethod("securedMethod"));
-        underTest.invoke(methodInvocation);
-    }
+    Mockito.doThrow(new AuthorizationException()).when(subjectUnderTest).checkPermission("CODE");
 
-    @Test
-    public void test_or_permission_ok() throws Throwable {
-        SecuritySupport securitySupport = Mockito.mock(SecuritySupport.class);
-        Mockito.when(securitySupport.isPermitted("CODE")).thenReturn(true);
-        Mockito.when(securitySupport.isPermitted("EAT")).thenReturn(false);
+    underTest = new RequiresPermissionsInterceptor();
+    MethodInvocation methodInvocation = Mockito.mock(MethodInvocation.class);
 
-        underTest = new RequiresPermissionsInterceptor(securitySupport);
-        MethodInvocation methodInvocation = Mockito.mock(MethodInvocation.class);
+    when(methodInvocation.getMethod())
+        .thenReturn(RequiresPermissionsInterceptorTest.class.getMethod("securedMethod"));
+    underTest.invoke(methodInvocation);
+  }
 
-        when(methodInvocation.getMethod()).thenReturn(RequiresPermissionsInterceptorTest.class.getMethod("securedOrMethod"));
-        underTest.invoke(methodInvocation);
-    }
+  @Test
+  public void test_or_permission_ok() throws Throwable {
 
-    @Test(expected = AuthorizationException.class)
-    public void test_or_permission_fail() throws Throwable {
-        SecuritySupport securitySupport = Mockito.mock(SecuritySupport.class);
-        Mockito.when(securitySupport.isPermitted("CODE")).thenReturn(false);
-        Mockito.when(securitySupport.isPermitted("EAT")).thenReturn(false);
+    Mockito.when(subjectUnderTest.isPermitted("CODE")).thenReturn(true);
+    Mockito.when(subjectUnderTest.isPermitted("EAT")).thenReturn(false);
 
-        underTest = new RequiresPermissionsInterceptor(securitySupport);
-        MethodInvocation methodInvocation = Mockito.mock(MethodInvocation.class);
+    underTest = new RequiresPermissionsInterceptor();
+    MethodInvocation methodInvocation = Mockito.mock(MethodInvocation.class);
 
-        when(methodInvocation.getMethod()).thenReturn(RequiresPermissionsInterceptorTest.class.getMethod("securedOrMethod"));
-        underTest.invoke(methodInvocation);
-    }
+    when(methodInvocation.getMethod())
+        .thenReturn(RequiresPermissionsInterceptorTest.class.getMethod("securedOrMethod"));
+    underTest.invoke(methodInvocation);
+  }
 
-    @Test
-    public void test_and_permission_ok() throws Throwable {
-        SecuritySupport securitySupport = Mockito.mock(SecuritySupport.class);
-        Mockito.when(securitySupport.isPermitted("CODE")).thenReturn(true);
-        Mockito.when(securitySupport.isPermitted("EAT")).thenReturn(true);
+  @Test(expected = AuthorizationException.class)
+  public void test_or_permission_fail() throws Throwable {
 
-        underTest = new RequiresPermissionsInterceptor(securitySupport);
-        MethodInvocation methodInvocation = Mockito.mock(MethodInvocation.class);
+    Mockito.when(subjectUnderTest.isPermitted("CODE")).thenReturn(false);
+    Mockito.when(subjectUnderTest.isPermitted("EAT")).thenReturn(false);
 
-        when(methodInvocation.getMethod()).thenReturn(RequiresPermissionsInterceptorTest.class.getMethod("securedAndMethod"));
-        underTest.invoke(methodInvocation);
-    }
+    underTest = new RequiresPermissionsInterceptor();
+    MethodInvocation methodInvocation = Mockito.mock(MethodInvocation.class);
 
-    @Test(expected = AuthorizationException.class)
-    public void test_and_permission_fail() throws Throwable {
-        SecuritySupport securitySupport = Mockito.mock(SecuritySupport.class);
-        Mockito.doThrow(new AuthorizationException()).when(securitySupport).checkPermissions("CODE", "EAT");
+    when(methodInvocation.getMethod())
+        .thenReturn(RequiresPermissionsInterceptorTest.class.getMethod("securedOrMethod"));
+    underTest.invoke(methodInvocation);
+  }
 
-        underTest = new RequiresPermissionsInterceptor(securitySupport);
-        MethodInvocation methodInvocation = Mockito.mock(MethodInvocation.class);
+  @Test
+  public void test_and_permission_ok() throws Throwable {
 
-        when(methodInvocation.getMethod()).thenReturn(RequiresPermissionsInterceptorTest.class.getMethod("securedAndMethod"));
-        underTest.invoke(methodInvocation);
-    }
+    Mockito.when(subjectUnderTest.isPermittedAll("CODE", "EAT")).thenReturn(true);
 
-    @RequiresPermissions("CODE")
-    public void securedMethod() {
-    }
-    @RequiresPermissions(value = {"CODE", "EAT"}, logical = Logical.OR)
-    public void securedOrMethod() {
-    }
-    @RequiresPermissions(value = {"CODE", "EAT"}, logical = Logical.AND)
-    public void securedAndMethod() {
-    }
+    underTest = new RequiresPermissionsInterceptor();
+    MethodInvocation methodInvocation = Mockito.mock(MethodInvocation.class);
+
+    when(methodInvocation.getMethod())
+        .thenReturn(RequiresPermissionsInterceptorTest.class.getMethod("securedAndMethod"));
+    underTest.invoke(methodInvocation);
+  }
+
+  @Test(expected = AuthorizationException.class)
+  public void test_and_permission_fail() throws Throwable {
+
+    Mockito.doThrow(new AuthorizationException()).when(subjectUnderTest).checkPermissions("CODE",
+        "EAT");
+
+    underTest = new RequiresPermissionsInterceptor();
+    MethodInvocation methodInvocation = Mockito.mock(MethodInvocation.class);
+
+    when(methodInvocation.getMethod())
+        .thenReturn(RequiresPermissionsInterceptorTest.class.getMethod("securedAndMethod"));
+    underTest.invoke(methodInvocation);
+  }
+
+  @RequiresPermissions("CODE")
+  public void securedMethod() {
+  }
+
+  @RequiresPermissions(value = { "CODE", "EAT" }, logical = Logical.OR)
+  public void securedOrMethod() {
+  }
+
+  @RequiresPermissions(value = { "CODE", "EAT" }, logical = Logical.AND)
+  public void securedAndMethod() {
+  }
 }

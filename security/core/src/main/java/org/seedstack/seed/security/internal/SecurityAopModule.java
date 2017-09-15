@@ -9,15 +9,42 @@ package org.seedstack.seed.security.internal;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.matcher.Matchers;
+import com.google.inject.multibindings.Multibinder;
+import org.seedstack.seed.security.RequiresCrudPermissions;
 import org.seedstack.seed.security.RequiresPermissions;
 import org.seedstack.seed.security.RequiresRoles;
+import org.seedstack.seed.security.internal.authorization.RequiresCrudPermissionsInterceptor;
 import org.seedstack.seed.security.internal.authorization.RequiresPermissionsInterceptor;
 import org.seedstack.seed.security.internal.authorization.RequiresRolesInterceptor;
+import org.seedstack.seed.security.spi.CrudActionResolver;
+
+import java.util.Collection;
 
 class SecurityAopModule extends AbstractModule {
+    private final Collection<Class<? extends CrudActionResolver>> crudActionResolverClasses;
+
+    SecurityAopModule(final Collection<Class<? extends CrudActionResolver>> crudActionResolverClasses) {
+        this.crudActionResolverClasses = crudActionResolverClasses;
+    }
+
     @Override
     protected void configure() {
-        bindInterceptor(Matchers.any(), Matchers.annotatedWith(RequiresRoles.class), new RequiresRolesInterceptor(new ShiroSecuritySupport()));
-        bindInterceptor(Matchers.any(), Matchers.annotatedWith(RequiresPermissions.class), new RequiresPermissionsInterceptor(new ShiroSecuritySupport()));
+        bindInterceptor(Matchers.any(), Matchers.annotatedWith(RequiresRoles.class), new RequiresRolesInterceptor());
+        bindInterceptor(Matchers.any(), Matchers.annotatedWith(RequiresPermissions.class), new RequiresPermissionsInterceptor());
+        bindCrudInterceptor();
+    }
+
+    private void bindCrudInterceptor() {
+        Multibinder<CrudActionResolver> crudActionResolverMultibinder = Multibinder.newSetBinder(binder(), CrudActionResolver.class);
+        for (Class<? extends CrudActionResolver> crudActionResolverClass : crudActionResolverClasses) {
+            crudActionResolverMultibinder.addBinding().to(crudActionResolverClass);
+        }
+
+        RequiresCrudPermissionsInterceptor requiresCrudPermissionsInterceptor = new RequiresCrudPermissionsInterceptor();
+        requestInjection(requiresCrudPermissionsInterceptor);
+
+        // Allows a single annotation at class level, or multiple annotations / one per method
+        bindInterceptor(Matchers.annotatedWith(RequiresCrudPermissions.class), Matchers.any(), requiresCrudPermissionsInterceptor);
+        bindInterceptor(Matchers.any(), Matchers.annotatedWith(RequiresCrudPermissions.class), requiresCrudPermissionsInterceptor);
     }
 }
