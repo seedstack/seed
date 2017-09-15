@@ -38,8 +38,11 @@ class ServletCrudActionResolver implements CrudActionResolver {
                     return Optional.of(CrudAction.UPDATE);
                 case "doTrace":
                     return Optional.of(CrudAction.READ);
+                default:
+                    return Optional.empty();
             }
+        } else {
+            return Optional.empty();
         }
-        return Optional.empty();
     }
 }
