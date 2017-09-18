@@ -79,6 +79,10 @@ public abstract class ClassConfiguration<T> {
         map.forEach(action);
     }
 
+    public Map<String, String> asMap() {
+        return Collections.unmodifiableMap(map);
+    }
+
     public ClassConfiguration<T> merge(ClassConfiguration<T> other) {
         if (!targetClass.isAssignableFrom(other.targetClass)) {
             throw new IllegalArgumentException("Cannot merge class configurations: " + targetClass.getName() + " is not assignable to " + other.targetClass.getName());
