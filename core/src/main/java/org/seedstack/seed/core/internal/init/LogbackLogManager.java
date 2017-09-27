@@ -1,11 +1,14 @@
-/**
- * Copyright (c) 2013-2016, The SeedStack authors <http://seedstack.org>
+/*
+ * Copyright © 2013-2017, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.core.internal.init;
+
+import static com.google.common.base.Strings.isNullOrEmpty;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
@@ -17,13 +20,10 @@ import ch.qos.logback.classic.util.ContextInitializer;
 import ch.qos.logback.core.ConsoleAppender;
 import ch.qos.logback.core.joran.spi.JoranException;
 import ch.qos.logback.core.joran.util.ConfigurationWatchListUtil;
+import java.util.Map;
 import org.seedstack.seed.LoggingConfig;
 import org.seedstack.shed.reflect.Classes;
 import org.slf4j.LoggerFactory;
-
-import java.util.Map;
-
-import static com.google.common.base.Strings.isNullOrEmpty;
 
 class LogbackLogManager implements LogManager {
     private final boolean underTomcat = Classes.optional("org.apache.catalina.startup.Catalina").isPresent();
@@ -51,7 +51,9 @@ class LogbackLogManager implements LogManager {
             context.reset();
 
             PatternLayoutEncoder encoder = new PatternLayoutEncoder();
-            encoder.setPattern(isNullOrEmpty(loggingConfig.getPattern()) ? "%highlight(%-5level) %d{ISO8601} %magenta(%-15thread) %cyan(%-40logger{40}) %msg%n%red(%throwable)" : loggingConfig.getPattern());
+            encoder.setPattern(isNullOrEmpty(
+                    loggingConfig.getPattern()) ? "%highlight(%-5level) %d{ISO8601} %magenta(%-15thread) %cyan"
+                    + "(%-40logger{40}) %msg%n%red(%throwable)" : loggingConfig.getPattern());
             encoder.setContext(context);
             encoder.start();
 
@@ -64,13 +66,16 @@ class LogbackLogManager implements LogManager {
             Logger nuunLogger = context.getLogger("io.nuun");
             nuunLogger.setLevel(Level.WARN);
 
-            if (underTomcat && (loggingConfig.getLevel() == LoggingConfig.Level.DEBUG || loggingConfig.getLevel() == LoggingConfig.Level.TRACE)) {
-                // When running under Tomcat with a LevelChangePropagator, DEBUG level and below lead to an exception so we force INFO level
+            if (underTomcat && (loggingConfig.getLevel() == LoggingConfig.Level.DEBUG || loggingConfig.getLevel() ==
+                    LoggingConfig.Level.TRACE)) {
+                // When running under Tomcat with a LevelChangePropagator, DEBUG level and below lead to an exception
+                // so we force INFO level
                 context.getLogger("org.apache.catalina").setLevel(Level.INFO);
                 context.getLogger("org.apache.juli").setLevel(Level.INFO);
             }
 
-            for (Map.Entry<String, LoggingConfig.LoggerConfig> loggerLevelEntry : loggingConfig.getLoggerConfigs().entrySet()) {
+            for (Map.Entry<String, LoggingConfig.LoggerConfig> loggerLevelEntry : loggingConfig.getLoggerConfigs()
+                    .entrySet()) {
                 Logger logger = context.getLogger(loggerLevelEntry.getKey());
                 LoggingConfig.LoggerConfig config = loggerLevelEntry.getValue();
                 logger.setLevel(convertLevel(config.getLevel()));

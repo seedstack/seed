@@ -1,19 +1,21 @@
-/**
- * Copyright (c) 2013-2016, The SeedStack authors <http://seedstack.org>
+/*
+ * Copyright © 2013-2017, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.web.spi;
 
-import javax.servlet.Servlet;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import javax.servlet.Servlet;
 
 /**
- * This class holds the full definition of a Servlet servlet. It can be returned as a collection element from {@link WebProvider#servlets()}
+ * This class holds the full definition of a Servlet servlet. It can be returned as a collection element from
+ * {@link WebProvider#servlets()}
  * to define the servlets that must be registered by Seed.
  */
 public class ServletDefinition extends AbstractDefinition {

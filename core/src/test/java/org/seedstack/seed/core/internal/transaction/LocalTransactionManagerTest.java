@@ -1,16 +1,12 @@
-/**
- * Copyright (c) 2013-2016, The SeedStack authors <http://seedstack.org>
+/*
+ * Copyright © 2013-2017, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-package org.seedstack.seed.core.internal.transaction;
 
-import org.junit.Test;
-import org.seedstack.seed.SeedException;
-import org.seedstack.seed.transaction.spi.TransactionManager;
-import org.seedstack.seed.transaction.spi.TransactionMetadata;
+package org.seedstack.seed.core.internal.transaction;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
@@ -18,6 +14,11 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
+import org.junit.Test;
+import org.seedstack.seed.SeedException;
+import org.seedstack.seed.transaction.spi.TransactionManager;
+import org.seedstack.seed.transaction.spi.TransactionMetadata;
 
 @SuppressWarnings("unchecked")
 public class LocalTransactionManagerTest extends AbstractTransactionManagerTest {

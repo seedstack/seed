@@ -1,21 +1,19 @@
-/**
- * Copyright (c) 2013-2016, The SeedStack authors <http://seedstack.org>
+/*
+ * Copyright © 2013-2017, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.web.internal.scan.tomcat;
 
-import com.google.common.collect.Lists;
-import org.junit.Before;
-import org.junit.Test;
-import org.reflections.vfs.Vfs;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Fail.fail;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
-import javax.naming.NameClassPair;
-import javax.naming.NamingEnumeration;
-import javax.naming.NamingException;
-import javax.naming.directory.DirContext;
+import com.google.common.collect.Lists;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -23,11 +21,13 @@ import java.net.URLConnection;
 import java.net.URLStreamHandler;
 import java.util.Iterator;
 import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Fail.fail;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import javax.naming.NameClassPair;
+import javax.naming.NamingEnumeration;
+import javax.naming.NamingException;
+import javax.naming.directory.DirContext;
+import org.junit.Before;
+import org.junit.Test;
+import org.reflections.vfs.Vfs;
 
 public class JndiInputDirTest {
     private URL goodURL;
@@ -43,15 +43,18 @@ public class JndiInputDirTest {
         DirContext bContext = mock(DirContext.class);
         DirContext aaContext = mock(DirContext.class);
 
-        when(rootContext.list("/")).thenReturn(new ListNamingEnumeration<>(Lists.newArrayList(new NameClassPair("A", "dummy"), new NameClassPair("B", "dummy"))));
+        when(rootContext.list("/")).thenReturn(new ListNamingEnumeration<>(
+                Lists.newArrayList(new NameClassPair("A", "dummy"), new NameClassPair("B", "dummy"))));
         when(rootContext.lookup("A")).thenReturn(aContext);
         when(rootContext.lookup("B")).thenReturn(bContext);
 
-        when(aContext.list("/")).thenReturn(new ListNamingEnumeration<>(Lists.newArrayList(new NameClassPair("AA", "dummy"), new NameClassPair("AB", "dummy"))));
+        when(aContext.list("/")).thenReturn(new ListNamingEnumeration<>(
+                Lists.newArrayList(new NameClassPair("AA", "dummy"), new NameClassPair("AB", "dummy"))));
         when(aContext.lookup("AA")).thenReturn(aaContext);
         when(aContext.lookup("AB")).thenReturn(new ResourceMock(abInputStream));
 
-        when(aaContext.list("/")).thenReturn(new ListNamingEnumeration<>(Lists.newArrayList(new NameClassPair("AAA", "dummy"))));
+        when(aaContext.list("/")).thenReturn(
+                new ListNamingEnumeration<>(Lists.newArrayList(new NameClassPair("AAA", "dummy"))));
         when(aaContext.lookup("AAA")).thenReturn(new ResourceMock(aaaInputStream));
 
         when(bContext.list("/")).thenReturn(new ListNamingEnumeration<>(Lists.newArrayList()));

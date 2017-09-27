@@ -1,10 +1,11 @@
-/**
- * Copyright (c) 2013-2016, The SeedStack authors <http://seedstack.org>
+/*
+ * Copyright © 2013-2017, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.security.internal.authorization;
 
 import org.apache.shiro.authz.Permission;
@@ -22,9 +23,8 @@ public class ScopePermission implements Permission {
 
     /**
      * Constructor with a permission
-     * 
-     * @param permission
-     *            the permission
+     *
+     * @param permission the permission
      */
     public ScopePermission(String permission) {
         this.permission = permission;
@@ -32,11 +32,9 @@ public class ScopePermission implements Permission {
 
     /**
      * Constructor with permissions and scope.
-     * 
-     * @param permission
-     *            the permission
-     * @param scope
-     *            the scope
+     *
+     * @param permission the permission
+     * @param scope      the scope
      */
     public ScopePermission(String permission, Scope scope) {
         this.permission = permission;
@@ -59,7 +57,7 @@ public class ScopePermission implements Permission {
 
     /**
      * Getter permission
-     * 
+     *
      * @return the permission
      */
     public String getPermission() {
@@ -68,7 +66,7 @@ public class ScopePermission implements Permission {
 
     /**
      * Getter scopes
-     * 
+     *
      * @return the scopes
      */
     public Scope getScope() {

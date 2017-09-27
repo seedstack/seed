@@ -1,21 +1,21 @@
-/**
- * Copyright (c) 2013-2016, The SeedStack authors <http://seedstack.org>
+/*
+ * Copyright © 2013-2017, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-package org.seedstack.seed.core.internal.cli;
 
-import org.apache.commons.cli.Option;
-import org.apache.commons.cli.Options;
-import org.seedstack.seed.cli.CliArgs;
-import org.seedstack.seed.cli.CliOption;
+package org.seedstack.seed.core.internal.cli;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import org.apache.commons.cli.Option;
+import org.apache.commons.cli.Options;
+import org.seedstack.seed.cli.CliArgs;
+import org.seedstack.seed.cli.CliOption;
 
 class CliModel {
     private final Options options = new Options();

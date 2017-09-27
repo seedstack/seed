@@ -1,23 +1,23 @@
-/**
- * Copyright (c) 2013-2016, The SeedStack authors <http://seedstack.org>
+/*
+ * Copyright © 2013-2017, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.core.internal.el;
 
-import com.google.common.base.Strings;
-import org.seedstack.seed.SeedException;
-import org.seedstack.seed.el.ELContextBuilder;
+import static com.google.common.base.Preconditions.checkArgument;
 
+import com.google.common.base.Strings;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import javax.el.ELContext;
 import javax.el.ExpressionFactory;
 import javax.inject.Inject;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-
-import static com.google.common.base.Preconditions.checkArgument;
+import org.seedstack.seed.SeedException;
+import org.seedstack.seed.el.ELContextBuilder;
 
 /**
  * Implementation of ELContextBuilder.
@@ -31,8 +31,10 @@ class ELContextBuilderImpl implements ELContextBuilder {
     static ELContext createDefaultELContext(ExpressionFactory expressionFactory) {
         if (ELPlugin.EL3_OPTIONAL.isPresent()) {
             try {
-                return ELPlugin.EL3_OPTIONAL.get().getConstructor(ExpressionFactory.class).newInstance(expressionFactory);
-            } catch (InvocationTargetException | NoSuchMethodException | IllegalAccessException | InstantiationException e) {
+                return ELPlugin.EL3_OPTIONAL.get().getConstructor(ExpressionFactory.class).newInstance(
+                        expressionFactory);
+            } catch (InvocationTargetException | NoSuchMethodException | IllegalAccessException |
+                    InstantiationException e) {
                 throw new RuntimeException("Unable to instantiate StandardELContext", e);
             }
         } else if (ELPlugin.JUEL_OPTIONAL.isPresent()) {
@@ -42,7 +44,8 @@ class ELContextBuilderImpl implements ELContextBuilder {
                 throw new RuntimeException("Unable to instantiate JUEL SimpleContext", e);
             }
         } else {
-            throw new UnsupportedOperationException("StandardELContext is not supported in this environment (EL level 3+ required)");
+            throw new UnsupportedOperationException(
+                    "StandardELContext is not supported in this environment (EL level 3+ required)");
         }
     }
 
@@ -78,15 +81,18 @@ class ELContextBuilderImpl implements ELContextBuilder {
             } else if (ELPlugin.JUEL_OPTIONAL.isPresent()) {
                 if (ELPlugin.JUEL_OPTIONAL.get().isAssignableFrom(elContext.getClass())) {
                     try {
-                        ELPlugin.JUEL_OPTIONAL.get().getMethod("setFunction", String.class, String.class, Method.class).invoke(elContext, prefix, localName, method);
+                        ELPlugin.JUEL_OPTIONAL.get().getMethod("setFunction", String.class, String.class,
+                                Method.class).invoke(elContext, prefix, localName, method);
                     } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
                         throw SeedException.wrap(e, ExpressionLanguageErrorCode.UNEXPECTED_EXCEPTION);
                     }
                 } else {
-                    throw new UnsupportedOperationException("At EL level 2, function mapping is only supported by JUEL SimpleContext");
+                    throw new UnsupportedOperationException(
+                            "At EL level 2, function mapping is only supported by JUEL SimpleContext");
                 }
             } else {
-                throw new UnsupportedOperationException("Function mapping is not supported in this environment (EL level 3+ required)");
+                throw new UnsupportedOperationException(
+                        "Function mapping is not supported in this environment (EL level 3+ required)");
             }
             return this;
         }

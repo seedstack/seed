@@ -1,16 +1,16 @@
-/**
- * Copyright (c) 2013-2016, The SeedStack authors <http://seedstack.org>
+/*
+ * Copyright © 2013-2017, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.diagnostic;
 
+import java.util.Map;
 import org.seedstack.seed.diagnostic.spi.DiagnosticInfoCollector;
 import org.seedstack.seed.diagnostic.spi.DiagnosticReporter;
-
-import java.util.Map;
 
 /**
  * The diagnostic manager enables to access diagnostic information or write it somewhere.
@@ -34,7 +34,8 @@ public interface DiagnosticManager {
     /**
      * Register a diagnostic collector.
      *
-     * @param domain the diagnostic collector domain which will be used root node in the diagnostic tree.
+     * @param domain                  the diagnostic collector domain which will be used root node in the diagnostic
+     *                                tree.
      * @param diagnosticInfoCollector the diagnostic collector to register.
      */
     void registerDiagnosticInfoCollector(String domain, DiagnosticInfoCollector diagnosticInfoCollector);

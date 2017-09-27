@@ -1,12 +1,17 @@
-/**
- * Copyright (c) 2013-2016, The SeedStack authors <http://seedstack.org>
+/*
+ * Copyright © 2013-2017, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.security.internal;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Map;
 import org.apache.shiro.util.CollectionUtils;
 import org.seedstack.seed.security.PrincipalCustomizer;
 import org.seedstack.seed.security.Realm;
@@ -19,11 +24,6 @@ import org.seedstack.seed.security.internal.authorization.EmptyRolePermissionRes
 import org.seedstack.seed.security.internal.authorization.SameRoleMapping;
 import org.seedstack.seed.security.internal.realms.ConfigurationRealm;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Map;
-
 class SecurityConfigurer {
     private static final String REALMS_KEY = "realms";
     private static final String ROLE_MAPPING_KEY = ".role-mapping";
@@ -34,8 +34,10 @@ class SecurityConfigurer {
     private static final Class<? extends RoleMapping> DEFAULT_ROLE_MAPPING = SameRoleMapping.class;
     private static final Class<? extends RoleMapping> CONFIGURATION_ROLE_MAPPING = ConfigurationRoleMapping.class;
 
-    private static final Class<? extends RolePermissionResolver> DEFAULT_ROLE_PERMISSION_RESOLVER = EmptyRolePermissionResolver.class;
-    private static final Class<? extends RolePermissionResolver> CONFIGURATION_ROLE_PERMISSION_RESOLVER = ConfigurationRolePermissionResolver.class;
+    private static final Class<? extends RolePermissionResolver> DEFAULT_ROLE_PERMISSION_RESOLVER =
+            EmptyRolePermissionResolver.class;
+    private static final Class<? extends RolePermissionResolver> CONFIGURATION_ROLE_PERMISSION_RESOLVER =
+            ConfigurationRolePermissionResolver.class;
 
     private final SecurityConfig securityConfig;
     private final Map<Class<?>, Collection<Class<?>>> securityClasses;
@@ -43,7 +45,7 @@ class SecurityConfigurer {
     private final Collection<RealmConfiguration> configurationRealms = new ArrayList<>();
 
     SecurityConfigurer(SecurityConfig securityConfig, Map<Class<?>, Collection<Class<?>>> securityClasses,
-                       Collection<Class<? extends PrincipalCustomizer<?>>> principalCustomizerClasses) {
+            Collection<Class<? extends PrincipalCustomizer<?>>> principalCustomizerClasses) {
         this.securityConfig = securityConfig;
         this.securityClasses = securityClasses;
         this.principalCustomizerClasses = principalCustomizerClasses;
@@ -77,9 +79,11 @@ class SecurityConfigurer {
             configurationRealms.add(confRealm);
         } else {
             for (SecurityConfig.RealmConfig realmConfig : securityConfig.getRealms()) {
-                Class<? extends Realm> realmClass = (Class<? extends Realm>) findClass(realmConfig.getName(), securityClasses.get(Realm.class));
+                Class<? extends Realm> realmClass = (Class<? extends Realm>) findClass(realmConfig.getName(),
+                        securityClasses.get(Realm.class));
                 if (realmClass == null) {
-                    throw new IllegalArgumentException("Unknown realm defined in property " + REALMS_KEY + " : " + realmConfig.getName());
+                    throw new IllegalArgumentException(
+                            "Unknown realm defined in property " + REALMS_KEY + " : " + realmConfig.getName());
                 }
                 RealmConfiguration confRealm = new RealmConfiguration(realmConfig.getName(), realmClass);
                 confRealm.setRolePermissionResolverClass(findRolePermissionResolver(realmConfig, confRealm));
@@ -89,7 +93,8 @@ class SecurityConfigurer {
         }
     }
 
-    private Class<? extends RolePermissionResolver> findRolePermissionResolver(SecurityConfig.RealmConfig realmConfig, RealmConfiguration realm) {
+    private Class<? extends RolePermissionResolver> findRolePermissionResolver(SecurityConfig.RealmConfig realmConfig,
+            RealmConfiguration realm) {
         if (realmConfig == null || realmConfig.getPermissionResolver() == null) {
             if (securityConfig.getPermissions().isEmpty()) {
                 return DEFAULT_ROLE_PERMISSION_RESOLVER;
@@ -99,7 +104,8 @@ class SecurityConfigurer {
         return findRealmComponent(realm.getName(), realmConfig.getPermissionResolver(), RolePermissionResolver.class);
     }
 
-    private Class<? extends RoleMapping> findRoleMapping(SecurityConfig.RealmConfig realmConfig, RealmConfiguration realm) {
+    private Class<? extends RoleMapping> findRoleMapping(SecurityConfig.RealmConfig realmConfig,
+            RealmConfiguration realm) {
         if (realmConfig == null || realmConfig.getRoleMapper() == null) {
             if (securityConfig.getRoles().isEmpty()) {
                 return DEFAULT_ROLE_MAPPING;
@@ -110,7 +116,8 @@ class SecurityConfigurer {
     }
 
     @SuppressWarnings("unchecked")
-    private <T> Class<? extends T> findRealmComponent(String realmName, String componentName, Class<? extends T> clazz) {
+    private <T> Class<? extends T> findRealmComponent(String realmName, String componentName,
+            Class<? extends T> clazz) {
         Class<? extends T> componentClass;
         if (CollectionUtils.isEmpty(securityClasses.get(clazz))) {
             throw new IllegalArgumentException("No class of type " + componentName + " were found");

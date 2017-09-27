@@ -1,13 +1,19 @@
-/**
- * Copyright (c) 2013-2016, The SeedStack authors <http://seedstack.org>
+/*
+ * Copyright © 2013-2017, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.web.security;
 
+import static com.jayway.restassured.RestAssured.expect;
+import static com.jayway.restassured.RestAssured.given;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import com.jayway.restassured.http.ContentType;
+import java.net.URL;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.test.api.ArquillianResource;
@@ -16,12 +22,6 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.After;
 import org.junit.Test;
 import org.seedstack.seed.it.AbstractSeedWebIT;
-
-import java.net.URL;
-
-import static com.jayway.restassured.RestAssured.expect;
-import static com.jayway.restassured.RestAssured.given;
-import static org.assertj.core.api.Assertions.assertThat;
 
 public class SecurityWebIT extends AbstractSeedWebIT {
     @ArquillianResource
@@ -52,14 +52,18 @@ public class SecurityWebIT extends AbstractSeedWebIT {
 
     @Test
     @RunAsClient
-    public void request_on_secured_resource_with_good_basicauth_should_send_200_on_authorized_resource() throws Exception {
-        given().auth().basic("Obiwan", "yodarulez").expect().statusCode(200).when().get(baseURL.toString() + "jediCouncil.html");
+    public void request_on_secured_resource_with_good_basicauth_should_send_200_on_authorized_resource() throws
+            Exception {
+        given().auth().basic("Obiwan", "yodarulez").expect().statusCode(200).when().get(
+                baseURL.toString() + "jediCouncil.html");
     }
 
     @Test
     @RunAsClient
-    public void request_on_secured_resource_with_good_basicauth_should_send_401_on_forbidden_resource() throws Exception {
-        given().auth().basic("Anakin", "imsodark").expect().statusCode(401).when().get(baseURL.toString() + "jediCouncil.html");
+    public void request_on_secured_resource_with_good_basicauth_should_send_401_on_forbidden_resource() throws
+            Exception {
+        given().auth().basic("Anakin", "imsodark").expect().statusCode(401).when().get(
+                baseURL.toString() + "jediCouncil.html");
     }
 
     @Test
@@ -77,13 +81,15 @@ public class SecurityWebIT extends AbstractSeedWebIT {
     @Test
     @RunAsClient
     public void logout_should_redirect() throws Exception {
-        assertThat(expect().statusCode(200).when().get(baseURL.toString() + "logout").body().asString()).contains("You are logged out!");
+        assertThat(expect().statusCode(200).when().get(baseURL.toString() + "logout").body().asString()).contains(
+                "You are logged out!");
     }
 
     @Test
     @RunAsClient
     public void authc_should_redirect_to_login() throws Exception {
-        assertThat(expect().statusCode(200).when().get(baseURL.toString() + "protected").body().asString()).contains("Please login:");
+        assertThat(expect().statusCode(200).when().get(baseURL.toString() + "protected").body().asString()).contains(
+                "Please login:");
     }
 
     @Test

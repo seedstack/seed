@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2013-2016, The SeedStack authors <http://seedstack.org>
+/*
+ * Copyright © 2013-2017, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -17,7 +17,8 @@ final class ByteArrays {
     }
 
     /**
-     * Compares two byte arrays in length-constant time. This comparison method is used so that password hashes cannot be extracted from an on-line
+     * Compares two byte arrays in length-constant time. This comparison method is used so that password hashes
+     * cannot be extracted from an on-line
      * system using a timing attack and then attacked off-line.
      *
      * @param a the first byte array

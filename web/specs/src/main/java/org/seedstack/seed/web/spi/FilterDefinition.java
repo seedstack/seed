@@ -1,21 +1,23 @@
-/**
- * Copyright (c) 2013-2016, The SeedStack authors <http://seedstack.org>
+/*
+ * Copyright © 2013-2017, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.web.spi;
 
-import javax.servlet.DispatcherType;
-import javax.servlet.Filter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.List;
+import javax.servlet.DispatcherType;
+import javax.servlet.Filter;
 
 /**
- * This class holds the full definition of a Servlet filter. It can be returned as a collection element from {@link WebProvider#filters()}
+ * This class holds the full definition of a Servlet filter. It can be returned as a collection element from
+ * {@link WebProvider#filters()}
  * to define the filters that must be registered by Seed.
  */
 public class FilterDefinition extends AbstractDefinition {

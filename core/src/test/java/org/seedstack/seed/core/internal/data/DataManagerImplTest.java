@@ -1,14 +1,22 @@
-/**
- * Copyright (c) 2013-2016, The SeedStack authors <http://seedstack.org>
+/*
+ * Copyright © 2013-2017, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.core.internal.data;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.inject.Injector;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.nio.charset.Charset;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.internal.util.reflection.Whitebox;
@@ -20,16 +28,11 @@ import org.seedstack.seed.core.fixtures.data.TestDataImporter;
 import org.seedstack.seed.core.fixtures.data.TestDataImporter2;
 import org.skyscreamer.jsonassert.JSONAssert;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.nio.charset.Charset;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
 public class DataManagerImplTest {
-    public static final String ACTUAL_JSON = "[{\"group\":\"group1\",\"name\":\"test1\",\"items\":[{\"firstName\":\"toto\",\"lastName\":\"titi\"},{\"firstName\":\"machin\",\"lastName\":\"truc\"}]},{\"group\":\"group1\",\"name\":\"test2\",\"items\":[{\"firstName\":\"toto2\",\"lastName\":\"titi2\",\"age\":12}]}]";
+    public static final String ACTUAL_JSON = "[{\"group\":\"group1\",\"name\":\"test1\","
+            + "\"items\":[{\"firstName\":\"toto\",\"lastName\":\"titi\"},{\"firstName\":\"machin\","
+            + "\"lastName\":\"truc\"}]},{\"group\":\"group1\",\"name\":\"test2\",\"items\":[{\"firstName\":\"toto2\","
+            + "\"lastName\":\"titi2\",\"age\":12}]}]";
     private TestDataImporter testDataImporter;
     private TestDataImporter2 testDataImporter2;
     private TestDataExporter testDataExporter;
@@ -66,7 +69,8 @@ public class DataManagerImplTest {
     @Test
     public void data_are_imported_correctly() throws Exception {
         DataManagerImpl underTest = createDataManager();
-        underTest.importData(new ByteArrayInputStream(ACTUAL_JSON.getBytes(Charset.forName("UTF-8"))), null, null, true);
+        underTest.importData(new ByteArrayInputStream(ACTUAL_JSON.getBytes(Charset.forName("UTF-8"))), null, null,
+                true);
 
         assertThat(TestDataImporter.getData().size()).isEqualTo(2);
 
@@ -94,10 +98,15 @@ public class DataManagerImplTest {
     private DataManagerImpl createDataManager() {
         DataManagerImpl yamlDataService = new DataManagerImpl();
         Whitebox.setInternalState(yamlDataService, "injector", mockInjector());
-        Whitebox.setInternalState(yamlDataService, "allDataExporters", ImmutableMap.of("group1", ImmutableMap.of("test1", new DataExporterDefinition<>("test1", "group1", TestDTO.class, TestDataExporter.class), "test2", new DataExporterDefinition<>("test2", "group1", TestDTO2.class, TestDataExporter2.class))));
-        Whitebox.setInternalState(yamlDataService, "allDataImporters", ImmutableMap.of("group1", ImmutableMap.of("test1", new DataImporterDefinition<>("test1", "group1", TestDTO.class, TestDataImporter.class), "test2", new DataImporterDefinition<>("test2", "group1", TestDTO2.class, TestDataImporter2.class))));
+        Whitebox.setInternalState(yamlDataService, "allDataExporters", ImmutableMap.of("group1",
+                ImmutableMap.of("test1",
+                        new DataExporterDefinition<>("test1", "group1", TestDTO.class, TestDataExporter.class), "test2",
+                        new DataExporterDefinition<>("test2", "group1", TestDTO2.class, TestDataExporter2.class))));
+        Whitebox.setInternalState(yamlDataService, "allDataImporters", ImmutableMap.of("group1",
+                ImmutableMap.of("test1",
+                        new DataImporterDefinition<>("test1", "group1", TestDTO.class, TestDataImporter.class), "test2",
+                        new DataImporterDefinition<>("test2", "group1", TestDTO2.class, TestDataImporter2.class))));
         return yamlDataService;
     }
-
 
 }

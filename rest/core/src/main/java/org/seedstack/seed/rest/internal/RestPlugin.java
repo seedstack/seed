@@ -1,10 +1,11 @@
-/**
- * Copyright (c) 2013-2016, The SeedStack authors <http://seedstack.org>
+/*
+ * Copyright © 2013-2017, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.rest.internal;
 
 import com.fasterxml.jackson.jaxrs.base.JsonMappingExceptionMapper;
@@ -15,6 +16,15 @@ import com.google.inject.AbstractModule;
 import io.nuun.kernel.api.plugin.InitState;
 import io.nuun.kernel.api.plugin.context.InitContext;
 import io.nuun.kernel.api.plugin.request.ClasspathScanRequest;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
+import javax.servlet.ServletContext;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Variant;
 import org.kametic.specifications.Specification;
 import org.seedstack.seed.core.SeedRuntime;
 import org.seedstack.seed.core.internal.AbstractSeedPlugin;
@@ -30,16 +40,6 @@ import org.seedstack.seed.rest.internal.jsonhome.JsonHomeRootResource;
 import org.seedstack.seed.rest.internal.jsonhome.Resource;
 import org.seedstack.seed.rest.spi.RestProvider;
 import org.seedstack.seed.rest.spi.RootResource;
-
-import javax.servlet.ServletContext;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Variant;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
 
 public class RestPlugin extends AbstractSeedPlugin implements RestProvider {
     private final Map<Variant, Class<? extends RootResource>> rootResourcesByVariant = new HashMap<>();
@@ -85,8 +85,10 @@ public class RestPlugin extends AbstractSeedPlugin implements RestProvider {
             configureExceptionMappers();
 
             if (restConfig.isJsonHome()) {
-                // The typed locale parameter resolves constructor ambiguity when the JAX-RS 2.0 spec is in the classpath
-                addRootResourceVariant(new Variant(new MediaType("application", "json"), (Locale) null, null), JsonHomeRootResource.class);
+                // The typed locale parameter resolves constructor ambiguity when the JAX-RS 2.0 spec is in the
+                // classpath
+                addRootResourceVariant(new Variant(new MediaType("application", "json"), (Locale) null, null),
+                        JsonHomeRootResource.class);
             }
 
             enabled = true;
@@ -129,7 +131,8 @@ public class RestPlugin extends AbstractSeedPlugin implements RestProvider {
             protected void configure() {
                 install(new HypermediaModule(jsonHome, relRegistry));
                 if (enabled) {
-                    install(new RestModule(restConfig, filterResourceClasses(resources), providers, rootResourcesByVariant));
+                    install(new RestModule(restConfig, filterResourceClasses(resources), providers,
+                            rootResourcesByVariant));
                 }
             }
         };

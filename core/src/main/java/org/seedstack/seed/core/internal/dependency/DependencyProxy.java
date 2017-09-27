@@ -1,28 +1,29 @@
-/**
- * Copyright (c) 2013-2016, The SeedStack authors <http://seedstack.org>
+/*
+ * Copyright © 2013-2017, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.core.internal.dependency;
 
-import org.seedstack.seed.SeedException;
-import org.seedstack.seed.core.internal.CoreErrorCode;
+import static org.seedstack.shed.reflect.ReflectUtils.makeAccessible;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
-
-import static org.seedstack.shed.reflect.ReflectUtils.makeAccessible;
+import org.seedstack.seed.SeedException;
+import org.seedstack.seed.core.internal.CoreErrorCode;
 
 /**
  * Proxy to implement interfaces. Override each method to proxy (method from the interface).<br>
  * For example: to create a proxy for a Gauge interface
  *
  * <pre>
- * DependencyProxy&lt;Gauge&lt;Long&gt;&gt; pgauge = new DependencyProxy&lt;Gauge&lt;Long&gt;&gt;(new Class[]{Gauge.class}, new ProxyMethodReplacer() {
+ * DependencyProxy&lt;Gauge&lt;Long&gt;&gt; pgauge = new DependencyProxy&lt;Gauge&lt;Long&gt;&gt;(new Class[]{Gauge
+ * .class}, new ProxyMethodReplacer() {
  *   public Long getValue(){
  *      return RandomUtils.nextLong();
  *   }

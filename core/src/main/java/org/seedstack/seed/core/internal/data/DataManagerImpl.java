@@ -1,10 +1,11 @@
-/**
- * Copyright (c) 2013-2016, The SeedStack authors <http://seedstack.org>
+/*
+ * Copyright © 2013-2017, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.core.internal.data;
 
 import com.fasterxml.jackson.core.JsonFactory;
@@ -16,12 +17,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.google.common.collect.Lists;
 import com.google.inject.Injector;
-import org.seedstack.seed.DataExporter;
-import org.seedstack.seed.DataImporter;
-import org.seedstack.seed.DataManager;
-import org.seedstack.seed.SeedException;
-
-import javax.inject.Inject;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -34,6 +29,11 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import javax.inject.Inject;
+import org.seedstack.seed.DataExporter;
+import org.seedstack.seed.DataImporter;
+import org.seedstack.seed.DataManager;
+import org.seedstack.seed.SeedException;
 
 /**
  * Implementation of the {@link DataManager}.
@@ -46,18 +46,14 @@ class DataManagerImpl implements DataManager {
     private static final String NAME = "name";
     private static final String ITEMS = "items";
     private static final String CLASSES_MAP_KEY = "%s:%s";
-
-    @Inject
-    private Map<String, Map<String, DataExporterDefinition<Object>>> allDataExporters;
-
-    @Inject
-    private Map<String, Map<String, DataImporterDefinition<Object>>> allDataImporters;
-
-    @Inject
-    private Injector injector;
-
     private final JsonFactory jsonFactory;
     private final ObjectMapper objectMapper;
+    @Inject
+    private Map<String, Map<String, DataExporterDefinition<Object>>> allDataExporters;
+    @Inject
+    private Map<String, Map<String, DataImporterDefinition<Object>>> allDataImporters;
+    @Inject
+    private Injector injector;
 
     DataManagerImpl() {
         this.jsonFactory = new JsonFactory();
@@ -90,13 +86,15 @@ class DataManagerImpl implements DataManager {
         Map<String, DataExporterDefinition<Object>> dataExporterDefinitionMap = allDataExporters.get(group);
 
         if (dataExporterDefinitionMap == null) {
-            throw SeedException.createNew(DataErrorCode.NO_EXPORTER_FOUND).put(DATA_SET, String.format(CLASSES_MAP_KEY, group, name));
+            throw SeedException.createNew(DataErrorCode.NO_EXPORTER_FOUND).put(DATA_SET,
+                    String.format(CLASSES_MAP_KEY, group, name));
         }
 
         DataExporterDefinition<Object> dataExporterDefinition = dataExporterDefinitionMap.get(name);
 
         if (dataExporterDefinition == null) {
-            throw SeedException.createNew(DataErrorCode.NO_EXPORTER_FOUND).put(DATA_SET, String.format(CLASSES_MAP_KEY, group, name));
+            throw SeedException.createNew(DataErrorCode.NO_EXPORTER_FOUND).put(DATA_SET,
+                    String.format(CLASSES_MAP_KEY, group, name));
         }
 
         dumpAll(Lists.newArrayList(new DataSetMarker(
@@ -113,7 +111,8 @@ class DataManagerImpl implements DataManager {
         for (Map<String, DataExporterDefinition<Object>> dataExporterDefinitionMap : allDataExporters.values()) {
             for (DataExporterDefinition<Object> dataExporterDefinition : dataExporterDefinitionMap.values()) {
                 DataExporter<Object> dataExporter = injector.getInstance(dataExporterDefinition.getDataExporterClass());
-                dataSets.add(new DataSetMarker<>(dataExporterDefinition.getGroup(), dataExporterDefinition.getName(), dataExporter.exportData()));
+                dataSets.add(new DataSetMarker<>(dataExporterDefinition.getGroup(), dataExporterDefinition.getName(),
+                        dataExporter.exportData()));
             }
         }
 
@@ -128,7 +127,8 @@ class DataManagerImpl implements DataManager {
             ParsingState state = ParsingState.START;
             String group = null;
             String name = null;
-            JsonParser jsonParser = this.jsonFactory.createParser(new InputStreamReader(inputStream, Charset.forName(UTF_8)));
+            JsonParser jsonParser = this.jsonFactory.createParser(
+                    new InputStreamReader(inputStream, Charset.forName(UTF_8)));
             JsonToken jsonToken = jsonParser.nextToken();
 
             while (jsonToken != null) {
@@ -234,7 +234,8 @@ class DataManagerImpl implements DataManager {
                 .put("offset", jsonLocation.getCharOffset());
     }
 
-    private DataImporter<Object> consumeItems(JsonParser jsonParser, String group, String name, String acceptGroup, String acceptName) throws IOException {
+    private DataImporter<Object> consumeItems(JsonParser jsonParser, String group, String name, String acceptGroup,
+            String acceptName) throws IOException {
 
         Map<String, DataImporterDefinition<Object>> dataImporterDefinitionMap = allDataImporters.get(group);
 
@@ -264,7 +265,6 @@ class DataManagerImpl implements DataManager {
                     .put(IMPORTER_CLASS, currentImporterDefinition.getDataImporterClass().getName());
         }
 
-
         DataImporter<Object> currentDataImporter = null;
         if ((acceptGroup == null || acceptGroup.equals(group)) && (acceptName == null || acceptName.equals(name))) {
 
@@ -281,7 +281,6 @@ class DataManagerImpl implements DataManager {
             // If the array is not empty consume it
             if (jsonParser.getCurrentToken() != JsonToken.END_ARRAY) {
                 Iterator<Object> objectIterator = jsonParser.readValuesAs(currentImporterDefinition.getImportedClass());
-
 
                 while (objectIterator.hasNext()) {
                     currentDataImporter.importData(objectIterator.next());
@@ -318,7 +317,8 @@ class DataManagerImpl implements DataManager {
 
     private void dumpAll(List<DataSetMarker<Object>> dataSetMarker, OutputStream outputStream) {
         try {
-            JsonGenerator jsonGenerator = this.jsonFactory.createGenerator(new OutputStreamWriter(outputStream, Charset.forName(UTF_8)));
+            JsonGenerator jsonGenerator = this.jsonFactory.createGenerator(
+                    new OutputStreamWriter(outputStream, Charset.forName(UTF_8)));
             ObjectWriter objectWriter = objectMapper.writer();
 
             jsonGenerator.writeStartArray();

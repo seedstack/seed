@@ -1,12 +1,17 @@
-/**
- * Copyright (c) 2013-2016, The SeedStack authors <http://seedstack.org>
+/*
+ * Copyright © 2013-2017, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.core;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.io.ByteArrayOutputStream;
+import javax.inject.Inject;
 import org.assertj.core.api.Assertions;
 import org.junit.Rule;
 import org.junit.Test;
@@ -16,12 +21,6 @@ import org.seedstack.seed.core.fixtures.data.TestDataImporter;
 import org.seedstack.seed.core.fixtures.data.TestDataImporter2;
 import org.seedstack.seed.core.rules.SeedITRule;
 import org.seedstack.shed.ClassLoaders;
-
-import javax.inject.Inject;
-import java.io.ByteArrayOutputStream;
-
-import static org.assertj.core.api.Assertions.assertThat;
-
 
 public class DataManagerIT {
     @Rule
@@ -47,7 +46,9 @@ public class DataManagerIT {
 
     @Test
     public void data_are_imported_correctly() throws Exception {
-        dataManager.importData(ClassLoaders.findMostCompleteClassLoader(DataManagerIT.class).getResourceAsStream("test_data.json"), null, null, true);
+        dataManager.importData(
+                ClassLoaders.findMostCompleteClassLoader(DataManagerIT.class).getResourceAsStream("test_data.json"),
+                null, null, true);
 
         assertThat(TestDataImporter.getData().size()).isEqualTo(2);
 
@@ -58,9 +59,9 @@ public class DataManagerIT {
         assertThat(TestDataImporter.getData().get(1).getLastName()).isEqualTo("truc");
 
         assertThat(TestDataImporter2.getData().size()).isEqualTo(0);
-//
-//        assertThat(TestDataImporter2.getData().get(0).getFirstName()).isEqualTo("toto2");
-//        assertThat(TestDataImporter2.getData().get(0).getLastName()).isEqualTo("titi2");
+        //
+        //        assertThat(TestDataImporter2.getData().get(0).getFirstName()).isEqualTo("toto2");
+        //        assertThat(TestDataImporter2.getData().get(0).getLastName()).isEqualTo("titi2");
     }
 
     @Test

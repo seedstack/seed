@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2013-2016, The SeedStack authors <http://seedstack.org>
+/*
+ * Copyright © 2013-2017, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -8,6 +8,13 @@
 
 package org.seedstack.seed.web.internal.scan.websphere;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.net.URLConnection;
+import java.net.URLStreamHandler;
+import java.util.jar.JarInputStream;
+import java.util.zip.ZipEntry;
 import mockit.Deencapsulation;
 import mockit.Expectations;
 import mockit.Mock;
@@ -18,14 +25,6 @@ import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.reflections.vfs.Vfs;
 import org.seedstack.seed.SeedException;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
-import java.net.URLConnection;
-import java.net.URLStreamHandler;
-import java.util.jar.JarInputStream;
-import java.util.zip.ZipEntry;
 
 public class WsInputDirTest {
 
@@ -83,7 +82,7 @@ public class WsInputDirTest {
         jarInputDir.getFiles();
 
         for (@SuppressWarnings("unused")
-        Vfs.File file : jarInputDir.getFiles()) {
+                Vfs.File file : jarInputDir.getFiles()) {
             // nothing to check
         }
 
@@ -127,7 +126,7 @@ public class WsInputDirTest {
         jarInputDir.getFiles();
 
         for (@SuppressWarnings("unused")
-        Vfs.File file : jarInputDir.getFiles()) {
+                Vfs.File file : jarInputDir.getFiles()) {
             // nothing to check
         }
 
@@ -178,7 +177,7 @@ public class WsInputDirTest {
         jarInputDir.getFiles();
 
         for (@SuppressWarnings("unused")
-        Vfs.File file : jarInputDir.getFiles()) {
+                Vfs.File file : jarInputDir.getFiles()) {
             // nothing to check
         }
     }

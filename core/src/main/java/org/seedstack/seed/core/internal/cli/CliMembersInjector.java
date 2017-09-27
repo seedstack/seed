@@ -1,14 +1,22 @@
-/**
- * Copyright (c) 2013-2016, The SeedStack authors <http://seedstack.org>
+/*
+ * Copyright © 2013-2017, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.core.internal.cli;
+
+import static org.seedstack.shed.reflect.ReflectUtils.makeAccessible;
 
 import com.google.common.base.Joiner;
 import com.google.inject.MembersInjector;
+import java.lang.reflect.Field;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
@@ -17,14 +25,6 @@ import org.apache.commons.cli.ParseException;
 import org.seedstack.seed.SeedException;
 import org.seedstack.seed.cli.CliContext;
 import org.seedstack.seed.cli.CliOption;
-
-import java.lang.reflect.Field;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import static org.seedstack.shed.reflect.ReflectUtils.makeAccessible;
 
 /**
  * Guice members injector that inject logger instances.

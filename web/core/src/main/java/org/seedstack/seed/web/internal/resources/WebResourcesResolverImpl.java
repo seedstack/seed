@@ -1,13 +1,23 @@
-/**
- * Copyright (c) 2013-2016, The SeedStack authors <http://seedstack.org>
+/*
+ * Copyright © 2013-2017, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.web.internal.resources;
 
 import com.google.inject.assistedinject.Assisted;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import javax.activation.MimetypesFileTypeMap;
+import javax.inject.Inject;
+import javax.servlet.ServletContext;
 import org.seedstack.seed.Application;
 import org.seedstack.seed.SeedException;
 import org.seedstack.seed.web.ResourceInfo;
@@ -18,16 +28,6 @@ import org.seedstack.seed.web.internal.WebErrorCode;
 import org.seedstack.shed.ClassLoaders;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import javax.activation.MimetypesFileTypeMap;
-import javax.inject.Inject;
-import javax.servlet.ServletContext;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 class WebResourcesResolverImpl implements WebResourceResolver {
     private static final Logger LOGGER = LoggerFactory.getLogger(WebResourcesResolverImpl.class);
@@ -52,7 +52,8 @@ class WebResourcesResolverImpl implements WebResourceResolver {
 
     @Inject
     WebResourcesResolverImpl(final Application application, @Assisted ServletContext servletContext) {
-        WebConfig.StaticResourcesConfig staticResourcesConfig = application.getConfiguration().get(WebConfig.class).staticResources();
+        WebConfig.StaticResourcesConfig staticResourcesConfig = application.getConfiguration().get(
+                WebConfig.class).staticResources();
         this.servletContext = servletContext;
         this.classLoader = ClassLoaders.findMostCompleteClassLoader(WebResourcesResolverImpl.class);
         this.mimetypesFileTypeMap = new MimetypesFileTypeMap();
@@ -115,7 +116,8 @@ class WebResourcesResolverImpl implements WebResourceResolver {
 
         // search in classpath last
         if (resourceRequest.isAcceptGzip() && serveGzippedResources) {
-            resourceUrl = classLoader.getResource(CLASSPATH_LOCATION + matcher.replaceAll(MINIFIED_GZIPPED_EXT_PATTERN));
+            resourceUrl = classLoader.getResource(
+                    CLASSPATH_LOCATION + matcher.replaceAll(MINIFIED_GZIPPED_EXT_PATTERN));
             if (serveMinifiedResources && resourceUrl != null) {
                 return new ResourceInfo(resourceUrl, true, contentType);
             }
@@ -173,6 +175,7 @@ class WebResourcesResolverImpl implements WebResourceResolver {
         return serveGzippedResources &&
                 onTheFlyGzipping &&
                 !resourceInfo.isGzipped() &&
-                (resourceInfo.getContentType().startsWith("text/") || "application/json".equals(resourceInfo.getContentType()));
+                (resourceInfo.getContentType().startsWith("text/") || "application/json".equals(
+                        resourceInfo.getContentType()));
     }
 }

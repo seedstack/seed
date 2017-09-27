@@ -1,26 +1,26 @@
-/**
- * Copyright (c) 2013-2016, The SeedStack authors <http://seedstack.org>
+/*
+ * Copyright © 2013-2017, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.core;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.seedstack.seed.diagnostic.DiagnosticManager;
-import org.seedstack.shed.exception.ErrorCode;
-import org.seedstack.seed.SeedException;
-import org.seedstack.seed.core.rules.SeedITRule;
+import static org.assertj.core.api.Assertions.assertThat;
 
-import javax.inject.Inject;
 import java.net.URL;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import static org.assertj.core.api.Assertions.assertThat;
+import javax.inject.Inject;
+import org.junit.Rule;
+import org.junit.Test;
+import org.seedstack.seed.SeedException;
+import org.seedstack.seed.core.rules.SeedITRule;
+import org.seedstack.seed.diagnostic.DiagnosticManager;
+import org.seedstack.shed.exception.ErrorCode;
 
 public class DiagnosticManagerIT {
     @Rule
@@ -77,7 +77,6 @@ public class DiagnosticManagerIT {
         assertThat((String) (seedInfo.get("contextClass"))).isNotEmpty();
         assertThat(seedInfo.get("configuration")).isNotNull();
     }
-
 
     @Test
     @SuppressWarnings("unchecked")

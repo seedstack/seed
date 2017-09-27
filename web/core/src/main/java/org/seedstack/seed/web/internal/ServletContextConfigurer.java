@@ -1,22 +1,22 @@
-/**
- * Copyright (c) 2013-2016, The SeedStack authors <http://seedstack.org>
+/*
+ * Copyright © 2013-2017, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.web.internal;
 
 import com.google.inject.Injector;
+import javax.servlet.FilterRegistration;
+import javax.servlet.ServletContext;
+import javax.servlet.ServletRegistration;
 import org.seedstack.seed.web.spi.FilterDefinition;
 import org.seedstack.seed.web.spi.ListenerDefinition;
 import org.seedstack.seed.web.spi.ServletDefinition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import javax.servlet.FilterRegistration;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletRegistration;
 
 class ServletContextConfigurer {
     private static final Logger LOGGER = LoggerFactory.getLogger(ServletContextConfigurer.class);
@@ -37,14 +37,19 @@ class ServletContextConfigurer {
         if (filterRegistration != null) {
             filterRegistration.setAsyncSupported(filterDefinition.isAsyncSupported());
             for (FilterDefinition.Mapping mapping : filterDefinition.getServletMappings()) {
-                filterRegistration.addMappingForServletNames(mapping.getDispatcherTypes(), mapping.isMatchAfter(), mapping.getValues());
+                filterRegistration.addMappingForServletNames(mapping.getDispatcherTypes(), mapping.isMatchAfter(),
+                        mapping.getValues());
             }
             for (FilterDefinition.Mapping mapping : filterDefinition.getMappings()) {
-                filterRegistration.addMappingForUrlPatterns(mapping.getDispatcherTypes(), mapping.isMatchAfter(), mapping.getValues());
+                filterRegistration.addMappingForUrlPatterns(mapping.getDispatcherTypes(), mapping.isMatchAfter(),
+                        mapping.getValues());
             }
             filterRegistration.setInitParameters(filterDefinition.getInitParameters());
         } else {
-            LOGGER.warn("Servlet filter {} was already registered by the container: injection and interception are not available. Consider adding a web.xml file with metadata-complete=true.", filterDefinition.getName());
+            LOGGER.warn(
+                    "Servlet filter {} was already registered by the container: injection and interception are not "
+                            + "available. Consider adding a web.xml file with metadata-complete=true.",
+                    filterDefinition.getName());
         }
     }
 
@@ -62,7 +67,10 @@ class ServletContextConfigurer {
             servletRegistration.setLoadOnStartup(servletDefinition.getLoadOnStartup());
             servletRegistration.setInitParameters(servletDefinition.getInitParameters());
         } else {
-            LOGGER.warn("Servlet {} was already registered by the container: injection and interception are not available. Consider adding a web.xml file with metadata-complete=true.", servletDefinition.getName());
+            LOGGER.warn(
+                    "Servlet {} was already registered by the container: injection and interception are not available"
+                            + ". Consider adding a web.xml file with metadata-complete=true.",
+                    servletDefinition.getName());
         }
     }
 

@@ -1,10 +1,11 @@
-/**
- * Copyright (c) 2013-2016, The SeedStack authors <http://seedstack.org>
+/*
+ * Copyright © 2013-2017, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.core.internal.configuration;
 
 import com.google.common.collect.Sets;
@@ -12,6 +13,17 @@ import io.nuun.kernel.api.plugin.InitState;
 import io.nuun.kernel.api.plugin.context.InitContext;
 import io.nuun.kernel.api.plugin.request.ClasspathScanRequest;
 import io.nuun.kernel.core.AbstractPlugin;
+import java.io.IOException;
+import java.net.URL;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Enumeration;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
+import java.util.stream.Collectors;
 import org.seedstack.coffig.Coffig;
 import org.seedstack.coffig.provider.InMemoryProvider;
 import org.seedstack.coffig.provider.JacksonProvider;
@@ -27,18 +39,6 @@ import org.seedstack.seed.spi.ConfigurationPriority;
 import org.seedstack.shed.ClassLoaders;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.IOException;
-import java.net.URL;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Enumeration;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * Core plugins that detects configuration files and adds them to the global configuration object.
@@ -100,7 +100,8 @@ public class ConfigurationPlugin extends AbstractPlugin implements ApplicationPr
         detectConfigurationFiles(initContext);
 
         application = new ApplicationImpl(coffig, applicationConfig);
-        diagnosticManager.registerDiagnosticInfoCollector("application", new ApplicationDiagnosticCollector(application));
+        diagnosticManager.registerDiagnosticInfoCollector("application",
+                new ApplicationDiagnosticCollector(application));
 
         return InitState.INITIALIZED;
     }
@@ -184,7 +185,8 @@ public class ConfigurationPlugin extends AbstractPlugin implements ApplicationPr
                     }
                 }
             } catch (IOException e) {
-                throw SeedException.wrap(e, CoreErrorCode.UNABLE_TO_LOAD_CONFIGURATION_RESOURCE).put("resource", configurationResource);
+                throw SeedException.wrap(e, CoreErrorCode.UNABLE_TO_LOAD_CONFIGURATION_RESOURCE).put("resource",
+                        configurationResource);
             }
         }
 

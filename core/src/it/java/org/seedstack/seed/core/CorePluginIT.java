@@ -1,14 +1,20 @@
-/**
- * Copyright (c) 2013-2016, The SeedStack authors <http://seedstack.org>
+/*
+ * Copyright © 2013-2017, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.core;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 import com.google.inject.ConfigurationException;
 import com.google.inject.Injector;
+import javax.annotation.Nullable;
+import javax.inject.Inject;
+import javax.inject.Named;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -32,67 +38,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import some.other.pkg.ForeignClass;
 
-import javax.annotation.Nullable;
-import javax.inject.Inject;
-import javax.inject.Named;
-
-import static org.assertj.core.api.Assertions.assertThat;
-
 public class CorePluginIT {
     @Rule
     public SeedITRule rule = new SeedITRule(this);
     private Injector injector;
-
-    static class LoggerHolder {
-        private static final Logger logger = LoggerFactory.getLogger(LoggerHolder.class);
-
-        @Logging
-        protected Logger logger1;
-    }
-
-    private static class SubLoggerHolder1 extends LoggerHolder {
-        @Logging
-        private Logger logger2;
-    }
-
-    private static class SubLoggerHolder2 extends LoggerHolder {
-        @Logging
-        private Logger logger2;
-    }
-
-    private static class HolderNominal {
-        @Inject
-        Service1 s1;
-        @Inject
-        @Nullable
-        Service3 s3;
-        @Inject
-        @Named("Service3Bis")
-        Service s3bis;
-        @Inject
-        @Named("Overriding")
-        Service overriding;
-        @Inject
-        @Named("OverridingNothing")
-        Service overridingNothing;
-        @Inject
-        ForeignClass foreignClass;
-        @Inject
-        BoundFromItself boundFromItself;
-        @Inject
-        BoundInterface boundFromInterface;
-        @Inject
-        @Named("toto")
-        BoundInterface boundFromInterfaceWithName;
-        @Inject
-        @Dummy
-        BoundInterface boundFromInterfaceWithAnnotation;
-    }
-
-    private static class HolderException {
-        @Inject
-        Service2 s2;
-    }
 
     @Before
     public void before() {
@@ -162,6 +111,58 @@ public class CorePluginIT {
         assertThat(holder.boundFromItself).isInstanceOf(BoundFromItself.class);
         assertThat(holder.boundFromInterface).isInstanceOf(BoundFromInterface.class);
         assertThat(holder.boundFromInterfaceWithName).isInstanceOf(BoundFromInterfaceWithName.class);
-        assertThat(holder.boundFromInterfaceWithAnnotation).isInstanceOf(BoundOverrideFromInterfaceWithAnnotation.class);
+        assertThat(holder.boundFromInterfaceWithAnnotation).isInstanceOf(
+                BoundOverrideFromInterfaceWithAnnotation.class);
+    }
+
+    static class LoggerHolder {
+        private static final Logger logger = LoggerFactory.getLogger(LoggerHolder.class);
+
+        @Logging
+        protected Logger logger1;
+    }
+
+    private static class SubLoggerHolder1 extends LoggerHolder {
+        @Logging
+        private Logger logger2;
+    }
+
+    private static class SubLoggerHolder2 extends LoggerHolder {
+        @Logging
+        private Logger logger2;
+    }
+
+    private static class HolderNominal {
+        @Inject
+        Service1 s1;
+        @Inject
+        @Nullable
+        Service3 s3;
+        @Inject
+        @Named("Service3Bis")
+        Service s3bis;
+        @Inject
+        @Named("Overriding")
+        Service overriding;
+        @Inject
+        @Named("OverridingNothing")
+        Service overridingNothing;
+        @Inject
+        ForeignClass foreignClass;
+        @Inject
+        BoundFromItself boundFromItself;
+        @Inject
+        BoundInterface boundFromInterface;
+        @Inject
+        @Named("toto")
+        BoundInterface boundFromInterfaceWithName;
+        @Inject
+        @Dummy
+        BoundInterface boundFromInterfaceWithAnnotation;
+    }
+
+    private static class HolderException {
+        @Inject
+        Service2 s2;
     }
 }

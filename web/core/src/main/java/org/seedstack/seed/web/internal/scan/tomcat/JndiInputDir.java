@@ -1,29 +1,29 @@
-/**
- * Copyright (c) 2013-2016, The SeedStack authors <http://seedstack.org>
+/*
+ * Copyright © 2013-2017, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.web.internal.scan.tomcat;
 
 import com.google.common.base.Joiner;
 import com.google.common.collect.AbstractIterator;
-import org.reflections.vfs.Vfs;
-import org.seedstack.seed.SeedException;
-import org.seedstack.seed.web.internal.WebErrorCode;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.naming.NameClassPair;
-import javax.naming.NamingEnumeration;
-import javax.naming.NamingException;
-import javax.naming.directory.DirContext;
 import java.net.URL;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
 import java.util.List;
+import javax.naming.NameClassPair;
+import javax.naming.NamingEnumeration;
+import javax.naming.NamingException;
+import javax.naming.directory.DirContext;
+import org.reflections.vfs.Vfs;
+import org.seedstack.seed.SeedException;
+import org.seedstack.seed.web.internal.WebErrorCode;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * VFS directory implementation for JNDI directory scanning.
@@ -65,7 +65,8 @@ class JndiInputDir implements Vfs.Dir {
                         return nextFile;
                     }
                 } catch (NamingException e) {
-                    throw SeedException.wrap(e, WebErrorCode.UNABLE_TO_SCAN_TOMCAT_JNDI_DIRECTORY).put("url", url.toExternalForm());
+                    throw SeedException.wrap(e, WebErrorCode.UNABLE_TO_SCAN_TOMCAT_JNDI_DIRECTORY).put("url",
+                            url.toExternalForm());
                 }
             }
         };
@@ -100,7 +101,8 @@ class JndiInputDir implements Vfs.Dir {
                 enumerationDeque.push(((DirContext) entry).list("/"));
                 fullPath.add(next.getName());
             } else {
-                return new JndiInputFile(entry, String.format("%s/%s", Joiner.on("/").skipNulls().join(fullPath), next.getName()));
+                return new JndiInputFile(entry,
+                        String.format("%s/%s", Joiner.on("/").skipNulls().join(fullPath), next.getName()));
             }
         }
 

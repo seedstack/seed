@@ -1,20 +1,20 @@
-/**
- * Copyright (c) 2013-2016, The SeedStack authors <http://seedstack.org>
+/*
+ * Copyright © 2013-2017, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.core.internal.el;
 
 import com.google.inject.Binder;
 import com.google.inject.matcher.Matcher;
 import com.google.inject.matcher.Matchers;
-import org.seedstack.seed.core.internal.utils.MethodMatcherBuilder;
-import org.seedstack.shed.reflect.AnnotationPredicates;
-
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
+import org.seedstack.seed.core.internal.utils.MethodMatcherBuilder;
+import org.seedstack.shed.reflect.AnnotationPredicates;
 
 /**
  * ELBinder provides methods to bind an {@link ELInterceptor} on a given annotation.
@@ -40,16 +40,6 @@ import java.lang.reflect.Method;
  */
 public class ELBinder {
     private final Binder binder;
-
-    /**
-     * ExecutionPolicy define when an EL will be executed. Before, after or before and after the annotated
-     * method proceed.
-     */
-    public enum ExecutionPolicy {
-        BEFORE,
-        AFTER,
-        BOTH
-    }
 
     /**
      * Constructor.
@@ -88,5 +78,15 @@ public class ELBinder {
 
     private Matcher<Method> handlerMethodMatcher(final Class<? extends Annotation> annotationClass) {
         return new MethodMatcherBuilder(AnnotationPredicates.elementAnnotatedWith(annotationClass, true)).build();
+    }
+
+    /**
+     * ExecutionPolicy define when an EL will be executed. Before, after or before and after the annotated
+     * method proceed.
+     */
+    public enum ExecutionPolicy {
+        BEFORE,
+        AFTER,
+        BOTH
     }
 }

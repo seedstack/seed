@@ -1,12 +1,22 @@
-/**
- * Copyright (c) 2013-2016, The SeedStack authors <http://seedstack.org>
+/*
+ * Copyright © 2013-2017, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.security.internal.realms;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+import java.security.cert.X509Certificate;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Set;
+import javax.security.auth.x500.X500Principal;
 import org.junit.Before;
 import org.junit.Test;
 import org.seedstack.seed.security.AuthenticationInfo;
@@ -19,16 +29,6 @@ import org.seedstack.seed.security.X509CertificateToken;
 import org.seedstack.seed.security.principals.PrincipalProvider;
 import org.seedstack.seed.security.principals.Principals;
 import org.seedstack.seed.security.principals.X509CertificatePrincipalProvider;
-
-import javax.security.auth.x500.X500Principal;
-import java.security.cert.X509Certificate;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Set;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 public class X509CertificateRealmTest {
 
@@ -65,7 +65,8 @@ public class X509CertificateRealmTest {
         AuthenticationInfo authInfo = underTest.getAuthenticationInfo(token);
 
         assertThat(authInfo.getIdentityPrincipal().getPrincipal()).isEqualTo(id);
-        PrincipalProvider<X509Certificate[]> x509pp = Principals.getOnePrincipalByType(authInfo.getOtherPrincipals(), X509Certificate[].class);
+        PrincipalProvider<X509Certificate[]> x509pp = Principals.getOnePrincipalByType(authInfo.getOtherPrincipals(),
+                X509Certificate[].class);
         assertThat(x509pp.getPrincipal()[0]).isEqualTo(x509Certificate);
     }
 

@@ -1,16 +1,25 @@
-/**
- * Copyright (c) 2013-2016, The SeedStack authors <http://seedstack.org>
+/*
+ * Copyright © 2013-2017, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.rest.jersey2.internal;
 
 import com.google.common.collect.Lists;
 import io.nuun.kernel.api.plugin.InitState;
 import io.nuun.kernel.api.plugin.context.InitContext;
 import io.nuun.kernel.core.AbstractPlugin;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import javax.ws.rs.ConstrainedTo;
+import javax.ws.rs.RuntimeType;
 import org.glassfish.jersey.media.multipart.MultiPartFeature;
 import org.glassfish.jersey.server.ServerProperties;
 import org.glassfish.jersey.server.mvc.jsp.JspMvcFeature;
@@ -25,15 +34,6 @@ import org.seedstack.seed.web.spi.WebProvider;
 import org.seedstack.shed.reflect.Classes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import javax.ws.rs.ConstrainedTo;
-import javax.ws.rs.RuntimeType;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 public class Jersey2Plugin extends AbstractPlugin implements WebProvider {
     private static final Logger LOGGER = LoggerFactory.getLogger(Jersey2Plugin.class);
@@ -137,10 +137,12 @@ public class Jersey2Plugin extends AbstractPlugin implements WebProvider {
 
         // Those properties must be defined as init parameters of the filter
         if (jerseyProperties.containsKey(ServletProperties.FILTER_CONTEXT_PATH)) {
-            initParams.put(ServletProperties.FILTER_CONTEXT_PATH, (String) jerseyProperties.get(ServletProperties.FILTER_CONTEXT_PATH));
+            initParams.put(ServletProperties.FILTER_CONTEXT_PATH,
+                    (String) jerseyProperties.get(ServletProperties.FILTER_CONTEXT_PATH));
         }
         if (jerseyProperties.containsKey(ServletProperties.FILTER_STATIC_CONTENT_REGEX)) {
-            initParams.put(ServletProperties.FILTER_STATIC_CONTENT_REGEX, (String) jerseyProperties.get(ServletProperties.FILTER_STATIC_CONTENT_REGEX));
+            initParams.put(ServletProperties.FILTER_STATIC_CONTENT_REGEX,
+                    (String) jerseyProperties.get(ServletProperties.FILTER_STATIC_CONTENT_REGEX));
         }
 
         return initParams;

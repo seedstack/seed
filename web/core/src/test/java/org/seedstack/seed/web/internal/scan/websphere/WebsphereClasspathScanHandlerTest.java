@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2013-2016, The SeedStack authors <http://seedstack.org>
+/*
+ * Copyright © 2013-2017, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -8,17 +8,16 @@
 
 package org.seedstack.seed.web.internal.scan.websphere;
 
-import mockit.Mocked;
-import mockit.Verifications;
-import org.assertj.core.api.Assertions;
-import org.junit.Test;
-import org.reflections.vfs.Vfs;
-
 import java.io.IOException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLStreamHandler;
 import java.util.List;
+import mockit.Mocked;
+import mockit.Verifications;
+import org.assertj.core.api.Assertions;
+import org.junit.Test;
+import org.reflections.vfs.Vfs;
 
 public class WebsphereClasspathScanHandlerTest {
 

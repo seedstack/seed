@@ -1,12 +1,17 @@
-/**
- * Copyright (c) 2013-2016, The SeedStack authors <http://seedstack.org>
+/*
+ * Copyright © 2013-2017, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.security.internal;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
+import javax.inject.Inject;
+import javax.inject.Named;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.UsernamePasswordToken;
@@ -22,11 +27,6 @@ import org.seedstack.seed.security.SimpleScope;
 import org.seedstack.seed.security.WithUser;
 import org.seedstack.seed.security.internal.fixtures.AnnotatedClass4Security;
 import org.seedstack.seed.security.principals.Principals;
-
-import javax.inject.Inject;
-import javax.inject.Named;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(SeedITRunner.class)
 public class SecurityIT {
@@ -110,6 +110,8 @@ public class SecurityIT {
     @Test
     @WithUser(id = "Anakin", password = "imsodark")
     public void Anakin_should_have_customized_principal() {
-        Assertions.assertThat(Principals.getSimplePrincipalByName(securitySupport.getOtherPrincipals(), "foo").getValue()).isEqualTo("bar");
+        Assertions.assertThat(
+                Principals.getSimplePrincipalByName(securitySupport.getOtherPrincipals(), "foo").getValue()).isEqualTo(
+                "bar");
     }
 }

@@ -1,12 +1,17 @@
-/**
- * Copyright (c) 2013-2016, The SeedStack authors <http://seedstack.org>
+/*
+ * Copyright © 2013-2017, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.security.internal;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+
+import javax.inject.Inject;
 import org.apache.shiro.SecurityUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -16,11 +21,6 @@ import org.seedstack.seed.security.SecuritySupport;
 import org.seedstack.seed.security.WithUser;
 import org.seedstack.seed.security.internal.fixtures.AnnotatedCrudClass4Security;
 import org.seedstack.seed.security.internal.fixtures.AnnotatedCrudMethods4Security;
-
-import javax.inject.Inject;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @RunWith(SeedITRunner.class)
 public class CrudSecurityIT {

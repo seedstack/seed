@@ -1,18 +1,16 @@
-/**
- * Copyright (c) 2013-2016, The SeedStack authors <http://seedstack.org>
+/*
+ * Copyright © 2013-2017, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.rest.jersey2.internal;
 
-
-import org.seedstack.seed.SeedException;
-import org.seedstack.seed.rest.CacheControl;
-import org.seedstack.seed.rest.CachePolicy;
-import org.seedstack.seed.rest.internal.RestErrorCode;
-
+import java.io.IOException;
+import java.lang.reflect.Method;
+import java.util.Date;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerResponseContext;
 import javax.ws.rs.container.ContainerResponseFilter;
@@ -22,9 +20,10 @@ import javax.ws.rs.core.FeatureContext;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.Provider;
-import java.io.IOException;
-import java.lang.reflect.Method;
-import java.util.Date;
+import org.seedstack.seed.SeedException;
+import org.seedstack.seed.rest.CacheControl;
+import org.seedstack.seed.rest.CachePolicy;
+import org.seedstack.seed.rest.internal.RestErrorCode;
 
 @Provider
 class CacheControlFeature implements DynamicFeature {
@@ -59,7 +58,8 @@ class CacheControlFeature implements DynamicFeature {
         }
 
         @Override
-        public void filter(ContainerRequestContext requestContext, ContainerResponseContext responseContext) throws IOException {
+        public void filter(ContainerRequestContext requestContext,
+                ContainerResponseContext responseContext) throws IOException {
             switch (this.policy) {
                 case NO_CACHE:
                     MultivaluedMap<String, Object> headers = responseContext.getHeaders();

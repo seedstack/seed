@@ -1,22 +1,22 @@
-/**
- * Copyright (c) 2013-2016, The SeedStack authors <http://seedstack.org>
+/*
+ * Copyright © 2013-2017, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.rest.internal.jsonhome;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 import com.damnhandy.uri.template.UriTemplate;
 import com.damnhandy.uri.template.UriTemplateBuilder;
-import org.seedstack.seed.SeedException;
-import org.seedstack.seed.rest.internal.RestErrorCode;
-
-import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.Map;
-
-import static com.google.common.base.Preconditions.checkNotNull;
+import javax.annotation.Nullable;
+import org.seedstack.seed.SeedException;
+import org.seedstack.seed.rest.internal.RestErrorCode;
 
 /**
  * The JSON-HOME representation of a REST resource as defined by the
@@ -54,7 +54,8 @@ public class Resource {
      * @param pathParams   the href variables
      * @param hints        the the resource hints
      */
-    public Resource(String rel, String hrefTemplate, @Nullable Map<String, String> pathParams, @Nullable Map<String, String> queryParams, @Nullable Hints hints) {
+    public Resource(String rel, String hrefTemplate, @Nullable Map<String, String> pathParams,
+            @Nullable Map<String, String> queryParams, @Nullable Hints hints) {
         this.rel = checkNotNull(rel, "The rel must not be null");
         this.hrefTemplate = checkNotNull(hrefTemplate, "The hrefTemplate must not be null");
         this.href = null;
@@ -93,7 +94,8 @@ public class Resource {
     public String hrefTemplate() {
         UriTemplateBuilder uriTemplateBuilder = UriTemplate.buildFromTemplate(hrefTemplate);
         if (!queryParams.isEmpty()) {
-            uriTemplateBuilder = uriTemplateBuilder.query(queryParams.keySet().toArray(new String[queryParams.keySet().size()]));
+            uriTemplateBuilder = uriTemplateBuilder.query(
+                    queryParams.keySet().toArray(new String[queryParams.keySet().size()]));
         }
         return uriTemplateBuilder.build().getTemplate();
     }

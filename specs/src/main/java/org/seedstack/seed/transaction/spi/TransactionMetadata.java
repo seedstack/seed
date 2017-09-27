@@ -1,22 +1,22 @@
-/**
- * Copyright (c) 2013-2016, The SeedStack authors <http://seedstack.org>
+/*
+ * Copyright © 2013-2017, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.transaction.spi;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-import org.seedstack.seed.transaction.Propagation;
-import org.seedstack.seed.transaction.Transactional;
-
-import javax.annotation.Nullable;
-import javax.inject.Inject;
-import javax.inject.Named;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import javax.annotation.Nullable;
+import javax.inject.Inject;
+import javax.inject.Named;
+import org.seedstack.seed.transaction.Propagation;
+import org.seedstack.seed.transaction.Transactional;
 
 /**
  * This class holds transaction metadata attributes.
@@ -96,7 +96,8 @@ public class TransactionMetadata {
      *
      * @return the exception classes array.
      */
-    @SuppressFBWarnings(value = "PZLA_PREFER_ZERO_LENGTH_ARRAYS", justification = "Null is used here to denote an undetermined value")
+    @SuppressFBWarnings(value = "PZLA_PREFER_ZERO_LENGTH_ARRAYS", justification = "Null is used here to denote an "
+            + "undetermined value")
     public Class<? extends Exception>[] getRollbackOn() {
         return rollbackOn != null ? rollbackOn.clone() : null;
     }
@@ -115,7 +116,8 @@ public class TransactionMetadata {
      *
      * @return the exception classes array.
      */
-    @SuppressFBWarnings(value = "PZLA_PREFER_ZERO_LENGTH_ARRAYS", justification = "Null is used here to denote an undetermined value")
+    @SuppressFBWarnings(value = "PZLA_PREFER_ZERO_LENGTH_ARRAYS", justification = "Null is used here to denote an "
+            + "undetermined value")
     public Class<? extends Exception>[] getNoRollbackFor() {
         return noRollbackFor != null ? noRollbackFor.clone() : null;
     }
@@ -292,16 +294,16 @@ public class TransactionMetadata {
 
     @Override
     public String toString() {
-        return "transaction metadata {" +
-                "propagation=" + propagation +
-                ", readOnly=" + readOnly +
-                ", rollbackOnParticipationFailure=" + rollbackOnParticipationFailure +
-                ", rollbackOn=" + Arrays.toString(rollbackOn) +
-                ", noRollbackFor=" + Arrays.toString(noRollbackFor) +
-                ", handler=" + handler +
-                ", exceptionHandler=" + exceptionHandler +
-                ", resource='" + resource + '\'' +
-                ", metadata='" + metadata + '\'' +
-                '}';
+        return "transaction metadata {"
+                + "propagation=" + propagation
+                + ", readOnly=" + readOnly
+                + ", rollbackOnParticipationFailure=" + rollbackOnParticipationFailure
+                + ", rollbackOn=" + Arrays.toString(rollbackOn)
+                + ", noRollbackFor=" + Arrays.toString(noRollbackFor)
+                + ", handler=" + handler
+                + ", exceptionHandler=" + exceptionHandler
+                + ", resource='" + resource + '\''
+                + ", metadata='" + metadata + '\''
+                + '}';
     }
 }

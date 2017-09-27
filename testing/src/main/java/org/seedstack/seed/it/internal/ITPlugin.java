@@ -1,10 +1,11 @@
-/**
- * Copyright (c) 2013-2016, The SeedStack authors <http://seedstack.org>
+/*
+ * Copyright © 2013-2017, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.it.internal;
 
 import com.google.inject.Module;
@@ -12,6 +13,13 @@ import io.nuun.kernel.api.plugin.InitState;
 import io.nuun.kernel.api.plugin.PluginException;
 import io.nuun.kernel.api.plugin.context.InitContext;
 import io.nuun.kernel.api.plugin.request.ClasspathScanRequest;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.stream.Collectors;
 import org.kametic.specifications.Specification;
 import org.seedstack.seed.core.SeedRuntime;
 import org.seedstack.seed.core.internal.AbstractSeedPlugin;
@@ -21,22 +29,16 @@ import org.seedstack.shed.reflect.Classes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.stream.Collectors;
-
 /**
  * This plugin automatically enable integration tests to be managed by SEED.
  */
 public class ITPlugin extends AbstractSeedPlugin {
     public static final String IT_CLASS_NAME = "seedstack.it.className";
     private static final Logger LOGGER = LoggerFactory.getLogger(ITPlugin.class);
-    private static final Specification<Class<?>> installSpecification = new SpecificationBuilder<>(ITInstallResolver.INSTANCE).build();
-    private static final Specification<Class<?>> bindSpecification = new SpecificationBuilder<>(ITBindResolver.INSTANCE).build();
+    private static final Specification<Class<?>> installSpecification = new SpecificationBuilder<>(
+            ITInstallResolver.INSTANCE).build();
+    private static final Specification<Class<?>> bindSpecification = new SpecificationBuilder<>(
+            ITBindResolver.INSTANCE).build();
     private final Set<Class<? extends Module>> modules = new HashSet<>();
     private final Set<Class<? extends Module>> overridingModules = new HashSet<>();
     private final Set<BindingDefinition> bindings = new HashSet<>();
@@ -124,10 +126,13 @@ public class ITPlugin extends AbstractSeedPlugin {
         try {
             if (temporaryAppStorage != null) {
                 deleteRecursively(temporaryAppStorage);
-                LOGGER.info("Deleted temporary application storage directory {}", temporaryAppStorage.getAbsolutePath());
+                LOGGER.info("Deleted temporary application storage directory {}",
+                        temporaryAppStorage.getAbsolutePath());
             }
         } catch (Exception e) {
-            LOGGER.warn("Unable to delete temporary application storage directory " + temporaryAppStorage.getAbsolutePath(), e);
+            LOGGER.warn(
+                    "Unable to delete temporary application storage directory " + temporaryAppStorage.getAbsolutePath(),
+                    e);
         }
     }
 

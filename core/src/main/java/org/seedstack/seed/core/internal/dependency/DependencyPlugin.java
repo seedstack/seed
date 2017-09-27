@@ -1,15 +1,20 @@
-/**
- * Copyright (c) 2013-2016, The SeedStack authors <http://seedstack.org>
+/*
+ * Copyright © 2013-2017, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.core.internal.dependency;
 
 import io.nuun.kernel.api.plugin.InitState;
 import io.nuun.kernel.api.plugin.context.InitContext;
 import io.nuun.kernel.api.plugin.request.ClasspathScanRequest;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
 import org.seedstack.seed.SeedException;
 import org.seedstack.seed.core.internal.AbstractSeedPlugin;
 import org.seedstack.seed.core.internal.CoreErrorCode;
@@ -17,11 +22,6 @@ import org.seedstack.seed.spi.DependencyProvider;
 import org.seedstack.shed.reflect.Classes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
 
 public class DependencyPlugin extends AbstractSeedPlugin {
     private static final Logger LOGGER = LoggerFactory.getLogger(DependencyPlugin.class);
@@ -69,11 +69,13 @@ public class DependencyPlugin extends AbstractSeedPlugin {
             try {
                 T provider = providerClass.newInstance();
                 if (Classes.optional(provider.getClassToCheck()).isPresent()) {
-                    LOGGER.debug("Found a new optional provider [{}] for [{}]", providerClass.getName(), provider.getClassToCheck());
+                    LOGGER.debug("Found a new optional provider [{}] for [{}]", providerClass.getName(),
+                            provider.getClassToCheck());
                     optionalDependency = Optional.of(provider);
                 }
             } catch (InstantiationException | IllegalAccessException e) {
-                throw SeedException.wrap(e, CoreErrorCode.UNABLE_TO_INSTANTIATE_CLASS).put("class", providerClass.getCanonicalName());
+                throw SeedException.wrap(e, CoreErrorCode.UNABLE_TO_INSTANTIATE_CLASS).put("class",
+                        providerClass.getCanonicalName());
             }
             dependencies.put(providerClass, optionalDependency);
         }

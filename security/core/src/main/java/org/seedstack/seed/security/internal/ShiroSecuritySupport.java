@@ -1,12 +1,21 @@
-/**
- * Copyright (c) 2013-2016, The SeedStack authors <http://seedstack.org>
+/*
+ * Copyright © 2013-2017, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.security.internal;
 
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
+import javax.inject.Inject;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.AuthorizationInfo;
@@ -24,15 +33,6 @@ import org.seedstack.seed.security.internal.authorization.SeedAuthorizationInfo;
 import org.seedstack.seed.security.principals.PrincipalProvider;
 import org.seedstack.seed.security.principals.Principals;
 import org.seedstack.seed.security.principals.SimplePrincipalProvider;
-
-import javax.inject.Inject;
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
 
 class ShiroSecuritySupport implements SecuritySupport {
 
@@ -82,12 +82,11 @@ class ShiroSecuritySupport implements SecuritySupport {
     public boolean isAuthenticated() {
         return SecurityUtils.getSubject().isAuthenticated();
     }
-    
+
     @Override
     public boolean isRemembered() {
         return SecurityUtils.getSubject().isRemembered();
     }
-    
 
     @Override
     public boolean isPermitted(String permission) {
@@ -150,7 +149,8 @@ class ShiroSecuritySupport implements SecuritySupport {
         try {
             SecurityUtils.getSubject().checkPermissions(permissions);
         } catch (org.apache.shiro.authz.AuthorizationException e) {
-            throw new AuthorizationException("Subject doesn't have permissions " + Arrays.toString(stringPermissions), e);
+            throw new AuthorizationException("Subject doesn't have permissions " + Arrays.toString(stringPermissions),
+                    e);
         }
     }
 
@@ -215,7 +215,8 @@ class ShiroSecuritySupport implements SecuritySupport {
     private SeedAuthorizationInfo getAuthorizationInfo(Realm realm) {
         SeedAuthorizationInfo authzInfo = null;
         if (realm instanceof ShiroRealmAdapter) {
-            AuthorizationInfo tmpInfo = ((ShiroRealmAdapter) realm).getAuthorizationInfo(SecurityUtils.getSubject().getPrincipals());
+            AuthorizationInfo tmpInfo = ((ShiroRealmAdapter) realm).getAuthorizationInfo(
+                    SecurityUtils.getSubject().getPrincipals());
             authzInfo = (SeedAuthorizationInfo) tmpInfo;
         }
         return authzInfo;
@@ -253,5 +254,4 @@ class ShiroSecuritySupport implements SecuritySupport {
         return s.getHost();
     }
 
-   
 }

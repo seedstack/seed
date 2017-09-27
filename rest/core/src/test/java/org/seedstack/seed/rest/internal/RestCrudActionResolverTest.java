@@ -1,15 +1,14 @@
-/**
- * Copyright (c) 2013-2016, The SeedStack authors <http://seedstack.org>
+/*
+ * Copyright © 2013-2017, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.rest.internal;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.seedstack.seed.security.CrudAction;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -17,8 +16,9 @@ import javax.ws.rs.HEAD;
 import javax.ws.rs.OPTIONS;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
-
-import static org.assertj.core.api.Assertions.assertThat;
+import org.junit.Before;
+import org.junit.Test;
+import org.seedstack.seed.security.CrudAction;
 
 public class RestCrudActionResolverTest {
     private RestCrudActionResolver resolverUnderTest;
@@ -30,7 +30,8 @@ public class RestCrudActionResolverTest {
 
     @Test
     public void test_that_resolves_to_the_right_verb() throws Exception {
-        assertThat(resolverUnderTest.resolve(Fixture.class.getMethod("delete"))).isPresent().contains(CrudAction.DELETE);
+        assertThat(resolverUnderTest.resolve(Fixture.class.getMethod("delete"))).isPresent().contains(
+                CrudAction.DELETE);
         assertThat(resolverUnderTest.resolve(Fixture.class.getMethod("get"))).isPresent().contains(CrudAction.READ);
         assertThat(resolverUnderTest.resolve(Fixture.class.getMethod("head"))).isPresent().contains(CrudAction.READ);
         assertThat(resolverUnderTest.resolve(Fixture.class.getMethod("options"))).isPresent().contains(CrudAction.READ);

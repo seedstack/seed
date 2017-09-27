@@ -1,21 +1,17 @@
-/**
- * Copyright (c) 2013-2016, The SeedStack authors <http://seedstack.org>
+/*
+ * Copyright © 2013-2017, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.core.internal.configuration.tool;
 
-import org.seedstack.coffig.Coffig;
-import org.seedstack.coffig.Config;
-import org.seedstack.coffig.SingleValue;
-import org.seedstack.shed.reflect.Annotations;
-import org.seedstack.shed.reflect.ReflectUtils;
-import org.seedstack.shed.reflect.Types;
+import static org.seedstack.shed.reflect.Classes.instantiateDefault;
+import static org.seedstack.shed.reflect.ReflectUtils.makeAccessible;
+import static org.seedstack.shed.reflect.Types.simpleNameOf;
 
-import javax.annotation.Nullable;
-import javax.validation.constraints.NotNull;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
@@ -31,10 +27,14 @@ import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 import java.util.TreeMap;
-
-import static org.seedstack.shed.reflect.Classes.instantiateDefault;
-import static org.seedstack.shed.reflect.ReflectUtils.makeAccessible;
-import static org.seedstack.shed.reflect.Types.simpleNameOf;
+import javax.annotation.Nullable;
+import javax.validation.constraints.NotNull;
+import org.seedstack.coffig.Coffig;
+import org.seedstack.coffig.Config;
+import org.seedstack.coffig.SingleValue;
+import org.seedstack.shed.reflect.Annotations;
+import org.seedstack.shed.reflect.ReflectUtils;
+import org.seedstack.shed.reflect.Types;
 
 class Node implements Comparable<Node> {
     private final Class<?> configClass;
@@ -158,7 +158,8 @@ class Node implements Comparable<Node> {
         return 0;
     }
 
-    private Map<String, PropertyInfo> buildPropertyInfo(Class<?> configClass, String parentPropertyName, Object defaultInstance) {
+    private Map<String, PropertyInfo> buildPropertyInfo(Class<?> configClass, String parentPropertyName,
+            Object defaultInstance) {
         Map<String, PropertyInfo> result = new LinkedHashMap<>();
 
         if (defaultInstance == null) {

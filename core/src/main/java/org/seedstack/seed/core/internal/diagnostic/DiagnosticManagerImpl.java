@@ -1,26 +1,18 @@
-/**
- * Copyright (c) 2013-2016, The SeedStack authors <http://seedstack.org>
+/*
+ * Copyright © 2013-2017, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.core.internal.diagnostic;
 
 import com.google.common.collect.Maps;
-import org.seedstack.seed.SeedException;
-import org.seedstack.seed.core.internal.CoreErrorCode;
-import org.seedstack.seed.diagnostic.DiagnosticManager;
-import org.seedstack.seed.diagnostic.spi.DiagnosticInfoCollector;
-import org.seedstack.seed.diagnostic.spi.DiagnosticReporter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.lang.management.ManagementFactory;
 import java.lang.management.RuntimeMXBean;
 import java.lang.management.ThreadInfo;
 import java.lang.management.ThreadMXBean;
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -29,6 +21,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import org.seedstack.seed.SeedException;
+import org.seedstack.seed.core.internal.CoreErrorCode;
+import org.seedstack.seed.diagnostic.DiagnosticManager;
+import org.seedstack.seed.diagnostic.spi.DiagnosticInfoCollector;
+import org.seedstack.seed.diagnostic.spi.DiagnosticReporter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Implementation of the diagnostic manager.
@@ -49,7 +48,8 @@ public class DiagnosticManagerImpl implements DiagnosticManager {
             try {
                 diagnosticReporterToUse = (DiagnosticReporter) Class.forName(reporterClassName).newInstance();
             } catch (Exception e) {
-                LOGGER.warn("Custom diagnostic reporter {} cannot be instantiated, falling back to default reporter", reporterClassName, e);
+                LOGGER.warn("Custom diagnostic reporter {} cannot be instantiated, falling back to default reporter",
+                        reporterClassName, e);
                 diagnosticReporterToUse = new DefaultDiagnosticReporter();
             }
         } else {
@@ -90,8 +90,10 @@ public class DiagnosticManagerImpl implements DiagnosticManager {
 
         allDiagnostics.put("system", collectSystemInfo());
 
-        for (Map.Entry<String, DiagnosticInfoCollector> diagnosticInfoCollectorEntry : diagnosticCollectors.entrySet()) {
-            allDiagnostics.put(diagnosticInfoCollectorEntry.getKey(), diagnosticInfoCollectorEntry.getValue().collect());
+        for (Map.Entry<String, DiagnosticInfoCollector> diagnosticInfoCollectorEntry : diagnosticCollectors.entrySet
+                ()) {
+            allDiagnostics.put(diagnosticInfoCollectorEntry.getKey(),
+                    diagnosticInfoCollectorEntry.getValue().collect());
         }
 
         return allDiagnostics;
@@ -136,7 +138,8 @@ public class DiagnosticManagerImpl implements DiagnosticManager {
 
         RuntimeMXBean runtimeMXBean = ManagementFactory.getRuntimeMXBean();
         result.put("args", runtimeMXBean.getInputArguments());
-        result.put("startTime", new SimpleDateFormat(DiagnosticManagerImpl.DATE_FORMAT).format(runtimeMXBean.getStartTime()));
+        result.put("startTime",
+                new SimpleDateFormat(DiagnosticManagerImpl.DATE_FORMAT).format(runtimeMXBean.getStartTime()));
 
         return result;
     }

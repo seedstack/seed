@@ -1,20 +1,19 @@
-/**
- * Copyright (c) 2013-2016, The SeedStack authors <http://seedstack.org>
+/*
+ * Copyright © 2013-2017, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-package org.seedstack.seed.rest.internal;
 
-import org.assertj.core.api.Assertions;
-import org.junit.Test;
-import org.seedstack.seed.rest.Rel;
+package org.seedstack.seed.rest.internal;
 
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Response;
-
+import org.assertj.core.api.Assertions;
+import org.junit.Test;
+import org.seedstack.seed.rest.Rel;
 
 public class JsonHomeSpecificationTest {
     private JsonHomeSpecification underTest = JsonHomeSpecification.INSTANCE;
@@ -34,24 +33,30 @@ public class JsonHomeSpecificationTest {
         Assertions.assertThat(underTest.isSatisfiedBy(ValidResource3.class.getMethod("post"))).isTrue();
     }
 
-    static class ValidResource1 {
-
-        @Rel(value = "ValidResource1", home = true)
-        @Path("/JsonHomeValidResource1") @POST
-        public Response post() { return null;}
-    }
-
     static interface InterfaceResource1 {
 
         @Rel(value = "InterfaceResource1", home = true)
-        @Path("/JsonHomeInterfaceResource1") @POST
+        @Path("/JsonHomeInterfaceResource1")
+        @POST
         Response post();
+    }
+
+    static class ValidResource1 {
+
+        @Rel(value = "ValidResource1", home = true)
+        @Path("/JsonHomeValidResource1")
+        @POST
+        public Response post() {
+            return null;
+        }
     }
 
     static class ValidResource2 extends ValidResource1 {
     }
+
     static class ValidResource3 implements InterfaceResource1 {
-        @Override @POST
+        @Override
+        @POST
         public Response post() {
             return null;
         }
@@ -59,13 +64,18 @@ public class JsonHomeSpecificationTest {
 
     static class InvalidResource1 {
 
-        @Path("/JsonHomeInvalidResource1") @POST
-        public Response post() { return null; }
+        @Path("/JsonHomeInvalidResource1")
+        @POST
+        public Response post() {
+            return null;
+        }
     }
 
     @Path("/JsonHomeInvalidResource1")
     static class InvalidResource2 {
-        public Response post() { return null; }
+        public Response post() {
+            return null;
+        }
     }
 
 }

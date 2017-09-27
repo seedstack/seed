@@ -1,12 +1,12 @@
-/**
- * Copyright (c) 2013-2016, The SeedStack authors <http://seedstack.org>
+/*
+ * Copyright © 2013-2017, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-package org.seedstack.seed.security;
 
+package org.seedstack.seed.security;
 
 import static java.util.Objects.requireNonNull;
 
@@ -18,7 +18,8 @@ import static java.util.Objects.requireNonNull;
  * (which may seem more logical).  This is because Strings are immutable and their
  * internal value cannot be overwritten - meaning even a nulled String instance might be accessible in memory at a later
  * time (e.g. memory dump).  This is not good for sensitive information such as passwords. For more information, see the
- * <a href="http://java.sun.com/j2se/1.5.0/docs/guide/security/jce/JCERefGuide.html#PBEEx">Java Cryptography Extension Reference Guide</a>.</p>
+ * <a href="http://java.sun.com/j2se/1.5.0/docs/guide/security/jce/JCERefGuide.html#PBEEx">Java Cryptography
+ * Extension Reference Guide</a>.</p>
  */
 public class UsernamePasswordToken implements AuthenticationToken {
     private static final long serialVersionUID = 1L;

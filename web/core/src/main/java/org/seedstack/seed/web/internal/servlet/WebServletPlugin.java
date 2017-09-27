@@ -1,32 +1,19 @@
-/**
- * Copyright (c) 2013-2016, The SeedStack authors <http://seedstack.org>
+/*
+ * Copyright © 2013-2017, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.web.internal.servlet;
+
+import static org.seedstack.shed.misc.PriorityUtils.priorityOf;
 
 import com.google.common.base.Strings;
 import io.nuun.kernel.api.plugin.InitState;
 import io.nuun.kernel.api.plugin.context.InitContext;
 import io.nuun.kernel.api.plugin.request.ClasspathScanRequest;
-import org.seedstack.seed.core.SeedRuntime;
-import org.seedstack.seed.core.internal.AbstractSeedPlugin;
-import org.seedstack.seed.web.internal.WebPlugin;
-import org.seedstack.seed.web.spi.FilterDefinition;
-import org.seedstack.seed.web.spi.ListenerDefinition;
-import org.seedstack.seed.web.spi.ServletDefinition;
-import org.seedstack.seed.web.spi.WebProvider;
-
-import javax.servlet.DispatcherType;
-import javax.servlet.Filter;
-import javax.servlet.Servlet;
-import javax.servlet.ServletContext;
-import javax.servlet.annotation.WebFilter;
-import javax.servlet.annotation.WebInitParam;
-import javax.servlet.annotation.WebListener;
-import javax.servlet.annotation.WebServlet;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -35,11 +22,25 @@ import java.util.EventListener;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import static org.seedstack.shed.misc.PriorityUtils.priorityOf;
+import javax.servlet.DispatcherType;
+import javax.servlet.Filter;
+import javax.servlet.Servlet;
+import javax.servlet.ServletContext;
+import javax.servlet.annotation.WebFilter;
+import javax.servlet.annotation.WebInitParam;
+import javax.servlet.annotation.WebListener;
+import javax.servlet.annotation.WebServlet;
+import org.seedstack.seed.core.SeedRuntime;
+import org.seedstack.seed.core.internal.AbstractSeedPlugin;
+import org.seedstack.seed.web.internal.WebPlugin;
+import org.seedstack.seed.web.spi.FilterDefinition;
+import org.seedstack.seed.web.spi.ListenerDefinition;
+import org.seedstack.seed.web.spi.ServletDefinition;
+import org.seedstack.seed.web.spi.WebProvider;
 
 /**
- * This plugin detects {@link WebServlet}, {@link WebFilter} and {@link WebListener} annotated classes and provides their
+ * This plugin detects {@link WebServlet}, {@link WebFilter} and {@link WebListener} annotated classes and provides
+ * their
  * corresponding definitions to {@link WebPlugin} for registration with the container.
  */
 public class WebServletPlugin extends AbstractSeedPlugin implements WebProvider {
@@ -70,9 +71,11 @@ public class WebServletPlugin extends AbstractSeedPlugin implements WebProvider 
     @Override
     public InitState initialize(InitContext initContext) {
         if (servletContext != null) {
-            listenerDefinitions.addAll(detectListeners(initContext.scannedClassesByAnnotationClass().get(WebListener.class)));
+            listenerDefinitions.addAll(
+                    detectListeners(initContext.scannedClassesByAnnotationClass().get(WebListener.class)));
             filterDefinitions.addAll(detectFilters(initContext.scannedClassesByAnnotationClass().get(WebFilter.class)));
-            servletDefinitions.addAll(detectServlets(initContext.scannedClassesByAnnotationClass().get(WebServlet.class)));
+            servletDefinitions.addAll(
+                    detectServlets(initContext.scannedClassesByAnnotationClass().get(WebServlet.class)));
         }
 
         return InitState.INITIALIZED;
@@ -100,18 +103,21 @@ public class WebServletPlugin extends AbstractSeedPlugin implements WebProvider 
                 Class<? extends Filter> filterClass = (Class<? extends Filter>) candidate;
                 WebFilter annotation = filterClass.getAnnotation(WebFilter.class);
                 FilterDefinition filterDefinition = new FilterDefinition(
-                        Strings.isNullOrEmpty(annotation.filterName()) ? filterClass.getCanonicalName() : annotation.filterName(),
+                        Strings.isNullOrEmpty(
+                                annotation.filterName()) ? filterClass.getCanonicalName() : annotation.filterName(),
                         filterClass
                 );
                 filterDefinition.setAsyncSupported(annotation.asyncSupported());
                 if (annotation.servletNames().length > 0) {
-                    filterDefinition.addServletMappings(convert(annotation.dispatcherTypes(), false, annotation.servletNames()));
+                    filterDefinition.addServletMappings(
+                            convert(annotation.dispatcherTypes(), false, annotation.servletNames()));
                 }
                 if (annotation.value().length > 0) {
                     filterDefinition.addMappings(convert(annotation.dispatcherTypes(), false, annotation.value()));
                 }
                 if (annotation.urlPatterns().length > 0) {
-                    filterDefinition.addMappings(convert(annotation.dispatcherTypes(), false, annotation.urlPatterns()));
+                    filterDefinition.addMappings(
+                            convert(annotation.dispatcherTypes(), false, annotation.urlPatterns()));
                 }
                 filterDefinition.addInitParameters(convert(annotation.initParams()));
                 filterDefinition.setPriority(priorityOf(filterClass));

@@ -1,10 +1,11 @@
-/**
- * Copyright (c) 2013-2016, The SeedStack authors <http://seedstack.org>
+/*
+ * Copyright © 2013-2017, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.core.internal.init;
 
 import io.nuun.kernel.api.Kernel;
@@ -12,6 +13,12 @@ import io.nuun.kernel.api.Plugin;
 import io.nuun.kernel.api.config.KernelConfiguration;
 import io.nuun.kernel.core.NuunCore;
 import io.nuun.kernel.core.internal.scanner.AbstractClasspathScanner;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.ServiceLoader;
+import javax.annotation.Nullable;
 import org.reflections.vfs.Vfs;
 import org.seedstack.seed.core.SeedRuntime;
 import org.seedstack.seed.core.internal.configuration.ConfigurationPlugin;
@@ -21,25 +28,10 @@ import org.seedstack.seed.diagnostic.DiagnosticManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.ServiceLoader;
-
 public class KernelManager {
     private static final Logger LOGGER = LoggerFactory.getLogger(KernelManager.class);
     private final List<Vfs.UrlType> savedUrlTypes;
     private final List<Vfs.UrlType> detectedUrlTypes;
-
-    private static class Holder {
-        private static final KernelManager INSTANCE = new KernelManager();
-    }
-
-    public static KernelManager get() {
-        return Holder.INSTANCE;
-    }
 
     private KernelManager() {
         // Load Nuun and Reflections classes to force initialization of Vfs url types
@@ -63,7 +55,12 @@ public class KernelManager {
         detectedUrlTypes = urlTypes;
     }
 
-    public Kernel createKernel(SeedRuntime seedRuntime, @Nullable KernelConfiguration kernelConfiguration, boolean autoStart) {
+    public static KernelManager get() {
+        return Holder.INSTANCE;
+    }
+
+    public Kernel createKernel(SeedRuntime seedRuntime, @Nullable KernelConfiguration kernelConfiguration,
+            boolean autoStart) {
         long startTime = System.currentTimeMillis();
         if (kernelConfiguration == null) {
             kernelConfiguration = NuunCore.newKernelConfiguration();
@@ -72,7 +69,8 @@ public class KernelManager {
         Kernel kernel = createKernel(kernelConfiguration, seedRuntime.getDiagnosticManager());
         if (autoStart) {
             kernel.start();
-            LOGGER.info("{} started in {} second(s)", getApplicationName(kernel), (System.currentTimeMillis() - startTime) / 1000d);
+            LOGGER.info("{} started in {} second(s)", getApplicationName(kernel),
+                    (System.currentTimeMillis() - startTime) / 1000d);
         }
 
         return kernel;
@@ -86,7 +84,8 @@ public class KernelManager {
         }
     }
 
-    private synchronized Kernel createKernel(KernelConfiguration kernelConfiguration, DiagnosticManager diagnosticManager) {
+    private synchronized Kernel createKernel(KernelConfiguration kernelConfiguration,
+            DiagnosticManager diagnosticManager) {
         // Kernel instantiation
         Kernel kernel = NuunCore.createKernel(kernelConfiguration);
         FallbackUrlType fallbackUrlType = new FallbackUrlType();
@@ -128,5 +127,9 @@ public class KernelManager {
         } else {
             return "Seed";
         }
+    }
+
+    private static class Holder {
+        private static final KernelManager INSTANCE = new KernelManager();
     }
 }

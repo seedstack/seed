@@ -1,17 +1,17 @@
-/**
- * Copyright (c) 2013-2016, The SeedStack authors <http://seedstack.org>
+/*
+ * Copyright © 2013-2017, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.core.internal.data;
 
 import com.google.inject.PrivateModule;
 import com.google.inject.TypeLiteral;
-import org.seedstack.seed.DataManager;
-
 import java.util.Map;
+import org.seedstack.seed.DataManager;
 
 /**
  * Guice module for configuring SEED core data infrastructure.
@@ -22,8 +22,8 @@ class DataModule extends PrivateModule {
 
     private final Map<String, Map<String, DataImporterDefinition<Object>>> allDataImporters;
 
-
-    DataModule(Map<String, Map<String, DataExporterDefinition<Object>>> allDataExporters, Map<String, Map<String, DataImporterDefinition<Object>>> allDataImporters) {
+    DataModule(Map<String, Map<String, DataExporterDefinition<Object>>> allDataExporters,
+            Map<String, Map<String, DataImporterDefinition<Object>>> allDataImporters) {
         this.allDataExporters = allDataExporters;
         this.allDataImporters = allDataImporters;
     }
@@ -52,9 +52,11 @@ class DataModule extends PrivateModule {
         expose(DataManager.class);
     }
 
-    private static class DataExportersTypeLiteral extends TypeLiteral<Map<String, Map<String, DataExporterDefinition<Object>>>> {
+    private static class DataExportersTypeLiteral extends TypeLiteral<Map<String, Map<String,
+            DataExporterDefinition<Object>>>> {
     }
 
-    private static class DataImportersTypeLiteral extends TypeLiteral<Map<String, Map<String, DataImporterDefinition<Object>>>> {
+    private static class DataImportersTypeLiteral extends TypeLiteral<Map<String, Map<String,
+            DataImporterDefinition<Object>>>> {
     }
 }

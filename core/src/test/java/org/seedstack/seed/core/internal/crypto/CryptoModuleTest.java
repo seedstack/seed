@@ -1,25 +1,23 @@
-/**
- * Copyright (c) 2013-2016, The SeedStack authors <http://seedstack.org>
+/*
+ * Copyright © 2013-2017, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.core.internal.crypto;
 
 import com.google.inject.Binder;
 import com.google.inject.Key;
 import com.google.inject.name.Names;
-import mockit.Mocked;
-import mockit.Verifications;
-import org.junit.Test;
-import org.seedstack.seed.core.internal.crypto.CryptoModule;
-import org.seedstack.seed.core.internal.crypto.EncryptionServiceImpl;
-import org.seedstack.seed.crypto.EncryptionService;
-
 import java.security.KeyStore;
 import java.util.HashMap;
 import java.util.Map;
+import mockit.Mocked;
+import mockit.Verifications;
+import org.junit.Test;
+import org.seedstack.seed.crypto.EncryptionService;
 
 /**
  * Unit test for {@link CryptoModule}
@@ -32,7 +30,7 @@ public class CryptoModuleTest {
      */
     @Test
     public void testConfigure(@Mocked final EncryptionServiceImpl asymetricCryptingRSA, @Mocked final KeyStore keyStore,
-                              @Mocked final Binder binder) {
+            @Mocked final Binder binder) {
 
         final Map<String, KeyStore> keyStores = new HashMap<>();
         keyStores.put("k1", keyStore);

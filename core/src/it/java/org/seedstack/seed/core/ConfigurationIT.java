@@ -1,14 +1,18 @@
-/**
- * Copyright (c) 2013-2016, The SeedStack authors <http://seedstack.org>
+/*
+ * Copyright © 2013-2017, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.core;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 import com.google.inject.Injector;
 import com.google.inject.Module;
+import javax.inject.Inject;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -24,10 +28,6 @@ import org.seedstack.seed.core.fixtures.SomeEnum;
 import org.seedstack.seed.core.rules.SeedITRule;
 import some.other.pkg.ForeignClass;
 
-import javax.inject.Inject;
-
-import static org.assertj.core.api.Assertions.assertThat;
-
 public class ConfigurationIT {
     @Rule
     public SeedITRule rule = new SeedITRule(this);
@@ -35,66 +35,10 @@ public class ConfigurationIT {
     @Inject
     private Application application;
 
-    private static class Holder {
-        @Inject
-        Application application;
-
-        @Configuration("secret1")
-        String secret1;
-
-        @Configuration(value = "dummy")
-        String dummy = "defaultValue";
-
-        @Configuration("someEnum")
-        SomeEnum someEnum;
-
-        @Configuration("anInt")
-        int anInt;
-
-        @Configuration("someShorts")
-        short[] someShorts;
-
-        @Configuration
-        ConfigObject configObject1;
-
-        @Configuration(value = "missingProperty")
-        ConfigObject configObject2 = new ConfigObject().setProperty2(5);
-
-        @Configuration
-        OtherConfigObject otherConfigObject1 = new OtherConfigObject().setProperty1("someValue");
-
-        @Configuration
-        OtherConfigObject otherConfigObject2;
-
-        @Configuration(injectDefault = false)
-        OtherConfigObject otherConfigObject3;
-    }
-
     @Before
     public void setUp() throws Exception {
-        injector = rule.getKernel().objectGraph().as(Injector.class).createChildInjector((Module) binder -> binder.bind(Holder.class));
-    }
-
-    @Config("someObject")
-    public static class ConfigObject {
-        String property1 = "defaultValue";
-        @SingleValue
-        int[] property2;
-
-        public ConfigObject setProperty2(int... property2) {
-            this.property2 = property2;
-            return this;
-        }
-    }
-
-    @Config("nonExistingObject")
-    private static class OtherConfigObject {
-        String property1 = "defaultValue";
-
-        public OtherConfigObject setProperty1(String property1) {
-            this.property1 = property1;
-            return this;
-        }
+        injector = rule.getKernel().objectGraph().as(Injector.class).createChildInjector(
+                (Module) binder -> binder.bind(Holder.class));
     }
 
     @Test
@@ -118,15 +62,20 @@ public class ConfigurationIT {
     @Test
     public void system_properties_are_accessible_in_configuration() {
         Holder holder = injector.getInstance(Holder.class);
-        assertThat(holder.application.getConfiguration().get(String.class, "sys.java\\.vendor")).isEqualTo(System.getProperty("java.vendor"));
+        assertThat(holder.application.getConfiguration().get(String.class, "sys.java\\.vendor")).isEqualTo(
+                System.getProperty("java.vendor"));
     }
 
     @Test
     public void scanned_configuration_is_accessible() {
         Holder holder = injector.getInstance(Holder.class);
-        assertThat(holder.application.getConfiguration().getOptional(String.class, "propertyInOtherFile").get()).isEqualTo("value");
-        assertThat(holder.application.getConfiguration().getOptional(String.class, "propertyInOtherPropertiesFile").get()).isEqualTo("value");
-        assertThat(holder.application.getConfiguration().getOptional(String.class, "propertyInOtherFileWithSuffix")).isNotPresent();
+        assertThat(
+                holder.application.getConfiguration().getOptional(String.class, "propertyInOtherFile").get()).isEqualTo(
+                "value");
+        assertThat(holder.application.getConfiguration().getOptional(String.class,
+                "propertyInOtherPropertiesFile").get()).isEqualTo("value");
+        assertThat(holder.application.getConfiguration().getOptional(String.class,
+                "propertyInOtherFileWithSuffix")).isNotPresent();
     }
 
     @Test
@@ -141,7 +90,8 @@ public class ConfigurationIT {
     @Test
     public void properties_files_are_accessible_in_configuration() {
         Holder holder = injector.getInstance(Holder.class);
-        assertThat(holder.application.getConfiguration().get(String.class, "test.keyFromProperties")).isEqualTo("testValue");
+        assertThat(holder.application.getConfiguration().get(String.class, "test.keyFromProperties")).isEqualTo(
+                "testValue");
     }
 
     @Test
@@ -152,14 +102,18 @@ public class ConfigurationIT {
 
     @Test
     public void non_existent_configuration_values_are_empty() {
-        assertThat(injector.getInstance(Application.class).getConfiguration().getOptional(Object.class, "nonExistent")).isEmpty();
-        assertThat(injector.getInstance(Application.class).getConfiguration().getOptional(String.class, "nonExistent")).isEmpty();
+        assertThat(injector.getInstance(Application.class).getConfiguration().getOptional(Object.class,
+                "nonExistent")).isEmpty();
+        assertThat(injector.getInstance(Application.class).getConfiguration().getOptional(String.class,
+                "nonExistent")).isEmpty();
     }
 
     @Test
     public void null_configuration_values_are_empty() {
-        assertThat(injector.getInstance(Application.class).getConfiguration().getOptional(Object.class, "null")).isEmpty();
-        assertThat(injector.getInstance(Application.class).getConfiguration().getOptional(String.class, "null")).isEmpty();
+        assertThat(
+                injector.getInstance(Application.class).getConfiguration().getOptional(Object.class, "null")).isEmpty();
+        assertThat(
+                injector.getInstance(Application.class).getConfiguration().getOptional(String.class, "null")).isEmpty();
     }
 
     @Test(expected = ConfigurationException.class)
@@ -224,5 +178,62 @@ public class ConfigurationIT {
         assertThat(application.getId()).isEqualTo("seed-it");
         assertThat(application.getName()).isEqualTo("seed-it");
         assertThat(application.getVersion()).isEqualTo("1.0.0");
+    }
+
+    private static class Holder {
+        @Inject
+        Application application;
+
+        @Configuration("secret1")
+        String secret1;
+
+        @Configuration(value = "dummy")
+        String dummy = "defaultValue";
+
+        @Configuration("someEnum")
+        SomeEnum someEnum;
+
+        @Configuration("anInt")
+        int anInt;
+
+        @Configuration("someShorts")
+        short[] someShorts;
+
+        @Configuration
+        ConfigObject configObject1;
+
+        @Configuration(value = "missingProperty")
+        ConfigObject configObject2 = new ConfigObject().setProperty2(5);
+
+        @Configuration
+        OtherConfigObject otherConfigObject1 = new OtherConfigObject().setProperty1("someValue");
+
+        @Configuration
+        OtherConfigObject otherConfigObject2;
+
+        @Configuration(injectDefault = false)
+        OtherConfigObject otherConfigObject3;
+    }
+
+    @Config("someObject")
+    public static class ConfigObject {
+        String property1 = "defaultValue";
+        @SingleValue
+        int[] property2;
+
+        public ConfigObject setProperty2(int... property2) {
+            this.property2 = property2;
+            return this;
+        }
+    }
+
+    @Config("nonExistingObject")
+    private static class OtherConfigObject {
+        String property1 = "defaultValue";
+
+        public OtherConfigObject setProperty1(String property1) {
+            this.property1 = property1;
+            return this;
+        }
     }
 }

@@ -1,21 +1,21 @@
-/**
- * Copyright (c) 2013-2016, The SeedStack authors <http://seedstack.org>
+/*
+ * Copyright © 2013-2017, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.core.internal.crypto;
 
-import org.seedstack.seed.SeedException;
-import org.seedstack.seed.crypto.Hash;
-import org.seedstack.seed.crypto.HashingService;
-
-import javax.crypto.SecretKeyFactory;
-import javax.crypto.spec.PBEKeySpec;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
+import javax.crypto.SecretKeyFactory;
+import javax.crypto.spec.PBEKeySpec;
+import org.seedstack.seed.SeedException;
+import org.seedstack.seed.crypto.Hash;
+import org.seedstack.seed.crypto.HashingService;
 
 class PBKDF2HashingService implements HashingService {
     private static final String PBKDF2_ALGORITHM = "PBKDF2WithHmacSHA1";
@@ -58,9 +58,9 @@ class PBKDF2HashingService implements HashingService {
 
     /**
      * Computes the PBKDF2 hash of a password.
-     * 
+     *
      * @param password the password to hash.
-     * @param salt the salt
+     * @param salt     the salt
      * @return the PBDKF2 hash of the password
      */
     private byte[] pbkdf2(char[] password, byte[] salt) {

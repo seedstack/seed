@@ -1,26 +1,26 @@
-/**
- * Copyright (c) 2013-2016, The SeedStack authors <http://seedstack.org>
+/*
+ * Copyright © 2013-2017, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.rest.internal;
 
-import org.seedstack.seed.rest.Rel;
-import org.seedstack.shed.reflect.Classes;
+import static org.seedstack.seed.rest.internal.UriBuilder.uri;
 
-import javax.ws.rs.BeanParam;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.QueryParam;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
-
-import static org.seedstack.seed.rest.internal.UriBuilder.uri;
+import javax.ws.rs.BeanParam;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.QueryParam;
+import org.seedstack.seed.rest.Rel;
+import org.seedstack.shed.reflect.Classes;
 
 /**
  * Provides a set of functions which scan HTTP methods to find various information
@@ -142,12 +142,14 @@ class RESTReflect {
         return hrefVars;
     }
 
-    private static Map<String, String> findQueryParamOnParameter(String baseParam, Class<?> parameterClass, Annotation paramAnnotation) {
+    private static Map<String, String> findQueryParamOnParameter(String baseParam, Class<?> parameterClass,
+            Annotation paramAnnotation) {
         Map<String, String> hrefVars = new HashMap<>();
         if (paramAnnotation.annotationType().equals(QueryParam.class)) {
             String varName = ((QueryParam) paramAnnotation).value();
             addHrefVar(baseParam, hrefVars, varName);
-        } else if (Classes.optional("javax.ws.rs.BeanParam").isPresent() && paramAnnotation.annotationType().equals(BeanParam.class)) {
+        } else if (Classes.optional("javax.ws.rs.BeanParam").isPresent() && paramAnnotation.annotationType().equals(
+                BeanParam.class)) {
             hrefVars.putAll(findQueryParamOnFields(baseParam, parameterClass));
         }
         return hrefVars;

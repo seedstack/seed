@@ -1,14 +1,26 @@
-/**
- * Copyright (c) 2013-2016, The SeedStack authors <http://seedstack.org>
+/*
+ * Copyright © 2013-2017, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.core.internal.transaction;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.seedstack.shed.reflect.ReflectUtils.makeAccessible;
 
 import com.google.common.collect.Sets;
 import com.google.inject.Injector;
+import java.lang.reflect.AccessibleObject;
+import java.lang.reflect.Method;
+import javax.transaction.Transactional;
 import org.aopalliance.intercept.MethodInvocation;
 import org.junit.Before;
 import org.junit.Test;
@@ -20,18 +32,6 @@ import org.seedstack.seed.transaction.spi.TransactionManager;
 import org.seedstack.seed.transaction.spi.TransactionMetadata;
 import org.seedstack.seed.transaction.spi.TransactionMetadataResolver;
 import org.seedstack.shed.reflect.ReflectUtils;
-
-import javax.transaction.Transactional;
-import java.lang.reflect.AccessibleObject;
-import java.lang.reflect.Method;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.fail;
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static org.seedstack.shed.reflect.ReflectUtils.makeAccessible;
 
 @SuppressWarnings("unchecked")
 public abstract class AbstractTransactionManagerTest {
@@ -52,7 +52,8 @@ public abstract class AbstractTransactionManagerTest {
         transactionMetadata.setHandler(TransactionHandler.class);
 
         transactionMetadataResolver = mock(TransactionMetadataResolver.class);
-        when(transactionMetadataResolver.resolve(any(MethodInvocation.class), any(TransactionMetadata.class))).thenReturn(transactionMetadata);
+        when(transactionMetadataResolver.resolve(any(MethodInvocation.class),
+                any(TransactionMetadata.class))).thenReturn(transactionMetadata);
 
         Injector injector = mock(Injector.class);
         when(injector.getInstance(TransactionHandler.class)).thenReturn(transactionHandler);
@@ -60,7 +61,8 @@ public abstract class AbstractTransactionManagerTest {
         when(injector.getInstance(ExceptionHandler.class)).thenReturn(exceptionHandler);
 
         underTest = doProvideTransactionManager();
-        Whitebox.setInternalState(underTest, "transactionMetadataResolvers", Sets.newHashSet(transactionMetadataResolver));
+        Whitebox.setInternalState(underTest, "transactionMetadataResolvers",
+                Sets.newHashSet(transactionMetadataResolver));
         Whitebox.setInternalState(underTest, "injector", injector);
     }
 
@@ -83,7 +85,8 @@ public abstract class AbstractTransactionManagerTest {
     @Test
     public void exception_handler_can_mask_exception() throws Throwable {
         transactionMetadata.setExceptionHandler(ExceptionHandler.class);
-        when(exceptionHandler.handleException(any(Exception.class), any(TransactionMetadata.class), any())).thenReturn(true);
+        when(exceptionHandler.handleException(any(Exception.class), any(TransactionMetadata.class), any())).thenReturn(
+                true);
 
         try {
             invoke(TransactionalMethods.Enum.FAIL);
@@ -97,7 +100,8 @@ public abstract class AbstractTransactionManagerTest {
     @Test
     public void exception_handler_can_process_exception_without_masking_it() throws Throwable {
         transactionMetadata.setExceptionHandler(ExceptionHandler.class);
-        when(exceptionHandler.handleException(any(Exception.class), any(TransactionMetadata.class), any())).thenReturn(false);
+        when(exceptionHandler.handleException(any(Exception.class), any(TransactionMetadata.class), any())).thenReturn(
+                false);
 
         try {
             invoke(TransactionalMethods.Enum.FAIL);
@@ -159,7 +163,8 @@ public abstract class AbstractTransactionManagerTest {
     @Test
     public void no_rollback_on_exceptions_matching_rollback_for_and_matching_no_rollback_for_too() throws Throwable {
         try {
-            invokeWithArguments(TransactionalMethods.Enum.NO_ROLLBACK_FOR, new Object[]{new IllegalArgumentException()});
+            invokeWithArguments(TransactionalMethods.Enum.NO_ROLLBACK_FOR,
+                    new Object[]{new IllegalArgumentException()});
         } catch (Exception e) {
             fail("exception should not have been propagated");
         }
@@ -190,9 +195,11 @@ public abstract class AbstractTransactionManagerTest {
     }
 
     private void testReadTransactional(String methodName) throws NoSuchMethodException {
-        Method readTransactionMetadata = AbstractTransactionManager.class.getDeclaredMethod("readTransactionMetadata", MethodInvocation.class);
+        Method readTransactionMetadata = AbstractTransactionManager.class.getDeclaredMethod("readTransactionMetadata",
+                MethodInvocation.class);
         makeAccessible(readTransactionMetadata);
-        TransactionMetadata transactionMetadata = ReflectUtils.invoke(readTransactionMetadata, underTest, buildMethodInvocation(methodName));
+        TransactionMetadata transactionMetadata = ReflectUtils.invoke(readTransactionMetadata, underTest,
+                buildMethodInvocation(methodName));
         assertThat(transactionMetadata.getPropagation()).isEqualTo(Propagation.MANDATORY);
         assertThat(transactionMetadata.getRollbackOn()).containsExactly(MyException.class);
         assertThat(transactionMetadata.getNoRollbackFor()).containsExactly(MyException.class);
@@ -231,11 +238,13 @@ public abstract class AbstractTransactionManagerTest {
         };
     }
 
-    @Transactional(value = Transactional.TxType.MANDATORY, dontRollbackOn = MyException.class, rollbackOn = MyException.class)
+    @Transactional(value = Transactional.TxType.MANDATORY, dontRollbackOn = MyException.class, rollbackOn =
+            MyException.class)
     private void someJtaAnnotatedMethod() {
     }
 
-    @org.seedstack.seed.transaction.Transactional(propagation = Propagation.MANDATORY, noRollbackFor = MyException.class, rollbackOn = MyException.class)
+    @org.seedstack.seed.transaction.Transactional(propagation = Propagation.MANDATORY, noRollbackFor = MyException
+            .class, rollbackOn = MyException.class)
     private void someSeedAnnotatedMethod() {
     }
 

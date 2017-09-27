@@ -1,12 +1,19 @@
-/**
- * Copyright (c) 2013-2016, The SeedStack authors <http://seedstack.org>
+/*
+ * Copyright © 2013-2017, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.core.internal.init;
 
+import java.io.IOException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.List;
+import javax.validation.ValidatorFactory;
 import org.seedstack.coffig.Coffig;
 import org.seedstack.coffig.provider.EnvironmentProvider;
 import org.seedstack.coffig.provider.JacksonProvider;
@@ -14,32 +21,17 @@ import org.seedstack.coffig.provider.PrefixProvider;
 import org.seedstack.coffig.provider.PropertiesProvider;
 import org.seedstack.coffig.provider.SystemPropertiesProvider;
 import org.seedstack.seed.core.Seed;
-import org.seedstack.seed.spi.ConfigurationPriority;
 import org.seedstack.seed.core.internal.configuration.PrioritizedProvider;
+import org.seedstack.seed.spi.ConfigurationPriority;
 import org.seedstack.shed.ClassLoaders;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import javax.validation.ValidatorFactory;
-import java.io.IOException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.List;
 
 public class BaseConfiguration {
     private static final Logger LOGGER = LoggerFactory.getLogger(BaseConfiguration.class);
     private static final String ENVIRONMENT_VARIABLES_PREFIX = "env";
     private static final String SYSTEM_PROPERTIES_PREFIX = "sys";
     private final Coffig baseConfiguration;
-
-    private static class Holder {
-        private static final BaseConfiguration INSTANCE = new BaseConfiguration(GlobalValidatorFactory.get());
-    }
-
-    public static Coffig get() {
-        return Holder.INSTANCE.baseConfiguration;
-    }
 
     private BaseConfiguration(ValidatorFactory validatorFactory) {
         baseConfiguration = Coffig.builder()
@@ -53,7 +45,8 @@ public class BaseConfiguration {
                                 ConfigurationPriority.BASE
                         )
                         .registerProvider(
-                                buildJacksonProvider("application.override.yaml", "application.override.yml", "application.override.json"),
+                                buildJacksonProvider("application.override.yaml", "application.override.yml",
+                                        "application.override.json"),
                                 ConfigurationPriority.BASE_OVERRIDE
                         )
                         .registerProvider(
@@ -72,6 +65,10 @@ public class BaseConfiguration {
                 .build();
     }
 
+    public static Coffig get() {
+        return Holder.INSTANCE.baseConfiguration;
+    }
+
     private JacksonProvider buildJacksonProvider(String... resourceNames) {
         JacksonProvider jacksonProvider = new JacksonProvider();
         getResources(resourceNames).forEach(jacksonProvider::addSource);
@@ -88,7 +85,8 @@ public class BaseConfiguration {
         List<URL> result = new ArrayList<>();
         for (String resourceName : resourceNames) {
             try {
-                Enumeration<URL> configResources = ClassLoaders.findMostCompleteClassLoader(Seed.class).getResources(resourceName);
+                Enumeration<URL> configResources = ClassLoaders.findMostCompleteClassLoader(Seed.class).getResources(
+                        resourceName);
                 while (configResources.hasMoreElements()) {
                     URL url = configResources.nextElement();
                     LOGGER.debug("Detected configuration resource: {}", url.toExternalForm());
@@ -99,5 +97,9 @@ public class BaseConfiguration {
             }
         }
         return result;
+    }
+
+    private static class Holder {
+        private static final BaseConfiguration INSTANCE = new BaseConfiguration(GlobalValidatorFactory.get());
     }
 }

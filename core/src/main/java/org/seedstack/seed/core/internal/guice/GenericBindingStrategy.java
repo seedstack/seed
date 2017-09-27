@@ -1,10 +1,11 @@
-/**
- * Copyright (c) 2013-2016, The SeedStack authors <http://seedstack.org>
+/*
+ * Copyright © 2013-2017, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.core.internal.guice;
 
 import com.google.inject.Binder;
@@ -13,7 +14,6 @@ import com.google.inject.Provider;
 import com.google.inject.TypeLiteral;
 import com.google.inject.assistedinject.FactoryModuleBuilder;
 import com.google.inject.util.Types;
-
 import java.lang.reflect.Type;
 import java.util.Collection;
 import java.util.Map;
@@ -34,7 +34,8 @@ import java.util.Map;
  * constructorParams.add(new Object[]{MyAggregate1.class, MyKey1.class});
  * constructorParams.add(new Object[]{MyAggregate2.class, MyKey2.class});
  *
- * GenericBindingStrategy bindingStrategy = new GenericBindingStrategy(MyClass.class, MyImplClass.class, constructorParams);
+ * GenericBindingStrategy bindingStrategy = new GenericBindingStrategy(MyClass.class, MyImplClass.class,
+ * constructorParams);
  * </pre>
  * This will allow to inject as follows:
  * <pre>
@@ -59,7 +60,8 @@ public class GenericBindingStrategy<T> implements BindingStrategy {
      * @param genericImplClass  the implementation to bind with unresolved constructorParams
      * @param constructorParams the collection of resolved constructorParams
      */
-    public GenericBindingStrategy(Class<T> injecteeClass, Class<? extends T> genericImplClass, Map<Type[], Key<?>> constructorParams) {
+    public GenericBindingStrategy(Class<T> injecteeClass, Class<? extends T> genericImplClass,
+            Map<Type[], Key<?>> constructorParams) {
         this.constructorParamsMap = constructorParams;
         this.injecteeClass = injecteeClass;
         this.genericImplClass = genericImplClass;
@@ -72,7 +74,8 @@ public class GenericBindingStrategy<T> implements BindingStrategy {
      * @param genericImplClass  the implementation to bind with unresolved constructorParams
      * @param constructorParams the collection of resolved constructorParams
      */
-    public GenericBindingStrategy(Class<T> injecteeClass, Class<? extends T> genericImplClass, Collection<Type[]> constructorParams) {
+    public GenericBindingStrategy(Class<T> injecteeClass, Class<? extends T> genericImplClass,
+            Collection<Type[]> constructorParams) {
         this.constructorParams = constructorParams;
         this.injecteeClass = injecteeClass;
         this.genericImplClass = genericImplClass;
@@ -94,7 +97,8 @@ public class GenericBindingStrategy<T> implements BindingStrategy {
             }
         }
 
-        TypeLiteral<?> guiceAssistedFactory = TypeLiteral.get(Types.newParameterizedType(DEFAULT_IMPL_FACTORY_CLASS, genericImplClass));
+        TypeLiteral<?> guiceAssistedFactory = TypeLiteral.get(
+                Types.newParameterizedType(DEFAULT_IMPL_FACTORY_CLASS, genericImplClass));
         binder.install(guiceFactoryBuilder.build(guiceAssistedFactory));
     }
 

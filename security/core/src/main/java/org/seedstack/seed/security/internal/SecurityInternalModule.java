@@ -1,10 +1,11 @@
-/**
- * Copyright (c) 2013-2016, The SeedStack authors <http://seedstack.org>
+/*
+ * Copyright © 2013-2017, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.security.internal;
 
 import com.google.common.base.Strings;
@@ -14,6 +15,11 @@ import com.google.inject.Provider;
 import com.google.inject.TypeLiteral;
 import com.google.inject.multibindings.Multibinder;
 import com.google.inject.name.Names;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import javax.inject.Inject;
 import org.apache.shiro.realm.Realm;
 import org.seedstack.seed.security.PrincipalCustomizer;
 import org.seedstack.seed.security.RoleMapping;
@@ -21,12 +27,6 @@ import org.seedstack.seed.security.RolePermissionResolver;
 import org.seedstack.seed.security.Scope;
 import org.seedstack.seed.security.SecurityConfig;
 import org.seedstack.seed.security.SecuritySupport;
-
-import javax.inject.Inject;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
 
 class SecurityInternalModule extends PrivateModule {
     private final Map<String, Class<? extends Scope>> scopeClasses;
@@ -51,7 +51,8 @@ class SecurityInternalModule extends PrivateModule {
     }
 
     private void bindPrincipalCustomizers() {
-        Multibinder<PrincipalCustomizer> principalCustomizers = Multibinder.newSetBinder(binder(), PrincipalCustomizer.class);
+        Multibinder<PrincipalCustomizer> principalCustomizers = Multibinder.newSetBinder(binder(),
+                PrincipalCustomizer.class);
         for (Class<? extends PrincipalCustomizer> customizerClass : securityConfigurer.getPrincipalCustomizers()) {
             principalCustomizers.addBinding().to(customizerClass);
         }
@@ -65,12 +66,16 @@ class SecurityInternalModule extends PrivateModule {
         for (RealmConfiguration realm : realms) {
             bind(realm.getRealmClass());
             apiRealmClasses.add(realm.getRealmClass());
-            bind(RolePermissionResolver.class).annotatedWith(Names.named(realm.getName() + "-role-permission-resolver")).to(realm.getRolePermissionResolverClass());
-            bind(RoleMapping.class).annotatedWith(Names.named(realm.getName() + "-role-mapping")).to(realm.getRoleMappingClass());
+            bind(RolePermissionResolver.class).annotatedWith(
+                    Names.named(realm.getName() + "-role-permission-resolver")).to(
+                    realm.getRolePermissionResolverClass());
+            bind(RoleMapping.class).annotatedWith(Names.named(realm.getName() + "-role-mapping")).to(
+                    realm.getRoleMappingClass());
         }
 
         bind(new RealmClassesTypeLiteral()).toInstance(apiRealmClasses);
-        bind(new RealmsTypeLiteral()).toProvider(new RealmProvider(securityConfigurer.getSecurityConfiguration())).asEagerSingleton();
+        bind(new RealmsTypeLiteral()).toProvider(
+                new RealmProvider(securityConfigurer.getSecurityConfiguration())).asEagerSingleton();
         expose(new RealmsTypeLiteral());
     }
 
@@ -98,14 +103,16 @@ class SecurityInternalModule extends PrivateModule {
                         realmAdapter.setCachingEnabled(true);
 
                         // Authentication cache
-                        realmAdapter.setAuthenticationCachingEnabled(securityConfiguration.cache().authentication().isEnabled());
+                        realmAdapter.setAuthenticationCachingEnabled(
+                                securityConfiguration.cache().authentication().isEnabled());
                         String authenticationCacheName = securityConfiguration.cache().authentication().getName();
                         if (!Strings.isNullOrEmpty(authenticationCacheName)) {
                             realmAdapter.setAuthenticationCacheName(authenticationCacheName);
                         }
 
                         // Authorization cache
-                        realmAdapter.setAuthorizationCachingEnabled(securityConfiguration.cache().authorization().isEnabled());
+                        realmAdapter.setAuthorizationCachingEnabled(
+                                securityConfiguration.cache().authorization().isEnabled());
                         String authorizationCacheName = securityConfiguration.cache().authorization().getName();
                         if (!Strings.isNullOrEmpty(authorizationCacheName)) {
                             realmAdapter.setAuthorizationCacheName(authorizationCacheName);
@@ -127,7 +134,8 @@ class SecurityInternalModule extends PrivateModule {
     private static class PrincipalCustomizersTypeLiteral extends TypeLiteral<Set<PrincipalCustomizer>> {
     }
 
-    private static class RealmClassesTypeLiteral extends TypeLiteral<Set<Class<? extends org.seedstack.seed.security.Realm>>> {
+    private static class RealmClassesTypeLiteral extends TypeLiteral<Set<Class<? extends org.seedstack.seed.security
+            .Realm>>> {
     }
 
     private static class RealmsTypeLiteral extends TypeLiteral<Set<Realm>> {

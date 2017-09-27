@@ -1,21 +1,21 @@
-/**
- * Copyright (c) 2013-2016, The SeedStack authors <http://seedstack.org>
+/*
+ * Copyright © 2013-2017, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.core.internal.logging;
 
+import static org.seedstack.shed.reflect.ReflectUtils.makeAccessible;
+
 import com.google.inject.MembersInjector;
+import java.lang.reflect.Field;
+import java.util.Set;
 import org.seedstack.seed.SeedException;
 import org.seedstack.seed.core.internal.CoreErrorCode;
 import org.slf4j.LoggerFactory;
-
-import java.lang.reflect.Field;
-import java.util.Set;
-
-import static org.seedstack.shed.reflect.ReflectUtils.makeAccessible;
 
 /**
  * Guice members injector that inject logger instances.
@@ -38,7 +38,8 @@ class LoggingMembersInjector<T> implements MembersInjector<T> {
             try {
                 field.set(t, LoggerFactory.getLogger(field.getDeclaringClass()));
             } catch (IllegalAccessException e) {
-                throw SeedException.wrap(e, CoreErrorCode.UNABLE_TO_INJECT_LOGGER).put("class", field.getDeclaringClass().getCanonicalName()).put("field", field.getName());
+                throw SeedException.wrap(e, CoreErrorCode.UNABLE_TO_INJECT_LOGGER).put("class",
+                        field.getDeclaringClass().getCanonicalName()).put("field", field.getName());
             }
         }
     }

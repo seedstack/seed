@@ -1,42 +1,45 @@
-/**
- * Copyright (c) 2013-2016, The SeedStack authors <http://seedstack.org>
+/*
+ * Copyright © 2013-2017, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.web.internal;
 
 import com.google.inject.Injector;
 import io.nuun.kernel.api.Kernel;
 import io.nuun.kernel.api.config.KernelConfiguration;
 import io.nuun.kernel.core.NuunCore;
-import org.seedstack.seed.core.Seed;
-import org.seedstack.seed.web.WebConfig;
-import org.seedstack.shed.exception.BaseException;
-
+import java.util.EnumSet;
+import java.util.Enumeration;
+import java.util.Set;
 import javax.servlet.ServletContainerInitializer;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import javax.servlet.ServletException;
 import javax.servlet.SessionTrackingMode;
-import java.util.EnumSet;
-import java.util.Enumeration;
-import java.util.Set;
+import org.seedstack.seed.core.Seed;
+import org.seedstack.seed.web.WebConfig;
+import org.seedstack.shed.exception.BaseException;
 
 public class SeedServletContainerInitializer implements ServletContainerInitializer, ServletContextListener {
     private Kernel kernel;
 
     @Override
-    public void onStartup(Set<Class<?>> servletContextConfigurerClasses, ServletContext servletContext) throws ServletException {
+    public void onStartup(Set<Class<?>> servletContextConfigurerClasses,
+            ServletContext servletContext) throws ServletException {
         WebConfig webConfig = Seed.baseConfiguration().get(WebConfig.class);
-        servletContext.setSessionTrackingModes(EnumSet.of(SessionTrackingMode.valueOf(webConfig.getSessionTrackingMode().name())));
+        servletContext.setSessionTrackingModes(
+                EnumSet.of(SessionTrackingMode.valueOf(webConfig.getSessionTrackingMode().name())));
 
         try {
             kernel = Seed.createKernel(servletContext, buildKernelConfiguration(servletContext), true);
             servletContext.setAttribute(ServletContextUtils.KERNEL_ATTRIBUTE_NAME, kernel);
-            servletContext.setAttribute(ServletContextUtils.INJECTOR_ATTRIBUTE_NAME, kernel.objectGraph().as(Injector.class));
+            servletContext.setAttribute(ServletContextUtils.INJECTOR_ATTRIBUTE_NAME,
+                    kernel.objectGraph().as(Injector.class));
         } catch (Exception e) {
             handleException(e);
         }

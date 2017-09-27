@@ -1,22 +1,17 @@
-/**
- * Copyright (c) 2013-2016, The SeedStack authors <http://seedstack.org>
+/*
+ * Copyright © 2013-2017, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.core.internal.guice;
 
 import com.google.common.reflect.TypeToken;
 import com.google.inject.Key;
 import com.google.inject.TypeLiteral;
 import com.google.inject.util.Types;
-import org.seedstack.seed.SeedException;
-import org.seedstack.seed.core.internal.CoreErrorCode;
-import org.seedstack.shed.reflect.AnnotationPredicates;
-import org.seedstack.shed.reflect.Annotations;
-
-import javax.inject.Qualifier;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
@@ -27,6 +22,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import javax.inject.Qualifier;
+import org.seedstack.seed.SeedException;
+import org.seedstack.seed.core.internal.CoreErrorCode;
+import org.seedstack.shed.reflect.AnnotationPredicates;
+import org.seedstack.shed.reflect.Annotations;
 
 /**
  * Utilities for Guice bindings.
@@ -76,7 +76,8 @@ public final class BindingUtils {
      * @throws SeedException when duplicates keys are found.
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
-    public static <T> Map<Key<T>, Class<? extends T>> resolveBindingDefinitions(Class<T> injecteeClass, Class<? extends T> firstImplClass, Class<? extends T>... restImplClasses) {
+    public static <T> Map<Key<T>, Class<? extends T>> resolveBindingDefinitions(Class<T> injecteeClass,
+            Class<? extends T> firstImplClass, Class<? extends T>... restImplClasses) {
         Map<Key<T>, Class<? extends T>> typeLiterals = new HashMap<>();
         List<Class<? extends T>> subClasses = new ArrayList<>();
 
@@ -103,7 +104,8 @@ public final class BindingUtils {
                         .findAll()
                         .filter(AnnotationPredicates.annotationAnnotatedWith(Qualifier.class, false))
                         .findFirst();
-                Key<T> key = qualifier.map(annotation -> Key.get(parentTypeLiteral, annotation)).orElseGet(() -> Key.get(parentTypeLiteral));
+                Key<T> key = qualifier.map(annotation -> Key.get(parentTypeLiteral, annotation)).orElseGet(
+                        () -> Key.get(parentTypeLiteral));
                 if (typeLiterals.containsKey(key)) {
                     throw SeedException.createNew(CoreErrorCode.DUPLICATED_BINDING_KEY)
                             .put("duplicatedKey", key)
@@ -125,13 +127,13 @@ public final class BindingUtils {
      * @return a multimap with typeliterals for keys and a list of associated subclasses for values
      */
     @SuppressWarnings("unchecked")
-    public static <T> Map<Key<T>, Class<? extends T>> resolveBindingDefinitions(Class<T> injecteeClass, Collection<Class<? extends T>> implClasses) {
+    public static <T> Map<Key<T>, Class<? extends T>> resolveBindingDefinitions(Class<T> injecteeClass,
+            Collection<Class<? extends T>> implClasses) {
         if (implClasses != null && !implClasses.isEmpty()) {
             return resolveBindingDefinitions(injecteeClass, null, implClasses.toArray(new Class[implClasses.size()]));
         }
         return new HashMap<>();
     }
-
 
     /**
      * Checks if the class is not an interface, an abstract class or a class with unresolved generics.
@@ -140,7 +142,8 @@ public final class BindingUtils {
      * @return true if the class verify the condition, false otherwise
      */
     public static boolean isBindable(Class<?> subClass) {
-        return !subClass.isInterface() && !Modifier.isAbstract(subClass.getModifiers()) && subClass.getTypeParameters().length == 0;
+        return !subClass.isInterface() && !Modifier.isAbstract(
+                subClass.getModifiers()) && subClass.getTypeParameters().length == 0;
     }
 
     /**
@@ -154,13 +157,16 @@ public final class BindingUtils {
      * @return {@link com.google.inject.Key}
      */
     @SuppressWarnings("unchecked")
-    public static <T> Key<T> resolveKey(Class<T> injecteeClass, Class<? extends T> genericImplClass, Type... typeVariableClasses) {
+    public static <T> Key<T> resolveKey(Class<T> injecteeClass, Class<? extends T> genericImplClass,
+            Type... typeVariableClasses) {
         Optional<Annotation> qualifier = Annotations.on(genericImplClass)
                 .findAll()
                 .filter(AnnotationPredicates.annotationAnnotatedWith(Qualifier.class, false))
                 .findFirst();
-        TypeLiteral<T> genericInterface = (TypeLiteral<T>) TypeLiteral.get(Types.newParameterizedType(injecteeClass, typeVariableClasses));
-        return qualifier.map(annotation -> Key.get(genericInterface, annotation)).orElseGet(() -> Key.get(genericInterface));
+        TypeLiteral<T> genericInterface = (TypeLiteral<T>) TypeLiteral.get(
+                Types.newParameterizedType(injecteeClass, typeVariableClasses));
+        return qualifier.map(annotation -> Key.get(genericInterface, annotation)).orElseGet(
+                () -> Key.get(genericInterface));
     }
 
     /**

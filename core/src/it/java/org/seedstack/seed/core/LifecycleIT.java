@@ -1,15 +1,19 @@
-/**
- * Copyright (c) 2013-2016, The SeedStack authors <http://seedstack.org>
+/*
+ * Copyright © 2013-2017, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.core;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 import com.google.inject.Injector;
 import com.google.inject.Module;
 import com.google.inject.name.Names;
+import javax.inject.Singleton;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -22,25 +26,29 @@ import org.seedstack.seed.core.internal.transaction.TransactionalClassProxy;
 import org.seedstack.seed.core.internal.transaction.TransactionalProxy;
 import org.seedstack.seed.core.rules.SeedITRule;
 
-import javax.inject.Singleton;
-
-import static org.assertj.core.api.Assertions.assertThat;
-
 public class LifecycleIT implements LifecycleListener {
-    @Rule
-    public SeedITRule rule = new SeedITRule(this);
     private static boolean startedWasCalled;
     private static boolean stoppingWasCalled;
     private static boolean closedWasCalled;
     private static boolean ignoredClosedWasCalled;
     private static boolean proxyClosedWasCalled;
     private static boolean classProxyClosedWasCalled;
+    @Rule
+    public SeedITRule rule = new SeedITRule(this);
 
     @BeforeClass
     public static void setUpClass() throws Exception {
         startedWasCalled = false;
         stoppingWasCalled = false;
         closedWasCalled = false;
+    }
+
+    @AfterClass
+    public static void tearDownClass() throws Exception {
+        assertThat(startedWasCalled).isTrue();
+        assertThat(stoppingWasCalled).isTrue();
+        assertThat(closedWasCalled).isTrue();
+        assertThat(ignoredClosedWasCalled).isFalse();
     }
 
     @Before
@@ -53,7 +61,8 @@ public class LifecycleIT implements LifecycleListener {
                     .toInstance(TransactionalProxy.create(AutoCloseable.class, ProxyAutoCloseableFixture::new));
             binder.bind(AutoCloseable.class)
                     .annotatedWith(Names.named("classProxy"))
-                    .toInstance(TransactionalClassProxy.create(ClassProxyAutoCloseableFixture.class, ClassProxyAutoCloseableFixture::new));
+                    .toInstance(TransactionalClassProxy.create(ClassProxyAutoCloseableFixture.class,
+                            ClassProxyAutoCloseableFixture::new));
         });
         assertThat(startedWasCalled).isTrue();
         assertThat(stoppingWasCalled).isFalse();
@@ -66,14 +75,6 @@ public class LifecycleIT implements LifecycleListener {
         assertThat(startedWasCalled).isTrue();
         assertThat(stoppingWasCalled).isFalse();
         assertThat(closedWasCalled).isFalse();
-        assertThat(ignoredClosedWasCalled).isFalse();
-    }
-
-    @AfterClass
-    public static void tearDownClass() throws Exception {
-        assertThat(startedWasCalled).isTrue();
-        assertThat(stoppingWasCalled).isTrue();
-        assertThat(closedWasCalled).isTrue();
         assertThat(ignoredClosedWasCalled).isFalse();
     }
 

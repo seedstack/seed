@@ -1,10 +1,11 @@
-/**
- * Copyright (c) 2013-2016, The SeedStack authors <http://seedstack.org>
+/*
+ * Copyright © 2013-2017, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.core.internal;
 
 import com.google.common.base.Strings;
@@ -12,14 +13,13 @@ import com.google.inject.Module;
 import io.nuun.kernel.api.plugin.InitState;
 import io.nuun.kernel.api.plugin.context.InitContext;
 import io.nuun.kernel.api.plugin.request.ClasspathScanRequest;
-import org.kametic.specifications.Specification;
-import org.seedstack.seed.core.internal.utils.SpecificationBuilder;
-import org.seedstack.shed.reflect.Classes;
-
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
+import org.kametic.specifications.Specification;
+import org.seedstack.seed.core.internal.utils.SpecificationBuilder;
+import org.seedstack.shed.reflect.Classes;
 
 /**
  * Core plugin that configures base package roots and detects diagnostic collectors, dependency providers, Guice modules
@@ -29,8 +29,10 @@ public class CorePlugin extends AbstractSeedPlugin {
     static final String AUTODETECT_MODULES_KERNEL_PARAM = "seedstack.autodetectModules";
     static final String AUTODETECT_BINDINGS_KERNEL_PARAM = "seedstack.autodetectBindings";
     private static final String SEEDSTACK_PACKAGE = "org.seedstack";
-    private static final Specification<Class<?>> installSpecification = new SpecificationBuilder<>(InstallResolver.INSTANCE).build();
-    private static final Specification<Class<?>> bindSpecification = new SpecificationBuilder<>(BindResolver.INSTANCE).build();
+    private static final Specification<Class<?>> installSpecification = new SpecificationBuilder<>(
+            InstallResolver.INSTANCE).build();
+    private static final Specification<Class<?>> bindSpecification = new SpecificationBuilder<>(
+            BindResolver.INSTANCE).build();
     private final Set<Class<? extends Module>> modules = new HashSet<>();
     private final Set<Class<? extends Module>> overridingModules = new HashSet<>();
     private final Set<BindingDefinition> bindings = new HashSet<>();

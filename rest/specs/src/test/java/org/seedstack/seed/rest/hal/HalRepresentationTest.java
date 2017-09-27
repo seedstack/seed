@@ -1,23 +1,24 @@
-/**
- * Copyright (c) 2013-2016, The SeedStack authors <http://seedstack.org>
+/*
+ * Copyright © 2013-2017, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.rest.hal;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.ByteArrayOutputStream;
+import java.util.List;
 import org.assertj.core.api.Assertions;
 import org.assertj.core.util.Lists;
 import org.junit.Test;
 
-import java.io.ByteArrayOutputStream;
-import java.util.List;
-
 public class HalRepresentationTest {
-    private static final String EXPECTED = "{\"_links\":{\"objects\":{\"href\":\"/pok\"}},\"_embedded\":{\"objects\":[{\"name\":\"toto\"}]}}";
+    private static final String EXPECTED = "{\"_links\":{\"objects\":{\"href\":\"/pok\"}},"
+            + "\"_embedded\":{\"objects\":[{\"name\":\"toto\"}]}}";
 
     @Test
     public void test_hal_links() {

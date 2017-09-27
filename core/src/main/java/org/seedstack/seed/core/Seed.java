@@ -1,16 +1,31 @@
-/**
- * Copyright (c) 2013-2016, The SeedStack authors <http://seedstack.org>
+/*
+ * Copyright © 2013-2017, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.core;
+
+import static com.google.common.base.Preconditions.checkState;
+import static org.seedstack.shed.misc.PriorityUtils.sortByPriority;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import io.nuun.kernel.api.Kernel;
 import io.nuun.kernel.api.config.KernelConfiguration;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Scanner;
+import java.util.ServiceLoader;
+import javax.annotation.Nullable;
+import javax.validation.ValidatorFactory;
 import org.fusesource.jansi.Ansi;
 import org.fusesource.jansi.AnsiRenderer;
 import org.seedstack.coffig.Coffig;
@@ -38,21 +53,6 @@ import org.seedstack.shed.misc.PriorityUtils;
 import org.seedstack.shed.reflect.Classes;
 import org.seedstack.shed.text.TextTemplate;
 
-import javax.annotation.Nullable;
-import javax.validation.ValidatorFactory;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Scanner;
-import java.util.ServiceLoader;
-
-import static com.google.common.base.Preconditions.checkState;
-import static org.seedstack.shed.misc.PriorityUtils.sortByPriority;
-
 /**
  * This class is the SeedStack framework entry point, which is used create and dispose kernels.
  * It handles global initialization and cleanup.
@@ -64,21 +64,14 @@ public class Seed {
             "\\___ \\ / _ \\/ _ \\/ _  \\___ \\| __/ _  |/ __| |/ /\n" +
             " ___) |  __/  __/ (_| |___) | || (_| | (__|   < \n" +
             "|____/ \\___|\\___|\\____|____/ \\__\\____|\\___|_|\\_\\";
-    private static volatile boolean initialized = false;
-    private static volatile boolean disposed = false;
-    private static volatile boolean noLogs = false;
     private static final List<SeedInitializer> seedInitializers;
     private static final List<SeedExceptionTranslator> exceptionTranslators;
     private static final DiagnosticManager diagnosticManager;
     private static final String seedVersion;
     private static final String businessVersion;
-    private final ApplicationConfig applicationConfig;
-    private final Coffig configuration;
-    private final ConsoleManager consoleManager;
-    private final LogManager logManager;
-    private final ValidatorFactory validatorFactory;
-    private final ProxyManager proxyManager;
-    private final KernelManager kernelManager;
+    private static volatile boolean initialized = false;
+    private static volatile boolean disposed = false;
+    private static volatile boolean noLogs = false;
 
     static {
         diagnosticManager = new DiagnosticManagerImpl();
@@ -99,8 +92,91 @@ public class Seed {
                 .orElse(null);
     }
 
-    private static class Holder {
-        private static final Seed INSTANCE = new Seed();
+    private final ApplicationConfig applicationConfig;
+    private final Coffig configuration;
+    private final ConsoleManager consoleManager;
+    private final LogManager logManager;
+    private final ValidatorFactory validatorFactory;
+    private final ProxyManager proxyManager;
+    private final KernelManager kernelManager;
+
+    private Seed() {
+        // Trigger beforeInitialization() in custom initializers
+        for (SeedInitializer seedInitializer : seedInitializers) {
+            try {
+                seedInitializer.beforeInitialization();
+            } catch (Exception e) {
+                throw SeedException.wrap(e, CoreErrorCode.ERROR_IN_INITIALIZER)
+                        .put("initializerClass", seedInitializer.getClass().getName());
+            }
+        }
+
+        // Setup a default exception handler that translates exceptions
+        Thread.setDefaultUncaughtExceptionHandler((thread, throwable) -> {
+            Throwable translated;
+            if (throwable instanceof Exception) {
+                translated = Seed.translateException((Exception) throwable);
+            } else {
+                translated = throwable;
+            }
+            diagnosticManager.dumpDiagnosticReport(throwable);
+            translated.printStackTrace(System.err);
+        });
+
+        // Initialize logging subsystem (should silence logs until logging activation later in the initialization)
+        logManager = AutodetectLogManager.get();
+
+        // Create global validator factory
+        validatorFactory = GlobalValidatorFactory.get();
+
+        // Create base configuration
+        configuration = BaseConfiguration.get();
+
+        // Trigger onInitialization() in custom initializers
+        for (SeedInitializer seedInitializer : seedInitializers) {
+            try {
+                seedInitializer.onInitialization(configuration);
+            } catch (Exception e) {
+                throw SeedException.wrap(e, CoreErrorCode.ERROR_IN_INITIALIZER)
+                        .put("initializerClass", seedInitializer.getClass().getName());
+            }
+        }
+
+        // Access application configuration
+        applicationConfig = configuration.get(ApplicationConfig.class);
+
+        // Install console enhancements
+        consoleManager = ConsoleManager.get();
+        consoleManager.install(applicationConfig.getColorOutput());
+
+        // Print banner
+        if (!noLogs && applicationConfig.isPrintBanner()) {
+            System.out.println(buildBannerMessage(applicationConfig).orElseGet(this::buildWelcomeMessage));
+        }
+
+        // Logging activation
+        if (!noLogs) {
+            logManager.configure(configuration.get(LoggingConfig.class));
+        }
+
+        // Install global proxy handling
+        proxyManager = ProxyManager.get();
+        proxyManager.install(configuration.get(ProxyConfig.class));
+
+        // Create kernel manager
+        kernelManager = KernelManager.get();
+
+        // Trigger afterInitialization() in custom initializers
+        for (SeedInitializer seedInitializer : seedInitializers) {
+            try {
+                seedInitializer.afterInitialization();
+            } catch (Exception e) {
+                throw SeedException.wrap(e, CoreErrorCode.ERROR_IN_INITIALIZER)
+                        .put("initializerClass", seedInitializer.getClass().getName());
+            }
+        }
+
+        markInitialized();
     }
 
     /**
@@ -191,7 +267,8 @@ public class Seed {
     }
 
     /**
-     * Create, initialize and optionally start a kernel with the specified runtime context and configuration. Seed JVM-global
+     * Create, initialize and optionally start a kernel with the specified runtime context and configuration. Seed
+     * JVM-global
      * state is automatically initialized before the first time a kernel is created.
      *
      * <p>Cannot be called from {@link SeedInitializer} methods.</p>
@@ -201,7 +278,8 @@ public class Seed {
      * @param autoStart           if true, the kernel is started automatically.
      * @return the {@link Kernel} instance.
      */
-    public static Kernel createKernel(@Nullable Object runtimeContext, @Nullable KernelConfiguration kernelConfiguration, boolean autoStart) {
+    public static Kernel createKernel(@Nullable Object runtimeContext,
+            @Nullable KernelConfiguration kernelConfiguration, boolean autoStart) {
         Seed instance = getInstance();
         return instance.kernelManager.createKernel(
                 SeedRuntime.builder()
@@ -229,8 +307,10 @@ public class Seed {
     }
 
     /**
-     * Explicitly cleanup SeedStack global state. After calling this method, SeedStack is no longer usable in the current
-     * classloader and cannot be reinitialized. Only call this method in standalone JVM environments, just before exiting,
+     * Explicitly cleanup SeedStack global state. After calling this method, SeedStack is no longer usable in the
+     * current
+     * classloader and cannot be reinitialized. Only call this method in standalone JVM environments, just before
+     * exiting,
      * typically in a shutdown hook.
      *
      * <p>Has no effect if called from {@link SeedInitializer} methods or after the first call.</p>
@@ -255,87 +335,13 @@ public class Seed {
         }
     }
 
-    private Seed() {
-        // Trigger beforeInitialization() in custom initializers
-        for (SeedInitializer seedInitializer : seedInitializers) {
-            try {
-                seedInitializer.beforeInitialization();
-            } catch (Exception e) {
-                throw SeedException.wrap(e, CoreErrorCode.ERROR_IN_INITIALIZER)
-                        .put("initializerClass", seedInitializer.getClass().getName());
-            }
-        }
-
-        // Setup a default exception handler that translates exceptions
-        Thread.setDefaultUncaughtExceptionHandler((thread, throwable) -> {
-            Throwable translated;
-            if (throwable instanceof Exception) {
-                translated = Seed.translateException((Exception) throwable);
-            } else {
-                translated = throwable;
-            }
-            diagnosticManager.dumpDiagnosticReport(throwable);
-            translated.printStackTrace(System.err);
-        });
-
-        // Initialize logging subsystem (should silence logs until logging activation later in the initialization)
-        logManager = AutodetectLogManager.get();
-
-        // Create global validator factory
-        validatorFactory = GlobalValidatorFactory.get();
-
-        // Create base configuration
-        configuration = BaseConfiguration.get();
-
-        // Trigger onInitialization() in custom initializers
-        for (SeedInitializer seedInitializer : seedInitializers) {
-            try {
-                seedInitializer.onInitialization(configuration);
-            } catch (Exception e) {
-                throw SeedException.wrap(e, CoreErrorCode.ERROR_IN_INITIALIZER)
-                        .put("initializerClass", seedInitializer.getClass().getName());
-            }
-        }
-
-        // Access application configuration
-        applicationConfig = configuration.get(ApplicationConfig.class);
-
-        // Install console enhancements
-        consoleManager = ConsoleManager.get();
-        consoleManager.install(applicationConfig.getColorOutput());
-
-        // Print banner
-        if (!noLogs && applicationConfig.isPrintBanner()) {
-            System.out.println(buildBannerMessage(applicationConfig).orElseGet(this::buildWelcomeMessage));
-        }
-
-        // Logging activation
-        if (!noLogs) {
-            logManager.configure(configuration.get(LoggingConfig.class));
-        }
-
-        // Install global proxy handling
-        proxyManager = ProxyManager.get();
-        proxyManager.install(configuration.get(ProxyConfig.class));
-
-        // Create kernel manager
-        kernelManager = KernelManager.get();
-
-        // Trigger afterInitialization() in custom initializers
-        for (SeedInitializer seedInitializer : seedInitializers) {
-            try {
-                seedInitializer.afterInitialization();
-            } catch (Exception e) {
-                throw SeedException.wrap(e, CoreErrorCode.ERROR_IN_INITIALIZER)
-                        .put("initializerClass", seedInitializer.getClass().getName());
-            }
-        }
-
-        markInitialized();
-    }
-
     private static void markInitialized() {
         initialized = true;
+    }
+
+    private static void markDisposed() {
+        initialized = false;
+        disposed = true;
     }
 
     private Optional<String> buildBannerMessage(ApplicationConfig applicationConfig) {
@@ -366,7 +372,8 @@ public class Seed {
     }
 
     private String getBanner() {
-        InputStream bannerStream = ClassLoaders.findMostCompleteClassLoader(Seed.class).getResourceAsStream("banner.txt");
+        InputStream bannerStream = ClassLoaders.findMostCompleteClassLoader(Seed.class).getResourceAsStream(
+                "banner.txt");
         if (bannerStream != null) {
             try {
                 return new Scanner(bannerStream, StandardCharsets.UTF_8.name()).useDelimiter("\\Z").next();
@@ -410,8 +417,7 @@ public class Seed {
         Thread.setDefaultUncaughtExceptionHandler(null);
     }
 
-    private static void markDisposed() {
-        initialized = false;
-        disposed = true;
+    private static class Holder {
+        private static final Seed INSTANCE = new Seed();
     }
 }

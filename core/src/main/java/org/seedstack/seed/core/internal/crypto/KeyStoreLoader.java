@@ -1,18 +1,14 @@
-/**
- * Copyright (c) 2013-2016, The SeedStack authors <http://seedstack.org>
+/*
+ * Copyright © 2013-2017, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.core.internal.crypto;
 
 import com.google.common.base.Strings;
-import org.seedstack.seed.SeedException;
-import org.seedstack.seed.crypto.CryptoConfig;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -23,6 +19,10 @@ import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.security.UnrecoverableKeyException;
 import java.security.cert.CertificateException;
+import org.seedstack.seed.SeedException;
+import org.seedstack.seed.crypto.CryptoConfig;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This class allows to load a KeyStore from a file. It supports any type of KeyStore or provider.
@@ -32,7 +32,8 @@ class KeyStoreLoader {
 
     KeyStore load(String name, CryptoConfig.KeyStoreConfig ksConfig) {
         String path = ksConfig.getPath();
-        if (Strings.isNullOrEmpty(name) || Strings.isNullOrEmpty(path) || Strings.isNullOrEmpty(ksConfig.getPassword())) {
+        if (Strings.isNullOrEmpty(name) || Strings.isNullOrEmpty(path) || Strings.isNullOrEmpty(
+                ksConfig.getPassword())) {
             throw SeedException.createNew(CryptoErrorCode.KEYSTORE_CONFIGURATION_ERROR)
                     .put("ksName", name)
                     .put("path", path);
@@ -81,7 +82,9 @@ class KeyStoreLoader {
             throw SeedException.wrap(e, CryptoErrorCode.UNABLE_TO_LOAD_CERTIFICATE)
                     .put("ksName", name);
         } catch (IOException e) {
-            throw SeedException.wrap(e, e.getCause() instanceof UnrecoverableKeyException ? CryptoErrorCode.INCORRECT_PASSWORD : CryptoErrorCode.UNEXPECTED_EXCEPTION)
+            throw SeedException.wrap(e,
+                    e.getCause() instanceof UnrecoverableKeyException ? CryptoErrorCode.INCORRECT_PASSWORD :
+                            CryptoErrorCode.UNEXPECTED_EXCEPTION)
                     .put("ksName", name);
         } finally {
             try {

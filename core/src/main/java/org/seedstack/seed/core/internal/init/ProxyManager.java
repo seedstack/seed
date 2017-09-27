@@ -1,18 +1,17 @@
-/**
- * Copyright (c) 2013-2016, The SeedStack authors <http://seedstack.org>
+/*
+ * Copyright © 2013-2017, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.core.internal.init;
+
+import static java.util.stream.Collectors.toList;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
-import org.seedstack.seed.ProxyConfig;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.net.Authenticator;
 import java.net.InetSocketAddress;
 import java.net.PasswordAuthentication;
@@ -23,24 +22,21 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.regex.Pattern;
-
-import static java.util.stream.Collectors.toList;
+import org.seedstack.seed.ProxyConfig;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ProxyManager {
     private static final Logger LOGGER = LoggerFactory.getLogger(ProxyManager.class);
     private SeedProxySelector seedProxySelector;
     private SeedProxyAuthenticator seedProxyAuthenticator;
 
-    private static class Holder {
-        private static final ProxyManager INSTANCE = new ProxyManager();
+    private ProxyManager() {
+        // noop
     }
 
     public static ProxyManager get() {
         return Holder.INSTANCE;
-    }
-
-    private ProxyManager() {
-        // noop
     }
 
     public void install(ProxyConfig proxyConfig) {
@@ -70,7 +66,8 @@ public class ProxyManager {
                 if (Strings.isNullOrEmpty(noProxyValue)) {
                     LOGGER.info("Proxy configured to {} with no exclusion", httpProxy.address().toString());
                 } else {
-                    LOGGER.info("Proxy configured to {} with exclusion(s) on {}", httpProxy.address().toString(), noProxyValue);
+                    LOGGER.info("Proxy configured to {} with exclusion(s) on {}", httpProxy.address().toString(),
+                            noProxyValue);
                 }
             }
         }
@@ -106,7 +103,8 @@ public class ProxyManager {
 
     private Proxy buildProxy(String value, int defaultPort) {
         return parseProxy(value, String.valueOf(defaultPort))
-                .map(hostAndPort -> new Proxy(Proxy.Type.HTTP, new InetSocketAddress(hostAndPort[0], Integer.parseInt(hostAndPort[1]))))
+                .map(hostAndPort -> new Proxy(Proxy.Type.HTTP,
+                        new InetSocketAddress(hostAndPort[0], Integer.parseInt(hostAndPort[1]))))
                 .orElse(Proxy.NO_PROXY);
     }
 
@@ -121,7 +119,8 @@ public class ProxyManager {
      * of the array is null if no password is specified.
      *
      * @param url The proxy host URL.
-     * @return An optional containing an array of the user name and the password or empty when none are present or the url is empty.
+     * @return An optional containing an array of the user name and the password or empty when none are present or
+     * the url is empty.
      */
     private Optional<String[]> parseCredentials(String url) {
         if (!Strings.isNullOrEmpty(url)) {
@@ -193,5 +192,9 @@ public class ProxyManager {
      */
     private Pattern makePattern(String noProxy) {
         return Pattern.compile(noProxy.replaceAll("\\.", "\\\\.").replaceAll("\\*", ".*"));
+    }
+
+    private static class Holder {
+        private static final ProxyManager INSTANCE = new ProxyManager();
     }
 }

@@ -1,10 +1,11 @@
-/**
- * Copyright (c) 2013-2016, The SeedStack authors <http://seedstack.org>
+/*
+ * Copyright © 2013-2017, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.security.internal;
 
 import com.google.inject.AbstractModule;
@@ -15,6 +16,8 @@ import com.google.inject.PrivateModule;
 import com.google.inject.spi.Element;
 import com.google.inject.spi.Elements;
 import com.google.inject.spi.PrivateElements;
+import java.util.Collection;
+import java.util.Map;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.shiro.event.EventBus;
 import org.apache.shiro.mgt.SecurityManager;
@@ -22,9 +25,6 @@ import org.seedstack.seed.SeedException;
 import org.seedstack.seed.security.Scope;
 import org.seedstack.seed.security.internal.securityexpr.SecurityExpressionModule;
 import org.seedstack.seed.security.spi.CrudActionResolver;
-
-import java.util.Collection;
-import java.util.Map;
 
 @SecurityConcern
 class SecurityModule extends AbstractModule {
@@ -38,7 +38,9 @@ class SecurityModule extends AbstractModule {
     private final Collection<SecurityProvider> securityProviders;
     private final Collection<Class<? extends CrudActionResolver>> crudActionResolvers;
 
-    SecurityModule(SecurityConfigurer securityConfigurer, Map<String, Class<? extends Scope>> scopeClasses, boolean elAvailable, Collection<SecurityProvider> securityProviders, Collection<Class<? extends CrudActionResolver>> crudActionResolvers) {
+    SecurityModule(SecurityConfigurer securityConfigurer, Map<String, Class<? extends Scope>> scopeClasses,
+            boolean elAvailable, Collection<SecurityProvider> securityProviders,
+            Collection<Class<? extends CrudActionResolver>> crudActionResolvers) {
         this.securityConfigurer = securityConfigurer;
         this.scopeClasses = scopeClasses;
         this.elAvailable = elAvailable;
@@ -57,7 +59,8 @@ class SecurityModule extends AbstractModule {
 
         Module mainModuleToInstall = null;
         for (SecurityProvider securityProvider : securityProviders) {
-            Module mainSecurityModule = securityProvider.provideMainSecurityModule(new SecurityGuiceConfigurer(securityConfigurer.getSecurityConfiguration()));
+            Module mainSecurityModule = securityProvider.provideMainSecurityModule(
+                    new SecurityGuiceConfigurer(securityConfigurer.getSecurityConfiguration()));
             if (mainSecurityModule != null) {
                 if (mainModuleToInstall == null || mainModuleToInstall instanceof DefaultSecurityModule) {
                     mainModuleToInstall = mainSecurityModule;

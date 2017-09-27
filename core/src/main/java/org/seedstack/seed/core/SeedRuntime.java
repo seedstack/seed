@@ -1,32 +1,32 @@
-/**
- * Copyright (c) 2013-2016, The SeedStack authors <http://seedstack.org>
+/*
+ * Copyright © 2013-2017, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.core;
 
 import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
 import io.nuun.kernel.api.Plugin;
-import org.seedstack.coffig.Coffig;
-import org.seedstack.coffig.provider.CompositeProvider;
-import org.seedstack.coffig.provider.InMemoryProvider;
-import org.seedstack.coffig.spi.ConfigurationProvider;
-import org.seedstack.seed.ApplicationConfig;
-import org.seedstack.seed.spi.ConfigurationPriority;
-import org.seedstack.seed.core.internal.configuration.PrioritizedProvider;
-import org.seedstack.seed.diagnostic.DiagnosticManager;
-import org.seedstack.seed.diagnostic.spi.DiagnosticInfoCollector;
-
-import javax.annotation.Nullable;
-import javax.validation.ValidatorFactory;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.ServiceLoader;
 import java.util.Set;
+import javax.annotation.Nullable;
+import javax.validation.ValidatorFactory;
+import org.seedstack.coffig.Coffig;
+import org.seedstack.coffig.provider.CompositeProvider;
+import org.seedstack.coffig.provider.InMemoryProvider;
+import org.seedstack.coffig.spi.ConfigurationProvider;
+import org.seedstack.seed.ApplicationConfig;
+import org.seedstack.seed.core.internal.configuration.PrioritizedProvider;
+import org.seedstack.seed.diagnostic.DiagnosticManager;
+import org.seedstack.seed.diagnostic.spi.DiagnosticInfoCollector;
+import org.seedstack.seed.spi.ConfigurationPriority;
 
 public class SeedRuntime {
     private static final String SEED_PACKAGE_PREFIX = "org.seedstack.seed";
@@ -43,7 +43,9 @@ public class SeedRuntime {
     private final ApplicationConfig applicationConfig;
     private final Set<String> inconsistentPlugins = new HashSet<>();
 
-    private SeedRuntime(Object context, DiagnosticManager diagnosticManager, Coffig configuration, ValidatorFactory validatorFactory, String seedVersion, String businessVersion, ApplicationConfig applicationConfig) {
+    private SeedRuntime(Object context, DiagnosticManager diagnosticManager, Coffig configuration,
+            ValidatorFactory validatorFactory, String seedVersion, String businessVersion,
+            ApplicationConfig applicationConfig) {
         this.context = context;
         this.diagnosticManager = diagnosticManager;
         this.configuration = configuration;
@@ -52,10 +54,15 @@ public class SeedRuntime {
         this.businessVersion = businessVersion;
         this.applicationConfig = applicationConfig;
         this.diagnosticManager.registerDiagnosticInfoCollector("seed", new RuntimeDiagnosticCollector());
-        this.prioritizedProvider = ((CompositeProvider) this.configuration.getProvider()).get(PrioritizedProvider.class);
+        this.prioritizedProvider = ((CompositeProvider) this.configuration.getProvider()).get(
+                PrioritizedProvider.class);
         this.inMemoryProvider = new InMemoryProvider();
         registerConfigurationProvider(this.inMemoryProvider, ConfigurationPriority.DEFAULT);
         checkConsistency();
+    }
+
+    public static Builder builder() {
+        return new Builder();
     }
 
     public <T> T contextAs(Class<T> tClass) {
@@ -170,12 +177,9 @@ public class SeedRuntime {
         }
 
         public SeedRuntime build() {
-            return new SeedRuntime(_context, _diagnosticManager, _configuration, _validatorFactory, _seedVersion, _businessVersion, _applicationConfig);
+            return new SeedRuntime(_context, _diagnosticManager, _configuration, _validatorFactory, _seedVersion,
+                    _businessVersion, _applicationConfig);
         }
-    }
-
-    public static Builder builder() {
-        return new Builder();
     }
 
     private class RuntimeDiagnosticCollector implements DiagnosticInfoCollector {

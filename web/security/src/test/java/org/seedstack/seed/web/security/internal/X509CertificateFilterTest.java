@@ -1,25 +1,12 @@
-/**
- * Copyright (c) 2013-2016, The SeedStack authors <http://seedstack.org>
+/*
+ * Copyright © 2013-2017, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.web.security.internal;
-
-import org.apache.shiro.authc.AuthenticationException;
-import org.apache.shiro.authc.AuthenticationToken;
-import org.junit.Before;
-import org.junit.Test;
-import org.seedstack.seed.security.X509CertificateToken;
-import org.seedstack.seed.security.internal.realms.AuthenticationTokenWrapper;
-import org.seedstack.seed.web.security.internal.X509CertificateFilter;
-
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.security.cert.X509Certificate;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.anyString;
@@ -27,6 +14,18 @@ import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
+import java.io.IOException;
+import java.security.cert.X509Certificate;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletResponse;
+import org.apache.shiro.authc.AuthenticationException;
+import org.apache.shiro.authc.AuthenticationToken;
+import org.junit.Before;
+import org.junit.Test;
+import org.seedstack.seed.security.X509CertificateToken;
+import org.seedstack.seed.security.internal.realms.AuthenticationTokenWrapper;
 
 public class X509CertificateFilterTest {
 
@@ -42,7 +41,8 @@ public class X509CertificateFilterTest {
         X509Certificate certificate = mock(X509Certificate.class);
         ServletRequest request = mock(ServletRequest.class);
         ServletResponse response = mock(ServletResponse.class);
-        when(request.getAttribute("javax.servlet.request.X509Certificate")).thenReturn(new X509Certificate[] { certificate });
+        when(request.getAttribute("javax.servlet.request.X509Certificate")).thenReturn(
+                new X509Certificate[]{certificate});
         AuthenticationToken token = underTest.createToken(request, response);
 
         assertThat(token).isInstanceOf(AuthenticationTokenWrapper.class);

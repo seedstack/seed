@@ -1,12 +1,23 @@
-/**
- * Copyright (c) 2013-2016, The SeedStack authors <http://seedstack.org>
+/*
+ * Copyright © 2013-2017, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.security.internal.authorization;
 
+import static org.seedstack.shed.reflect.ReflectUtils.makeAccessible;
+
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import javax.inject.Inject;
 import org.apache.commons.lang.StringUtils;
 import org.seedstack.seed.SeedException;
 import org.seedstack.seed.security.Role;
@@ -17,17 +28,6 @@ import org.seedstack.seed.security.internal.SecurityErrorCode;
 import org.seedstack.seed.security.principals.PrincipalProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import javax.inject.Inject;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-
-import static org.seedstack.shed.reflect.ReflectUtils.makeAccessible;
 
 /**
  * Resolve the role mappings from a Configuration:
@@ -86,7 +86,6 @@ public class ConfigurationRoleMapping implements RoleMapping {
                         String mapKey = entry.getKey();
                         String wildcard = String.format("{%s}", scopeClass.getKey());
 
-
                         if (mapKey.contains(wildcard) && auth.matches(convertToRegex(mapKey, wildcard))) {
                             String scopeValue = findScope(wildcard, mapKey, auth);
 
@@ -94,11 +93,14 @@ public class ConfigurationRoleMapping implements RoleMapping {
                                 Scope scope;
 
                                 try {
-                                    Constructor<? extends Scope> constructor = scopeClass.getValue().getConstructor(String.class);
+                                    Constructor<? extends Scope> constructor = scopeClass.getValue().getConstructor(
+                                            String.class);
                                     makeAccessible(constructor);
                                     scope = constructor.newInstance(scopeValue);
-                                } catch (IllegalAccessException | InstantiationException | InvocationTargetException | NoSuchMethodException e) {
-                                    throw SeedException.wrap(e, SecurityErrorCode.UNABLE_TO_CREATE_SCOPE).put("scopeName", scopeClass.getValue().getName());
+                                } catch (IllegalAccessException | InstantiationException | InvocationTargetException
+                                        | NoSuchMethodException e) {
+                                    throw SeedException.wrap(e, SecurityErrorCode.UNABLE_TO_CREATE_SCOPE).put(
+                                            "scopeName", scopeClass.getValue().getName());
                                 }
 
                                 getOrCreateRoleInMap(foundRoleName, roleMap).getScopes().add(scope);

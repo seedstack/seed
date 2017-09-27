@@ -1,12 +1,20 @@
-/**
- * Copyright (c) 2013-2016, The SeedStack authors <http://seedstack.org>
+/*
+ * Copyright © 2013-2017, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.security.internal.realms;
 
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import javax.inject.Inject;
+import javax.inject.Named;
 import org.seedstack.seed.security.AuthenticationException;
 import org.seedstack.seed.security.AuthenticationInfo;
 import org.seedstack.seed.security.AuthenticationToken;
@@ -22,26 +30,16 @@ import org.seedstack.seed.security.principals.PrincipalProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.inject.Inject;
-import javax.inject.Named;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-
 /**
  * A realm that authentifies users and gives authorities with a configuration file.
  */
 public class ConfigurationRealm implements Realm {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ConfigurationRealm.class);
-
     /**
      * props section suffix
      */
     public static final String USER_SECTION_NAME = "users";
-
+    private static final Logger LOGGER = LoggerFactory.getLogger(ConfigurationRealm.class);
     private final Set<ConfigurationUser> users = new HashSet<>();
 
     private RoleMapping roleMapping;
@@ -49,7 +47,8 @@ public class ConfigurationRealm implements Realm {
     private RolePermissionResolver rolePermissionResolver;
 
     @Override
-    public Set<String> getRealmRoles(PrincipalProvider<?> identityPrincipal, Collection<PrincipalProvider<?>> otherPrincipals) {
+    public Set<String> getRealmRoles(PrincipalProvider<?> identityPrincipal,
+            Collection<PrincipalProvider<?>> otherPrincipals) {
         ConfigurationUser user = findUser(identityPrincipal.getPrincipal().toString());
         if (user != null) {
             return user.roles;
@@ -94,11 +93,6 @@ public class ConfigurationRealm implements Realm {
         return this.roleMapping;
     }
 
-    @Override
-    public RolePermissionResolver getRolePermissionResolver() {
-        return this.rolePermissionResolver;
-    }
-
     /**
      * Setter roleMapping
      *
@@ -109,13 +103,19 @@ public class ConfigurationRealm implements Realm {
         this.roleMapping = roleMapping;
     }
 
+    @Override
+    public RolePermissionResolver getRolePermissionResolver() {
+        return this.rolePermissionResolver;
+    }
+
     /**
      * Setter rolePermissionResolver
      *
      * @param rolePermissionResolver the rolePermissionResolver
      */
     @Inject
-    public void setRolePermissionResolver(@Named("ConfigurationRealm-role-permission-resolver") RolePermissionResolver rolePermissionResolver) {
+    public void setRolePermissionResolver(
+            @Named("ConfigurationRealm-role-permission-resolver") RolePermissionResolver rolePermissionResolver) {
         this.rolePermissionResolver = rolePermissionResolver;
     }
 
@@ -134,9 +134,9 @@ public class ConfigurationRealm implements Realm {
     }
 
     /**
-     * Class to represent a user from the configuration. In the file, key is the name, first value is the password, following values are the roles.
-     *
-     *      */
+     * Class to represent a user from the configuration. In the file, key is the name, first value is the password,
+     * following values are the roles.
+     */
     static class ConfigurationUser {
 
         private final String username;

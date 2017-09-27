@@ -1,10 +1,11 @@
-/**
- * Copyright (c) 2013-2016, The SeedStack authors <http://seedstack.org>
+/*
+ * Copyright © 2013-2017, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.rest.jersey2.internal;
 
 import com.google.common.collect.Lists;
@@ -41,9 +42,11 @@ public class Jersey2PluginTest {
             initContext.dependency(RestPlugin.class);
             result = restPlugin;
 
-            restPlugin.isEnabled(); result = true;
+            restPlugin.isEnabled();
+            result = true;
 
-            restPlugin.getRestConfig(); result = restConfig;
+            restPlugin.getRestConfig();
+            result = restConfig;
 
             initContext.dependencies(RestProvider.class);
             result = Lists.newArrayList(restProvider);
@@ -51,11 +54,12 @@ public class Jersey2PluginTest {
 
         underTest.init(initContext);
     }
-    
+
     @Test
     public void testInitWithoutServletContext() {
         new NonStrictExpectations() {{
-            restPlugin.isEnabled(); result = false;
+            restPlugin.isEnabled();
+            result = false;
 
             initContext.dependency(RestPlugin.class);
             result = restPlugin;
@@ -63,8 +67,10 @@ public class Jersey2PluginTest {
             initContext.dependencies(RestProvider.class);
             result = Lists.newArrayList(restProvider);
 
-            restProvider.resources(); result = null;
-            restProvider.providers(); result = null;
+            restProvider.resources();
+            result = null;
+            restProvider.providers();
+            result = null;
         }};
 
         underTest.init(initContext);

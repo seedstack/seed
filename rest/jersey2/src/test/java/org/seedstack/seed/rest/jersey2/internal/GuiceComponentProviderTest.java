@@ -1,16 +1,23 @@
-/**
- * Copyright (c) 2013-2016, The SeedStack authors <http://seedstack.org>
+/*
+ * Copyright © 2013-2017, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.rest.jersey2.internal;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.fail;
 
 import com.google.common.collect.Sets;
 import com.google.inject.Injector;
 import com.sun.org.apache.xpath.internal.operations.String;
 import io.nuun.kernel.api.annotations.Ignore;
+import javax.servlet.ServletContext;
+import javax.ws.rs.Path;
+import javax.ws.rs.ext.Provider;
 import mockit.Deencapsulation;
 import mockit.Expectations;
 import mockit.Mock;
@@ -31,14 +38,6 @@ import org.junit.runner.RunWith;
 import org.jvnet.hk2.guice.bridge.api.GuiceBridge;
 import org.jvnet.hk2.guice.bridge.api.GuiceIntoHK2Bridge;
 import org.seedstack.seed.SeedException;
-
-import javax.servlet.ServletContext;
-import javax.ws.rs.Path;
-import javax.ws.rs.ext.Provider;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.fail;
-
 
 @RunWith(JMockit.class)
 public class GuiceComponentProviderTest {
@@ -81,9 +80,12 @@ public class GuiceComponentProviderTest {
 
     private void givenServiceLocator() {
         new NonStrictExpectations() {{
-            serviceLocator.getService(ServletContext.class); result = servletContext;
-            servletContext.getAttribute(Injector.class.getName()); result = injector;
-            serviceLocator.getService(GuiceIntoHK2Bridge.class); result = guiceIntoHK2Bridge;
+            serviceLocator.getService(ServletContext.class);
+            result = servletContext;
+            servletContext.getAttribute(Injector.class.getName());
+            result = injector;
+            serviceLocator.getService(GuiceIntoHK2Bridge.class);
+            result = guiceIntoHK2Bridge;
         }};
     }
 
@@ -154,16 +156,14 @@ public class GuiceComponentProviderTest {
         givenInjections();
         underTest.initialize(serviceLocator);
         @Ignore
-        @Path("/") class MyResource { }
+        @Path("/")
+        class MyResource {
+        }
 
         boolean isBound = underTest.bind(MyResource.class, null);
 
         assertThat(isBound).isTrue();
     }
-
-    @Ignore
-    @Provider interface MyProvider { }
-    class MyProviderImpl implements MyProvider { }
 
     @Test
     @SuppressWarnings("unchecked")
@@ -175,8 +175,8 @@ public class GuiceComponentProviderTest {
         underTest.bind(MyProvider.class, Sets.newHashSet(MyProviderImpl.class));
 
         new Verifications() {{
-           bindingBuilder.to(MyProvider.class);
-           bindingBuilder.to(MyProviderImpl.class);
+            bindingBuilder.to(MyProvider.class);
+            bindingBuilder.to(MyProviderImpl.class);
         }};
     }
 
@@ -186,12 +186,23 @@ public class GuiceComponentProviderTest {
             DynamicConfiguration getConfiguration(final ServiceLocator locator) {
                 return dynamicConfiguration;
             }
+
             @Mock
             <T> ServiceBindingBuilder<T> newFactoryBinder(final Factory<T> factory) {
                 return bindingBuilder;
             }
+
             @Mock
-            void addBinding(final BindingBuilder<?> builder, final DynamicConfiguration configuration) {}
+            void addBinding(final BindingBuilder<?> builder, final DynamicConfiguration configuration) {
+            }
         };
+    }
+
+    @Ignore
+    @Provider
+    interface MyProvider {
+    }
+
+    class MyProviderImpl implements MyProvider {
     }
 }

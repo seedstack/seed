@@ -1,14 +1,24 @@
-/**
- * Copyright (c) 2013-2016, The SeedStack authors <http://seedstack.org>
+/*
+ * Copyright © 2013-2017, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.core.internal.transaction;
+
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import io.nuun.kernel.api.plugin.InitState;
 import io.nuun.kernel.api.plugin.context.InitContext;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 import org.assertj.core.api.Assertions;
 import org.assertj.core.api.Fail;
 import org.fest.reflect.core.Reflection;
@@ -20,21 +30,11 @@ import org.seedstack.seed.Application;
 import org.seedstack.seed.core.fixtures.transaction.TransactionHandlerTestImpl;
 import org.seedstack.seed.core.fixtures.transaction.TransactionMetadataResolverTestImpl;
 import org.seedstack.seed.spi.ApplicationProvider;
-import org.seedstack.seed.transaction.Transactional;
 import org.seedstack.seed.transaction.TransactionConfig;
+import org.seedstack.seed.transaction.Transactional;
 import org.seedstack.seed.transaction.spi.TransactionHandler;
 import org.seedstack.seed.transaction.spi.TransactionManager;
 import org.seedstack.seed.transaction.spi.TransactionMetadataResolver;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
-
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 public class TransactionPluginTest {
     private TransactionPlugin pluginUnderTest;
@@ -46,22 +46,27 @@ public class TransactionPluginTest {
 
     @Test
     public void initTransactionPluginTest1() {
-        InitState initState = pluginUnderTest.init(mockInitContext(LocalTransactionManager.class, TransactionHandlerTestImpl.class));
+        InitState initState = pluginUnderTest.init(
+                mockInitContext(LocalTransactionManager.class, TransactionHandlerTestImpl.class));
         Assertions.assertThat(initState).isEqualTo(InitState.INITIALIZED);
     }
 
     @Test
     public void initTransactionPluginTest2() {
-        InitState initState = pluginUnderTest.init(mockInitContext(LocalTransactionManager.class, TransactionHandlerTestImpl.class));
+        InitState initState = pluginUnderTest.init(
+                mockInitContext(LocalTransactionManager.class, TransactionHandlerTestImpl.class));
         Object object = pluginUnderTest.nativeUnitModule();
         Assertions.assertThat(object).isNotNull();
         Assertions.assertThat(object).isInstanceOf(TransactionModule.class);
-        Class<?> defaultTransactionHandlerClass = Reflection.field("defaultTransactionHandlerClass").ofType(Class.class).in(pluginUnderTest).get();
+        Class<?> defaultTransactionHandlerClass = Reflection.field("defaultTransactionHandlerClass").ofType(
+                Class.class).in(pluginUnderTest).get();
         Assertions.assertThat(defaultTransactionHandlerClass).isNotNull();
-        Set<TransactionMetadataResolver> transactionMetadataResolvers = Reflection.field("transactionMetadataResolvers").ofType(new TypeRef<Set<TransactionMetadataResolver>>() {
+        Set<TransactionMetadataResolver> transactionMetadataResolvers = Reflection.field(
+                "transactionMetadataResolvers").ofType(new TypeRef<Set<TransactionMetadataResolver>>() {
         }).in(pluginUnderTest).get();
         Assertions.assertThat(transactionMetadataResolvers).isNotNull();
-        TransactionManager transactionManager = Reflection.field("transactionManager").ofType(TransactionManager.class).in(pluginUnderTest).get();
+        TransactionManager transactionManager = Reflection.field("transactionManager").ofType(
+                TransactionManager.class).in(pluginUnderTest).get();
         Assertions.assertThat(transactionManager).isNotNull();
         Assertions.assertThat(initState).isEqualTo(InitState.INITIALIZED);
     }
@@ -71,7 +76,8 @@ public class TransactionPluginTest {
         Collection<Class<?>> implementsTransactionHandlerClasses = new ArrayList<>();
         implementsTransactionHandlerClasses.add(TransactionHandlerTestImpl.class);
         implementsTransactionHandlerClasses.add(TransactionHandlerTestImpl.class);
-        InitState initState = pluginUnderTest.init(mockInitContext2(LocalTransactionManager.class, implementsTransactionHandlerClasses));
+        InitState initState = pluginUnderTest.init(
+                mockInitContext2(LocalTransactionManager.class, implementsTransactionHandlerClasses));
         Assertions.assertThat(initState).isEqualTo(InitState.INITIALIZED);
         Object object = pluginUnderTest.nativeUnitModule();
         Assertions.assertThat(object).isNotNull();
@@ -83,7 +89,8 @@ public class TransactionPluginTest {
     public void initTransactionPluginTest4() {
         Collection<Class<?>> implementsTransactionHandlerClasses = new ArrayList<>();
         implementsTransactionHandlerClasses.add(TransactionHandlerTestImpl.class);
-        InitState initState = pluginUnderTest.init(mockInitContext2(LocalTransactionManager.class, implementsTransactionHandlerClasses));
+        InitState initState = pluginUnderTest.init(
+                mockInitContext2(LocalTransactionManager.class, implementsTransactionHandlerClasses));
         Assertions.assertThat(initState).isEqualTo(InitState.INITIALIZED);
         Object object = pluginUnderTest.nativeUnitModule();
         Assertions.assertThat(object).isNotNull();
@@ -95,19 +102,23 @@ public class TransactionPluginTest {
     public void initTransactionPluginTest7() {
         InitState initState = pluginUnderTest.init(mockInitContext(null, TransactionHandlerTestImpl.class));
         Assertions.assertThat(initState).isEqualTo(InitState.INITIALIZED);
-        Class<?> defaultTransactionHandlerClass = Reflection.field("defaultTransactionHandlerClass").ofType(Class.class).in(pluginUnderTest).get();
+        Class<?> defaultTransactionHandlerClass = Reflection.field("defaultTransactionHandlerClass").ofType(
+                Class.class).in(pluginUnderTest).get();
         Assertions.assertThat(defaultTransactionHandlerClass).isNotNull();
-        Set<TransactionMetadataResolver> transactionMetadataResolvers = Reflection.field("transactionMetadataResolvers").ofType(new TypeRef<Set<TransactionMetadataResolver>>() {
+        Set<TransactionMetadataResolver> transactionMetadataResolvers = Reflection.field(
+                "transactionMetadataResolvers").ofType(new TypeRef<Set<TransactionMetadataResolver>>() {
         }).in(pluginUnderTest).get();
         Assertions.assertThat(transactionMetadataResolvers).isNotNull();
-        TransactionManager transactionManager = Reflection.field("transactionManager").ofType(TransactionManager.class).in(pluginUnderTest).get();
+        TransactionManager transactionManager = Reflection.field("transactionManager").ofType(
+                TransactionManager.class).in(pluginUnderTest).get();
         Assertions.assertThat(transactionManager).isNotNull();
     }
 
     @Test
     public void isTransactionalTest() {
         try {
-            Assertions.assertThat(pluginUnderTest.isTransactional(this.getClass().getDeclaredMethod("testTransactional"))).isTrue();
+            Assertions.assertThat(
+                    pluginUnderTest.isTransactional(this.getClass().getDeclaredMethod("testTransactional"))).isTrue();
         } catch (SecurityException | NoSuchMethodException e) {
             Fail.fail(e.getMessage());
         }
@@ -124,12 +135,14 @@ public class TransactionPluginTest {
     }
 
     @SuppressWarnings("unchecked")
-    private InitContext mockInitContext(Class<? extends TransactionManager> transactionManagerClass, Class<? extends TransactionHandler<?>> transactionHandlerClass) {
+    private InitContext mockInitContext(Class<? extends TransactionManager> transactionManagerClass,
+            Class<? extends TransactionHandler<?>> transactionHandlerClass) {
         InitContext initContext = mock(InitContext.class);
         Application application = mock(Application.class);
 
         Coffig coffig = mock(Coffig.class);
-        when(coffig.get(TransactionConfig.class)).thenReturn(new TransactionConfig().setManager(transactionManagerClass).setDefaultHandler(transactionHandlerClass));
+        when(coffig.get(TransactionConfig.class)).thenReturn(
+                new TransactionConfig().setManager(transactionManagerClass).setDefaultHandler(transactionHandlerClass));
         when(application.getConfiguration()).thenReturn(coffig);
         when(initContext.dependency(ApplicationProvider.class)).thenReturn(() -> application);
 
@@ -144,7 +157,8 @@ public class TransactionPluginTest {
         return initContext;
     }
 
-    private InitContext mockInitContext2(Class<? extends TransactionManager> transactionManagerClass, Collection<Class<?>> implementsTransactionHandler) {
+    private InitContext mockInitContext2(Class<? extends TransactionManager> transactionManagerClass,
+            Collection<Class<?>> implementsTransactionHandler) {
         InitContext initContext = mockInitContext(transactionManagerClass, null);
         Map<Class<?>, Collection<Class<?>>> mapImplements = new HashMap<>();
         mapImplements.put(TransactionHandler.class, implementsTransactionHandler);

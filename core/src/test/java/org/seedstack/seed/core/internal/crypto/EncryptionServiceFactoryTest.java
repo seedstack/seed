@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2013-2016, The SeedStack authors <http://seedstack.org>
+/*
+ * Copyright © 2013-2017, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -8,6 +8,14 @@
 
 package org.seedstack.seed.core.internal.crypto;
 
+import java.net.URL;
+import java.security.Key;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.PublicKey;
+import java.security.UnrecoverableKeyException;
+import java.security.cert.Certificate;
+import java.util.HashMap;
 import mockit.Expectations;
 import mockit.Mock;
 import mockit.MockUp;
@@ -18,15 +26,6 @@ import org.junit.Test;
 import org.seedstack.seed.SeedException;
 import org.seedstack.seed.crypto.CryptoConfig;
 import org.seedstack.seed.crypto.EncryptionService;
-
-import java.net.URL;
-import java.security.Key;
-import java.security.KeyStore;
-import java.security.KeyStoreException;
-import java.security.PublicKey;
-import java.security.UnrecoverableKeyException;
-import java.security.cert.Certificate;
-import java.util.HashMap;
 
 /**
  * Unit test for {@link EncryptionServiceFactory}.
@@ -128,7 +127,8 @@ public class EncryptionServiceFactoryTest {
     }
 
     @Test
-    public void testCreateWithExternalCertificateFromResource(@Mocked final URL url, @Mocked CryptoConfig.CertificateConfig certificateConfig) throws Exception {
+    public void testCreateWithExternalCertificateFromResource(@Mocked final URL url,
+            @Mocked CryptoConfig.CertificateConfig certificateConfig) throws Exception {
         new MockUp<ClassLoader>() {
             @Mock
             public URL getResource(String name) {
@@ -145,7 +145,9 @@ public class EncryptionServiceFactoryTest {
                 result = publicKey;
 
                 configuration.certificates();
-                result = new HashMap<String, CryptoConfig.CertificateConfig>() {{ put(ALIAS, certificateConfig); }};
+                result = new HashMap<String, CryptoConfig.CertificateConfig>() {{
+                    put(ALIAS, certificateConfig);
+                }};
 
                 certificateConfig.getResource();
                 result = "path/to/cert";
@@ -165,12 +167,15 @@ public class EncryptionServiceFactoryTest {
     }
 
     @Test(expected = SeedException.class)
-    public void testMissingCertificateFromResource(@Mocked CryptoConfig.CertificateConfig certificateConfig) throws Exception {
+    public void testMissingCertificateFromResource(
+            @Mocked CryptoConfig.CertificateConfig certificateConfig) throws Exception {
 
         new Expectations() {
             {
                 configuration.certificates();
-                result = new HashMap<String, CryptoConfig.CertificateConfig>() {{ put(ALIAS, certificateConfig); }};
+                result = new HashMap<String, CryptoConfig.CertificateConfig>() {{
+                    put(ALIAS, certificateConfig);
+                }};
 
                 certificateConfig.getResource();
                 result = "path/to/cert";

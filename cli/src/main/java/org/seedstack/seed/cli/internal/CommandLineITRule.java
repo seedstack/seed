@@ -1,11 +1,14 @@
-/**
- * Copyright (c) 2013-2016, The SeedStack authors <http://seedstack.org>
+/*
+ * Copyright © 2013-2017, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.cli.internal;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 import com.google.inject.Inject;
 import com.google.inject.Injector;
@@ -18,9 +21,6 @@ import org.seedstack.seed.cli.WithCommandLine;
 import org.seedstack.seed.it.ITBind;
 import org.seedstack.seed.it.spi.KernelRule;
 import org.seedstack.seed.it.spi.PausableStatement;
-
-import static org.assertj.core.api.Assertions.assertThat;
-
 
 @ITBind
 public class CommandLineITRule implements MethodRule, KernelRule {
@@ -39,8 +39,10 @@ public class CommandLineITRule implements MethodRule, KernelRule {
 
                 if (annotation != null) {
                     String[] args = annotation.args();
-                    int returnCode = CliLauncher.execute(args, new CommandLineITCallable(target, statement, annotation.command()), kernelConfiguration);
-                    assertThat(returnCode).as("Exit code returned by SeedRunner").isEqualTo(annotation.expectedExitCode());
+                    int returnCode = CliLauncher.execute(args,
+                            new CommandLineITCallable(target, statement, annotation.command()), kernelConfiguration);
+                    assertThat(returnCode).as("Exit code returned by SeedRunner").isEqualTo(
+                            annotation.expectedExitCode());
                 }
 
                 if (statement instanceof PausableStatement) {

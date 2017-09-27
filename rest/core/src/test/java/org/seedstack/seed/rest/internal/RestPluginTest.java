@@ -1,11 +1,14 @@
-/**
- * Copyright (c) 2013-2016, The SeedStack authors <http://seedstack.org>
+/*
+ * Copyright © 2013-2017, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.rest.internal;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 import com.fasterxml.jackson.jaxrs.base.JsonMappingExceptionMapper;
 import com.fasterxml.jackson.jaxrs.base.JsonParseExceptionMapper;
@@ -15,6 +18,12 @@ import com.google.common.collect.Lists;
 import io.nuun.kernel.api.plugin.InitState;
 import io.nuun.kernel.api.plugin.context.InitContext;
 import io.nuun.kernel.api.plugin.request.ClasspathScanRequest;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+import javax.servlet.ServletContext;
+import javax.ws.rs.Path;
+import javax.ws.rs.ext.Provider;
 import mockit.Deencapsulation;
 import mockit.Expectations;
 import mockit.Mocked;
@@ -30,16 +39,6 @@ import org.seedstack.seed.core.SeedRuntime;
 import org.seedstack.seed.core.internal.configuration.PrioritizedProvider;
 import org.seedstack.seed.core.internal.diagnostic.DiagnosticManagerImpl;
 import org.seedstack.seed.spi.ApplicationProvider;
-
-import javax.servlet.ServletContext;
-import javax.ws.rs.Path;
-import javax.ws.rs.ext.Provider;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-
-import static org.assertj.core.api.Assertions.assertThat;
-
 
 @RunWith(JMockit.class)
 public class RestPluginTest {
@@ -115,16 +114,6 @@ public class RestPluginTest {
         );
     }
 
-    @Ignore
-    @Path("/")
-    private static class MyResource {
-    }
-
-    @Ignore
-    @Provider
-    private static class MyProvider {
-    }
-
     private void givenSpecifications(Pair<Specification<Class<?>>, Class<?>>... specEntries) {
         final Map<Specification, Collection<Class<?>>> specsMap = new HashMap<>();
         for (Pair<Specification<Class<?>>, Class<?>> specEntry : specEntries) {
@@ -147,6 +136,16 @@ public class RestPluginTest {
                 result = Coffig.builder().build();
             }
         };
+    }
+
+    @Ignore
+    @Path("/")
+    private static class MyResource {
+    }
+
+    @Ignore
+    @Provider
+    private static class MyProvider {
     }
 
     public class Pair<T1, T2> {

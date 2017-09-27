@@ -1,10 +1,11 @@
-/**
- * Copyright (c) 2013-2016, The SeedStack authors <http://seedstack.org>
+/*
+ * Copyright © 2013-2017, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.transaction.spi;
 
 /**
@@ -16,10 +17,10 @@ package org.seedstack.seed.transaction.spi;
  */
 public interface TransactionHandler<T> {
     /**
-     * <p>This method is called before the transaction creation and is responsible to execution any initialization
+     * This method is called before the transaction creation and is responsible to execution any initialization
      * code necessary to the underlying implementation. If this method fails, no cleanup is performed so implementations
      * must ensure that its behavior is atomic (all or nothing).
-     * <p> The transactionMetadata is given by the {@link TransactionManager}.
+     * <p>The transactionMetadata is given by the {@link TransactionManager}.</p>
      *
      * @param transactionMetadata The associated transaction metadata.
      */

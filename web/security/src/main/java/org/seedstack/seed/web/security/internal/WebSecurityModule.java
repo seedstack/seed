@@ -1,16 +1,23 @@
-/**
- * Copyright (c) 2013-2016, The SeedStack authors <http://seedstack.org>
+/*
+ * Copyright © 2013-2017, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.web.security.internal;
 
 import com.google.common.base.Strings;
 import com.google.inject.Key;
 import com.google.inject.Scopes;
 import com.google.inject.name.Names;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import javax.servlet.Filter;
+import javax.servlet.ServletContext;
 import org.apache.shiro.config.ConfigurationException;
 import org.apache.shiro.guice.web.GuiceShiroFilter;
 import org.apache.shiro.guice.web.ShiroWebModule;
@@ -23,13 +30,6 @@ import org.seedstack.seed.web.security.WebSecurityConfig;
 import org.seedstack.seed.web.spi.AntiXsrfService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import javax.servlet.Filter;
-import javax.servlet.ServletContext;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 class WebSecurityModule extends ShiroWebModule {
     private static final Logger LOGGER = LoggerFactory.getLogger(ShiroWebModule.class);
@@ -59,7 +59,9 @@ class WebSecurityModule extends ShiroWebModule {
     private final Collection<Class<? extends Filter>> customFilters;
     private final SecurityGuiceConfigurer securityGuiceConfigurer;
 
-    WebSecurityModule(ServletContext servletContext, WebSecurityConfig securityConfig, Collection<Class<? extends Filter>> customFilters, String applicationName, SecurityGuiceConfigurer securityGuiceConfigurer) {
+    WebSecurityModule(ServletContext servletContext, WebSecurityConfig securityConfig,
+            Collection<Class<? extends Filter>> customFilters, String applicationName,
+            SecurityGuiceConfigurer securityGuiceConfigurer) {
         super(servletContext);
         this.securityConfig = securityConfig;
         this.customFilters = customFilters;
@@ -130,7 +132,9 @@ class WebSecurityModule extends ShiroWebModule {
                     filterConfig[index] = filterConfig(currentKey);
                 }
             } else {
-                addError("The filter [" + nameConfig[0] + "] could not be found as a default filter or as a class annotated with SecurityFilter");
+                addError(
+                        "The filter [" + nameConfig[0] + "] could not be found as a default filter or as a class "
+                                + "annotated with SecurityFilter");
             }
             index++;
         }

@@ -1,27 +1,27 @@
-/**
- * Copyright (c) 2013-2016, The SeedStack authors <http://seedstack.org>
+/*
+ * Copyright © 2013-2017, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.core.internal.command;
 
 import com.google.common.base.Strings;
 import com.google.inject.Injector;
 import com.google.inject.Key;
 import com.google.inject.name.Names;
-import org.seedstack.seed.command.CommandRegistry;
-import org.seedstack.seed.SeedException;
-import org.seedstack.seed.command.Argument;
-import org.seedstack.seed.command.Command;
-import org.seedstack.seed.command.Option;
-
-import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import javax.inject.Inject;
+import org.seedstack.seed.SeedException;
+import org.seedstack.seed.command.Argument;
+import org.seedstack.seed.command.Command;
+import org.seedstack.seed.command.CommandRegistry;
+import org.seedstack.seed.command.Option;
 
 /**
  * Implementation of the {@link CommandRegistry}.
@@ -107,7 +107,8 @@ class CommandRegistryImpl implements CommandRegistry {
 
         // Check the number of arguments
         if (args.size() > commandDefinitionDefinition.getArgumentDefinitions().size()) {
-            throw SeedException.createNew(CommandErrorCode.TOO_MANY_ARGUMENTS).put("command", qualifiedName).put("accepted", commandDefinitionDefinition.getArgumentDefinitions().size()).put("given", args.size());
+            throw SeedException.createNew(CommandErrorCode.TOO_MANY_ARGUMENTS).put("command", qualifiedName).put(
+                    "accepted", commandDefinitionDefinition.getArgumentDefinitions().size()).put("given", args.size());
         }
 
         // Set command arguments
@@ -117,7 +118,8 @@ class CommandRegistryImpl implements CommandRegistry {
 
             if (i >= args.size()) {
                 if (argumentDefinition.isMandatory()) {
-                    throw SeedException.createNew(CommandErrorCode.MISSING_ARGUMENTS).put("command", qualifiedName).put("required", i + 1).put("given", args.size());
+                    throw SeedException.createNew(CommandErrorCode.MISSING_ARGUMENTS).put("command", qualifiedName).put(
+                            "required", i + 1).put("given", args.size());
                 } else if (!Strings.isNullOrEmpty(argumentDefinition.getDefaultValue())) {
                     value = argumentDefinition.getDefaultValue();
                 }
@@ -129,7 +131,8 @@ class CommandRegistryImpl implements CommandRegistry {
                 try {
                     argumentDefinition.getField().set(command, value);
                 } catch (IllegalAccessException e) {
-                    throw SeedException.wrap(e, CommandErrorCode.UNABLE_TO_INJECT_ARGUMENT).put("command", qualifiedName).put("argument", argumentDefinition.getName());
+                    throw SeedException.wrap(e, CommandErrorCode.UNABLE_TO_INJECT_ARGUMENT).put("command",
+                            qualifiedName).put("argument", argumentDefinition.getName());
                 }
             }
 
@@ -146,7 +149,8 @@ class CommandRegistryImpl implements CommandRegistry {
                 } else {
                     if (optionDefinition.isMandatory()) {
                         if (Strings.isNullOrEmpty(optionDefinition.getDefaultValue())) {
-                            throw SeedException.createNew(CommandErrorCode.MISSING_MANDATORY_OPTION).put("command", qualifiedName).put("option", optionDefinition.getName());
+                            throw SeedException.createNew(CommandErrorCode.MISSING_MANDATORY_OPTION).put("command",
+                                    qualifiedName).put("option", optionDefinition.getName());
                         } else {
                             value = optionDefinition.getDefaultValue();
                         }
@@ -159,14 +163,16 @@ class CommandRegistryImpl implements CommandRegistry {
                     try {
                         optionDefinition.getField().set(command, value);
                     } catch (IllegalAccessException e) {
-                        throw SeedException.wrap(e, CommandErrorCode.UNABLE_TO_INJECT_OPTION).put("command", qualifiedName).put("option", optionDefinition.getName());
+                        throw SeedException.wrap(e, CommandErrorCode.UNABLE_TO_INJECT_OPTION).put("command",
+                                qualifiedName).put("option", optionDefinition.getName());
                     }
                 }
             } else {
                 try {
                     optionDefinition.getField().set(command, options.containsKey(optionDefinition.getName()));
                 } catch (IllegalAccessException e) {
-                    throw SeedException.wrap(e, CommandErrorCode.UNABLE_TO_INJECT_OPTION).put("command", qualifiedName).put("option", optionDefinition.getName());
+                    throw SeedException.wrap(e, CommandErrorCode.UNABLE_TO_INJECT_OPTION).put("command",
+                            qualifiedName).put("option", optionDefinition.getName());
                 }
             }
         }

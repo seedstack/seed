@@ -1,18 +1,18 @@
-/**
- * Copyright (c) 2013-2016, The SeedStack authors <http://seedstack.org>
+/*
+ * Copyright © 2013-2017, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.rest.internal;
 
+import java.lang.reflect.Modifier;
+import javax.ws.rs.Path;
 import org.kametic.specifications.AbstractSpecification;
 import org.seedstack.shed.reflect.AnnotationPredicates;
 import org.seedstack.shed.reflect.ClassPredicates;
-
-import javax.ws.rs.Path;
-import java.lang.reflect.Modifier;
 
 /**
  * Matches non abstract classes annotated by {@link javax.ws.rs.Path} or containing methods annotated by {@code Path}.

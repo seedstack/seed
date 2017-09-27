@@ -1,12 +1,16 @@
-/**
- * Copyright (c) 2013-2016, The SeedStack authors <http://seedstack.org>
+/*
+ * Copyright © 2013-2017, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.core.internal.crypto;
 
+import java.security.InvalidKeyException;
+import java.security.KeyStore;
+import javax.xml.bind.DatatypeConverter;
 import mockit.Expectations;
 import mockit.Injectable;
 import mockit.Mocked;
@@ -16,10 +20,6 @@ import org.seedstack.coffig.Coffig;
 import org.seedstack.seed.SeedException;
 import org.seedstack.seed.crypto.CryptoConfig;
 import org.seedstack.seed.crypto.EncryptionService;
-
-import javax.xml.bind.DatatypeConverter;
-import java.security.InvalidKeyException;
-import java.security.KeyStore;
 
 /**
  * Unit test for {@link DecryptFunction}.
@@ -55,12 +55,12 @@ public class DecryptFunctionTest {
     public void testLookupString(@Mocked CryptoConfig cryptoConfig) throws Exception {
         new Expectations() {{
             cryptoConfig.masterKeyStore();
-            result = new CryptoConfig.KeyStoreConfig().addAlias("seed", new CryptoConfig.KeyStoreConfig.AliasConfig().setPassword("toto"));
+            result = new CryptoConfig.KeyStoreConfig().addAlias("seed",
+                    new CryptoConfig.KeyStoreConfig.AliasConfig().setPassword("toto"));
 
             encryptionService.decrypt(DatatypeConverter.parseHexBinary(cryptingString));
             result = toDecrypt.getBytes();
         }};
-
 
         DecryptFunction decryptFunction = new DecryptFunction();
         decryptFunction.initialize(Coffig.builder().build());
@@ -69,7 +69,8 @@ public class DecryptFunctionTest {
 
     @Test(expected = SeedException.class)
     public void testLookupStringWithoutPassword(@Mocked CryptoConfig cryptoConfig) throws Exception {
-        CryptoConfig.KeyStoreConfig keyStoreConfig = new CryptoConfig.KeyStoreConfig().addAlias("seed", new CryptoConfig.KeyStoreConfig.AliasConfig());
+        CryptoConfig.KeyStoreConfig keyStoreConfig = new CryptoConfig.KeyStoreConfig().addAlias("seed",
+                new CryptoConfig.KeyStoreConfig.AliasConfig());
 
         new Expectations() {{
             cryptoConfig.masterKeyStore();
@@ -85,7 +86,8 @@ public class DecryptFunctionTest {
 
     @Test(expected = SeedException.class)
     public void testLookupStringWithInvalidKey(@Mocked CryptoConfig cryptoConfig) throws Exception {
-        CryptoConfig.KeyStoreConfig keyStoreConfig = new CryptoConfig.KeyStoreConfig().addAlias("seed", new CryptoConfig.KeyStoreConfig.AliasConfig().setPassword("seedPassword"));
+        CryptoConfig.KeyStoreConfig keyStoreConfig = new CryptoConfig.KeyStoreConfig().addAlias("seed",
+                new CryptoConfig.KeyStoreConfig.AliasConfig().setPassword("seedPassword"));
 
         new Expectations() {{
             cryptoConfig.masterKeyStore();

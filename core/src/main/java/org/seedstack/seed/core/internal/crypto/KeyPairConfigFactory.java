@@ -1,15 +1,12 @@
-/**
- * Copyright (c) 2013-2016, The SeedStack authors <http://seedstack.org>
+/*
+ * Copyright © 2013-2017, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-package org.seedstack.seed.core.internal.crypto;
 
-import org.seedstack.seed.SeedException;
-import org.seedstack.seed.crypto.CryptoConfig;
-import org.seedstack.shed.ClassLoaders;
+package org.seedstack.seed.core.internal.crypto;
 
 import java.net.URL;
 import java.security.KeyStore;
@@ -17,7 +14,9 @@ import java.security.KeyStoreException;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
-
+import org.seedstack.seed.SeedException;
+import org.seedstack.seed.crypto.CryptoConfig;
+import org.seedstack.shed.ClassLoaders;
 
 class KeyPairConfigFactory {
 

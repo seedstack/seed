@@ -1,19 +1,19 @@
-/**
- * Copyright (c) 2013-2016, The SeedStack authors <http://seedstack.org>
+/*
+ * Copyright © 2013-2017, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.web;
 
-import org.seedstack.coffig.Config;
-import org.seedstack.coffig.SingleValue;
-
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
 import java.util.HashMap;
 import java.util.Map;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+import org.seedstack.coffig.Config;
+import org.seedstack.coffig.SingleValue;
 
 @Config("web")
 public class WebConfig {
@@ -51,6 +51,12 @@ public class WebConfig {
 
     public ServerConfig serverConfig() {
         return serverConfig;
+    }
+
+    public enum SessionTrackingMode {
+        COOKIE,
+        SSL,
+        URL
     }
 
     @Config("cors")
@@ -193,11 +199,5 @@ public class WebConfig {
             this.http2 = http2;
             return this;
         }
-    }
-
-    public enum SessionTrackingMode {
-        COOKIE,
-        SSL,
-        URL
     }
 }

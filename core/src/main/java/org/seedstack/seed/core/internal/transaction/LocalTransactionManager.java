@@ -1,10 +1,11 @@
-/**
- * Copyright (c) 2013-2016, The SeedStack authors <http://seedstack.org>
+/*
+ * Copyright © 2013-2017, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.core.internal.transaction;
 
 import org.aopalliance.intercept.MethodInvocation;
@@ -19,9 +20,11 @@ import org.seedstack.seed.transaction.spi.TransactionMetadata;
  */
 public class LocalTransactionManager extends AbstractTransactionManager {
     @Override
-    protected Object doMethodInterception(TransactionLogger transactionLogger, MethodInvocation invocation, TransactionMetadata transactionMetadata, TransactionHandler<Object> transactionHandler) throws Throwable {
+    protected Object doMethodInterception(TransactionLogger transactionLogger, MethodInvocation invocation,
+            TransactionMetadata transactionMetadata, TransactionHandler<Object> transactionHandler) throws Throwable {
         Object currentTransaction = transactionHandler.getCurrentTransaction();
-        PropagationResult propagationResult = handlePropagation(transactionMetadata.getPropagation(), currentTransaction);
+        PropagationResult propagationResult = handlePropagation(transactionMetadata.getPropagation(),
+                currentTransaction);
 
         if (propagationResult.isNewTransactionNeeded()) {
             transactionLogger.log("initializing transaction handler");
@@ -81,13 +84,15 @@ public class LocalTransactionManager extends AbstractTransactionManager {
         switch (propagation) {
             case MANDATORY:
                 if (currentTransaction == null) {
-                    throw SeedException.createNew(TransactionErrorCode.TRANSACTION_NEEDED_WHEN_USING_PROPAGATION_MANDATORY);
+                    throw SeedException.createNew(
+                            TransactionErrorCode.TRANSACTION_NEEDED_WHEN_USING_PROPAGATION_MANDATORY);
                 }
 
                 return new PropagationResult(false);
             case NEVER:
                 if (currentTransaction != null) {
-                    throw SeedException.createNew(TransactionErrorCode.NO_TRANSACTION_ALLOWED_WHEN_USING_PROPAGATION_NEVER);
+                    throw SeedException.createNew(
+                            TransactionErrorCode.NO_TRANSACTION_ALLOWED_WHEN_USING_PROPAGATION_NEVER);
                 }
 
                 return new PropagationResult(false);
@@ -104,7 +109,8 @@ public class LocalTransactionManager extends AbstractTransactionManager {
             case SUPPORTS:
                 return new PropagationResult(false);
             default:
-                throw SeedException.createNew(TransactionErrorCode.PROPAGATION_NOT_SUPPORTED).put("propagation", propagation);
+                throw SeedException.createNew(TransactionErrorCode.PROPAGATION_NOT_SUPPORTED).put("propagation",
+                        propagation);
         }
     }
 }

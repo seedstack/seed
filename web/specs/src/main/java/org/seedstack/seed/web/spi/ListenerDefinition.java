@@ -1,17 +1,20 @@
-/**
- * Copyright (c) 2013-2016, The SeedStack authors <http://seedstack.org>
+/*
+ * Copyright © 2013-2017, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.web.spi;
 
 import java.util.EventListener;
 
 /**
- * This class holds the full definition of a Servlet listener. It can be returned as a collection element from {@link WebProvider#listeners()}
- * to define the listeners that must be registered by Seed. The registered listener will be injectable and interceptable.
+ * This class holds the full definition of a Servlet listener. It can be returned as a collection element from
+ * {@link WebProvider#listeners()}
+ * to define the listeners that must be registered by Seed. The registered listener will be injectable and
+ * interceptable.
  */
 public class ListenerDefinition {
     private final Class<? extends EventListener> listenerClass;

@@ -1,10 +1,11 @@
-/**
- * Copyright (c) 2013-2016, The SeedStack authors <http://seedstack.org>
+/*
+ * Copyright © 2013-2017, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.it;
 
 import java.lang.annotation.Documented;
@@ -16,7 +17,8 @@ import java.lang.annotation.Target;
 
 /**
  * This annotation makes the class on which it is applied, injectable during testing only (i.e. when the testing plugin
- * is present, typically in the test classpath). It is the testing-only equivalent of the {@link org.seedstack.seed.Bind}
+ * is present, typically in the test classpath). It is the testing-only equivalent of the
+ * {@link org.seedstack.seed.Bind}
  * annotation.
  *
  * @see org.seedstack.seed.Bind

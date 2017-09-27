@@ -1,10 +1,11 @@
-/**
- * Copyright (c) 2013-2016, The SeedStack authors <http://seedstack.org>
+/*
+ * Copyright © 2013-2017, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.core.internal.diagnostic;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -14,10 +15,6 @@ import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
-import org.seedstack.seed.diagnostic.spi.DiagnosticReporter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -27,6 +24,9 @@ import java.nio.charset.Charset;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Map;
+import org.seedstack.seed.diagnostic.spi.DiagnosticReporter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Default implementation of {@link DiagnosticReporter} that logs to a JSON
@@ -55,12 +55,15 @@ class DefaultDiagnosticReporter implements DiagnosticReporter {
         File diagnosticFile;
 
         File diagnosticDirectory = new File(System.getProperty("java.io.tmpdir"), "seedstack-diagnostics");
-        if (!diagnosticDirectory.exists() && !diagnosticDirectory.mkdirs() || !diagnosticDirectory.isDirectory() || !diagnosticDirectory.canWrite()) {
+        if (!diagnosticDirectory.exists() && !diagnosticDirectory.mkdirs() || !diagnosticDirectory.isDirectory() ||
+                !diagnosticDirectory.canWrite()) {
             diagnosticDirectory = new File(System.getProperty("java.io.tmpdir"));
         }
 
-        diagnosticFile = new File(diagnosticDirectory, String.format("seedstack-diagnostic-%s.yaml", new SimpleDateFormat(DefaultDiagnosticReporter.DATE_FORMAT).format(new Date())));
-        try (Writer writer = new OutputStreamWriter(new FileOutputStream(diagnosticFile), Charset.forName("UTF-8").newEncoder())) {
+        diagnosticFile = new File(diagnosticDirectory, String.format("seedstack-diagnostic-%s.yaml",
+                new SimpleDateFormat(DefaultDiagnosticReporter.DATE_FORMAT).format(new Date())));
+        try (Writer writer = new OutputStreamWriter(new FileOutputStream(diagnosticFile),
+                Charset.forName("UTF-8").newEncoder())) {
             writeDiagnosticReport(diagnosticInfo, writer);
             LOGGER.warn("Diagnostic information dumped to file://{}", diagnosticFile.toURI().toURL().getPath());
         } catch (RuntimeException e) {

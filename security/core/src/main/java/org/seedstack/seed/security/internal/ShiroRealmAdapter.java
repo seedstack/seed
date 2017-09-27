@@ -1,12 +1,18 @@
-/**
- * Copyright (c) 2013-2016, The SeedStack authors <http://seedstack.org>
+/*
+ * Copyright © 2013-2017, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.security.internal;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Set;
+import javax.inject.Inject;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.AuthenticationInfo;
 import org.apache.shiro.authc.AuthenticationToken;
@@ -25,12 +31,6 @@ import org.seedstack.seed.security.Role;
 import org.seedstack.seed.security.internal.authorization.SeedAuthorizationInfo;
 import org.seedstack.seed.security.internal.realms.AuthenticationTokenWrapper;
 import org.seedstack.seed.security.principals.PrincipalProvider;
-
-import javax.inject.Inject;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Set;
 
 class ShiroRealmAdapter extends AuthorizingRealm {
     private Realm realm;
@@ -57,7 +57,8 @@ class ShiroRealmAdapter extends AuthorizingRealm {
             }
         }
         List<PrincipalProvider<?>> asList = principals.asList();
-        for (Role role : realm.getRoleMapping().resolveRoles(realm.getRealmRoles(idPrincipal, asList), principalProviders)) {
+        for (Role role : realm.getRoleMapping().resolveRoles(realm.getRealmRoles(idPrincipal, asList),
+                principalProviders)) {
             role.getPermissions().addAll(realm.getRolePermissionResolver().resolvePermissionsInRole(role));
             authzInfo.addRole(role);
         }
@@ -65,7 +66,8 @@ class ShiroRealmAdapter extends AuthorizingRealm {
     }
 
     @Override
-    protected AuthenticationInfo doGetAuthenticationInfo(final AuthenticationToken token) throws AuthenticationException {
+    protected AuthenticationInfo doGetAuthenticationInfo(
+            final AuthenticationToken token) throws AuthenticationException {
         org.seedstack.seed.security.AuthenticationToken seedToken = convertToken(token);
         if (seedToken == null) {
             throw new UnsupportedTokenException("The token " + token.getClass() + " is not supported");
@@ -84,7 +86,8 @@ class ShiroRealmAdapter extends AuthorizingRealm {
         }
 
         SimpleAuthenticationInfo authcInfo = new SimpleAuthenticationInfo();
-        SimplePrincipalCollection principals = new SimplePrincipalCollection(apiAuthenticationInfo.getIdentityPrincipal(), this.getName());
+        SimplePrincipalCollection principals = new SimplePrincipalCollection(
+                apiAuthenticationInfo.getIdentityPrincipal(), this.getName());
         authcInfo.setCredentials(token.getCredentials());
         //Realm principals
         for (PrincipalProvider<?> principal : apiAuthenticationInfo.getOtherPrincipals()) {
@@ -93,7 +96,8 @@ class ShiroRealmAdapter extends AuthorizingRealm {
         //Custom principals
         for (PrincipalCustomizer<?> principalCustomizer : principalCustomizers) {
             if (principalCustomizer.supportedRealm().isAssignableFrom(getRealm().getClass())) {
-                for (PrincipalProvider<?> principal : principalCustomizer.principalsToAdd(apiAuthenticationInfo.getIdentityPrincipal(), apiAuthenticationInfo.getOtherPrincipals())) {
+                for (PrincipalProvider<?> principal : principalCustomizer.principalsToAdd(
+                        apiAuthenticationInfo.getIdentityPrincipal(), apiAuthenticationInfo.getOtherPrincipals())) {
                     principals.add(principal, this.getName());
                 }
             }
@@ -119,7 +123,8 @@ class ShiroRealmAdapter extends AuthorizingRealm {
     private org.seedstack.seed.security.AuthenticationToken convertToken(AuthenticationToken token) {
         if (token instanceof UsernamePasswordToken) {
             UsernamePasswordToken shiroToken = (UsernamePasswordToken) token;
-            return new org.seedstack.seed.security.UsernamePasswordToken(shiroToken.getUsername(), shiroToken.getPassword());
+            return new org.seedstack.seed.security.UsernamePasswordToken(shiroToken.getUsername(),
+                    shiroToken.getPassword());
         } else if (token instanceof AuthenticationTokenWrapper) {
             AuthenticationTokenWrapper shiroToken = (AuthenticationTokenWrapper) token;
             return shiroToken.getSeedToken();

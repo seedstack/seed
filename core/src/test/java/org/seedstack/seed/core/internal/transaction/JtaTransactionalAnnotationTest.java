@@ -1,113 +1,29 @@
-/**
- * Copyright (c) 2013-2016, The SeedStack authors <http://seedstack.org>
+/*
+ * Copyright © 2013-2017, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.core.internal.transaction;
-
-import com.google.inject.matcher.Matcher;
-import org.junit.Before;
-import org.junit.Test;
-
-import javax.transaction.Transactional;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-import java.lang.reflect.Method;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.seedstack.shed.reflect.ReflectUtils.invoke;
 import static org.seedstack.shed.reflect.ReflectUtils.makeAccessible;
 
+import com.google.inject.matcher.Matcher;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+import java.lang.reflect.Method;
+import javax.transaction.Transactional;
+import org.junit.Before;
+import org.junit.Test;
+
 public class JtaTransactionalAnnotationTest {
     private Matcher<Method> methodMatcher;
-
-    @Retention(RetentionPolicy.RUNTIME)
-    @Target({ElementType.TYPE, ElementType.METHOD})
-    @Transactional
-    private @interface MetaTransactional {
-    }
-
-    @MetaTransactional
-    static class MetaTransactionalClass {
-        public void someMethod() {
-
-        }
-    }
-
-    @Transactional
-    static class TransactionalClass {
-        public void someMethod() {
-
-        }
-    }
-
-    static class NotTransactionalClass {
-        @Transactional
-        public void transactionalMethod() {
-
-        }
-
-        @MetaTransactional
-        public void metaTransactionalMethod() {
-
-        }
-    }
-
-    @Transactional
-    interface TransactionalInterface {
-        void someMethod();
-    }
-
-    interface NotTransactionalInterface {
-        @Transactional
-        void transactionalMethod();
-    }
-
-    static class InterfaceMethodInherited implements NotTransactionalInterface {
-        @Override
-        public void transactionalMethod() {
-
-        }
-
-        public void localMethod() {
-
-        }
-    }
-
-    static class InterfaceInherited implements TransactionalInterface {
-        @Override
-        public void someMethod() {
-
-        }
-
-        public void localMethod() {
-
-        }
-    }
-
-    static class ClassMethodInherited extends NotTransactionalClass {
-        public void transactionalMethod() {
-
-        }
-
-        public void localMethod() {
-
-        }
-    }
-
-    static class ClassInherited extends TransactionalClass {
-        public void someMethod() {
-
-        }
-
-        public void localMethod() {
-
-        }
-    }
 
     @Before
     @SuppressWarnings("unchecked")
@@ -155,5 +71,89 @@ public class JtaTransactionalAnnotationTest {
     public void annotationOnInheritedClass() throws Exception {
         assertThat(methodMatcher.matches(ClassInherited.class.getMethod("someMethod"))).isTrue();
         assertThat(methodMatcher.matches(ClassInherited.class.getMethod("localMethod"))).isTrue();
+    }
+
+    @Retention(RetentionPolicy.RUNTIME)
+    @Target({ElementType.TYPE, ElementType.METHOD})
+    @Transactional
+    private @interface MetaTransactional {
+    }
+
+    @Transactional
+    interface TransactionalInterface {
+        void someMethod();
+    }
+
+    interface NotTransactionalInterface {
+        @Transactional
+        void transactionalMethod();
+    }
+
+    @MetaTransactional
+    static class MetaTransactionalClass {
+        public void someMethod() {
+
+        }
+    }
+
+    @Transactional
+    static class TransactionalClass {
+        public void someMethod() {
+
+        }
+    }
+
+    static class NotTransactionalClass {
+        @Transactional
+        public void transactionalMethod() {
+
+        }
+
+        @MetaTransactional
+        public void metaTransactionalMethod() {
+
+        }
+    }
+
+    static class InterfaceMethodInherited implements NotTransactionalInterface {
+        @Override
+        public void transactionalMethod() {
+
+        }
+
+        public void localMethod() {
+
+        }
+    }
+
+    static class InterfaceInherited implements TransactionalInterface {
+        @Override
+        public void someMethod() {
+
+        }
+
+        public void localMethod() {
+
+        }
+    }
+
+    static class ClassMethodInherited extends NotTransactionalClass {
+        public void transactionalMethod() {
+
+        }
+
+        public void localMethod() {
+
+        }
+    }
+
+    static class ClassInherited extends TransactionalClass {
+        public void someMethod() {
+
+        }
+
+        public void localMethod() {
+
+        }
     }
 }

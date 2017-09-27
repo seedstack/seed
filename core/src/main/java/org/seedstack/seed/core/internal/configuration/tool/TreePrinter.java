@@ -1,16 +1,16 @@
-/**
- * Copyright (c) 2013-2016, The SeedStack authors <http://seedstack.org>
+/*
+ * Copyright © 2013-2017, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.core.internal.configuration.tool;
 
+import java.io.PrintStream;
 import org.fusesource.jansi.Ansi;
 import org.fusesource.jansi.AnsiRenderer;
-
-import java.io.PrintStream;
 
 class TreePrinter {
     private static final String INDENTATION = "  ";
@@ -18,6 +18,10 @@ class TreePrinter {
 
     TreePrinter(Node node) {
         this.node = node;
+    }
+
+    private static String defaultToString(Object o) {
+        return o.getClass().getName() + "@" + Integer.toHexString(o.hashCode());
     }
 
     void printTree(PrintStream stream) {
@@ -75,7 +79,8 @@ class TreePrinter {
                 ansi
                         .a(" = ")
                         .fgBright(Ansi.Color.GREEN)
-                        .a(defaultValue instanceof String ? String.format("\"%s\"", stringDefaultValue) : stringDefaultValue)
+                        .a(defaultValue instanceof String ? String.format("\"%s\"",
+                                stringDefaultValue) : stringDefaultValue)
                         .reset();
             }
         }
@@ -93,9 +98,5 @@ class TreePrinter {
         for (PropertyInfo child : propertyInfo.getInnerPropertyInfo().values()) {
             printProperty(child, leftPadding + INDENTATION, ansi);
         }
-    }
-
-    private static String defaultToString(Object o) {
-        return o.getClass().getName() + "@" + Integer.toHexString(o.hashCode());
     }
 }

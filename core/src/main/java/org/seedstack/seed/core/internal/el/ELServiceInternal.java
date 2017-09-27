@@ -1,16 +1,17 @@
-/**
- * Copyright (c) 2013-2016, The SeedStack authors <http://seedstack.org>
+/*
+ * Copyright © 2013-2017, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.core.internal.el;
 
-import com.google.common.base.Strings;
-import org.seedstack.seed.SeedException;
-import org.seedstack.seed.el.ELService;
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkNotNull;
 
+import com.google.common.base.Strings;
 import javax.el.ELContext;
 import javax.el.ELException;
 import javax.el.ExpressionFactory;
@@ -18,9 +19,8 @@ import javax.el.MethodExpression;
 import javax.el.PropertyNotFoundException;
 import javax.el.ValueExpression;
 import javax.inject.Inject;
-
-import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Preconditions.checkNotNull;
+import org.seedstack.seed.SeedException;
+import org.seedstack.seed.el.ELService;
 
 /**
  * Implementation of ELService.
@@ -49,7 +49,8 @@ class ELServiceInternal implements ELService {
         return elInstance;
     }
 
-    private static class ELInstance implements ELContextProvider, ELExpressionProvider, ELService.MethodExpressionProvider, ELService.ValueExpressionProvider {
+    private static class ELInstance implements ELContextProvider, ELExpressionProvider, ELService
+            .MethodExpressionProvider, ELService.ValueExpressionProvider {
         private final ExpressionFactory expressionFactory;
         private String el;
         private Class returnType;

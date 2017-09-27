@@ -1,10 +1,11 @@
-/**
- * Copyright (c) 2013-2016, The SeedStack authors <http://seedstack.org>
+/*
+ * Copyright © 2013-2017, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.security;
 
 /**
@@ -13,7 +14,9 @@ package org.seedstack.seed.security;
  */
 public class IncorrectCredentialsException extends AuthenticationException {
 
-    /** UID */
+    /**
+     * UID
+     */
     private static final long serialVersionUID = 1L;
 
     /**
@@ -25,9 +28,8 @@ public class IncorrectCredentialsException extends AuthenticationException {
 
     /**
      * Constructs a new IncorrectCredentialsException.
-     * 
-     * @param message
-     *            the reason for the exception
+     *
+     * @param message the reason for the exception
      */
     public IncorrectCredentialsException(String message) {
         super(message);
@@ -35,10 +37,9 @@ public class IncorrectCredentialsException extends AuthenticationException {
 
     /**
      * Constructs a new IncorrectCredentialsException.
-     * 
-     * @param cause
-     *            the underlying Throwable that caused this exception to be
-     *            thrown.
+     *
+     * @param cause the underlying Throwable that caused this exception to be
+     *              thrown.
      */
     public IncorrectCredentialsException(Throwable cause) {
         super(cause);
@@ -46,12 +47,10 @@ public class IncorrectCredentialsException extends AuthenticationException {
 
     /**
      * Constructs a new IncorrectCredentialsException.
-     * 
-     * @param message
-     *            the reason for the exception
-     * @param cause
-     *            the underlying Throwable that caused this exception to be
-     *            thrown.
+     *
+     * @param message the reason for the exception
+     * @param cause   the underlying Throwable that caused this exception to be
+     *                thrown.
      */
     public IncorrectCredentialsException(String message, Throwable cause) {
         super(message, cause);

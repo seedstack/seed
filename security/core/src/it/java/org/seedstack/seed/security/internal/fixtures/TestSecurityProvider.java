@@ -1,22 +1,22 @@
-/**
- * Copyright (c) 2013-2016, The SeedStack authors <http://seedstack.org>
+/*
+ * Copyright © 2013-2017, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.security.internal.fixtures;
 
 import com.google.inject.Module;
 import com.google.inject.name.Names;
 import io.nuun.kernel.core.AbstractPlugin;
+import java.util.Collection;
 import org.apache.shiro.guice.ShiroModule;
 import org.apache.shiro.mgt.DefaultSecurityManager;
 import org.apache.shiro.mgt.SecurityManager;
 import org.seedstack.seed.security.internal.SecurityGuiceConfigurer;
 import org.seedstack.seed.security.internal.SecurityProvider;
-
-import java.util.Collection;
 
 public class TestSecurityProvider extends AbstractPlugin implements SecurityProvider {
     @Override

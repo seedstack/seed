@@ -1,15 +1,15 @@
-/**
- * Copyright (c) 2013-2016, The SeedStack authors <http://seedstack.org>
+/*
+ * Copyright © 2013-2017, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.rest.hal;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -22,8 +22,8 @@ import java.util.Map;
  * It's a resource object with two reserved properties:
  * </p>
  * <ul>
- *     <li>"_links": links to other resources</li>
- *     <li>"_embedded": embedded resources</li>
+ * <li>"_links": links to other resources</li>
+ * <li>"_embedded": embedded resources</li>
  * </ul>
  *
  * For instance:
@@ -50,7 +50,8 @@ import java.util.Map;
 public class HalRepresentation {
 
     /**
-     * Links as defined in the <a href="https://tools.ietf.org/html/draft-kelly-json-hal-06#section-4.1.1">specification</a>
+     * Links as defined in the
+     * <a href="https://tools.ietf.org/html/draft-kelly-json-hal-06#section-4.1.1">specification</a>
      * is a map whose keys are rel and values can be either an object link or an array of object links.
      * <p>
      * So Object can be a List&lt;Link&gt; or a {@link Link}
@@ -143,7 +144,7 @@ public class HalRepresentation {
             List<Link> linksForRel = (List<Link>) obj;
             linksForRel.add(link);
             links.put(rel, linksForRel);
-        } else if (obj instanceof Link){
+        } else if (obj instanceof Link) {
             Link linkCopy = (Link) obj;
             List<Link> linksForRel = new ArrayList<>();
             linksForRel.add(linkCopy);

@@ -1,19 +1,12 @@
-/**
- * Copyright (c) 2013-2016, The SeedStack authors <http://seedstack.org>
+/*
+ * Copyright © 2013-2017, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-package org.seedstack.seed.core.internal.transaction;
 
-import org.aopalliance.intercept.MethodInvocation;
-import org.seedstack.seed.Configuration;
-import org.seedstack.seed.transaction.Propagation;
-import org.seedstack.seed.transaction.TransactionConfig;
-import org.seedstack.seed.transaction.spi.TransactionHandler;
-import org.seedstack.seed.transaction.spi.TransactionMetadata;
-import org.seedstack.seed.SeedException;
+package org.seedstack.seed.core.internal.transaction;
 
 import javax.inject.Inject;
 import javax.naming.Context;
@@ -23,22 +16,30 @@ import javax.transaction.SystemException;
 import javax.transaction.Transaction;
 import javax.transaction.TransactionManager;
 import javax.transaction.UserTransaction;
+import org.aopalliance.intercept.MethodInvocation;
+import org.seedstack.seed.Configuration;
+import org.seedstack.seed.SeedException;
+import org.seedstack.seed.transaction.Propagation;
+import org.seedstack.seed.transaction.TransactionConfig;
+import org.seedstack.seed.transaction.spi.TransactionHandler;
+import org.seedstack.seed.transaction.spi.TransactionMetadata;
 
 /**
  * This transaction manager delegates to JTA the transactional behavior.
  */
 public class JtaTransactionManager extends AbstractTransactionManager {
-    private static final String[] AUTODETECT_TRANSACTION_MANAGER_NAMES = new String[]{"java:comp/TransactionManager", "java:appserver/TransactionManager", "java:pm/TransactionManager", "java:/TransactionManager"};
-
+    private static final String[] AUTODETECT_TRANSACTION_MANAGER_NAMES = new String[]{"java:comp/TransactionManager",
+            "java:appserver/TransactionManager", "java:pm/TransactionManager", "java:/TransactionManager"};
+    protected UserTransaction userTransaction;
+    protected TransactionManager transactionManager;
     @Inject
     private Context jndiContext;
     @Configuration
     private TransactionConfig.JtaConfig jtaConfig;
-    protected UserTransaction userTransaction;
-    protected TransactionManager transactionManager;
 
     @Override
-    protected Object doMethodInterception(TransactionLogger transactionLogger, MethodInvocation invocation, TransactionMetadata transactionMetadata, TransactionHandler<Object> transactionHandler) throws Throwable {
+    protected Object doMethodInterception(TransactionLogger transactionLogger, MethodInvocation invocation,
+            TransactionMetadata transactionMetadata, TransactionHandler<Object> transactionHandler) throws Throwable {
         initJTAObjects(transactionLogger);
 
         PropagationResult propagationResult;
@@ -50,7 +51,8 @@ public class JtaTransactionManager extends AbstractTransactionManager {
 
         Transaction suspendedTransaction = null;
         try {
-            if (propagationResult.isSuspendCurrentTransaction() && userTransaction.getStatus() == Status.STATUS_ACTIVE) {
+            if (propagationResult.isSuspendCurrentTransaction() && userTransaction.getStatus() == Status
+                    .STATUS_ACTIVE) {
                 if (transactionManager != null) {
                     transactionLogger.log("suspending current JTA transaction");
                     suspendedTransaction = transactionManager.suspend();
@@ -85,7 +87,8 @@ public class JtaTransactionManager extends AbstractTransactionManager {
                             transactionLogger.log("rolling back JTA transaction after invocation exception");
                             userTransaction.rollback();
                         } else if (transactionMetadata.isRollbackOnParticipationFailure()) {
-                            transactionLogger.log("marking JTA transaction as rollback-only after invocation exception");
+                            transactionLogger.log(
+                                    "marking JTA transaction as rollback-only after invocation exception");
                             userTransaction.setRollbackOnly();
                         }
 
@@ -97,7 +100,8 @@ public class JtaTransactionManager extends AbstractTransactionManager {
                         userTransaction.commit();
                     }
                 } finally {
-                    if (propagationResult.isNewTransactionNeeded() && userTransaction.getStatus() == Status.STATUS_ACTIVE) {
+                    if (propagationResult.isNewTransactionNeeded() && userTransaction.getStatus() == Status
+                            .STATUS_ACTIVE) {
                         transactionLogger.log("rolling back JTA transaction (no commit occurred)");
                         userTransaction.rollback();
                     }
@@ -170,13 +174,15 @@ public class JtaTransactionManager extends AbstractTransactionManager {
         switch (propagation) {
             case MANDATORY:
                 if (userTransaction.getStatus() != Status.STATUS_ACTIVE) {
-                    throw SeedException.createNew(TransactionErrorCode.TRANSACTION_NEEDED_WHEN_USING_PROPAGATION_MANDATORY);
+                    throw SeedException.createNew(
+                            TransactionErrorCode.TRANSACTION_NEEDED_WHEN_USING_PROPAGATION_MANDATORY);
                 }
 
                 return new PropagationResult(false, false);
             case NEVER:
                 if (userTransaction.getStatus() != Status.STATUS_NO_TRANSACTION) {
-                    throw SeedException.createNew(TransactionErrorCode.NO_TRANSACTION_ALLOWED_WHEN_USING_PROPAGATION_NEVER);
+                    throw SeedException.createNew(
+                            TransactionErrorCode.NO_TRANSACTION_ALLOWED_WHEN_USING_PROPAGATION_NEVER);
                 }
 
                 return new PropagationResult(false, false);
@@ -189,7 +195,8 @@ public class JtaTransactionManager extends AbstractTransactionManager {
             case SUPPORTS:
                 return new PropagationResult(false, false);
             default:
-                throw SeedException.createNew(TransactionErrorCode.PROPAGATION_NOT_SUPPORTED).put("propagation", propagation);
+                throw SeedException.createNew(TransactionErrorCode.PROPAGATION_NOT_SUPPORTED).put("propagation",
+                        propagation);
         }
     }
 }

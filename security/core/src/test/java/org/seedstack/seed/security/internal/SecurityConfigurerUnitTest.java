@@ -1,13 +1,22 @@
-/**
- * Copyright (c) 2013-2016, The SeedStack authors <http://seedstack.org>
+/*
+ * Copyright © 2013-2017, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.security.internal;
 
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 import com.google.common.collect.ImmutableList;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 import org.junit.Before;
 import org.junit.Test;
 import org.seedstack.seed.security.Realm;
@@ -17,15 +26,6 @@ import org.seedstack.seed.security.SecurityConfig;
 import org.seedstack.seed.security.internal.authorization.EmptyRolePermissionResolver;
 import org.seedstack.seed.security.internal.authorization.SameRoleMapping;
 import org.seedstack.seed.security.internal.realms.ConfigurationRealm;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 public class SecurityConfigurerUnitTest {
 
@@ -60,7 +60,8 @@ public class SecurityConfigurerUnitTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void getConfigurationRealms_should_throw_IllegalArgumentException_if_no_realm_class_correspond_to_configuration() {
+    public void
+    getConfigurationRealms_should_throw_IllegalArgumentException_if_no_realm_class_correspond_to_configuration() {
         when(configuration.getRealms()).thenReturn(ImmutableList.of(new SecurityConfig.RealmConfig().setName("toto")));
         underTest = new SecurityConfigurer(configuration, securityClasses, null);
 
@@ -82,7 +83,8 @@ public class SecurityConfigurerUnitTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void getConfigurationRealms_should_throw_IllegalArgumentException_if_no_class_for_component_given() {
-        when(configuration.getRealms()).thenReturn(ImmutableList.of(new SecurityConfig.RealmConfig().setName("Realm").setRoleMapper("RoleMapping")));
+        when(configuration.getRealms()).thenReturn(
+                ImmutableList.of(new SecurityConfig.RealmConfig().setName("Realm").setRoleMapper("RoleMapping")));
         underTest = new SecurityConfigurer(configuration, securityClasses, null);
 
         RealmConfiguration realm = underTest.getConfigurationRealms().iterator().next();
@@ -90,11 +92,13 @@ public class SecurityConfigurerUnitTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void getConfigurationRealms_should_throw_IllegalArgumentException_if_no_class_for_component_match_property() {
+    public void getConfigurationRealms_should_throw_IllegalArgumentException_if_no_class_for_component_match_property
+            () {
         Collection<Class<?>> roleMappingClasses = new ArrayList<>();
         roleMappingClasses.add(RoleMapping.class);
         securityClasses.put(RoleMapping.class, roleMappingClasses);
-        when(configuration.getRealms()).thenReturn(ImmutableList.of(new SecurityConfig.RealmConfig().setName("Realm").setRoleMapper("toto")));
+        when(configuration.getRealms()).thenReturn(
+                ImmutableList.of(new SecurityConfig.RealmConfig().setName("Realm").setRoleMapper("toto")));
         underTest = new SecurityConfigurer(configuration, securityClasses, null);
 
         RealmConfiguration realm = underTest.getConfigurationRealms().iterator().next();
@@ -106,7 +110,8 @@ public class SecurityConfigurerUnitTest {
         Collection<Class<?>> roleMappingClasses = new ArrayList<>();
         roleMappingClasses.add(RoleMapping.class);
         securityClasses.put(RoleMapping.class, roleMappingClasses);
-        when(configuration.getRealms()).thenReturn(ImmutableList.of(new SecurityConfig.RealmConfig().setName("Realm").setRoleMapper("RoleMapping")));
+        when(configuration.getRealms()).thenReturn(
+                ImmutableList.of(new SecurityConfig.RealmConfig().setName("Realm").setRoleMapper("RoleMapping")));
         underTest = new SecurityConfigurer(configuration, securityClasses, null);
 
         RealmConfiguration realm = underTest.getConfigurationRealms().iterator().next();
@@ -118,7 +123,8 @@ public class SecurityConfigurerUnitTest {
         Collection<Class<?>> rolePermissionResolverClasses = new ArrayList<>();
         rolePermissionResolverClasses.add(RolePermissionResolver.class);
         securityClasses.put(RolePermissionResolver.class, rolePermissionResolverClasses);
-        when(configuration.getRealms()).thenReturn(ImmutableList.of(new SecurityConfig.RealmConfig().setName("Realm").setPermissionResolver("RolePermissionResolver")));
+        when(configuration.getRealms()).thenReturn(ImmutableList.of(
+                new SecurityConfig.RealmConfig().setName("Realm").setPermissionResolver("RolePermissionResolver")));
         underTest = new SecurityConfigurer(configuration, securityClasses, null);
 
         RealmConfiguration realm = underTest.getConfigurationRealms().iterator().next();

@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2013-2016, The SeedStack authors <http://seedstack.org>
+/*
+ * Copyright © 2013-2017, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -11,19 +11,19 @@ package org.seedstack.seed.core.internal.crypto;
 import com.google.inject.AbstractModule;
 import com.google.inject.Key;
 import com.google.inject.name.Names;
-import org.seedstack.seed.crypto.EncryptionService;
-import org.seedstack.seed.crypto.HashingService;
-
 import java.security.KeyStore;
 import java.util.Map;
 import java.util.Map.Entry;
+import org.seedstack.seed.crypto.EncryptionService;
+import org.seedstack.seed.crypto.HashingService;
 
 class CryptoModule extends AbstractModule {
 
     private final Map<Key<EncryptionService>, EncryptionService> encryptionServices;
     private final Map<String, KeyStore> keyStores;
 
-    public CryptoModule(Map<Key<EncryptionService>, EncryptionService> encryptionServices, Map<String, KeyStore> keyStores) {
+    public CryptoModule(Map<Key<EncryptionService>, EncryptionService> encryptionServices,
+            Map<String, KeyStore> keyStores) {
         this.encryptionServices = encryptionServices;
         this.keyStores = keyStores;
     }

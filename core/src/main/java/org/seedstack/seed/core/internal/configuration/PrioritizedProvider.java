@@ -1,20 +1,20 @@
-/**
- * Copyright (c) 2013-2016, The SeedStack authors <http://seedstack.org>
+/*
+ * Copyright © 2013-2017, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-package org.seedstack.seed.core.internal.configuration;
 
-import org.seedstack.coffig.node.MapNode;
-import org.seedstack.coffig.spi.ConfigurationComponent;
-import org.seedstack.coffig.spi.ConfigurationProvider;
+package org.seedstack.seed.core.internal.configuration;
 
 import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
+import org.seedstack.coffig.node.MapNode;
+import org.seedstack.coffig.spi.ConfigurationComponent;
+import org.seedstack.coffig.spi.ConfigurationProvider;
 
 public class PrioritizedProvider implements ConfigurationProvider {
     private final List<PrioritizedConfigurationProvider> providers = new CopyOnWriteArrayList<>();
@@ -34,14 +34,17 @@ public class PrioritizedProvider implements ConfigurationProvider {
 
     @Override
     public boolean isDirty() {
-        return dirty.get() || providers.stream().map(PrioritizedConfigurationProvider::getConfigurationProvider).filter(ConfigurationComponent::isDirty).count() > 0;
+        return dirty.get() || providers.stream().map(PrioritizedConfigurationProvider::getConfigurationProvider).filter(
+                ConfigurationComponent::isDirty).count() > 0;
     }
 
     @Override
     public PrioritizedProvider fork() {
         PrioritizedProvider fork = new PrioritizedProvider();
         for (PrioritizedConfigurationProvider prioritizedConfigurationProvider : providers) {
-            fork.registerProvider((ConfigurationProvider) prioritizedConfigurationProvider.getConfigurationProvider().fork(), prioritizedConfigurationProvider.getPriority());
+            fork.registerProvider(
+                    (ConfigurationProvider) prioritizedConfigurationProvider.getConfigurationProvider().fork(),
+                    prioritizedConfigurationProvider.getPriority());
         }
         return fork;
     }

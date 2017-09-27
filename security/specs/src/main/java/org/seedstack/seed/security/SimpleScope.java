@@ -1,18 +1,19 @@
-/**
- * Copyright (c) 2013-2016, The SeedStack authors <http://seedstack.org>
+/*
+ * Copyright © 2013-2017, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.security;
 
+import java.util.Locale;
 import org.seedstack.seed.security.spi.SecurityScope;
 
-import java.util.Locale;
-
 /**
- * A simple kind of scope that can be described as a String which matches in an all or nothing fashion (strict equality).
+ * A simple kind of scope that can be described as a String which matches in an all or nothing fashion (strict
+ * equality).
  */
 @SecurityScope("scope")
 public class SimpleScope implements Scope {

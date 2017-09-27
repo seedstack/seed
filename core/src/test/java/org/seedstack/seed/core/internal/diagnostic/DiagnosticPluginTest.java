@@ -1,45 +1,37 @@
-/**
- * Copyright (c) 2013-2016, The SeedStack authors <http://seedstack.org>
+/*
+ * Copyright © 2013-2017, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.core.internal.diagnostic;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import com.google.common.collect.Lists;
 import io.nuun.kernel.api.plugin.context.InitContext;
+import java.util.AbstractMap;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 import org.fest.reflect.core.Reflection;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.internal.util.reflection.Whitebox;
 import org.seedstack.coffig.Coffig;
 import org.seedstack.seed.Application;
-import org.seedstack.seed.spi.ApplicationProvider;
 import org.seedstack.seed.diagnostic.spi.DiagnosticDomain;
 import org.seedstack.seed.diagnostic.spi.DiagnosticInfoCollector;
-
-import java.util.AbstractMap;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import org.seedstack.seed.spi.ApplicationProvider;
 
 /**
  * CorePlugin unit test
  */
 public class DiagnosticPluginTest {
-    @DiagnosticDomain("test")
-    private static class TestDiagnosticInfoCollector implements DiagnosticInfoCollector {
-        @Override
-        public Map<String, Object> collect() {
-            return null;
-        }
-    }
-
     private DiagnosticPlugin diagnosticPlugin;
 
     @Before
@@ -64,8 +56,11 @@ public class DiagnosticPluginTest {
         InitContext initContext = mockInitContextForCore(Lists.newArrayList(TestDiagnosticInfoCollector.class));
         diagnosticPlugin.init(initContext);
         @SuppressWarnings("unchecked")
-        Map<String, Class<? extends DiagnosticInfoCollector>> seedModules = Reflection.field("diagnosticInfoCollectorClasses").ofType(Map.class).in(diagnosticPlugin).get();
-        assertThat(seedModules).containsExactly(new AbstractMap.SimpleImmutableEntry<String, Class<? extends DiagnosticInfoCollector>>("test", TestDiagnosticInfoCollector.class));
+        Map<String, Class<? extends DiagnosticInfoCollector>> seedModules = Reflection.field(
+                "diagnosticInfoCollectorClasses").ofType(Map.class).in(diagnosticPlugin).get();
+        assertThat(seedModules).containsExactly(
+                new AbstractMap.SimpleImmutableEntry<String, Class<? extends DiagnosticInfoCollector>>("test",
+                        TestDiagnosticInfoCollector.class));
     }
 
     private InitContext mockInitContextForCore(Collection<Class<?>> diagnosticClasses) {
@@ -80,5 +75,13 @@ public class DiagnosticPluginTest {
         when(initContext.scannedSubTypesByParentClass()).thenReturn(scannedSubTypesByParentClass);
 
         return initContext;
+    }
+
+    @DiagnosticDomain("test")
+    private static class TestDiagnosticInfoCollector implements DiagnosticInfoCollector {
+        @Override
+        public Map<String, Object> collect() {
+            return null;
+        }
     }
 }

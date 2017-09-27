@@ -1,13 +1,17 @@
-/**
- * Copyright (c) 2013-2016, The SeedStack authors <http://seedstack.org>
+/*
+ * Copyright © 2013-2017, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.it;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import com.google.inject.Injector;
+import javax.inject.Inject;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -16,22 +20,16 @@ import org.seedstack.seed.Application;
 import org.seedstack.seed.Configuration;
 import org.seedstack.seed.it.fixtures.ITBound;
 
-import javax.inject.Inject;
-
-import static org.assertj.core.api.Assertions.assertThat;
-
 @RunWith(TestingITRunner.class)
 public class SeedITRunnerIT {
-    @Inject
-    private Injector injector;
-
-    @Configuration("custom-property")
-    private String customConfiguration;
-
     static boolean passedBeforeClass = false;
     static boolean passedAfterClass = false;
     static boolean passedBeforeKernel = false;
     static boolean passedAfterKernel = false;
+    @Inject
+    private Injector injector;
+    @Configuration("custom-property")
+    private String customConfiguration;
 
     @BeforeKernel
     public static void beforeKernel() {
@@ -80,7 +78,8 @@ public class SeedITRunnerIT {
 
     @Test
     public void seed_it_runner_is_correctly_passing_default_configuration() {
-        assertThat(injector.getInstance(Application.class).getConfiguration().getMandatory(String.class, "testKey")).isEqualTo("testValue");
+        assertThat(injector.getInstance(Application.class).getConfiguration().getMandatory(String.class,
+                "testKey")).isEqualTo("testValue");
     }
 
     @Test

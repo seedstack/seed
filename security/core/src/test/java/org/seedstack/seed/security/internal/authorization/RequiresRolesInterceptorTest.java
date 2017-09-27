@@ -1,17 +1,17 @@
-/**
- * Copyright (c) 2013-2016, The SeedStack authors <http://seedstack.org>
+/*
+ * Copyright © 2013-2017, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.security.internal.authorization;
 
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import org.aopalliance.intercept.MethodInvocation;
 import org.apache.shiro.subject.Subject;
 import org.junit.After;
@@ -25,104 +25,104 @@ import org.seedstack.seed.security.internal.shiro.AbstractShiroTest;
 
 public class RequiresRolesInterceptorTest extends AbstractShiroTest {
 
-  private RequiresRolesInterceptor underTest;
-  private Subject subjectUnderTest;
+    private RequiresRolesInterceptor underTest;
+    private Subject subjectUnderTest;
 
-  @Before
-  public void setup() throws Exception {
-    subjectUnderTest = Mockito.mock(Subject.class);
-    setSubject(subjectUnderTest);
-  }
+    @Before
+    public void setup() throws Exception {
+        subjectUnderTest = Mockito.mock(Subject.class);
+        setSubject(subjectUnderTest);
+    }
 
-  @After
-  public void tearDownSubject() {
-    clearSubject();
-  }
+    @After
+    public void tearDownSubject() {
+        clearSubject();
+    }
 
-  @Test
-  public void test_one_permission_ok() throws Throwable {
-    underTest = new RequiresRolesInterceptor();
-    MethodInvocation methodInvocation = Mockito.mock(MethodInvocation.class);
-    when(methodInvocation.getMethod())
-        .thenReturn(RequiresRolesInterceptorTest.class.getMethod("securedMethod"));
+    @Test
+    public void test_one_permission_ok() throws Throwable {
+        underTest = new RequiresRolesInterceptor();
+        MethodInvocation methodInvocation = Mockito.mock(MethodInvocation.class);
+        when(methodInvocation.getMethod())
+                .thenReturn(RequiresRolesInterceptorTest.class.getMethod("securedMethod"));
 
-    underTest.invoke(methodInvocation);
-  }
+        underTest.invoke(methodInvocation);
+    }
 
-  @Test(expected = AuthorizationException.class)
-  public void test_one_permission_fail() throws Throwable {
-    Mockito.doThrow(new AuthorizationException()).when(subjectUnderTest).checkRole("CODE");
+    @Test(expected = AuthorizationException.class)
+    public void test_one_permission_fail() throws Throwable {
+        Mockito.doThrow(new AuthorizationException()).when(subjectUnderTest).checkRole("CODE");
 
-    underTest = new RequiresRolesInterceptor();
-    MethodInvocation methodInvocation = Mockito.mock(MethodInvocation.class);
-    when(methodInvocation.getMethod())
-        .thenReturn(RequiresRolesInterceptorTest.class.getMethod("securedMethod"));
-    underTest.invoke(methodInvocation);
-  }
+        underTest = new RequiresRolesInterceptor();
+        MethodInvocation methodInvocation = Mockito.mock(MethodInvocation.class);
+        when(methodInvocation.getMethod())
+                .thenReturn(RequiresRolesInterceptorTest.class.getMethod("securedMethod"));
+        underTest.invoke(methodInvocation);
+    }
 
-  @Test
-  public void test_or_permission_ok() throws Throwable {
-    Mockito.when(subjectUnderTest.hasRole("CODE")).thenReturn(true);
-    Mockito.when(subjectUnderTest.hasRole("EAT")).thenReturn(false);
+    @Test
+    public void test_or_permission_ok() throws Throwable {
+        Mockito.when(subjectUnderTest.hasRole("CODE")).thenReturn(true);
+        Mockito.when(subjectUnderTest.hasRole("EAT")).thenReturn(false);
 
-    underTest = new RequiresRolesInterceptor();
-    MethodInvocation methodInvocation = Mockito.mock(MethodInvocation.class);
+        underTest = new RequiresRolesInterceptor();
+        MethodInvocation methodInvocation = Mockito.mock(MethodInvocation.class);
 
-    when(methodInvocation.getMethod())
-        .thenReturn(RequiresRolesInterceptorTest.class.getMethod("securedOrMethod"));
-    underTest.invoke(methodInvocation);
-  }
+        when(methodInvocation.getMethod())
+                .thenReturn(RequiresRolesInterceptorTest.class.getMethod("securedOrMethod"));
+        underTest.invoke(methodInvocation);
+    }
 
-  @Test(expected = AuthorizationException.class)
-  public void test_or_permission_fail() throws Throwable {
-    Mockito.when(subjectUnderTest.hasRole("CODE")).thenReturn(false);
-    Mockito.when(subjectUnderTest.hasRole("EAT")).thenReturn(false);
+    @Test(expected = AuthorizationException.class)
+    public void test_or_permission_fail() throws Throwable {
+        Mockito.when(subjectUnderTest.hasRole("CODE")).thenReturn(false);
+        Mockito.when(subjectUnderTest.hasRole("EAT")).thenReturn(false);
 
-    underTest = new RequiresRolesInterceptor();
-    MethodInvocation methodInvocation = Mockito.mock(MethodInvocation.class);
+        underTest = new RequiresRolesInterceptor();
+        MethodInvocation methodInvocation = Mockito.mock(MethodInvocation.class);
 
-    when(methodInvocation.getMethod())
-        .thenReturn(RequiresRolesInterceptorTest.class.getMethod("securedOrMethod"));
-    underTest.invoke(methodInvocation);
-  }
+        when(methodInvocation.getMethod())
+                .thenReturn(RequiresRolesInterceptorTest.class.getMethod("securedOrMethod"));
+        underTest.invoke(methodInvocation);
+    }
 
-  @Test
-  public void test_and_permission_ok() throws Throwable {
+    @Test
+    public void test_and_permission_ok() throws Throwable {
 
-    List<String> roles = new ArrayList<>();
-    roles.add("CODE");
-    roles.add("EAT");
-    Mockito.when(subjectUnderTest.hasAllRoles(roles)).thenReturn(true);
+        List<String> roles = new ArrayList<>();
+        roles.add("CODE");
+        roles.add("EAT");
+        Mockito.when(subjectUnderTest.hasAllRoles(roles)).thenReturn(true);
 
-    underTest = new RequiresRolesInterceptor();
-    MethodInvocation methodInvocation = Mockito.mock(MethodInvocation.class);
+        underTest = new RequiresRolesInterceptor();
+        MethodInvocation methodInvocation = Mockito.mock(MethodInvocation.class);
 
-    when(methodInvocation.getMethod())
-        .thenReturn(RequiresRolesInterceptorTest.class.getMethod("securedAndMethod"));
-    underTest.invoke(methodInvocation);
-  }
+        when(methodInvocation.getMethod())
+                .thenReturn(RequiresRolesInterceptorTest.class.getMethod("securedAndMethod"));
+        underTest.invoke(methodInvocation);
+    }
 
-  @Test(expected = AuthorizationException.class)
-  public void test_and_permission_fail() throws Throwable {
-    Mockito.doThrow(new AuthorizationException()).when(subjectUnderTest).checkRoles("CODE", "EAT");
+    @Test(expected = AuthorizationException.class)
+    public void test_and_permission_fail() throws Throwable {
+        Mockito.doThrow(new AuthorizationException()).when(subjectUnderTest).checkRoles("CODE", "EAT");
 
-    underTest = new RequiresRolesInterceptor();
-    MethodInvocation methodInvocation = Mockito.mock(MethodInvocation.class);
+        underTest = new RequiresRolesInterceptor();
+        MethodInvocation methodInvocation = Mockito.mock(MethodInvocation.class);
 
-    when(methodInvocation.getMethod())
-        .thenReturn(RequiresRolesInterceptorTest.class.getMethod("securedAndMethod"));
-    underTest.invoke(methodInvocation);
-  }
+        when(methodInvocation.getMethod())
+                .thenReturn(RequiresRolesInterceptorTest.class.getMethod("securedAndMethod"));
+        underTest.invoke(methodInvocation);
+    }
 
-  @RequiresRoles("CODE")
-  public void securedMethod() {
-  }
+    @RequiresRoles("CODE")
+    public void securedMethod() {
+    }
 
-  @RequiresRoles(value = { "CODE", "EAT" }, logical = Logical.OR)
-  public void securedOrMethod() {
-  }
+    @RequiresRoles(value = {"CODE", "EAT"}, logical = Logical.OR)
+    public void securedOrMethod() {
+    }
 
-  @RequiresRoles(value = { "CODE", "EAT" }, logical = Logical.AND)
-  public void securedAndMethod() {
-  }
+    @RequiresRoles(value = {"CODE", "EAT"}, logical = Logical.AND)
+    public void securedAndMethod() {
+    }
 }

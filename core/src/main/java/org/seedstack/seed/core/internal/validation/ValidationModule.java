@@ -1,10 +1,11 @@
-/**
- * Copyright (c) 2013-2016, The SeedStack authors <http://seedstack.org>
+/*
+ * Copyright © 2013-2017, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.core.internal.validation;
 
 import com.google.inject.AbstractModule;
@@ -13,18 +14,17 @@ import com.google.inject.Provides;
 import com.google.inject.matcher.AbstractMatcher;
 import com.google.inject.matcher.Matcher;
 import com.google.inject.matcher.Matchers;
-import org.seedstack.shed.reflect.Annotations;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import javax.validation.Constraint;
 import javax.validation.Valid;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 import javax.validation.executable.ExecutableValidator;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
+import org.seedstack.shed.reflect.Annotations;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @ValidationConcern
 class ValidationModule extends AbstractModule {
@@ -114,7 +114,8 @@ class ValidationModule extends AbstractModule {
     }
 
     private boolean hasConstraintOrValidAnnotation(Annotation annotation) {
-        return Annotations.on(annotation.annotationType()).includingMetaAnnotations().find(Constraint.class).isPresent() ||
+        return Annotations.on(annotation.annotationType()).includingMetaAnnotations().find(
+                Constraint.class).isPresent() ||
                 Valid.class.equals(annotation.annotationType());
     }
 }

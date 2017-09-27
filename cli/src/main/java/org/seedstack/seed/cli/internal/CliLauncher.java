@@ -1,10 +1,11 @@
-/**
- * Copyright (c) 2013-2016, The SeedStack authors <http://seedstack.org>
+/*
+ * Copyright © 2013-2017, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.cli.internal;
 
 import com.google.inject.ConfigurationException;
@@ -14,6 +15,9 @@ import com.google.inject.name.Names;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.nuun.kernel.api.Kernel;
 import io.nuun.kernel.api.config.KernelConfiguration;
+import java.util.Arrays;
+import java.util.concurrent.Callable;
+import javax.inject.Inject;
 import org.seedstack.seed.SeedException;
 import org.seedstack.seed.cli.CliConfig;
 import org.seedstack.seed.cli.CommandLineHandler;
@@ -22,28 +26,11 @@ import org.seedstack.seed.spi.SeedLauncher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.inject.Inject;
-import java.util.Arrays;
-import java.util.concurrent.Callable;
-
 /**
  * This class executes {@link CommandLineHandler}s found in the classpath.
  */
 public class CliLauncher implements SeedLauncher {
     private static final Logger LOGGER = LoggerFactory.getLogger(CliLauncher.class);
-
-    @Override
-    @SuppressFBWarnings(value = "DM_EXIT", justification = "CliLauncher must be able to return a code to the system")
-    public void launch(String[] args) throws Exception {
-        int returnCode = execute(args);
-        LOGGER.info("CLI command finished with return code {}", returnCode);
-        System.exit(returnCode);
-    }
-
-    @Override
-    public void shutdown() throws Exception {
-        // nothing to do here
-    }
 
     /**
      * Execute a Seed CLI command (implemented by a {@link CommandLineHandler}.
@@ -108,7 +95,8 @@ public class CliLauncher implements SeedLauncher {
      * @return the return code of the callable
      * @throws Exception when the CLI command fails to complete.
      */
-    public static int execute(String[] args, Callable<Integer> callable, KernelConfiguration kernelConfiguration) throws Exception {
+    public static int execute(String[] args, Callable<Integer> callable,
+            KernelConfiguration kernelConfiguration) throws Exception {
         Kernel kernel = Seed.createKernel(new CliContextInternal(args), kernelConfiguration, true);
 
         try {
@@ -117,6 +105,19 @@ public class CliLauncher implements SeedLauncher {
         } finally {
             Seed.disposeKernel(kernel);
         }
+    }
+
+    @Override
+    @SuppressFBWarnings(value = "DM_EXIT", justification = "CliLauncher must be able to return a code to the system")
+    public void launch(String[] args) throws Exception {
+        int returnCode = execute(args);
+        LOGGER.info("CLI command finished with return code {}", returnCode);
+        System.exit(returnCode);
+    }
+
+    @Override
+    public void shutdown() throws Exception {
+        // nothing to do here
     }
 
     public static class SeedCallable implements Callable<Integer> {
@@ -131,11 +132,14 @@ public class CliLauncher implements SeedLauncher {
         @Override
         public Integer call() throws Exception {
             try {
-                CommandLineHandler commandLineHandler = injector.getInstance(Key.get(CommandLineHandler.class, Names.named(cliCommand)));
-                LOGGER.info("Executing CLI command {}, handled by {}", cliCommand, commandLineHandler.getClass().getCanonicalName());
+                CommandLineHandler commandLineHandler = injector.getInstance(
+                        Key.get(CommandLineHandler.class, Names.named(cliCommand)));
+                LOGGER.info("Executing CLI command {}, handled by {}", cliCommand,
+                        commandLineHandler.getClass().getCanonicalName());
                 return commandLineHandler.call();
             } catch (ConfigurationException e) {
-                throw SeedException.wrap(e, CliErrorCode.COMMAND_LINE_HANDLER_NOT_FOUND).put("commandLineHandler", cliCommand);
+                throw SeedException.wrap(e, CliErrorCode.COMMAND_LINE_HANDLER_NOT_FOUND).put("commandLineHandler",
+                        cliCommand);
             }
         }
     }

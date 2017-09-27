@@ -1,23 +1,35 @@
-/**
- * Copyright (c) 2013-2016, The SeedStack authors <http://seedstack.org>
+/*
+ * Copyright © 2013-2017, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.core.fixtures;
 
-import org.seedstack.coffig.Coffig;
-import org.seedstack.seed.spi.SeedInitializer;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.concurrent.atomic.AtomicInteger;
-
-import static org.assertj.core.api.Assertions.assertThat;
+import org.seedstack.coffig.Coffig;
+import org.seedstack.seed.spi.SeedInitializer;
 
 public class TestSeedInitializer implements SeedInitializer {
     private static AtomicInteger beforeCallCount = new AtomicInteger(0);
     private static AtomicInteger onCallCount = new AtomicInteger(0);
     private static AtomicInteger afterCallCount = new AtomicInteger(0);
+
+    public static int getBeforeCallCount() {
+        return beforeCallCount.get();
+    }
+
+    public static int getOnCallCount() {
+        return onCallCount.get();
+    }
+
+    public static int getAfterCallCount() {
+        return afterCallCount.get();
+    }
 
     @Override
     public void beforeInitialization() {
@@ -37,17 +49,5 @@ public class TestSeedInitializer implements SeedInitializer {
     @Override
     public void onClose() {
         throw new IllegalStateException("Should not be called from tests");
-    }
-
-    public static int getBeforeCallCount() {
-        return beforeCallCount.get();
-    }
-
-    public static int getOnCallCount() {
-        return onCallCount.get();
-    }
-
-    public static int getAfterCallCount() {
-        return afterCallCount.get();
     }
 }

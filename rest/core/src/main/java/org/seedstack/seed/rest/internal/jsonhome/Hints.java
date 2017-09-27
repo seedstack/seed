@@ -1,14 +1,12 @@
-/**
- * Copyright (c) 2013-2016, The SeedStack authors <http://seedstack.org>
+/*
+ * Copyright © 2013-2017, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-package org.seedstack.seed.rest.internal.jsonhome;
 
-import org.seedstack.seed.SeedException;
-import org.seedstack.seed.rest.internal.RestErrorCode;
+package org.seedstack.seed.rest.internal.jsonhome;
 
 import java.net.URI;
 import java.util.ArrayList;
@@ -17,6 +15,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import org.seedstack.seed.SeedException;
+import org.seedstack.seed.rest.internal.RestErrorCode;
 
 /**
  * Defines the hints representation as defined by the
@@ -45,11 +45,6 @@ public class Hints {
     private List<AuthorizationRequired> authReq = new ArrayList<>();
 
     private Status status;
-
-    public enum Status {
-        GONE,
-        DEPRECATED
-    }
 
     /**
      * Merges the current hints with hints comming from another method of the resource.
@@ -89,9 +84,9 @@ public class Hints {
      * Merges the status. If one of the resource have different status the status will be
      * chosen according to the following priorities:
      * <ol>
-     *     <li>GONE</li>
-     *     <li>DEPRECATED</li>
-     *     <li>NONE</li>
+     * <li>GONE</li>
+     * <li>DEPRECATED</li>
+     * <li>NONE</li>
      * </ol>
      *
      * @param hints the hints to merge
@@ -214,11 +209,17 @@ public class Hints {
         if (object == null) {
             return;
         }
-        boolean isEmptyCollection = Collection.class.isAssignableFrom(object.getClass()) && ((Collection) object).isEmpty();
+        boolean isEmptyCollection = Collection.class.isAssignableFrom(
+                object.getClass()) && ((Collection) object).isEmpty();
         boolean isEmptyMap = Map.class.isAssignableFrom(object.getClass()) && ((Map) object).isEmpty();
 
         if (!isEmptyCollection && !isEmptyMap) {
             representation.put(name, object);
         }
+    }
+
+    public enum Status {
+        GONE,
+        DEPRECATED
     }
 }

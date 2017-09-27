@@ -1,14 +1,19 @@
-/**
- * Copyright (c) 2013-2016, The SeedStack authors <http://seedstack.org>
+/*
+ * Copyright © 2013-2017, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.core.rules;
 
 import com.google.inject.Injector;
 import io.nuun.kernel.api.Kernel;
+import java.lang.reflect.Method;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
 import mockit.Mock;
 import mockit.MockUp;
 import org.junit.Rule;
@@ -20,19 +25,14 @@ import org.seedstack.seed.SeedException;
 import org.seedstack.seed.core.Seed;
 import org.seedstack.seed.core.internal.CoreErrorCode;
 
-import java.lang.reflect.Method;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
-
 /**
  * {@link Rule} to start/stop the {@link Kernel} and to inject a {@link BeforeKernel} method.
  */
 public class SeedITRule implements TestRule {
     private static final Map<String, String> initialEnv = System.getenv();
-    private Kernel kernel;
     private final Object target;
     private final Object context;
+    private Kernel kernel;
 
     public SeedITRule(Object target, Object context) {
         this.target = target;

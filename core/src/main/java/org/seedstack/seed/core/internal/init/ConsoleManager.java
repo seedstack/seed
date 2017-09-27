@@ -1,15 +1,12 @@
-/**
- * Copyright (c) 2013-2016, The SeedStack authors <http://seedstack.org>
+/*
+ * Copyright © 2013-2017, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-package org.seedstack.seed.core.internal.init;
 
-import org.fusesource.jansi.AnsiConsole;
-import org.fusesource.jansi.AnsiOutputStream;
-import org.seedstack.seed.ApplicationConfig;
+package org.seedstack.seed.core.internal.init;
 
 import java.io.FilterOutputStream;
 import java.io.IOException;
@@ -17,21 +14,20 @@ import java.io.OutputStream;
 import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
+import org.fusesource.jansi.AnsiConsole;
+import org.fusesource.jansi.AnsiOutputStream;
+import org.seedstack.seed.ApplicationConfig;
 
 public class ConsoleManager {
     private final PrintStream savedOut = System.out;
     private final PrintStream savedErr = System.err;
 
-    private static class Holder {
-        private static final ConsoleManager INSTANCE = new ConsoleManager();
+    private ConsoleManager() {
+        // noop
     }
 
     public static ConsoleManager get() {
         return Holder.INSTANCE;
-    }
-
-    private ConsoleManager() {
-        // noop
     }
 
     public synchronized void install(ApplicationConfig.ColorOutput colorOutput) {
@@ -107,6 +103,10 @@ public class ConsoleManager {
                 return false;
             }
         }
+    }
+
+    private static class Holder {
+        private static final ConsoleManager INSTANCE = new ConsoleManager();
     }
 
     private static class ColorOutputStream extends FilterOutputStream {

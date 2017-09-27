@@ -1,12 +1,15 @@
-/**
- * Copyright (c) 2013-2016, The SeedStack authors <http://seedstack.org>
+/*
+ * Copyright © 2013-2017, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.core;
 
+import javax.el.ELContext;
+import javax.inject.Inject;
 import org.assertj.core.api.Assertions;
 import org.junit.Rule;
 import org.junit.Test;
@@ -14,9 +17,6 @@ import org.seedstack.seed.core.fixtures.el.ELFixture;
 import org.seedstack.seed.core.rules.SeedITRule;
 import org.seedstack.seed.el.ELContextBuilder;
 import org.seedstack.seed.el.ELService;
-
-import javax.el.ELContext;
-import javax.inject.Inject;
 
 public class ExpressionLanguageIT {
     private static final String HELLO_WORLD = "hello world !";
@@ -43,14 +43,16 @@ public class ExpressionLanguageIT {
 
     @Test
     public void evaluate_value_expression_with_the_service() {
-        Integer response = (Integer) elService.withExpression("${21*2}", Integer.class).withDefaultContext().asValueExpression().eval();
+        Integer response = (Integer) elService.withExpression("${21*2}",
+                Integer.class).withDefaultContext().asValueExpression().eval();
         Assertions.assertThat(response).isEqualTo(42);
     }
 
     @Test
     public void add_function_to_expression_language() throws NoSuchMethodException {
         Double response = (Double) elService.withExpression("${math:max(24,42)}", double.class)
-                .withContext(elContextBuilder.defaultContext().withFunction("math", "max", Math.class.getMethod("max", double.class, double.class)).build())
+                .withContext(elContextBuilder.defaultContext().withFunction("math", "max",
+                        Math.class.getMethod("max", double.class, double.class)).build())
                 .asValueExpression().eval();
         Assertions.assertThat(response).isEqualTo(42);
     }
@@ -67,7 +69,8 @@ public class ExpressionLanguageIT {
     @Test
     public void define_reusable_context() {
         ELContext elContext = elContextBuilder.defaultContext().withProperty("pok", HELLO_WORLD).build();
-        Object eval = elService.withExpression("${pok}", String.class).withContext(elContext).asValueExpression().eval();
+        Object eval = elService.withExpression("${pok}", String.class).withContext(
+                elContext).asValueExpression().eval();
         Assertions.assertThat(eval).isEqualTo(HELLO_WORLD);
     }
 }

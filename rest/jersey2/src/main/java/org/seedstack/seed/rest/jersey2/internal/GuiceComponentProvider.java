@@ -1,13 +1,18 @@
-/**
- * Copyright (c) 2013-2016, The SeedStack authors <http://seedstack.org>
+/*
+ * Copyright © 2013-2017, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.rest.jersey2.internal;
 
 import com.google.inject.Injector;
+import java.util.Set;
+import javax.servlet.ServletContext;
+import javax.ws.rs.Path;
+import javax.ws.rs.ext.Provider;
 import org.glassfish.hk2.api.DynamicConfiguration;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.utilities.binding.ServiceBindingBuilder;
@@ -16,12 +21,6 @@ import org.glassfish.jersey.server.spi.ComponentProvider;
 import org.jvnet.hk2.guice.bridge.api.GuiceBridge;
 import org.jvnet.hk2.guice.bridge.api.GuiceIntoHK2Bridge;
 import org.seedstack.seed.SeedException;
-
-import javax.servlet.ServletContext;
-import javax.ws.rs.Path;
-import javax.ws.rs.ext.Provider;
-import java.util.Set;
-
 
 public class GuiceComponentProvider implements ComponentProvider {
 

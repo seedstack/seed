@@ -1,21 +1,21 @@
-/**
- * Copyright (c) 2013-2016, The SeedStack authors <http://seedstack.org>
+/*
+ * Copyright © 2013-2017, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-package org.seedstack.seed.crypto;
 
-import org.seedstack.coffig.Config;
-import org.seedstack.coffig.SingleValue;
-import org.seedstack.seed.crypto.spi.SSLAuthenticationMode;
+package org.seedstack.seed.crypto;
 
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import org.seedstack.coffig.Config;
+import org.seedstack.coffig.SingleValue;
+import org.seedstack.seed.crypto.spi.SSLAuthenticationMode;
 
 @Config("crypto")
 public class CryptoConfig {
@@ -136,9 +136,16 @@ public class CryptoConfig {
             return resource;
         }
 
+        /**
+         * Sets the resource to load the certificate from the classpath. Exclusive with file.
+         *
+         * @param resource the resource path.
+         * @return the config object itself.
+         */
         public CertificateConfig setResource(String resource) {
             if (file != null) {
-                throw new IllegalStateException("A certificate must be configured from either a resource or a file, not both");
+                throw new IllegalStateException(
+                        "A certificate must be configured from either a resource or a file, not both");
             }
             this.resource = resource;
             return this;
@@ -148,9 +155,16 @@ public class CryptoConfig {
             return file;
         }
 
+        /**
+         * Sets the file to load the certificate from the filesystem. Exclusive with resource.
+         *
+         * @param file the file path.
+         * @return the config object itself.
+         */
         public CertificateConfig setFile(String file) {
             if (resource != null) {
-                throw new IllegalStateException("A certificate must be configured from either a resource or a file, not both");
+                throw new IllegalStateException(
+                        "A certificate must be configured from either a resource or a file, not both");
             }
             this.file = file;
             return this;

@@ -1,10 +1,11 @@
-/**
- * Copyright (c) 2013-2016, The SeedStack authors <http://seedstack.org>
+/*
+ * Copyright © 2013-2017, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.security.principals;
 
 import java.io.Serializable;
@@ -97,7 +98,8 @@ public final class Principals {
      * @return A collection of the user's PrincipalProviders of type principalProviderClass. Not null.
      */
     @SuppressWarnings("unchecked")
-    public static <T extends Serializable> Collection<PrincipalProvider<T>> getPrincipalsByType(Collection<PrincipalProvider<?>> principalProviders, Class<T> principalClass) {
+    public static <T extends Serializable> Collection<PrincipalProvider<T>> getPrincipalsByType(
+            Collection<PrincipalProvider<?>> principalProviders, Class<T> principalClass) {
         Collection<PrincipalProvider<T>> principals = new ArrayList<>();
         for (PrincipalProvider<?> principal : principalProviders) {
             for (Type principalInterface : principal.getClass().getGenericInterfaces()) {
@@ -108,7 +110,8 @@ public final class Principals {
                         if (principalClass.equals(currentType)) {
                             principals.add((PrincipalProvider<T>) principal);
                         }
-                    } else if (currentType instanceof Class && principalClass.getComponentType().equals(((Class<?>) currentType).getComponentType())) {
+                    } else if (currentType instanceof Class && principalClass.getComponentType().equals(
+                            ((Class<?>) currentType).getComponentType())) {
                         principals.add((PrincipalProvider<T>) principal);
                     }
                 }
@@ -132,7 +135,8 @@ public final class Principals {
      * @param principalClass     the PrincipalProvider type, not null
      * @return The user's PrincipalProvider of type principalProviderClass. Null if none.
      */
-    public static <T extends Serializable> PrincipalProvider<T> getOnePrincipalByType(Collection<PrincipalProvider<?>> principalProviders, Class<T> principalClass) {
+    public static <T extends Serializable> PrincipalProvider<T> getOnePrincipalByType(
+            Collection<PrincipalProvider<?>> principalProviders, Class<T> principalClass) {
         Collection<PrincipalProvider<T>> pps = getPrincipalsByType(principalProviders, principalClass);
         if (!pps.isEmpty()) {
             return pps.iterator().next();
@@ -147,7 +151,8 @@ public final class Principals {
      * @param principalProviders the principals to extract from
      * @return the simple principals
      */
-    public static Collection<SimplePrincipalProvider> getSimplePrincipals(Collection<PrincipalProvider<?>> principalProviders) {
+    public static Collection<SimplePrincipalProvider> getSimplePrincipals(
+            Collection<PrincipalProvider<?>> principalProviders) {
         Collection<SimplePrincipalProvider> principals = new ArrayList<>();
         for (PrincipalProvider<?> principal : principalProviders) {
             if (principal instanceof SimplePrincipalProvider) {
@@ -164,7 +169,8 @@ public final class Principals {
      * @param principalName      the name to search
      * @return the simple principal with the name
      */
-    public static SimplePrincipalProvider getSimplePrincipalByName(Collection<PrincipalProvider<?>> principalProviders, String principalName) {
+    public static SimplePrincipalProvider getSimplePrincipalByName(Collection<PrincipalProvider<?>> principalProviders,
+            String principalName) {
         for (SimplePrincipalProvider principal : getSimplePrincipals(principalProviders)) {
             if (principal.getName().equals(principalName)) {
                 return principal;

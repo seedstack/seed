@@ -1,20 +1,14 @@
-/**
- * Copyright (c) 2013-2016, The SeedStack authors <http://seedstack.org>
+/*
+ * Copyright © 2013-2017, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.core.internal.crypto;
 
-import mockit.Expectations;
-import mockit.MockUp;
-import mockit.Mocked;
-import org.junit.Before;
-import org.junit.Test;
-import org.seedstack.seed.core.internal.crypto.KeyPairConfig;
-import org.seedstack.seed.core.internal.crypto.KeyPairConfigFactory;
-import org.seedstack.seed.crypto.CryptoConfig;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -23,9 +17,12 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Vector;
-
-import static org.assertj.core.api.Assertions.assertThat;
-
+import mockit.Expectations;
+import mockit.MockUp;
+import mockit.Mocked;
+import org.junit.Before;
+import org.junit.Test;
+import org.seedstack.seed.crypto.CryptoConfig;
 
 public class KeyPairConfigFactoryTest {
 
@@ -84,7 +81,9 @@ public class KeyPairConfigFactoryTest {
                 result = new HashMap<String, CryptoConfig.KeyStoreConfig>() {{
                     put(KEY_STORE_NAME, new CryptoConfig.KeyStoreConfig()
                             .addAlias(ALIAS_NAME_1, new CryptoConfig.KeyStoreConfig.AliasConfig().setPassword(PASSWORD))
-                            .addAlias(ALIAS_NAME_2, new CryptoConfig.KeyStoreConfig.AliasConfig().setPassword(PASSWORD).setQualifier(ALIAS_QUALIFIER)
+                            .addAlias(ALIAS_NAME_2,
+                                    new CryptoConfig.KeyStoreConfig.AliasConfig().setPassword(PASSWORD).setQualifier(
+                                            ALIAS_QUALIFIER)
                             ));
                 }};
             }

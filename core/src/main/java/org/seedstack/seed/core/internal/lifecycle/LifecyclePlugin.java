@@ -1,16 +1,22 @@
-/**
- * Copyright (c) 2013-2016, The SeedStack authors <http://seedstack.org>
+/*
+ * Copyright © 2013-2017, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.core.internal.lifecycle;
 
 import com.google.common.collect.Sets;
 import io.nuun.kernel.api.plugin.InitState;
 import io.nuun.kernel.api.plugin.context.InitContext;
 import io.nuun.kernel.api.plugin.request.ClasspathScanRequest;
+import java.lang.reflect.Method;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
+import javax.inject.Inject;
 import org.seedstack.seed.Ignore;
 import org.seedstack.seed.LifecycleListener;
 import org.seedstack.seed.SeedException;
@@ -19,12 +25,6 @@ import org.seedstack.seed.core.internal.CoreErrorCode;
 import org.seedstack.shed.reflect.Annotations;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import javax.inject.Inject;
-import java.lang.reflect.Method;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
 
 public class LifecyclePlugin extends AbstractSeedPlugin implements LifecycleManager {
     private static final Logger LOGGER = LoggerFactory.getLogger(LifecyclePlugin.class);
@@ -82,7 +82,8 @@ public class LifecyclePlugin extends AbstractSeedPlugin implements LifecycleMana
                 LOGGER.info("Closing {}", closeable.getClass().getName());
                 closeable.close();
             } catch (Exception e) {
-                LOGGER.error("An exception occurred in the close() method of auto-closeable {}", closeable.getClass().getName(), e);
+                LOGGER.error("An exception occurred in the close() method of auto-closeable {}",
+                        closeable.getClass().getName(), e);
             }
         });
 
@@ -90,7 +91,8 @@ public class LifecyclePlugin extends AbstractSeedPlugin implements LifecycleMana
             try {
                 lifecycleListener.stopping();
             } catch (Exception e) {
-                LOGGER.error("An exception occurred in the stopping() method of lifecycle listener {}", lifecycleListener.getClass().getName(), e);
+                LOGGER.error("An exception occurred in the stopping() method of lifecycle listener {}",
+                        lifecycleListener.getClass().getName(), e);
             }
         }
     }
@@ -101,10 +103,12 @@ public class LifecyclePlugin extends AbstractSeedPlugin implements LifecycleMana
             Method closeMethod = autoCloseable.getClass().getMethod("close");
             if (!Annotations.on(closeMethod).traversingOverriddenMembers().find(Ignore.class).isPresent()) {
                 if (autoCloseableObjects.add(autoCloseable)) {
-                    LOGGER.info("Registered auto-closeable {} for closing at shutdown", autoCloseable.getClass().getName());
+                    LOGGER.info("Registered auto-closeable {} for closing at shutdown",
+                            autoCloseable.getClass().getName());
                 }
             } else {
-                LOGGER.debug("Ignored registration of auto-closeable {} for closing at shutdown", autoCloseable.getClass().getName());
+                LOGGER.debug("Ignored registration of auto-closeable {} for closing at shutdown",
+                        autoCloseable.getClass().getName());
             }
         } catch (NoSuchMethodException e) {
             throw SeedException.wrap(e, CoreErrorCode.UNEXPECTED_EXCEPTION);

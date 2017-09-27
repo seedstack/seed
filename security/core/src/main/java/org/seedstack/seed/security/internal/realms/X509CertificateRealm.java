@@ -1,12 +1,24 @@
-/**
- * Copyright (c) 2013-2016, The SeedStack authors <http://seedstack.org>
+/*
+ * Copyright © 2013-2017, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.security.internal.realms;
 
+import java.security.cert.X509Certificate;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.naming.InvalidNameException;
+import javax.naming.ldap.LdapName;
+import javax.naming.ldap.Rdn;
+import javax.security.auth.x500.X500Principal;
 import org.seedstack.seed.security.AuthenticationException;
 import org.seedstack.seed.security.AuthenticationInfo;
 import org.seedstack.seed.security.AuthenticationToken;
@@ -22,18 +34,6 @@ import org.seedstack.seed.security.principals.X509CertificatePrincipalProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.naming.InvalidNameException;
-import javax.naming.ldap.LdapName;
-import javax.naming.ldap.Rdn;
-import javax.security.auth.x500.X500Principal;
-import java.security.cert.X509Certificate;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
-
 /**
  * A realm that is based on an X509Certificate to identify the user and provide his roles. This realm does not actually
  * authenticates the user as this process should be done by Servlet container.
@@ -41,13 +41,10 @@ import java.util.Set;
 public class X509CertificateRealm implements Realm {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(X509CertificateRealm.class);
-
-    private RoleMapping roleMapping;
-
-    private RolePermissionResolver rolePermissionResolver;
-
     private static final String UID = "UID";
     private static final String CN = "CN";
+    private RoleMapping roleMapping;
+    private RolePermissionResolver rolePermissionResolver;
 
     @Override
     public AuthenticationInfo getAuthenticationInfo(AuthenticationToken token) throws AuthenticationException {
@@ -89,20 +86,12 @@ public class X509CertificateRealm implements Realm {
         return authInfo;
     }
 
-    @Inject
-    public void setRoleMapping(@Named("X509CertificateRealm-role-mapping") RoleMapping roleMapping) {
-        this.roleMapping = roleMapping;
-    }
-
-    @Inject
-    public void setRolePermissionResolver(@Named("X509CertificateRealm-role-permission-resolver") RolePermissionResolver rolePermissionResolver) {
-        this.rolePermissionResolver = rolePermissionResolver;
-    }
-
     @Override
-    public Set<String> getRealmRoles(PrincipalProvider<?> identityPrincipal, Collection<PrincipalProvider<?>> otherPrincipals) {
+    public Set<String> getRealmRoles(PrincipalProvider<?> identityPrincipal,
+            Collection<PrincipalProvider<?>> otherPrincipals) {
         Set<String> realmRoles = new HashSet<>();
-        Collection<PrincipalProvider<X509Certificate[]>> certificatePrincipals = Principals.getPrincipalsByType(otherPrincipals,
+        Collection<PrincipalProvider<X509Certificate[]>> certificatePrincipals = Principals.getPrincipalsByType(
+                otherPrincipals,
                 X509Certificate[].class);
         if (certificatePrincipals.isEmpty()) {
             return Collections.emptySet();
@@ -132,9 +121,20 @@ public class X509CertificateRealm implements Realm {
         return roleMapping;
     }
 
+    @Inject
+    public void setRoleMapping(@Named("X509CertificateRealm-role-mapping") RoleMapping roleMapping) {
+        this.roleMapping = roleMapping;
+    }
+
     @Override
     public RolePermissionResolver getRolePermissionResolver() {
         return rolePermissionResolver;
+    }
+
+    @Inject
+    public void setRolePermissionResolver(
+            @Named("X509CertificateRealm-role-permission-resolver") RolePermissionResolver rolePermissionResolver) {
+        this.rolePermissionResolver = rolePermissionResolver;
     }
 
     @Override

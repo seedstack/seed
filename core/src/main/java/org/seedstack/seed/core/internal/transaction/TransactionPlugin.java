@@ -1,16 +1,23 @@
-/**
- * Copyright (c) 2013-2016, The SeedStack authors <http://seedstack.org>
+/*
+ * Copyright © 2013-2017, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.core.internal.transaction;
 
 import io.nuun.kernel.api.plugin.InitState;
 import io.nuun.kernel.api.plugin.PluginException;
 import io.nuun.kernel.api.plugin.context.InitContext;
 import io.nuun.kernel.api.plugin.request.ClasspathScanRequest;
+import java.lang.reflect.Method;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Optional;
+import java.util.Set;
+import javax.transaction.Transactional;
 import org.seedstack.seed.core.internal.AbstractSeedPlugin;
 import org.seedstack.seed.transaction.TransactionConfig;
 import org.seedstack.seed.transaction.spi.TransactionHandler;
@@ -19,13 +26,6 @@ import org.seedstack.seed.transaction.spi.TransactionMetadataResolver;
 import org.seedstack.shed.reflect.Classes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import javax.transaction.Transactional;
-import java.lang.reflect.Method;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Set;
 
 /**
  * This plugin manages transactional matters in SEED code:
@@ -36,9 +36,9 @@ import java.util.Set;
  * </ul>
  */
 public class TransactionPlugin extends AbstractSeedPlugin {
+    static final Optional<Class<Transactional>> JTA_12_OPTIONAL = Classes.optional("javax.transaction.Transactional");
     private static final Logger LOGGER = LoggerFactory.getLogger(TransactionPlugin.class);
     private final Set<Class<? extends TransactionMetadataResolver>> transactionMetadataResolvers = new HashSet<>();
-    static final Optional<Class<Transactional>> JTA_12_OPTIONAL = Classes.optional("javax.transaction.Transactional");
     private TransactionManager transactionManager;
     private Class<? extends TransactionHandler> defaultTransactionHandlerClass;
 

@@ -1,20 +1,20 @@
-/**
- * Copyright (c) 2013-2016, The SeedStack authors <http://seedstack.org>
+/*
+ * Copyright © 2013-2017, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.core.internal.transaction;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import javassist.util.proxy.MethodHandler;
 import javassist.util.proxy.ProxyFactory;
 import org.seedstack.seed.Ignore;
 import org.seedstack.seed.SeedException;
 import org.seedstack.seed.transaction.spi.TransactionalLink;
-
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 
 /**
  * This class proxy takes a {@link TransactionalLink}. It intercepts method calls and
@@ -28,15 +28,6 @@ public class TransactionalClassProxy<T> implements MethodHandler {
     private TransactionalClassProxy(TransactionalLink<T> transactionalLink) {
         super();
         this.transactionalLink = transactionalLink;
-    }
-
-    @Override
-    public Object invoke(Object self, Method thisMethod, Method proceed, Object[] args) throws Throwable {
-        try {
-            return thisMethod.invoke(transactionalLink.get(), args);
-        } catch (InvocationTargetException e) {
-            throw e.getCause();
-        }
     }
 
     /**
@@ -56,7 +47,17 @@ public class TransactionalClassProxy<T> implements MethodHandler {
             factory.setFilter(method -> !method.getDeclaringClass().equals(Object.class));
             return (T) factory.create(new Class<?>[0], new Object[0], new TransactionalClassProxy<>(transactionalLink));
         } catch (Exception e) {
-            throw SeedException.wrap(e, TransactionErrorCode.UNABLE_TO_CREATE_TRANSACTIONAL_PROXY).put("class", clazz.getName());
+            throw SeedException.wrap(e, TransactionErrorCode.UNABLE_TO_CREATE_TRANSACTIONAL_PROXY).put("class",
+                    clazz.getName());
+        }
+    }
+
+    @Override
+    public Object invoke(Object self, Method thisMethod, Method proceed, Object[] args) throws Throwable {
+        try {
+            return thisMethod.invoke(transactionalLink.get(), args);
+        } catch (InvocationTargetException e) {
+            throw e.getCause();
         }
     }
 

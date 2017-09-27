@@ -1,11 +1,14 @@
-/**
- * Copyright (c) 2013-2016, The SeedStack authors <http://seedstack.org>
+/*
+ * Copyright © 2013-2017, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.web.internal;
+
+import static org.seedstack.shed.misc.PriorityUtils.sortByPriority;
 
 import com.google.common.collect.Lists;
 import com.google.inject.Injector;
@@ -14,6 +17,13 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.nuun.kernel.api.plugin.InitState;
 import io.nuun.kernel.api.plugin.context.Context;
 import io.nuun.kernel.api.plugin.context.InitContext;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import javax.servlet.ServletContext;
 import org.seedstack.seed.SeedException;
 import org.seedstack.seed.core.SeedRuntime;
 import org.seedstack.seed.core.internal.AbstractSeedPlugin;
@@ -23,16 +33,6 @@ import org.seedstack.seed.web.spi.ServletDefinition;
 import org.seedstack.seed.web.spi.WebProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import javax.servlet.ServletContext;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import static org.seedstack.shed.misc.PriorityUtils.sortByPriority;
 
 /**
  * This plugin provides support for servlet-based Web applications.
@@ -58,7 +58,8 @@ public class WebPlugin extends AbstractSeedPlugin {
     }
 
     @Override
-    @SuppressFBWarnings(value = "DMI_COLLECTION_OF_URLS", justification = "Those URLs are denoting local resources without DNS resolution")
+    @SuppressFBWarnings(value = "DMI_COLLECTION_OF_URLS", justification = "Those URLs are denoting local resources "
+            + "without DNS resolution")
     public Set<URL> computeAdditionalClasspathScan() {
         Set<URL> additionalUrls = new HashSet<>();
         if (servletContext != null) {
@@ -132,7 +133,8 @@ public class WebPlugin extends AbstractSeedPlugin {
     @Override
     public void start(Context context) {
         if (servletContext != null) {
-            ServletContextConfigurer servletContextConfigurer = new ServletContextConfigurer(servletContext, context.applicationObjectGraph().as(Injector.class));
+            ServletContextConfigurer servletContextConfigurer = new ServletContextConfigurer(servletContext,
+                    context.applicationObjectGraph().as(Injector.class));
 
             for (ListenerDefinition listenerDefinition : listenerDefinitions) {
                 LOGGER.trace("Registering servlet listener {}", listenerDefinition.getListenerClass());
@@ -143,7 +145,8 @@ public class WebPlugin extends AbstractSeedPlugin {
             LOGGER.trace("Registering Guice servlet filter");
             servletContextConfigurer.addFilter(buildGuiceFilterDefinition());
             for (FilterDefinition filterDefinition : filterDefinitions) {
-                LOGGER.trace("Registering servlet filter {} with {} priority", filterDefinition.getFilterClass(), filterDefinition.getPriority());
+                LOGGER.trace("Registering servlet filter {} with {} priority", filterDefinition.getFilterClass(),
+                        filterDefinition.getPriority());
                 servletContextConfigurer.addFilter(filterDefinition);
             }
             LOGGER.debug("Registered {} servlet filter(s)", filterDefinitions.size() + 1);
@@ -163,7 +166,8 @@ public class WebPlugin extends AbstractSeedPlugin {
         return guiceFilter;
     }
 
-    @SuppressFBWarnings(value = "DMI_COLLECTION_OF_URLS", justification = "Those URLs are denoting local resources without DNS resolution")
+    @SuppressFBWarnings(value = "DMI_COLLECTION_OF_URLS", justification = "Those URLs are denoting local resources "
+            + "without DNS resolution")
     private Set<URL> resolveWebLibraries() {
         final Set<URL> resolvedUrls = new HashSet<>();
         Set<String> resourcePaths = servletContext.getResourcePaths(WEB_INF_LIB);
@@ -185,7 +189,8 @@ public class WebPlugin extends AbstractSeedPlugin {
         return resolvedUrls;
     }
 
-    @SuppressFBWarnings(value = "DMI_COLLECTION_OF_URLS", justification = "Those URLs are denoting local resources without DNS resolution")
+    @SuppressFBWarnings(value = "DMI_COLLECTION_OF_URLS", justification = "Those URLs are denoting local resources "
+            + "without DNS resolution")
     private Set<URL> resolveWebClassesLocations() {
         final Set<URL> resolvedUrls = new HashSet<>();
         Set<String> resourcePaths = servletContext.getResourcePaths(WEB_INF_CLASSES);
@@ -198,7 +203,8 @@ public class WebPlugin extends AbstractSeedPlugin {
                         if (resource != null) {
                             String resourceAsString = resource.toExternalForm();
                             if (resourceAsString.endsWith(suffix)) {
-                                resolvedUrls.add(new URL(resourceAsString.substring(0, resourceAsString.length() - suffix.length())));
+                                resolvedUrls.add(new URL(resourceAsString.substring(0,
+                                        resourceAsString.length() - suffix.length())));
                             } else {
                                 LOGGER.warn("Ignoring invalid '{}' location: {}", WEB_INF_CLASSES, resourcePath);
                             }

@@ -1,20 +1,20 @@
-/**
- * Copyright (c) 2013-2016, The SeedStack authors <http://seedstack.org>
+/*
+ * Copyright © 2013-2017, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.core.internal.validation;
 
-import org.aopalliance.intercept.MethodInterceptor;
-import org.aopalliance.intercept.MethodInvocation;
-import org.seedstack.seed.SeedException;
-
+import java.util.Set;
 import javax.validation.ConstraintViolation;
 import javax.validation.ValidatorFactory;
 import javax.validation.executable.ExecutableValidator;
-import java.util.Set;
+import org.aopalliance.intercept.MethodInterceptor;
+import org.aopalliance.intercept.MethodInvocation;
+import org.seedstack.seed.SeedException;
 
 class MethodValidationInterceptor implements MethodInterceptor {
     private final ValidatorFactory validatorFactory;
@@ -48,7 +48,8 @@ class MethodValidationInterceptor implements MethodInterceptor {
         }
     }
 
-    private void validateReturnValue(MethodInvocation invocation, ExecutableValidator executableValidator, Object returnValue) {
+    private void validateReturnValue(MethodInvocation invocation, ExecutableValidator executableValidator,
+            Object returnValue) {
         Set<ConstraintViolation<Object>> constraintViolations = executableValidator.validateReturnValue(
                 invocation.getThis(),
                 invocation.getMethod(),

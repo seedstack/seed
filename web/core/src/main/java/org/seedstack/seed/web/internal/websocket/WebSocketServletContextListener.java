@@ -1,26 +1,26 @@
-/**
- * Copyright (c) 2013-2016, The SeedStack authors <http://seedstack.org>
+/*
+ * Copyright © 2013-2017, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.web.internal.websocket;
 
 import com.google.inject.Injector;
 import io.nuun.kernel.api.plugin.PluginException;
-import org.seedstack.seed.web.internal.ServletContextUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
+import java.util.Arrays;
+import java.util.Set;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import javax.websocket.server.ServerContainer;
 import javax.websocket.server.ServerEndpoint;
 import javax.websocket.server.ServerEndpointConfig;
-import java.util.Arrays;
-import java.util.Set;
+import org.seedstack.seed.web.internal.ServletContextUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 class WebSocketServletContextListener implements ServletContextListener {
     private static final Logger LOGGER = LoggerFactory.getLogger(WebSocketServletContextListener.class);
@@ -34,13 +34,15 @@ class WebSocketServletContextListener implements ServletContextListener {
     @Override
     public void contextInitialized(ServletContextEvent sce) {
         ServletContext servletContext = sce.getServletContext();
-        ServerContainer container = (ServerContainer) servletContext.getAttribute("javax.websocket.server.ServerContainer");
+        ServerContainer container = (ServerContainer) servletContext.getAttribute(
+                "javax.websocket.server.ServerContainer");
         if (container != null) {
             for (Class<?> endpointClass : serverEndpointClasses) {
                 try {
                     LOGGER.trace("Registering WebSocket server endpoint {}", endpointClass.getCanonicalName());
                     ServerEndpoint serverEndpoint = endpointClass.getAnnotation(ServerEndpoint.class);
-                    ServerEndpointConfig serverEndpointConfig = ServerEndpointConfig.Builder.create(endpointClass, serverEndpoint.value())
+                    ServerEndpointConfig serverEndpointConfig = ServerEndpointConfig.Builder.create(endpointClass,
+                            serverEndpoint.value())
                             .decoders(Arrays.asList(serverEndpoint.decoders()))
                             .encoders(Arrays.asList(serverEndpoint.encoders()))
                             .subprotocols(Arrays.asList(serverEndpoint.subprotocols()))
@@ -60,7 +62,8 @@ class WebSocketServletContextListener implements ServletContextListener {
         // nothing to do
     }
 
-    private ServerEndpointConfig.Configurator getConfiguratorInstance(ServletContext servletContext, ServerEndpoint serverEndpoint) {
+    private ServerEndpointConfig.Configurator getConfiguratorInstance(ServletContext servletContext,
+            ServerEndpoint serverEndpoint) {
         Injector injector = ServletContextUtils.getInjector(servletContext);
         if (ServerEndpointConfig.Configurator.class == serverEndpoint.configurator()) {
             return injector.getInstance(SeedServerEndpointConfigurator.class);

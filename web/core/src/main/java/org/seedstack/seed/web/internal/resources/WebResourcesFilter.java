@@ -1,16 +1,32 @@
-/**
- * Copyright (c) 2013-2016, The SeedStack authors <http://seedstack.org>
+/*
+ * Copyright © 2013-2017, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.web.internal.resources;
 
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.google.inject.Injector;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.Optional;
+import java.util.concurrent.ExecutionException;
+import java.util.zip.GZIPOutputStream;
+import javax.servlet.Filter;
+import javax.servlet.FilterChain;
+import javax.servlet.FilterConfig;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import org.seedstack.seed.Application;
 import org.seedstack.seed.SeedException;
 import org.seedstack.seed.web.ResourceInfo;
@@ -20,22 +36,6 @@ import org.seedstack.seed.web.WebResourceResolver;
 import org.seedstack.seed.web.WebResourceResolverFactory;
 import org.seedstack.seed.web.internal.ServletContextUtils;
 import org.seedstack.seed.web.internal.WebErrorCode;
-
-import javax.servlet.Filter;
-import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.Optional;
-import java.util.concurrent.ExecutionException;
-import java.util.zip.GZIPOutputStream;
 
 /**
  * This web resource filter provides automatic static resource serving from the classpath and the docroot with some
@@ -62,7 +62,8 @@ public class WebResourcesFilter implements Filter {
     @Override
     public void init(FilterConfig config) throws ServletException {
         Injector injector = ServletContextUtils.getInjector(config.getServletContext());
-        WebConfig.StaticResourcesConfig staticResourcesConfig = injector.getInstance(Application.class).getConfiguration().get(WebConfig.class).staticResources();
+        WebConfig.StaticResourcesConfig staticResourcesConfig = injector.getInstance(
+                Application.class).getConfiguration().get(WebConfig.class).staticResources();
 
         this.bufferSize = staticResourcesConfig.getBufferSize();
 
@@ -81,11 +82,13 @@ public class WebResourcesFilter implements Filter {
                     }
                 });
 
-        this.webResourceResolver = injector.getInstance(WebResourceResolverFactory.class).createWebResourceResolver(config.getServletContext());
+        this.webResourceResolver = injector.getInstance(WebResourceResolverFactory.class).createWebResourceResolver(
+                config.getServletContext());
     }
 
     @Override
-    public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
+    public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse,
+            FilterChain filterChain) throws IOException, ServletException {
         HttpServletRequest httpServletRequest = (HttpServletRequest) servletRequest;
         HttpServletResponse httpServletResponse = (HttpServletResponse) servletResponse;
         String path = httpServletRequest.getRequestURI().substring(httpServletRequest.getContextPath().length());

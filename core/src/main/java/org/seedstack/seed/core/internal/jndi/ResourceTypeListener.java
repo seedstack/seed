@@ -1,23 +1,23 @@
-/**
- * Copyright (c) 2013-2016, The SeedStack authors <http://seedstack.org>
+/*
+ * Copyright © 2013-2017, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.core.internal.jndi;
 
 import com.google.inject.TypeLiteral;
 import com.google.inject.spi.TypeEncounter;
 import com.google.inject.spi.TypeListener;
-import org.seedstack.seed.JndiContext;
-import org.seedstack.seed.SeedException;
-
+import java.lang.reflect.Field;
+import java.util.Map;
 import javax.annotation.Resource;
 import javax.naming.Context;
 import javax.naming.NamingException;
-import java.lang.reflect.Field;
-import java.util.Map;
+import org.seedstack.seed.JndiContext;
+import org.seedstack.seed.SeedException;
 
 /**
  * Guice type listener for {@link Resource} annotated fields.
@@ -46,7 +46,8 @@ class ResourceTypeListener implements TypeListener {
                     String resourceName = resourceAnnotation.name();
                     if (!resourceName.isEmpty()) {
                         try {
-                            typeEncounter.register(new ResourceMembersInjector<>(field, contextToLookup.lookup(resourceName)));
+                            typeEncounter.register(
+                                    new ResourceMembersInjector<>(field, contextToLookup.lookup(resourceName)));
                         } catch (NamingException e) {
                             String contextName = "default";
                             if (jndiContextAnnotation != null) {

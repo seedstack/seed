@@ -1,22 +1,22 @@
-/**
- * Copyright (c) 2013-2016, The SeedStack authors <http://seedstack.org>
+/*
+ * Copyright © 2013-2017, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-package org.seedstack.seed.rest.internal.exceptionmapper;
 
-import org.seedstack.seed.Application;
-import org.seedstack.seed.diagnostic.DiagnosticManager;
-import org.seedstack.seed.web.WebConfig;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+package org.seedstack.seed.rest.internal.exceptionmapper;
 
 import javax.inject.Inject;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
+import org.seedstack.seed.Application;
+import org.seedstack.seed.diagnostic.DiagnosticManager;
+import org.seedstack.seed.web.WebConfig;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Default exception mapper for an caught exception with no exception mapper associated.
@@ -25,10 +25,9 @@ import javax.ws.rs.ext.Provider;
 @Provider
 public class InternalErrorExceptionMapper implements ExceptionMapper<Exception> {
     private static final Logger logger = LoggerFactory.getLogger(InternalErrorExceptionMapper.class);
-
+    private final WebConfig webConfig;
     @Inject
     private DiagnosticManager diagnosticManager;
-    private final WebConfig webConfig;
 
     @Inject
     public InternalErrorExceptionMapper(Application application) {

@@ -1,13 +1,15 @@
-/**
- * Copyright (c) 2013-2016, The SeedStack authors <http://seedstack.org>
+/*
+ * Copyright © 2013-2017, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.core.internal.configuration;
 
 import com.google.inject.util.Types;
+import java.io.File;
 import org.seedstack.coffig.Coffig;
 import org.seedstack.coffig.node.ValueNode;
 import org.seedstack.seed.Application;
@@ -17,8 +19,6 @@ import org.seedstack.seed.SeedException;
 import org.seedstack.seed.core.internal.CoreErrorCode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.File;
 
 /**
  * Implementation of the {@link Application} interface.
@@ -74,12 +74,12 @@ class ApplicationImpl implements Application {
 
     @Override
     @SuppressWarnings("unchecked")
-    public <T> ClassConfiguration<T> getConfiguration(Class<T> aClass) {
-        ClassConfiguration<T> classConfiguration = ClassConfiguration.empty(aClass);
+    public <T> ClassConfiguration<T> getConfiguration(Class<T> someClass) {
+        ClassConfiguration<T> classConfiguration = ClassConfiguration.empty(someClass);
         StringBuilder sb = new StringBuilder(CLASSES_CONFIGURATION_PREFIX);
-        for (String part : aClass.getName().split("\\.")) {
+        for (String part : someClass.getName().split("\\.")) {
             sb.append(".").append(part);
-            coffig.getOptional(Types.newParameterizedType(ClassConfiguration.class, aClass), sb.toString())
+            coffig.getOptional(Types.newParameterizedType(ClassConfiguration.class, someClass), sb.toString())
                     .ifPresent(o -> classConfiguration.merge((ClassConfiguration<T>) o));
         }
         return classConfiguration;
@@ -104,15 +104,18 @@ class ApplicationImpl implements Application {
 
     private void ensureWritableDirectory(File location) {
         if (!location.exists() && !location.mkdirs()) {
-            throw SeedException.createNew(CoreErrorCode.UNABLE_TO_CREATE_STORAGE_DIRECTORY).put("path", location.getAbsolutePath());
+            throw SeedException.createNew(CoreErrorCode.UNABLE_TO_CREATE_STORAGE_DIRECTORY).put("path",
+                    location.getAbsolutePath());
         }
 
         if (!location.isDirectory()) {
-            throw SeedException.createNew(CoreErrorCode.STORAGE_PATH_IS_NOT_A_DIRECTORY).put("path", location.getAbsolutePath());
+            throw SeedException.createNew(CoreErrorCode.STORAGE_PATH_IS_NOT_A_DIRECTORY).put("path",
+                    location.getAbsolutePath());
         }
 
         if (!location.canWrite()) {
-            throw SeedException.createNew(CoreErrorCode.STORAGE_DIRECTORY_IS_NOT_WRITABLE).put("path", location.getAbsolutePath());
+            throw SeedException.createNew(CoreErrorCode.STORAGE_DIRECTORY_IS_NOT_WRITABLE).put("path",
+                    location.getAbsolutePath());
         }
     }
 }

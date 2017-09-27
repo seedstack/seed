@@ -1,17 +1,17 @@
-/**
- * Copyright (c) 2013-2016, The SeedStack authors <http://seedstack.org>
+/*
+ * Copyright © 2013-2017, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-package org.seedstack.seed.el;
 
-import org.seedstack.seed.SeedException;
+package org.seedstack.seed.el;
 
 import javax.el.ELContext;
 import javax.el.MethodExpression;
 import javax.el.ValueExpression;
+import org.seedstack.seed.SeedException;
 
 /**
  * The ELService provides a DSL to facilitate the evaluation of expression language.
@@ -61,6 +61,7 @@ public interface ELService {
 
         /**
          * Use the default context.
+         *
          * @return ELExpressionProvider
          */
         ELExpressionProvider withDefaultContext();
@@ -68,8 +69,7 @@ public interface ELService {
 
     /**
      * This interface provides methods to add properties for the EL evaluation.
-     *
-     *      */
+     */
     interface ELExpressionProvider {
 
         /**
@@ -91,8 +91,7 @@ public interface ELService {
 
     /**
      * This interface provides methods to evaluate a value expression.
-     *
-     *      */
+     */
     interface ValueExpressionProvider {
 
         /**
@@ -112,8 +111,7 @@ public interface ELService {
 
     /**
      * This interface provides methods to evaluate a method expression.
-     *
-     *      */
+     */
     interface MethodExpressionProvider {
 
         /**

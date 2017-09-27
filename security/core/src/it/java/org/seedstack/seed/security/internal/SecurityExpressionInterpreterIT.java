@@ -1,21 +1,20 @@
-/**
- * Copyright (c) 2013-2016, The SeedStack authors <http://seedstack.org>
+/*
+ * Copyright © 2013-2017, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.security.internal;
 
+import javax.inject.Inject;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.seedstack.seed.it.SeedITRunner;
 import org.seedstack.seed.security.WithUser;
 import org.seedstack.seed.security.internal.securityexpr.SecurityExpressionInterpreter;
-
-import javax.inject.Inject;
-
 
 @RunWith(SeedITRunner.class)
 public class SecurityExpressionInterpreterIT {
@@ -34,8 +33,10 @@ public class SecurityExpressionInterpreterIT {
     @Test
     @WithUser(id = "Obiwan", password = "yodarulez")
     public void check_security_permission_methods_interpreted() {
-        Assertions.assertThat(interpreter.interpret("${hasPermission('lightSaber:*') && hasPermission('academy:*')}")).isTrue();
-        Assertions.assertThat(interpreter.interpret("${hasPermission('lightSaber:*') || hasPermission('site:haunt')}")).isTrue();
+        Assertions.assertThat(
+                interpreter.interpret("${hasPermission('lightSaber:*') && hasPermission('academy:*')}")).isTrue();
+        Assertions.assertThat(
+                interpreter.interpret("${hasPermission('lightSaber:*') || hasPermission('site:haunt')}")).isTrue();
         Assertions.assertThat(interpreter.interpret("${hasPermission('site:haunt')}")).isFalse();
         Assertions.assertThat(interpreter.interpret("${hasPermissionOn('lightSaber:*', 'MU')}")).isFalse();
     }

@@ -1,22 +1,22 @@
-/**
- * Copyright (c) 2013-2016, The SeedStack authors <http://seedstack.org>
+/*
+ * Copyright © 2013-2017, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.web.security.internal;
 
-import org.seedstack.seed.SeedException;
-import org.seedstack.seed.web.security.WebSecurityConfig;
-import org.seedstack.seed.web.spi.AntiXsrfService;
-
+import java.security.SecureRandom;
 import javax.inject.Inject;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import java.security.SecureRandom;
+import org.seedstack.seed.SeedException;
+import org.seedstack.seed.web.security.WebSecurityConfig;
+import org.seedstack.seed.web.spi.AntiXsrfService;
 
 class StatelessAntiXsrfService implements AntiXsrfService {
     private final static char[] CHARSET = new char[]{'a', 'b', 'c', 'd', 'e',
@@ -116,7 +116,8 @@ class StatelessAntiXsrfService implements AntiXsrfService {
 
             return sb.toString();
         } catch (Exception e) {
-            throw new RuntimeException(String.format("Unable to generate the random token - %s", e.getLocalizedMessage()), e);
+            throw new RuntimeException(
+                    String.format("Unable to generate the random token - %s", e.getLocalizedMessage()), e);
         }
     }
 }

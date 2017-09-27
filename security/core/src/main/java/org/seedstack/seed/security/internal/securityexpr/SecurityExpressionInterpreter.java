@@ -1,22 +1,22 @@
-/**
- * Copyright (c) 2013-2016, The SeedStack authors <http://seedstack.org>
+/*
+ * Copyright © 2013-2017, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.security.internal.securityexpr;
 
+import java.lang.reflect.Method;
+import java.util.HashMap;
+import java.util.Map;
+import javax.el.ELContext;
+import javax.inject.Inject;
 import org.seedstack.seed.SeedException;
 import org.seedstack.seed.el.ELContextBuilder;
 import org.seedstack.seed.el.ELService;
 import org.seedstack.seed.security.internal.SecurityErrorCode;
-
-import javax.el.ELContext;
-import javax.inject.Inject;
-import java.lang.reflect.Method;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * The Security Expression Interpreter has the responsibility to interpret any form of security expression.
@@ -57,16 +57,20 @@ public class SecurityExpressionInterpreter {
         }
 
         ELContext elContext = elContextProvider.build();
-        return (Boolean) elService.withExpression(expression, Boolean.class).withContext(elContext).asValueExpression().eval();
+        return (Boolean) elService.withExpression(expression, Boolean.class).withContext(
+                elContext).asValueExpression().eval();
     }
 
     private Map<String, Method> getMethods() {
         Map<String, Method> availableMethods = new HashMap<>();
         try {
             availableMethods.put("hasRole", SecurityExpressionUtils.class.getDeclaredMethod("hasRole", String.class));
-            availableMethods.put("hasRoleOn", SecurityExpressionUtils.class.getDeclaredMethod("hasRoleOn", String.class, String.class));
-            availableMethods.put("hasPermission", SecurityExpressionUtils.class.getDeclaredMethod("hasPermission", String.class));
-            availableMethods.put("hasPermissionOn", SecurityExpressionUtils.class.getDeclaredMethod("hasPermissionOn", String.class, String.class));
+            availableMethods.put("hasRoleOn",
+                    SecurityExpressionUtils.class.getDeclaredMethod("hasRoleOn", String.class, String.class));
+            availableMethods.put("hasPermission",
+                    SecurityExpressionUtils.class.getDeclaredMethod("hasPermission", String.class));
+            availableMethods.put("hasPermissionOn",
+                    SecurityExpressionUtils.class.getDeclaredMethod("hasPermissionOn", String.class, String.class));
         } catch (NoSuchMethodException e) {
             throw SeedException.wrap(e, SecurityErrorCode.UNEXPECTED_ERROR);
         }

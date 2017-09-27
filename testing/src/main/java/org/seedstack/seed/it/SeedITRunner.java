@@ -1,10 +1,11 @@
-/**
- * Copyright (c) 2013-2016, The SeedStack authors <http://seedstack.org>
+/*
+ * Copyright © 2013-2017, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.it;
 
 import com.google.inject.Injector;
@@ -13,6 +14,11 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.nuun.kernel.api.Kernel;
 import io.nuun.kernel.api.config.KernelConfiguration;
 import io.nuun.kernel.core.NuunCore;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.ServiceLoader;
 import org.junit.Before;
 import org.junit.rules.MethodRule;
 import org.junit.rules.TestRule;
@@ -33,13 +39,6 @@ import org.seedstack.seed.it.spi.ITRunnerPlugin;
 import org.seedstack.seed.it.spi.KernelRule;
 import org.seedstack.seed.it.spi.PausableStatement;
 import org.seedstack.shed.ClassLoaders;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.ServiceLoader;
-
 
 /**
  * This runner can be used to run JUnit tests with Seed integration. Tests
@@ -64,7 +63,8 @@ public class SeedITRunner extends BlockJUnit4ClassRunner {
     @SuppressWarnings("unchecked")
     public SeedITRunner(Class<?> klass) throws InitializationError {
         super(klass);
-        this.plugins = ServiceLoader.load(ITRunnerPlugin.class, ClassLoaders.findMostCompleteClassLoader(SeedITRunner.class));
+        this.plugins = ServiceLoader.load(ITRunnerPlugin.class,
+                ClassLoaders.findMostCompleteClassLoader(SeedITRunner.class));
 
         Expect annotation = getTestClass().getJavaClass().getAnnotation(Expect.class);
         if (annotation != null) {
@@ -189,11 +189,13 @@ public class SeedITRunner extends BlockJUnit4ClassRunner {
                 try {
                     T ruleInstance = instantiate(ruleClass);
                     if (ruleInstance instanceof KernelRule) {
-                        ((KernelRule) ruleInstance).acceptKernelConfiguration(provideKernelConfiguration(defaultConfiguration));
+                        ((KernelRule) ruleInstance).acceptKernelConfiguration(
+                                provideKernelConfiguration(defaultConfiguration));
                     }
                     rules.add(ruleInstance);
                 } catch (Exception e) {
-                    throw SeedException.wrap(e, ITErrorCode.FAILED_TO_INSTANTIATE_TEST_RULE).put("ruleClass", ruleClass.getCanonicalName());
+                    throw SeedException.wrap(e, ITErrorCode.FAILED_TO_INSTANTIATE_TEST_RULE).put("ruleClass",
+                            ruleClass.getCanonicalName());
                 }
             }
         }
@@ -320,19 +322,24 @@ public class SeedITRunner extends BlockJUnit4ClassRunner {
         Throwable unwrappedThrowable = e;
 
         // Unwrap known Guice exceptions to access the real one
-        if (unwrappedThrowable != null && ProvisionException.class.isAssignableFrom(e.getClass()) && e.getCause() != null) {
+        if (unwrappedThrowable != null && ProvisionException.class.isAssignableFrom(
+                e.getClass()) && e.getCause() != null) {
             unwrappedThrowable = e.getCause();
         }
 
         if (expectedClass == null && unwrappedThrowable != null) {
-            throw SeedException.wrap(unwrappedThrowable, ITErrorCode.UNEXPECTED_EXCEPTION_OCCURRED).put("occurredClass", unwrappedThrowable.getClass().getCanonicalName());
+            throw SeedException.wrap(unwrappedThrowable, ITErrorCode.UNEXPECTED_EXCEPTION_OCCURRED).put("occurredClass",
+                    unwrappedThrowable.getClass().getCanonicalName());
         }
 
         if (expectedClass != null && expectedTestingStep == testingStep) {
             if (unwrappedThrowable == null) {
-                throw SeedException.createNew(ITErrorCode.EXPECTED_EXCEPTION_DID_NOT_OCCURRED).put("expectedClass", expectedClass.getCanonicalName());
+                throw SeedException.createNew(ITErrorCode.EXPECTED_EXCEPTION_DID_NOT_OCCURRED).put("expectedClass",
+                        expectedClass.getCanonicalName());
             } else if (!expectedClass.isAssignableFrom(unwrappedThrowable.getClass())) {
-                throw SeedException.createNew(ITErrorCode.ANOTHER_EXCEPTION_THAN_EXPECTED_OCCURRED).put("expectedClass", expectedClass.getCanonicalName()).put("occurredClass", unwrappedThrowable.getClass().getCanonicalName());
+                throw SeedException.createNew(ITErrorCode.ANOTHER_EXCEPTION_THAN_EXPECTED_OCCURRED).put("expectedClass",
+                        expectedClass.getCanonicalName()).put("occurredClass",
+                        unwrappedThrowable.getClass().getCanonicalName());
             }
         }
     }
@@ -351,7 +358,8 @@ public class SeedITRunner extends BlockJUnit4ClassRunner {
 
         kernelConfiguration.param(ITPlugin.IT_CLASS_NAME, getTestClass().getJavaClass().getName());
         for (Map.Entry<String, String> defaultConfigurationEntry : configuration.entrySet()) {
-            kernelConfiguration.param(ConfigurationPlugin.EXTERNAL_CONFIG_PREFIX + defaultConfigurationEntry.getKey(), defaultConfigurationEntry.getValue());
+            kernelConfiguration.param(ConfigurationPlugin.EXTERNAL_CONFIG_PREFIX + defaultConfigurationEntry.getKey(),
+                    defaultConfigurationEntry.getValue());
         }
 
         return kernelConfiguration;

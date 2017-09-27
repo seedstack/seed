@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2013-2016, The SeedStack authors <http://seedstack.org>
+/*
+ * Copyright © 2013-2017, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -8,18 +8,17 @@
 
 package org.seedstack.seed.core.internal.crypto;
 
-import org.seedstack.seed.SeedException;
-import org.seedstack.seed.crypto.EncryptionService;
-
+import java.security.InvalidKeyException;
+import java.security.Key;
+import java.security.NoSuchAlgorithmException;
+import java.security.PublicKey;
 import javax.annotation.Nullable;
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
-import java.security.InvalidKeyException;
-import java.security.Key;
-import java.security.NoSuchAlgorithmException;
-import java.security.PublicKey;
+import org.seedstack.seed.SeedException;
+import org.seedstack.seed.crypto.EncryptionService;
 
 class EncryptionServiceImpl implements EncryptionService {
     private static final String CIPHER = "RSA/ECB/PKCS1PADDING";

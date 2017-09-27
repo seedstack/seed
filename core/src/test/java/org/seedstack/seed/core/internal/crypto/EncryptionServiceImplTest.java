@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2013-2016, The SeedStack authors <http://seedstack.org>
+/*
+ * Copyright © 2013-2017, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -8,20 +8,18 @@
 
 package org.seedstack.seed.core.internal.crypto;
 
+import java.security.Key;
+import java.security.NoSuchAlgorithmException;
+import java.security.PublicKey;
+import javax.crypto.BadPaddingException;
+import javax.crypto.Cipher;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 import mockit.Expectations;
 import mockit.Mocked;
 import mockit.Verifications;
 import org.junit.Test;
 import org.seedstack.seed.SeedException;
-import org.seedstack.seed.core.internal.crypto.EncryptionServiceImpl;
-
-import javax.crypto.BadPaddingException;
-import javax.crypto.Cipher;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.NoSuchPaddingException;
-import java.security.Key;
-import java.security.NoSuchAlgorithmException;
-import java.security.PublicKey;
 
 /**
  * Unit test for {@link EncryptionServiceImpl}.
@@ -67,7 +65,8 @@ public class EncryptionServiceImplTest {
      * @throws Exception if an error occurred
      */
     @Test(expected = SeedException.class)
-    public void testEncryptWithNoSuchAlgorithmException(@Mocked final PublicKey publicKey, @Mocked final Cipher cipher) throws Exception {
+    public void testEncryptWithNoSuchAlgorithmException(@Mocked final PublicKey publicKey,
+            @Mocked final Cipher cipher) throws Exception {
 
         new Expectations() {
             {
@@ -87,7 +86,8 @@ public class EncryptionServiceImplTest {
      * @throws Exception if an error occurred
      */
     @Test(expected = SeedException.class)
-    public void testEncryptWithNoSuchPaddingException(@Mocked final PublicKey publicKey, @Mocked final Cipher cipher) throws Exception {
+    public void testEncryptWithNoSuchPaddingException(@Mocked final PublicKey publicKey,
+            @Mocked final Cipher cipher) throws Exception {
 
         new Expectations() {
             {
@@ -107,7 +107,7 @@ public class EncryptionServiceImplTest {
      */
     @Test(expected = SeedException.class)
     public void testEncryptWithIllegalBlockSizeException(@Mocked final PublicKey publicKey,
-                                                         @Mocked final Cipher cipher) throws Exception {
+            @Mocked final Cipher cipher) throws Exception {
 
         final String toCrypt = "text to crypt";
 
@@ -131,7 +131,7 @@ public class EncryptionServiceImplTest {
      */
     @Test(expected = SeedException.class)
     public void testEncryptWithBadPaddingException(@Mocked final PublicKey publicKey,
-                                                   @Mocked final Cipher cipher) throws Exception {
+            @Mocked final Cipher cipher) throws Exception {
 
         final String toCrypt = "text to crypt";
 

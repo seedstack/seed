@@ -1,15 +1,19 @@
-/**
- * Copyright (c) 2013-2016, The SeedStack authors <http://seedstack.org>
+/*
+ * Copyright © 2013-2017, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.undertow.internal;
+
+import static org.mockito.Mockito.when;
 
 import io.undertow.Undertow;
 import io.undertow.server.HttpHandler;
 import io.undertow.servlet.api.DeploymentManager;
+import java.util.Optional;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -17,10 +21,6 @@ import org.seedstack.seed.crypto.CryptoConfig;
 import org.seedstack.seed.crypto.spi.SSLProvider;
 import org.seedstack.seed.undertow.UndertowConfig;
 import org.seedstack.seed.web.WebConfig;
-
-import java.util.Optional;
-
-import static org.mockito.Mockito.when;
 
 /**
  * Tests the server factory which configure an Undertow server.

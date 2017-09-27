@@ -1,29 +1,29 @@
-/**
- * Copyright (c) 2013-2016, The SeedStack authors <http://seedstack.org>
+/*
+ * Copyright © 2013-2017, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.core.internal.jndi;
 
 import io.nuun.kernel.api.plugin.InitState;
 import io.nuun.kernel.api.plugin.context.InitContext;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
+import javax.naming.Context;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
 import org.seedstack.seed.JndiConfig;
 import org.seedstack.seed.SeedException;
 import org.seedstack.seed.core.internal.AbstractSeedPlugin;
 import org.seedstack.shed.ClassLoaders;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import javax.naming.Context;
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
 
 /**
  * Plugin that retrieve configured JNDI contexts.
@@ -55,7 +55,8 @@ public class JndiPlugin extends AbstractSeedPlugin {
         for (Map.Entry<String, String> entry : jndiConfig.getAdditionalContexts().entrySet()) {
             Properties contextProperties = new Properties();
             String contextPropertiesPath = entry.getValue();
-            InputStream propertiesResourceStream = ClassLoaders.findMostCompleteClassLoader(JndiPlugin.class).getResourceAsStream(contextPropertiesPath);
+            InputStream propertiesResourceStream = ClassLoaders.findMostCompleteClassLoader(
+                    JndiPlugin.class).getResourceAsStream(contextPropertiesPath);
 
             String contextName = entry.getKey();
             if (propertiesResourceStream != null) {
@@ -64,7 +65,8 @@ public class JndiPlugin extends AbstractSeedPlugin {
                     additionalJndiContexts.put(contextName, new InitialContext(contextProperties));
                     LOGGER.debug("JNDI context " + contextName + " has been configured from " + contextPropertiesPath);
                 } catch (IOException | NamingException e) {
-                    throw SeedException.wrap(e, JndiErrorCode.UNABLE_TO_CONFIGURE_ADDITIONAL_JNDI_CONTEXT).put("context", contextName);
+                    throw SeedException.wrap(e, JndiErrorCode.UNABLE_TO_CONFIGURE_ADDITIONAL_JNDI_CONTEXT).put(
+                            "context", contextName);
                 }
 
                 try {
