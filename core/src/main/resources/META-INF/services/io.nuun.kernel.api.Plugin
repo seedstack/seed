@@ -4,7 +4,6 @@ org.seedstack.seed.core.internal.logging.LoggingPlugin
 org.seedstack.seed.core.internal.diagnostic.DiagnosticPlugin
 org.seedstack.seed.core.internal.jndi.JndiPlugin
 org.seedstack.seed.core.internal.command.CommandPlugin
-org.seedstack.seed.core.internal.data.DataPlugin
 org.seedstack.seed.core.internal.lifecycle.LifecyclePlugin
 org.seedstack.seed.core.internal.validation.ValidationPlugin
 org.seedstack.seed.core.internal.crypto.CryptoPlugin

@@ -8,8 +8,8 @@
 
 package org.seedstack.seed.core.fixtures;
 
+import com.google.inject.Injector;
 import javax.inject.Inject;
-import org.seedstack.seed.DataManager;
 import org.seedstack.seed.command.Argument;
 import org.seedstack.seed.command.Command;
 import org.seedstack.seed.command.CommandDefinition;
@@ -18,7 +18,7 @@ import org.seedstack.seed.command.Option;
 @CommandDefinition(scope = "core", name = "test", description = "Test command")
 public class TestCommand implements Command<Object> {
     @Inject
-    DataManager dataManager;
+    private Injector injector;
     @Option(name = "o1", longName = "option1", description = "Option1")
     private boolean o1;
     @Option(name = "o2", longName = "option2", description = "Option2", hasArgument = true)

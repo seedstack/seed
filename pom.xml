@@ -19,7 +19,7 @@
 
     <groupId>org.seedstack.seed</groupId>
     <artifactId>seed</artifactId>
-    <version>3.3.2-SNAPSHOT</version>
+    <version>3.4.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <properties>
@@ -110,6 +110,11 @@
                             <excludes>
                                 <exclude>*.internal.*</exclude>
                                 <exclude>org.seedstack.seed.core.SeedMain</exclude>
+                                <exclude>org.seedstack.seed.DataConfig</exclude>
+                                <exclude>org.seedstack.seed.DataExporter</exclude>
+                                <exclude>org.seedstack.seed.DataImporter</exclude>
+                                <exclude>org.seedstack.seed.DataManager</exclude>
+                                <exclude>org.seedstack.seed.DataSet</exclude>
                                 <exclude>org.seedstack.seed.spi.ToolContext</exclude>
                                 <exclude>org.seedstack.seed.cli.spi.CliContext</exclude>
                                 <exclude>org.seedstack.seed.security.principals.SimplePrincipalProvider</exclude>

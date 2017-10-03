@@ -1,8 +1,9 @@
-# Version 3.3.2 (2017-09-30)
+# Version 3.4.0 (2017-09-30)
 
 * [new] A `@RequiresCrudPermissions` annotation allows to add permission checks based on the detected CRUD action of the called method.
 * [new] SPI `CrudActionResolver` has been added to security to allow for resolving the CRUD action of a particular method.
 * [new] A JAX-RS implementation of `CrudActionResolver` detects the CRUD action based upon the JAX-RS annotations.
+* [brk] Data import/export API has been moved to business framework.
 
 # Version 3.3.1 (2017-09-06)
 
