@@ -10,11 +10,14 @@ package org.seedstack.seed.security.internal;
 
 import com.google.inject.Binder;
 import com.google.inject.name.Names;
+import java.util.Optional;
+import org.apache.shiro.authc.Authenticator;
+import org.apache.shiro.authc.pam.AuthenticationStrategy;
 import org.apache.shiro.cache.CacheManager;
-import org.apache.shiro.cache.MemoryConstrainedCacheManager;
-import org.apache.shiro.mgt.DefaultSubjectDAO;
 import org.apache.shiro.mgt.SessionStorageEvaluator;
 import org.apache.shiro.mgt.SubjectDAO;
+import org.apache.shiro.mgt.SubjectFactory;
+import org.apache.shiro.subject.SubjectContext;
 import org.seedstack.seed.security.SecurityConfig;
 
 public class SecurityGuiceConfigurer {
@@ -25,10 +28,26 @@ public class SecurityGuiceConfigurer {
     }
 
     public void configure(Binder binder) {
-        binder.bind(SubjectDAO.class).to(DefaultSubjectDAO.class);
-        binder.bind(SessionStorageEvaluator.class).to(SeedSessionStorageEvaluator.class);
-        binder.bind(CacheManager.class).to(MemoryConstrainedCacheManager.class);
-        binder.bindConstant().annotatedWith(Names.named("shiro.globalSessionTimeout")).to(
-                securityConfig.sessions().getTimeout());
+        // Subject
+        SecurityConfig.SubjectConfig subjectConfig = securityConfig.subject();
+        Optional.ofNullable(subjectConfig.getContext()).ifPresent(c -> binder.bind(SubjectContext.class).to(c));
+        Optional.ofNullable(subjectConfig.getFactory()).ifPresent(f -> binder.bind(SubjectFactory.class).to(f));
+        Optional.ofNullable(subjectConfig.getDao()).ifPresent(d -> binder.bind(SubjectDAO.class).to(d));
+
+        // Authentication
+        SecurityConfig.AuthenticationConfig authenticationConfig = securityConfig.authentication();
+        binder.bind(Authenticator.class).to(authenticationConfig.getAuthenticator());
+        binder.bind(AuthenticationStrategy.class).to(authenticationConfig.getStrategy());
+
+        // Cache configuration
+        SecurityConfig.CacheConfig cacheConfig = securityConfig.cache();
+        binder.bind(CacheManager.class).to(cacheConfig.getManager());
+
+        // Sessions
+        SecurityConfig.SessionConfig sessionConfig = securityConfig.sessions();
+        binder.bind(SessionStorageEvaluator.class).to(sessionConfig.getStorageEvaluator());
+        binder.bindConstant()
+                .annotatedWith(Names.named("shiro.globalSessionTimeout"))
+                .to(sessionConfig.getTimeout());
     }
 }

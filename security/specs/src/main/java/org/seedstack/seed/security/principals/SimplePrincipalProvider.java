@@ -8,10 +8,13 @@
 
 package org.seedstack.seed.security.principals;
 
+import java.io.Serializable;
+
 /**
  * A named principal represented as a string.
  */
-public class SimplePrincipalProvider implements PrincipalProvider<String> {
+public class SimplePrincipalProvider implements PrincipalProvider<String>, Serializable {
+    private static final long serialVersionUID = 1L;
     private final String name;
     private final String value;
 

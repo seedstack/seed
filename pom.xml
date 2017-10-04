@@ -117,6 +117,7 @@
                                 <exclude>org.seedstack.seed.DataSet</exclude>
                                 <exclude>org.seedstack.seed.spi.ToolContext</exclude>
                                 <exclude>org.seedstack.seed.cli.spi.CliContext</exclude>
+                                <exclude>org.seedstack.seed.security.SecurityConfig</exclude>
                                 <exclude>org.seedstack.seed.security.principals.SimplePrincipalProvider</exclude>
                                 <exclude>org.seedstack.seed.security.principals.X509CertificatePrincipalProvider</exclude>
                                 <exclude>org.seedstack.seed.rest.hal.Link</exclude>

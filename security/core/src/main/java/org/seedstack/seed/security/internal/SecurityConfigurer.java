@@ -25,20 +25,13 @@ import org.seedstack.seed.security.internal.authorization.SameRoleMapping;
 import org.seedstack.seed.security.internal.realms.ConfigurationRealm;
 
 class SecurityConfigurer {
-    private static final String REALMS_KEY = "realms";
-    private static final String ROLE_MAPPING_KEY = ".role-mapping";
-    private static final String ROLE_PERMISSION_RESOLVER_KEY = ".role-permission-resolver";
-
     private static final Class<? extends Realm> DEFAULT_REALM = ConfigurationRealm.class;
-
     private static final Class<? extends RoleMapping> DEFAULT_ROLE_MAPPING = SameRoleMapping.class;
     private static final Class<? extends RoleMapping> CONFIGURATION_ROLE_MAPPING = ConfigurationRoleMapping.class;
-
     private static final Class<? extends RolePermissionResolver> DEFAULT_ROLE_PERMISSION_RESOLVER =
             EmptyRolePermissionResolver.class;
     private static final Class<? extends RolePermissionResolver> CONFIGURATION_ROLE_PERMISSION_RESOLVER =
             ConfigurationRolePermissionResolver.class;
-
     private final SecurityConfig securityConfig;
     private final Map<Class<?>, Collection<Class<?>>> securityClasses;
     private final Collection<Class<? extends PrincipalCustomizer<?>>> principalCustomizerClasses;
@@ -82,8 +75,7 @@ class SecurityConfigurer {
                 Class<? extends Realm> realmClass = (Class<? extends Realm>) findClass(realmConfig.getName(),
                         securityClasses.get(Realm.class));
                 if (realmClass == null) {
-                    throw new IllegalArgumentException(
-                            "Unknown realm defined in property " + REALMS_KEY + " : " + realmConfig.getName());
+                    throw new IllegalArgumentException("Unknown realm: " + realmConfig.getName());
                 }
                 RealmConfiguration confRealm = new RealmConfiguration(realmConfig.getName(), realmClass);
                 confRealm.setRolePermissionResolverClass(findRolePermissionResolver(realmConfig, confRealm));

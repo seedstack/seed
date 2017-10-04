@@ -13,7 +13,7 @@ import org.apache.shiro.mgt.SessionStorageEvaluator;
 import org.apache.shiro.subject.Subject;
 import org.seedstack.seed.security.SecurityConfig;
 
-class SeedSessionStorageEvaluator implements SessionStorageEvaluator {
+public class SeedSessionStorageEvaluator implements SessionStorageEvaluator {
     @Inject
     private SecurityConfig securityConfig;
 
