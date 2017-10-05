@@ -17,12 +17,11 @@ import org.slf4j.LoggerFactory;
 
 @Provider
 public class WebApplicationExceptionMapper implements ExceptionMapper<WebApplicationException> {
-
-    private static final Logger logger = LoggerFactory.getLogger(WebApplicationExceptionMapper.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(WebApplicationExceptionMapper.class);
 
     @Override
     public Response toResponse(WebApplicationException exception) {
-        logger.debug(exception.getMessage(), exception);
+        LOGGER.debug(exception.toString());
         return exception.getResponse();
     }
 }

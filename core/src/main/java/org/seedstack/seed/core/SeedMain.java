@@ -20,24 +20,24 @@ import org.seedstack.shed.exception.BaseException;
  * class is found, it delegates the Seed application startup to its {@link SeedLauncher#launch(String[])} method.
  * </p>
  * <p>
- * High-level exception handling and diagnostic is done directly in this class.
+ * Exception handling and diagnostic during startup and shutdown is done directly in this class. This is materialized
+ * by the fact that {@link Seed#hasLifecycleExceptionHandler()} returns true when {@link SeedMain} is used.
+ * </p>
+ * <p>
+ * If an exception occurs during startup or shutdown, it is translated using {@link Seed#translateException(Exception)}
+ * and its stack trace is printed on the standard error output. During startup only a diagnostic report is also dumped.
  * </p>
  */
 public class SeedMain {
+    private static final int EXIT_FAILURE = 1;
+
     /**
      * Entry point of SeedStack non-managed applications (launched from the command-line).
      *
      * @param args The command-line arguments.
      */
     public static void main(String[] args) {
-        String toolName = System.getProperty("seedstack.tool");
-        SeedLauncher seedLauncher;
-
-        if (!Strings.isNullOrEmpty(toolName)) {
-            seedLauncher = Seed.getToolLauncher(toolName);
-        } else {
-            seedLauncher = Seed.getLauncher();
-        }
+        SeedLauncher seedLauncher = getSeedLauncher();
 
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             try {
@@ -49,11 +49,27 @@ public class SeedMain {
         }, "shutdown"));
 
         try {
+            Seed.markLifecycleExceptionHandlerEnabled();
             seedLauncher.launch(args);
         } catch (Exception e) {
             handleException(e);
-            System.exit(-1);
+            System.exit(EXIT_FAILURE);
         }
+    }
+
+    private static SeedLauncher getSeedLauncher() {
+        final String toolName = System.getProperty("seedstack.tool");
+        try {
+            if (!Strings.isNullOrEmpty(toolName)) {
+                return Seed.getToolLauncher(toolName);
+            } else {
+                return Seed.getLauncher();
+            }
+        } catch (Exception e) {
+            handleException(e);
+            System.exit(EXIT_FAILURE);
+        }
+        throw new IllegalStateException("SeedMain should have already exited");
     }
 
     private static void handleException(Exception e) {

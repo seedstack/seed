@@ -83,7 +83,9 @@ public class SeedServletContainerInitializer implements ServletContainerInitiali
 
     private void handleException(Exception e) throws BaseException {
         BaseException translated = Seed.translateException(e);
-        Seed.diagnostic().dumpDiagnosticReport(translated);
+        if (!Seed.hasLifecycleExceptionHandler()) {
+            Seed.diagnostic().dumpDiagnosticReport(translated);
+        }
         throw translated;
     }
 }

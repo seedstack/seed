@@ -20,12 +20,11 @@ import org.slf4j.LoggerFactory;
  */
 @Provider
 public class AuthenticationExceptionMapper implements ExceptionMapper<AuthenticationException> {
-
-    private static final Logger logger = LoggerFactory.getLogger(AuthenticationExceptionMapper.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(AuthenticationExceptionMapper.class);
 
     @Override
     public Response toResponse(AuthenticationException exception) {
-        logger.debug(exception.getMessage(), exception);
+        LOGGER.debug(exception.toString(), exception);
         return Response.status(Response.Status.UNAUTHORIZED).entity("Unauthorized").build();
     }
 }

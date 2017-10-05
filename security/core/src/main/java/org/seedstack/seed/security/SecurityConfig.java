@@ -17,6 +17,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import org.apache.shiro.authc.Authenticator;
+import org.apache.shiro.authc.pam.AtLeastOneSuccessfulStrategy;
 import org.apache.shiro.authc.pam.AuthenticationStrategy;
 import org.apache.shiro.authc.pam.FirstSuccessfulStrategy;
 import org.apache.shiro.authc.pam.ModularRealmAuthenticator;
@@ -227,7 +228,7 @@ public class SecurityConfig {
     @Config("authentication")
     public static class AuthenticationConfig {
         @SingleValue
-        private Class<? extends AuthenticationStrategy> strategy = FirstSuccessfulStrategy.class;
+        private Class<? extends AuthenticationStrategy> strategy = AtLeastOneSuccessfulStrategy.class;
         private Class<? extends Authenticator> authenticator = ModularRealmAuthenticator.class;
 
         public Class<? extends Authenticator> getAuthenticator() {

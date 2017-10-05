@@ -72,6 +72,7 @@ public class Seed {
     private static volatile boolean initialized = false;
     private static volatile boolean disposed = false;
     private static volatile boolean noLogs = false;
+    private static volatile boolean hasLifecycleExceptionHandler = false;
 
     static {
         diagnosticManager = new DiagnosticManagerImpl();
@@ -179,6 +180,19 @@ public class Seed {
         markInitialized();
     }
 
+    static void markLifecycleExceptionHandlerEnabled() {
+        hasLifecycleExceptionHandler = true;
+    }
+
+    /**
+     * Returns if a global exception handler for startup and shutdown is present or not.
+     *
+     * @return true if a global exception handler is catching all startup/shutdown exceptions, false otherwise.
+     */
+    public static boolean hasLifecycleExceptionHandler() {
+        return hasLifecycleExceptionHandler;
+    }
+
     /**
      * Disable logs globally if a supported SLF4J implementation is used. Currently only Logback is supported.
      */
@@ -245,7 +259,7 @@ public class Seed {
     /**
      * Provides the application base configuration (i.e. not including configuration sources discovered after kernel
      * startup).
-     *
+     * <p>
      * <p>Cannot be called from {@link SeedInitializer} methods.</p>
      *
      * @return the {@link Coffig} object for application base configuration.
@@ -257,7 +271,7 @@ public class Seed {
     /**
      * Create and start a basic kernel without specifying a runtime context, nor a configuration. Seed JVM-global
      * state is automatically initialized before the first time a kernel is created.
-     *
+     * <p>
      * <p>Cannot be called from {@link SeedInitializer} methods.</p>
      *
      * @return the {@link Kernel} instance.
@@ -270,7 +284,7 @@ public class Seed {
      * Create, initialize and optionally start a kernel with the specified runtime context and configuration. Seed
      * JVM-global
      * state is automatically initialized before the first time a kernel is created.
-     *
+     * <p>
      * <p>Cannot be called from {@link SeedInitializer} methods.</p>
      *
      * @param runtimeContext      the runtime context object, which will be accessible from plugins.
@@ -297,7 +311,7 @@ public class Seed {
 
     /**
      * Stops and dispose a running {@link Kernel} instance.
-     *
+     * <p>
      * <p>Cannot be called from {@link SeedInitializer} methods.</p>
      *
      * @param kernel the kernel to dispose.
@@ -312,7 +326,7 @@ public class Seed {
      * classloader and cannot be reinitialized. Only call this method in standalone JVM environments, just before
      * exiting,
      * typically in a shutdown hook.
-     *
+     * <p>
      * <p>Has no effect if called from {@link SeedInitializer} methods or after the first call.</p>
      */
     public static void close() {
