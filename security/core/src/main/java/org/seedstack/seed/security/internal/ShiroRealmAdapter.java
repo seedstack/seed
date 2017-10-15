@@ -121,7 +121,9 @@ class ShiroRealmAdapter extends AuthorizingRealm {
     }
 
     private org.seedstack.seed.security.AuthenticationToken convertToken(AuthenticationToken token) {
-        if (token instanceof UsernamePasswordToken) {
+        if (token instanceof org.seedstack.seed.security.AuthenticationToken) {
+            return (org.seedstack.seed.security.AuthenticationToken) token;
+        } else if (token instanceof UsernamePasswordToken) {
             UsernamePasswordToken shiroToken = (UsernamePasswordToken) token;
             return new org.seedstack.seed.security.UsernamePasswordToken(shiroToken.getUsername(),
                     shiroToken.getPassword());

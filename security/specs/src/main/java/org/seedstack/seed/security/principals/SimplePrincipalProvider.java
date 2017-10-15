@@ -47,4 +47,9 @@ public class SimplePrincipalProvider implements PrincipalProvider<String>, Seria
     public String getPrincipal() {
         return value;
     }
+
+    @Override
+    public String toString() {
+        return String.format("Principal{%s=%s}", name, value);
+    }
 }

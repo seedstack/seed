@@ -15,6 +15,8 @@ import javax.servlet.http.HttpServletResponse;
  * This service provides Cross-Site-Request-Forgery (CSRF or XSRF) protection to HTTP requests.
  */
 public interface AntiXsrfService {
+    String generateRandomToken();
+
     void applyXsrfProtection(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse);
 
     void cleanXsrfProtection(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse);

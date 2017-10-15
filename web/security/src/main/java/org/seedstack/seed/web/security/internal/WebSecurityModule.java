@@ -24,6 +24,8 @@ import org.apache.shiro.guice.web.ShiroWebModule;
 import org.apache.shiro.util.StringUtils;
 import org.apache.shiro.web.filter.PathMatchingFilter;
 import org.apache.shiro.web.filter.authc.LogoutFilter;
+import org.apache.shiro.web.filter.authc.SeedBasicHttpAuthenticationFilter;
+import org.apache.shiro.web.filter.authc.SeedFormAuthenticationFilter;
 import org.seedstack.seed.security.internal.SecurityGuiceConfigurer;
 import org.seedstack.seed.web.SecurityFilter;
 import org.seedstack.seed.web.security.WebSecurityConfig;
@@ -38,8 +40,10 @@ class WebSecurityModule extends ShiroWebModule {
     static {
         // Shiro filters
         DEFAULT_FILTERS.put("anon", ANON);
-        DEFAULT_FILTERS.put("authc", AUTHC);
-        DEFAULT_FILTERS.put("authcBasic", AUTHC_BASIC);
+        // Keep Seed flavor of authc to avoid potential session fixation vulnerability
+        DEFAULT_FILTERS.put("authc", Key.get(SeedFormAuthenticationFilter.class));
+        // Keep Seed flavor of authcBasic to avoid potential session fixation vulnerability
+        DEFAULT_FILTERS.put("authcBasic", Key.get(SeedBasicHttpAuthenticationFilter.class));
         DEFAULT_FILTERS.put("logout", LOGOUT);
         DEFAULT_FILTERS.put("noSessionCreation", NO_SESSION_CREATION);
         DEFAULT_FILTERS.put("perms", PERMS);
@@ -97,12 +101,12 @@ class WebSecurityModule extends ShiroWebModule {
 
         // General configuration attributes
         bindConstant().annotatedWith(Names.named("shiro.applicationName")).to(applicationName);
-        bindConstant().annotatedWith(Names.named("shiro.successUrl")).to(securityConfig.getSuccessUrl());
+        bindConstant().annotatedWith(Names.named("shiro.loginUrl")).to(securityConfig.getLoginUrl());
         bindConstant().annotatedWith(Names.named("shiro.redirectUrl")).to(securityConfig.getLogoutUrl());
+        bindConstant().annotatedWith(Names.named("shiro.successUrl")).to(securityConfig.getSuccessUrl());
 
         // Form configuration attributes
         WebSecurityConfig.FormConfig formConfig = securityConfig.form();
-        bindConstant().annotatedWith(Names.named("shiro.loginUrl")).to(formConfig.getLoginUrl());
         bindConstant().annotatedWith(Names.named("shiro.usernameParam")).to(formConfig.getUsernameParameter());
         bindConstant().annotatedWith(Names.named("shiro.passwordParam")).to(formConfig.getPasswordParameter());
         bindConstant().annotatedWith(Names.named("shiro.rememberMeParam")).to(formConfig.getRememberMeParameter());

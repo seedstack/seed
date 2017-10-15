@@ -41,7 +41,7 @@ class StatelessAntiXsrfService implements AntiXsrfService {
         if (session != null) {
             // If session is new, generate a token and put it in a cookie
             if (session.isNew()) {
-                Cookie cookie = new Cookie(cookieName, generateToken());
+                Cookie cookie = new Cookie(cookieName, generateRandomToken());
                 cookie.setHttpOnly(false);
                 cookie.setPath("/");
                 cookie.setMaxAge(-1);
@@ -88,17 +88,7 @@ class StatelessAntiXsrfService implements AntiXsrfService {
         }
     }
 
-    private String extractCookieToken(String cookieName, HttpServletRequest httpServletRequest) {
-        for (Cookie cookie : httpServletRequest.getCookies()) {
-            if (cookieName.equals(cookie.getName())) {
-                return cookie.getValue();
-            }
-        }
-
-        return null;
-    }
-
-    private String generateToken() {
+    public String generateRandomToken() {
         final String tokenAlgorithm = xsrfConfig.getAlgorithm();
         final int tokenLength = xsrfConfig.getLength();
 
@@ -119,5 +109,15 @@ class StatelessAntiXsrfService implements AntiXsrfService {
             throw new RuntimeException(
                     String.format("Unable to generate the random token - %s", e.getLocalizedMessage()), e);
         }
+    }
+
+    private String extractCookieToken(String cookieName, HttpServletRequest httpServletRequest) {
+        for (Cookie cookie : httpServletRequest.getCookies()) {
+            if (cookieName.equals(cookie.getName())) {
+                return cookie.getValue();
+            }
+        }
+
+        return null;
     }
 }

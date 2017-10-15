@@ -4,8 +4,10 @@
 * [new] SPI `CrudActionResolver` has been added to security to allow for resolving the CRUD action of a particular method.
 * [new] Provides the ability to configure some Shiro implementation classes: `SubjectDAO`, `SubjectFactory`, `SubjectContext`, `Authenticator`, `AuthenticationStrategy`, `CacheManager` and `SessionStorageEvaluator`.  
 * [new] A JAX-RS implementation of `CrudActionResolver` detects the CRUD action based upon the JAX-RS annotations.
+* [fix] Prevent session fixation issue by regenerating the session (if any) upon successful login.
 * [fix] Make `SimplePrincipalProvider` serializable. 
-* [brk] Data import/export API has been moved to business framework.
+* [chg] Security sessions are now enabled by default.
+* [brk] Data import/export API has been removed and replaced by a newer API into business framework.
 
 # Version 3.3.1 (2017-09-06)
 

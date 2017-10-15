@@ -9,6 +9,7 @@
 package org.seedstack.seed.security.internal;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.seedstack.seed.security.principals.Principals.getSimplePrincipalByName;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -17,7 +18,6 @@ import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.UsernamePasswordToken;
 import org.apache.shiro.mgt.SecurityManager;
 import org.apache.shiro.subject.Subject;
-import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.seedstack.seed.it.SeedITRunner;
@@ -26,7 +26,6 @@ import org.seedstack.seed.security.SecuritySupport;
 import org.seedstack.seed.security.SimpleScope;
 import org.seedstack.seed.security.WithUser;
 import org.seedstack.seed.security.internal.fixtures.AnnotatedClass4Security;
-import org.seedstack.seed.security.principals.Principals;
 
 @RunWith(SeedITRunner.class)
 public class SecurityIT {
@@ -92,7 +91,8 @@ public class SecurityIT {
     @Test
     @WithUser(id = "nobody", password = "foreverAlone")
     public void user_nobody_should_have_role_nothing() {
-        assertThat(securitySupport.hasRole("nothing")).isTrue();
+        assertThat(securitySupport.hasRole("nothing"))
+                .isTrue();
     }
 
     @Test(expected = AuthorizationException.class)
@@ -110,8 +110,13 @@ public class SecurityIT {
     @Test
     @WithUser(id = "Anakin", password = "imsodark")
     public void Anakin_should_have_customized_principal() {
-        Assertions.assertThat(
-                Principals.getSimplePrincipalByName(securitySupport.getOtherPrincipals(), "foo").getValue()).isEqualTo(
-                "bar");
+        assertThat(getSimplePrincipalByName(securitySupport.getOtherPrincipals(), "foo").getValue())
+                .isEqualTo("bar");
+    }
+
+    @Test
+    @WithUser(id = "Anakin", password = "imsodark")
+    public void sessionsShouldBeDisabledByDefault() {
+        assertThat(SecurityUtils.getSubject().getSession(false)).isNull();
     }
 }

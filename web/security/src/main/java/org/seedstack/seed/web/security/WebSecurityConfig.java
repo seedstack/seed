@@ -19,8 +19,9 @@ public class WebSecurityConfig {
     private List<UrlConfig> urls = new ArrayList<>();
     private XSRFConfig xsrf = new XSRFConfig();
     private FormConfig form = new FormConfig();
-    private String successUrl = "/";
+    private String loginUrl = "/login.html";
     private String logoutUrl = "/";
+    private String successUrl = "/";
 
     public List<UrlConfig> getUrls() {
         return Collections.unmodifiableList(urls);
@@ -45,6 +46,15 @@ public class WebSecurityConfig {
 
     public WebSecurityConfig setSuccessUrl(String successUrl) {
         this.successUrl = successUrl;
+        return this;
+    }
+
+    public String getLoginUrl() {
+        return loginUrl;
+    }
+
+    public WebSecurityConfig setLoginUrl(String loginUrl) {
+        this.loginUrl = loginUrl;
         return this;
     }
 
@@ -82,28 +92,18 @@ public class WebSecurityConfig {
 
     @Config("form")
     public static class FormConfig {
-        private String loginUrl = "/login.html";
         private String usernameParameter = "username";
         private String passwordParameter = "password";
         private String rememberMeParameter = "rememberMe";
         private String failureAttribute = "shiroLoginFailure";
-
-        public String getLoginUrl() {
-            return loginUrl;
-        }
-
-        public FormConfig setLoginUrl(String loginUrl) {
-            this.loginUrl = loginUrl;
-            return this;
-        }
 
         public String getUsernameParameter() {
             return usernameParameter;
         }
 
         public FormConfig setUsernameParameter(String usernameParameter) {
-            this.usernameParameter = usernameParameter;
-            return this;
+                this.usernameParameter = usernameParameter;
+                return this;
         }
 
         public String getPasswordParameter() {

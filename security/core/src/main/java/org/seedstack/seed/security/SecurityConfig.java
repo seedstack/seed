@@ -19,7 +19,6 @@ import java.util.Set;
 import org.apache.shiro.authc.Authenticator;
 import org.apache.shiro.authc.pam.AtLeastOneSuccessfulStrategy;
 import org.apache.shiro.authc.pam.AuthenticationStrategy;
-import org.apache.shiro.authc.pam.FirstSuccessfulStrategy;
 import org.apache.shiro.authc.pam.ModularRealmAuthenticator;
 import org.apache.shiro.cache.CacheManager;
 import org.apache.shiro.cache.MemoryConstrainedCacheManager;
@@ -159,7 +158,7 @@ public class SecurityConfig {
     @Config("sessions")
     public static class SessionConfig {
         @SingleValue
-        private boolean enabled;
+        private boolean enabled = true;
         private long timeout = 1000 * 60 * 15;
         private Class<? extends SessionStorageEvaluator> storageEvaluator = SeedSessionStorageEvaluator.class;
 
