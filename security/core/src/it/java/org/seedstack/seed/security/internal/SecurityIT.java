@@ -116,7 +116,7 @@ public class SecurityIT {
 
     @Test
     @WithUser(id = "Anakin", password = "imsodark")
-    public void sessionsShouldBeDisabledByDefault() {
-        assertThat(SecurityUtils.getSubject().getSession(false)).isNull();
+    public void sessionsShouldBeEnabledByDefault() {
+        assertThat(SecurityUtils.getSubject().getSession(false)).isNotNull();
     }
 }
