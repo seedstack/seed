@@ -21,10 +21,10 @@ security:
     jedi: ['lightSaber:*', 'academy:*']
     padawan: 'academy:learn'
   web:
-    successUrl: /success.html
+    loginUrl: /login.html
     logoutUrl: /logout.html
+    successUrl: /success.html
     form:
-      loginUrl: /login.html
       usernameParameter: user
       passwordParameter: pw
     urls:

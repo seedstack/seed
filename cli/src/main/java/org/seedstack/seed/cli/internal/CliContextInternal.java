@@ -8,7 +8,7 @@
 
 package org.seedstack.seed.cli.internal;
 
-import static org.assertj.core.util.Preconditions.checkNotNull;
+import static com.google.common.base.Preconditions.checkNotNull;
 
 class CliContextInternal implements org.seedstack.seed.cli.CliContext {
     private final String[] args;
