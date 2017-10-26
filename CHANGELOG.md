@@ -1,5 +1,6 @@
 # Version 3.4.0 (2017-09-30)
 
+* [new] Validation exceptions on REST resources are automatically mapped to a detailed response.
 * [new] A `@RequiresCrudPermissions` annotation allows to add permission checks based on the detected CRUD action of the called method.
 * [new] SPI `CrudActionResolver` has been added to security to allow for resolving the CRUD action of a particular method.
 * [new] Provides the ability to configure some Shiro implementation classes: `SubjectDAO`, `SubjectFactory`, `SubjectContext`, `Authenticator`, `AuthenticationStrategy`, `CacheManager` and `SessionStorageEvaluator`.  

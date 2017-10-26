@@ -11,6 +11,7 @@ package org.seedstack.seed.core.internal.init;
 import javax.validation.Validation;
 import javax.validation.ValidatorFactory;
 import org.hibernate.validator.messageinterpolation.ParameterMessageInterpolator;
+import org.hibernate.validator.parameternameprovider.ReflectionParameterNameProvider;
 
 public class GlobalValidatorFactory {
     private final ValidatorFactory validatorFactory;
@@ -18,6 +19,7 @@ public class GlobalValidatorFactory {
     private GlobalValidatorFactory() {
         validatorFactory = Validation.byDefaultProvider()
                 .configure()
+                .parameterNameProvider(new ReflectionParameterNameProvider())
                 .messageInterpolator(new ParameterMessageInterpolator())
                 .buildValidatorFactory();
     }

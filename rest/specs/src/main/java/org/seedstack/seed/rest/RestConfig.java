@@ -64,6 +64,7 @@ public class RestConfig {
     public static class ExceptionMappingConfig {
         private boolean security = true;
         private boolean all = true;
+        private boolean validation = true;
         private boolean detailedLog = true;
         private boolean detailedUserMessage = false;
 
@@ -73,6 +74,10 @@ public class RestConfig {
 
         public boolean isAll() {
             return all;
+        }
+
+        public boolean isValidation() {
+            return validation;
         }
 
         public boolean isDetailedLog() {

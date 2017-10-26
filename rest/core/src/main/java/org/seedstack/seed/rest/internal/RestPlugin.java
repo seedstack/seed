@@ -33,6 +33,7 @@ import org.seedstack.seed.rest.RestConfig;
 import org.seedstack.seed.rest.internal.exceptionmapper.AuthenticationExceptionMapper;
 import org.seedstack.seed.rest.internal.exceptionmapper.AuthorizationExceptionMapper;
 import org.seedstack.seed.rest.internal.exceptionmapper.InternalErrorExceptionMapper;
+import org.seedstack.seed.rest.internal.exceptionmapper.ValidationExceptionMapper;
 import org.seedstack.seed.rest.internal.exceptionmapper.WebApplicationExceptionMapper;
 import org.seedstack.seed.rest.internal.hal.RelRegistryImpl;
 import org.seedstack.seed.rest.internal.jsonhome.JsonHome;
@@ -106,6 +107,10 @@ public class RestPlugin extends AbstractSeedPlugin implements RestProvider {
         if (!restConfig.exceptionMapping().isAll()) {
             providers.remove(WebApplicationExceptionMapper.class);
             providers.remove(InternalErrorExceptionMapper.class);
+        }
+
+        if (!restConfig.exceptionMapping().isValidation()) {
+            providers.remove(ValidationExceptionMapper.class);
         }
     }
 
