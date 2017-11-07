@@ -176,7 +176,7 @@ public final class BindingUtils {
      * @return true if class is proxy false otherwise.
      */
     public static boolean isProxy(Class<?> proxyClass) {
-        return proxyClass.getName().contains("EnhancerByGuice");
+        return ProxyUtils.isProxy(proxyClass);
     }
 
     /**
@@ -186,9 +186,6 @@ public final class BindingUtils {
      * @return the cleaned class.
      */
     public static Class<?> cleanProxy(Class<?> toClean) {
-        if (BindingUtils.isProxy(toClean)) {
-            return toClean.getSuperclass();
-        }
-        return toClean;
+        return ProxyUtils.cleanProxy(toClean);
     }
 }
