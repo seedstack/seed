@@ -61,6 +61,21 @@ public class ValidationIT extends AbstractSeedWebIT {
 
     @Test
     @RunAsClient
+    public void validateUnknown() throws Exception {
+        String body = given()
+                .accept("application/json")
+                .expect()
+                .statusCode(400)
+                .when()
+                .get(baseURL.toString() + "validating/unknown")
+                .body()
+                .asString();
+        JSONAssert.assertEquals("{\"errors\":[{\"location\":\"UNKNOWN\",\"path\":\"arg0.attr1\"," +
+                "\"message\":\"someI18nKey\",\"invalidValue\":null}]}", body, false);
+    }
+
+    @Test
+    @RunAsClient
     public void validateResponse() throws Exception {
         String body = given()
                 .accept("application/json")

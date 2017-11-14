@@ -5,11 +5,11 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.rest.jersey2.fixtures;
 
 import javax.validation.Valid;
 import javax.ws.rs.GET;
-import javax.ws.rs.HEAD;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.QueryParam;
@@ -37,5 +37,15 @@ public class ValidatingResource {
     @Valid
     public Something getSomething(@NotBlank(message = "someI18nKey") @QueryParam("param") String param) {
         return new Something();
+    }
+
+    @Path("/unknown")
+    @GET
+    public Something getValidatedSomething() {
+        return validate(new Something());
+    }
+
+    Something validate(@Valid Something something) {
+        return something;
     }
 }
