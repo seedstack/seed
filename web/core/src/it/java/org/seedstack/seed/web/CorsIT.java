@@ -20,6 +20,8 @@ import org.junit.Test;
 import org.seedstack.seed.it.AbstractSeedWebIT;
 
 public class CorsIT extends AbstractSeedWebIT {
+    private static final String WWW_OTHER_COM = "www.other.com";
+
     @Deployment
     public static WebArchive createDeployment() {
         return ShrinkWrap
@@ -30,42 +32,83 @@ public class CorsIT extends AbstractSeedWebIT {
     @Test
     @RunAsClient
     public void cors_support_is_enabled_for_get(@ArquillianResource URL baseURL) throws Exception {
-        given().header("Origin", baseURL.toExternalForm()).expect().statusCode(200).header(
-                "Access-Control-Allow-Origin", baseURL.toString()).when().get(baseURL.toString() + "cors");
+        given().header("Origin", WWW_OTHER_COM)
+                .header("Access-Control-Request-Method", "GET")
+                .expect()
+                .statusCode(200)
+                .header("Access-Control-Allow-Origin", WWW_OTHER_COM)
+                .when()
+                .options(baseURL.toString() + "cors");
     }
 
     @Test
     @RunAsClient
     public void cors_support_is_enabled_for_post(@ArquillianResource URL baseURL) throws Exception {
-        given().header("Origin", baseURL.toExternalForm()).expect().statusCode(200).header(
-                "Access-Control-Allow-Origin", baseURL.toString()).when().post(baseURL.toString() + "cors");
+        given().header("Origin", WWW_OTHER_COM)
+                .header("Access-Control-Request-Method", "POST")
+                .expect()
+                .statusCode(200)
+                .header("Access-Control-Allow-Origin", WWW_OTHER_COM)
+                .when()
+                .options(baseURL.toString() + "cors");
     }
 
     @Test
     @RunAsClient
     public void cors_support_is_enabled_for_put(@ArquillianResource URL baseURL) throws Exception {
-        given().header("Origin", baseURL.toExternalForm()).expect().statusCode(200).header(
-                "Access-Control-Allow-Origin", baseURL.toString()).when().put(baseURL.toString() + "cors");
+        given().header("Origin", WWW_OTHER_COM)
+                .header("Access-Control-Request-Method", "PUT")
+                .expect()
+                .statusCode(200)
+                .header("Access-Control-Allow-Origin", WWW_OTHER_COM)
+                .when()
+                .options(baseURL.toString() + "cors");
     }
 
     @Test
     @RunAsClient
     public void cors_support_is_enabled_for_delete(@ArquillianResource URL baseURL) throws Exception {
-        given().header("Origin", baseURL.toExternalForm()).expect().statusCode(200).header(
-                "Access-Control-Allow-Origin", baseURL.toString()).when().delete(baseURL.toString() + "cors");
+        given().header("Origin", WWW_OTHER_COM)
+                .header("Access-Control-Request-Method", "DELETE")
+                .expect()
+                .statusCode(200)
+                .header("Access-Control-Allow-Origin", WWW_OTHER_COM)
+                .when()
+                .options(baseURL.toString() + "cors");
     }
 
     @Test
     @RunAsClient
     public void cors_support_is_enabled_for_head(@ArquillianResource URL baseURL) throws Exception {
-        given().header("Origin", baseURL.toExternalForm()).expect().statusCode(200).header(
-                "Access-Control-Allow-Origin", baseURL.toString()).when().head(baseURL.toString() + "cors");
+        given().header("Origin", WWW_OTHER_COM)
+                .header("Access-Control-Request-Method", "HEAD")
+                .expect()
+                .statusCode(200)
+                .header("Access-Control-Allow-Origin", WWW_OTHER_COM)
+                .when()
+                .options(baseURL.toString() + "cors");
     }
 
     @Test
     @RunAsClient
     public void cors_support_is_enabled_for_options(@ArquillianResource URL baseURL) throws Exception {
-        given().header("Origin", baseURL.toExternalForm()).expect().statusCode(200).header(
-                "Access-Control-Allow-Origin", baseURL.toString()).when().options(baseURL.toString() + "cors");
+        given().header("Origin", WWW_OTHER_COM)
+                .header("Access-Control-Request-Method", "OPTIONS")
+                .expect()
+                .statusCode(200)
+                .header("Access-Control-Allow-Origin", WWW_OTHER_COM)
+                .when()
+                .options(baseURL.toString() + "cors");
+    }
+
+    @Test
+    @RunAsClient
+    public void trace_request_should_be_refused(@ArquillianResource URL baseURL) throws Exception {
+        given().header("Origin", WWW_OTHER_COM)
+                .header("Access-Control-Request-Method", "TRACE")
+                .expect()
+                .statusCode(405)
+                .when()
+                .options(baseURL.toString() + "cors");
     }
 }

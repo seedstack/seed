@@ -8,7 +8,7 @@
 
 package org.seedstack.seed.rest.jersey2;
 
-import static com.jayway.restassured.RestAssured.expect;
+import static com.jayway.restassured.RestAssured.given;
 
 import java.net.URL;
 import org.jboss.arquillian.container.test.api.Deployment;
@@ -20,45 +20,93 @@ import org.junit.Test;
 import org.seedstack.seed.it.AbstractSeedWebIT;
 
 public class CorsRestIT extends AbstractSeedWebIT {
+    private static final String WWW_OTHER_COM = "www.other.com";
+
     @Deployment
     public static WebArchive createDeployment() {
         return ShrinkWrap.create(WebArchive.class);
     }
 
-    @RunAsClient
     @Test
-    public void cors_is_applied_to_rest_resources_get(@ArquillianResource URL baseURL) {
-        expect().statusCode(200).given().header("Origin", baseURL.toExternalForm()).get(baseURL.toString() + "cors");
+    @RunAsClient
+    public void cors_is_applied_to_rest_get(@ArquillianResource URL baseURL) throws Exception {
+        given().header("Origin", WWW_OTHER_COM)
+                .header("Access-Control-Request-Method", "GET")
+                .expect()
+                .statusCode(200)
+                .header("Access-Control-Allow-Origin", WWW_OTHER_COM)
+                .when()
+                .options(baseURL.toString() + "cors");
     }
 
-    @RunAsClient
     @Test
-    public void cors_is_applied_to_rest_resources_post(@ArquillianResource URL baseURL) {
-        expect().statusCode(200).given().header("Origin", baseURL.toExternalForm()).post(baseURL.toString() + "cors");
+    @RunAsClient
+    public void cors_is_applied_to_rest_post(@ArquillianResource URL baseURL) throws Exception {
+        given().header("Origin", WWW_OTHER_COM)
+                .header("Access-Control-Request-Method", "POST")
+                .expect()
+                .statusCode(200)
+                .header("Access-Control-Allow-Origin", WWW_OTHER_COM)
+                .when()
+                .options(baseURL.toString() + "cors");
     }
 
-    @RunAsClient
     @Test
-    public void cors_is_applied_to_rest_resources_options(@ArquillianResource URL baseURL) {
-        expect().statusCode(200).given().header("Origin", baseURL.toExternalForm()).options(
-                baseURL.toString() + "cors");
+    @RunAsClient
+    public void cors_is_applied_to_rest_put(@ArquillianResource URL baseURL) throws Exception {
+        given().header("Origin", WWW_OTHER_COM)
+                .header("Access-Control-Request-Method", "PUT")
+                .expect()
+                .statusCode(200)
+                .header("Access-Control-Allow-Origin", WWW_OTHER_COM)
+                .when()
+                .options(baseURL.toString() + "cors");
     }
 
-    @RunAsClient
     @Test
-    public void cors_is_applied_to_rest_resources_head(@ArquillianResource URL baseURL) {
-        expect().statusCode(200).given().header("Origin", baseURL.toExternalForm()).head(baseURL.toString() + "cors");
+    @RunAsClient
+    public void cors_is_applied_to_rest_delete(@ArquillianResource URL baseURL) throws Exception {
+        given().header("Origin", WWW_OTHER_COM)
+                .header("Access-Control-Request-Method", "DELETE")
+                .expect()
+                .statusCode(200)
+                .header("Access-Control-Allow-Origin", WWW_OTHER_COM)
+                .when()
+                .options(baseURL.toString() + "cors");
     }
 
-    @RunAsClient
     @Test
-    public void cors_is_applied_to_rest_resources_delete(@ArquillianResource URL baseURL) {
-        expect().statusCode(200).given().header("Origin", baseURL.toExternalForm()).delete(baseURL.toString() + "cors");
+    @RunAsClient
+    public void cors_is_applied_to_rest_head(@ArquillianResource URL baseURL) throws Exception {
+        given().header("Origin", WWW_OTHER_COM)
+                .header("Access-Control-Request-Method", "HEAD")
+                .expect()
+                .statusCode(200)
+                .header("Access-Control-Allow-Origin", WWW_OTHER_COM)
+                .when()
+                .options(baseURL.toString() + "cors");
     }
 
-    @RunAsClient
     @Test
-    public void cors_is_applied_to_rest_resources_put(@ArquillianResource URL baseURL) {
-        expect().statusCode(200).given().header("Origin", baseURL.toExternalForm()).put(baseURL.toString() + "cors");
+    @RunAsClient
+    public void cors_is_applied_to_rest_options(@ArquillianResource URL baseURL) throws Exception {
+        given().header("Origin", WWW_OTHER_COM)
+                .header("Access-Control-Request-Method", "OPTIONS")
+                .expect()
+                .statusCode(200)
+                .header("Access-Control-Allow-Origin", WWW_OTHER_COM)
+                .when()
+                .options(baseURL.toString() + "cors");
+    }
+
+    @Test
+    @RunAsClient
+    public void trace_request_should_be_refused(@ArquillianResource URL baseURL) throws Exception {
+        given().header("Origin", WWW_OTHER_COM)
+                .header("Access-Control-Request-Method", "TRACE")
+                .expect()
+                .statusCode(405)
+                .when()
+                .options(baseURL.toString() + "cors");
     }
 }
