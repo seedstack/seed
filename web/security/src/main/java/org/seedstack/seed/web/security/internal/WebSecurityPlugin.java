@@ -9,7 +9,7 @@
 package org.seedstack.seed.web.security.internal;
 
 import com.google.common.collect.Lists;
-import com.google.inject.Module;
+import com.google.inject.PrivateModule;
 import io.nuun.kernel.api.plugin.InitState;
 import io.nuun.kernel.api.plugin.PluginException;
 import io.nuun.kernel.api.plugin.context.InitContext;
@@ -84,7 +84,7 @@ public class WebSecurityPlugin extends AbstractSeedPlugin implements SecurityPro
     }
 
     @Override
-    public Module provideMainSecurityModule(SecurityGuiceConfigurer securityGuiceConfigurer) {
+    public PrivateModule provideMainSecurityModule(SecurityGuiceConfigurer securityGuiceConfigurer) {
         return servletContext != null ? new WebSecurityModule(
                 servletContext,
                 securityConfig,
@@ -95,7 +95,7 @@ public class WebSecurityPlugin extends AbstractSeedPlugin implements SecurityPro
     }
 
     @Override
-    public Module provideAdditionalSecurityModule() {
+    public PrivateModule provideAdditionalSecurityModule() {
         return null;
     }
 

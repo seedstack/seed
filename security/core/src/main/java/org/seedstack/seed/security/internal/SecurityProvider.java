@@ -8,7 +8,7 @@
 
 package org.seedstack.seed.security.internal;
 
-import com.google.inject.Module;
+import com.google.inject.PrivateModule;
 import io.nuun.kernel.api.annotations.Facet;
 
 /**
@@ -24,7 +24,7 @@ public interface SecurityProvider {
      *
      * @return the Guice module for the application main security.
      */
-    Module provideMainSecurityModule(SecurityGuiceConfigurer securityGuiceConfigurer);
+    PrivateModule provideMainSecurityModule(SecurityGuiceConfigurer securityGuiceConfigurer);
 
     /**
      * Provides a Guice module for handling additional entry point security. Multiple entry-point-specific Guice modules
@@ -32,6 +32,6 @@ public interface SecurityProvider {
      *
      * @return the Guice module for the specific entry-point.
      */
-    Module provideAdditionalSecurityModule();
+    PrivateModule provideAdditionalSecurityModule();
 
 }

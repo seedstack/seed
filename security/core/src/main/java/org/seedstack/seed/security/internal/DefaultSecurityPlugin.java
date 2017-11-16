@@ -8,7 +8,7 @@
 
 package org.seedstack.seed.security.internal;
 
-import com.google.inject.Module;
+import com.google.inject.PrivateModule;
 import io.nuun.kernel.core.AbstractPlugin;
 
 public class DefaultSecurityPlugin extends AbstractPlugin implements SecurityProvider {
@@ -18,12 +18,12 @@ public class DefaultSecurityPlugin extends AbstractPlugin implements SecurityPro
     }
 
     @Override
-    public Module provideMainSecurityModule(SecurityGuiceConfigurer securityGuiceConfigurer) {
+    public PrivateModule provideMainSecurityModule(SecurityGuiceConfigurer securityGuiceConfigurer) {
         return new DefaultSecurityModule(securityGuiceConfigurer);
     }
 
     @Override
-    public Module provideAdditionalSecurityModule() {
+    public PrivateModule provideAdditionalSecurityModule() {
         return null;
     }
 }

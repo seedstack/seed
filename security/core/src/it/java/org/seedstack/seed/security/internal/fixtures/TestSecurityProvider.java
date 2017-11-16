@@ -8,7 +8,7 @@
 
 package org.seedstack.seed.security.internal.fixtures;
 
-import com.google.inject.Module;
+import com.google.inject.PrivateModule;
 import com.google.inject.name.Names;
 import io.nuun.kernel.core.AbstractPlugin;
 import java.util.Collection;
@@ -25,12 +25,12 @@ public class TestSecurityProvider extends AbstractPlugin implements SecurityProv
     }
 
     @Override
-    public Module provideMainSecurityModule(SecurityGuiceConfigurer securityGuiceConfigurer) {
+    public PrivateModule provideMainSecurityModule(SecurityGuiceConfigurer securityGuiceConfigurer) {
         return null;
     }
 
     @Override
-    public Module provideAdditionalSecurityModule() {
+    public PrivateModule provideAdditionalSecurityModule() {
         return new ShiroModule() {
             @Override
             protected void configureShiro() {

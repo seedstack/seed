@@ -59,7 +59,7 @@ class SecurityModule extends AbstractModule {
 
         Module mainModuleToInstall = null;
         for (SecurityProvider securityProvider : securityProviders) {
-            Module mainSecurityModule = securityProvider.provideMainSecurityModule(
+            PrivateModule mainSecurityModule = securityProvider.provideMainSecurityModule(
                     new SecurityGuiceConfigurer(securityConfigurer.getSecurityConfiguration()));
             if (mainSecurityModule != null) {
                 if (mainModuleToInstall == null || mainModuleToInstall instanceof DefaultSecurityModule) {
@@ -72,7 +72,7 @@ class SecurityModule extends AbstractModule {
                 }
             }
 
-            Module additionalSecurityModule = securityProvider.provideAdditionalSecurityModule();
+            PrivateModule additionalSecurityModule = securityProvider.provideAdditionalSecurityModule();
             if (additionalSecurityModule != null) {
                 install(removeSecurityManager(additionalSecurityModule));
             }
@@ -80,7 +80,7 @@ class SecurityModule extends AbstractModule {
         install(mainModuleToInstall);
     }
 
-    private Module removeSecurityManager(Module module) {
+    private Module removeSecurityManager(PrivateModule module) {
         return new ModuleWithoutSecurityManager((PrivateElements) Elements.getElements(module).iterator().next());
     }
 
