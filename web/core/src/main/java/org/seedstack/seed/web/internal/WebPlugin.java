@@ -29,6 +29,7 @@ import org.seedstack.seed.core.SeedRuntime;
 import org.seedstack.seed.core.internal.AbstractSeedPlugin;
 import org.seedstack.seed.web.spi.FilterDefinition;
 import org.seedstack.seed.web.spi.ListenerDefinition;
+import org.seedstack.seed.web.spi.SeedFilterPriority;
 import org.seedstack.seed.web.spi.ServletDefinition;
 import org.seedstack.seed.web.spi.WebProvider;
 import org.slf4j.Logger;
@@ -161,6 +162,7 @@ public class WebPlugin extends AbstractSeedPlugin {
 
     private FilterDefinition buildGuiceFilterDefinition() {
         FilterDefinition guiceFilter = new FilterDefinition("guice", GuiceFilter.class);
+        guiceFilter.setPriority(SeedFilterPriority.GUICE);
         guiceFilter.setAsyncSupported(true);
         guiceFilter.addMappings(new FilterDefinition.Mapping("/*"));
         return guiceFilter;

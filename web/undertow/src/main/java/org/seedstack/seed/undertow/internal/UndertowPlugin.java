@@ -14,8 +14,6 @@ import io.nuun.kernel.api.plugin.context.InitContext;
 import java.util.Collection;
 import org.seedstack.seed.core.internal.AbstractSeedPlugin;
 import org.seedstack.seed.crypto.spi.SSLProvider;
-import org.seedstack.seed.undertow.UndertowConfig;
-import org.seedstack.seed.web.WebConfig;
 
 /**
  * This plugin retrieves the Undertow Web server configuration.
@@ -23,8 +21,6 @@ import org.seedstack.seed.web.WebConfig;
 public class UndertowPlugin extends AbstractSeedPlugin {
     static final String NAME = "undertow";
     private SSLProvider sslProvider;
-    private WebConfig.ServerConfig serverConfig;
-    private UndertowConfig undertowConfig;
 
     @Override
     public String name() {
@@ -39,20 +35,10 @@ public class UndertowPlugin extends AbstractSeedPlugin {
     @Override
     public InitState initialize(InitContext initContext) {
         sslProvider = initContext.dependency(SSLProvider.class);
-        serverConfig = getConfiguration(WebConfig.ServerConfig.class);
-        undertowConfig = getConfiguration(UndertowConfig.class);
         return InitState.INITIALIZED;
     }
 
     SSLProvider getSslProvider() {
         return sslProvider;
-    }
-
-    WebConfig.ServerConfig getServerConfig() {
-        return serverConfig;
-    }
-
-    UndertowConfig getUndertowConfig() {
-        return undertowConfig;
     }
 }

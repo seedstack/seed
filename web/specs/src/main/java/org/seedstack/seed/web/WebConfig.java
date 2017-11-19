@@ -8,7 +8,10 @@
 
 package org.seedstack.seed.web;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
@@ -145,6 +148,7 @@ public class WebConfig {
         private static final String DEFAULT_CONTEXT_PATH = "/";
         private static final boolean DEFAULT_HTTP2_ACTIVATION = true;
         private static final boolean DEFAULT_HTTPS_ACTIVATION = false;
+        private static final String DEFAULT_WECOME_FILE = "index.html";
 
         private String host = DEFAULT_HOST;
         @SingleValue
@@ -154,6 +158,11 @@ public class WebConfig {
         private String contextPath = DEFAULT_CONTEXT_PATH;
         private boolean http2 = DEFAULT_HTTP2_ACTIVATION;
         private boolean https = DEFAULT_HTTPS_ACTIVATION;
+        private List<String> welcomeFiles = new ArrayList<>();
+
+        public ServerConfig() {
+            addWelcomeFile(DEFAULT_WECOME_FILE);
+        }
 
         public String getHost() {
             return host;
@@ -198,6 +207,14 @@ public class WebConfig {
         public ServerConfig setHttp2(boolean http2) {
             this.http2 = http2;
             return this;
+        }
+
+        public List<String> getWelcomeFiles() {
+            return Collections.unmodifiableList(welcomeFiles);
+        }
+
+        public void addWelcomeFile(String welcomeFile) {
+            this.welcomeFiles.add(welcomeFile);
         }
     }
 }

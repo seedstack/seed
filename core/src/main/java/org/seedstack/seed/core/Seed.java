@@ -93,7 +93,6 @@ public class Seed {
                 .orElse(null);
     }
 
-    private final ApplicationConfig applicationConfig;
     private final Coffig configuration;
     private final ConsoleManager consoleManager;
     private final LogManager logManager;
@@ -144,7 +143,7 @@ public class Seed {
         }
 
         // Access application configuration
-        applicationConfig = configuration.get(ApplicationConfig.class);
+        ApplicationConfig applicationConfig = configuration.get(ApplicationConfig.class);
 
         // Install console enhancements
         consoleManager = ConsoleManager.get();
@@ -301,7 +300,6 @@ public class Seed {
                         .diagnosticManager(diagnosticManager)
                         .configuration(instance.configuration.fork())
                         .validatorFactory(instance.validatorFactory)
-                        .applicationConfig(instance.applicationConfig)
                         .version(seedVersion)
                         .businessVersion(businessVersion)
                         .build(),
@@ -332,6 +330,25 @@ public class Seed {
     public static void close() {
         if (initialized && !disposed) {
             getInstance().dispose();
+        }
+    }
+
+    public static void refresh() {
+        if (initialized && !disposed) {
+            Seed instance = getInstance();
+            instance.configuration.refresh();
+            instance.logManager.refresh(instance.configuration.get(LoggingConfig.class));
+            instance.proxyManager.refresh(instance.configuration.get(ProxyConfig.class));
+
+            // Trigger afterRefresh() in custom initializers
+            for (SeedInitializer seedInitializer : seedInitializers) {
+                try {
+                    seedInitializer.afterRefresh();
+                } catch (Exception e) {
+                    throw SeedException.wrap(e, CoreErrorCode.ERROR_IN_INITIALIZER)
+                            .put("initializerClass", seedInitializer.getClass().getName());
+                }
+            }
         }
     }
 

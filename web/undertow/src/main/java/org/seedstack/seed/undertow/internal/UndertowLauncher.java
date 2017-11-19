@@ -12,11 +12,11 @@ import io.nuun.kernel.api.Kernel;
 import io.nuun.kernel.api.Plugin;
 import io.undertow.Undertow;
 import io.undertow.servlet.api.DeploymentManager;
-import io.undertow.servlet.spec.ServletContextImpl;
-import org.seedstack.coffig.Coffig;
+import javax.servlet.ServletException;
 import org.seedstack.seed.SeedException;
 import org.seedstack.seed.core.Seed;
 import org.seedstack.seed.spi.SeedLauncher;
+import org.seedstack.seed.undertow.UndertowConfig;
 import org.seedstack.seed.web.WebConfig;
 import org.seedstack.seed.web.internal.ServletContextUtils;
 import org.slf4j.Logger;
@@ -29,28 +29,84 @@ public class UndertowLauncher implements SeedLauncher {
 
     @Override
     public void launch(String[] args) throws Exception {
-        Coffig baseConfiguration = Seed.baseConfiguration();
+        WebConfig.ServerConfig serverConfig = Seed.baseConfiguration().get(WebConfig.ServerConfig.class);
+        UndertowConfig undertowConfig = Seed.baseConfiguration().get(UndertowConfig.class);
 
-        DeploymentManagerFactory factory = new DeploymentManagerFactory();
-        deploymentManager = factory.createDeploymentManager(baseConfiguration);
-        deploymentManager.deploy();
+        // Create deployment
+        deploy(serverConfig);
 
-        ServletContextImpl servletContext = deploymentManager.getDeployment().getServletContext();
-        Kernel kernel = ServletContextUtils.getKernel(servletContext);
-        UndertowPlugin undertowPlugin = getUndertowPlugin(kernel);
-        WebConfig.ServerConfig serverConfig = undertowPlugin.getServerConfig();
+        // Start the HTTP server
+        start(serverConfig, undertowConfig);
 
-        undertow = new ServerFactory().createServer(
-                deploymentManager,
-                serverConfig,
-                undertowPlugin.getUndertowConfig(),
-                undertowPlugin.getSslProvider()
-        );
-        undertow.start();
         LOGGER.info("Undertow Web server listening on {}:{}", serverConfig.getHost(), serverConfig.getPort());
     }
 
-    private UndertowPlugin getUndertowPlugin(Kernel kernel) {
+    @Override
+    public void shutdown() throws Exception {
+        stop();
+        LOGGER.info("Undertow Web server stopped");
+        undeploy();
+    }
+
+    @Override
+    public void refresh() {
+        LOGGER.info("Refreshing Web application");
+        if (undertow != null && deploymentManager != null) {
+            stop();
+            undeploy();
+
+            Seed.refresh();
+
+            WebConfig.ServerConfig serverConfig = Seed.baseConfiguration().get(WebConfig.ServerConfig.class);
+            UndertowConfig undertowConfig = Seed.baseConfiguration().get(UndertowConfig.class);
+
+            deploy(serverConfig);
+            start(serverConfig, undertowConfig);
+
+            LOGGER.info("Refresh complete, Undertow Web server listening on {}:{}", serverConfig.getHost(),
+                    serverConfig.getPort());
+        }
+    }
+
+    private void deploy(WebConfig.ServerConfig serverConfig) {
+        DeploymentManagerFactory factory = new DeploymentManagerFactory(serverConfig);
+        deploymentManager = factory.createDeploymentManager();
+        deploymentManager.deploy();
+        try {
+            deploymentManager.start();
+        } catch (ServletException e) {
+            LOGGER.error("An error occurred when trying to start the servlet context", e);
+        }
+    }
+
+    private void undeploy() {
+        if (deploymentManager != null) {
+            try {
+                deploymentManager.stop();
+            } catch (ServletException e) {
+                LOGGER.error("An error occurred when trying to stop the servlet context", e);
+            }
+            deploymentManager.undeploy();
+        }
+    }
+
+    private void start(WebConfig.ServerConfig serverConfig, UndertowConfig undertowConfig) {
+        UndertowPlugin undertowPlugin = getUndertowPlugin(deploymentManager);
+        undertow = new ServerFactory(serverConfig, undertowConfig).createServer(
+                deploymentManager,
+                undertowPlugin.getSslProvider()
+        );
+        undertow.start();
+    }
+
+    private void stop() {
+        if (undertow != null) {
+            undertow.stop();
+        }
+    }
+
+    private UndertowPlugin getUndertowPlugin(DeploymentManager deploymentManager) {
+        Kernel kernel = ServletContextUtils.getKernel(deploymentManager.getDeployment().getServletContext());
         UndertowPlugin undertowPlugin = null;
         Plugin plugin = kernel.plugins().get(UndertowPlugin.NAME);
         if (plugin instanceof UndertowPlugin) {
@@ -60,17 +116,5 @@ public class UndertowLauncher implements SeedLauncher {
             throw SeedException.createNew(UndertowErrorCode.MISSING_UNDERTOW_PLUGIN);
         }
         return undertowPlugin;
-    }
-
-    @Override
-    public void shutdown() throws Exception {
-        if (undertow != null) {
-            undertow.stop();
-            LOGGER.info("Undertow Web server stopped");
-        }
-        if (deploymentManager != null) {
-            // should done at last for diagnostic purpose
-            deploymentManager.undeploy();
-        }
     }
 }

@@ -28,9 +28,15 @@ import org.xnio.SslClientAuthMode;
 
 class ServerFactory {
     private static final Logger LOGGER = LoggerFactory.getLogger(ServerFactory.class);
+    private final WebConfig.ServerConfig serverConfig;
+    private final UndertowConfig undertowConfig;
 
-    Undertow createServer(DeploymentManager manager, WebConfig.ServerConfig serverConfig, UndertowConfig undertowConfig,
-            SSLProvider sslProvider) {
+    ServerFactory(WebConfig.ServerConfig serverConfig, UndertowConfig undertowConfig) {
+        this.serverConfig = serverConfig;
+        this.undertowConfig = undertowConfig;
+    }
+
+    Undertow createServer(DeploymentManager manager, SSLProvider sslProvider) {
         PathHandler path = null;
         try {
             path = Handlers.path(Handlers.redirect(serverConfig.getContextPath()))
@@ -41,9 +47,9 @@ class ServerFactory {
 
         Undertow.Builder builder = Undertow.builder();
         if (serverConfig.isHttps()) {
-            configureHttps(builder, serverConfig, sslProvider);
+            builder = configureHttps(builder, serverConfig, sslProvider);
         } else {
-            configureHttp(builder, serverConfig);
+            builder = configureHttp(builder, serverConfig);
         }
         if (serverConfig.isHttp2()) {
             LOGGER.info("HTTP/2 support is enabled");

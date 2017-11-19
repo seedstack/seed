@@ -34,22 +34,21 @@ public class SeedServletContainerInitializer implements ServletContainerInitiali
         WebConfig webConfig = Seed.baseConfiguration().get(WebConfig.class);
         servletContext.setSessionTrackingModes(
                 EnumSet.of(SessionTrackingMode.valueOf(webConfig.getSessionTrackingMode().name())));
-
+        servletContext.addListener(this);
         try {
             kernel = Seed.createKernel(servletContext, buildKernelConfiguration(servletContext), true);
             servletContext.setAttribute(ServletContextUtils.KERNEL_ATTRIBUTE_NAME, kernel);
-            servletContext.setAttribute(ServletContextUtils.INJECTOR_ATTRIBUTE_NAME,
-                    kernel.objectGraph().as(Injector.class));
+            servletContext
+                    .setAttribute(ServletContextUtils.INJECTOR_ATTRIBUTE_NAME,
+                            kernel.objectGraph().as(Injector.class));
         } catch (Exception e) {
             handleException(e);
         }
-
-        servletContext.addListener(this);
     }
 
     @Override
     public void contextInitialized(ServletContextEvent sce) {
-        // nothing to do, already initialized
+        // already initialized
     }
 
     @Override

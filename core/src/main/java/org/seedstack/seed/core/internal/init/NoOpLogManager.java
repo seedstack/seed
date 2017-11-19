@@ -20,4 +20,9 @@ class NoOpLogManager implements LogManager {
     public void close() {
         // noop
     }
+
+    @Override
+    public void refresh(LoggingConfig loggingConfig) {
+        // noop
+    }
 }

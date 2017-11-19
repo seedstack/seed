@@ -40,19 +40,16 @@ public class SeedRuntime {
     private final ValidatorFactory validatorFactory;
     private final String seedVersion;
     private final String businessVersion;
-    private final ApplicationConfig applicationConfig;
     private final Set<String> inconsistentPlugins = new HashSet<>();
 
     private SeedRuntime(Object context, DiagnosticManager diagnosticManager, Coffig configuration,
-            ValidatorFactory validatorFactory, String seedVersion, String businessVersion,
-            ApplicationConfig applicationConfig) {
+            ValidatorFactory validatorFactory, String seedVersion, String businessVersion) {
         this.context = context;
         this.diagnosticManager = diagnosticManager;
         this.configuration = configuration;
         this.validatorFactory = validatorFactory;
         this.seedVersion = seedVersion;
         this.businessVersion = businessVersion;
-        this.applicationConfig = applicationConfig;
         this.diagnosticManager.registerDiagnosticInfoCollector("seed", new RuntimeDiagnosticCollector());
         this.prioritizedProvider = ((CompositeProvider) this.configuration.getProvider()).get(
                 PrioritizedProvider.class);
@@ -110,7 +107,7 @@ public class SeedRuntime {
     }
 
     public ApplicationConfig getApplicationConfig() {
-        return applicationConfig;
+        return configuration.get(ApplicationConfig.class);
     }
 
     private void checkConsistency() {
@@ -171,14 +168,15 @@ public class SeedRuntime {
             return this;
         }
 
-        public Builder applicationConfig(ApplicationConfig applicationConfig) {
-            this._applicationConfig = applicationConfig;
-            return this;
-        }
-
         public SeedRuntime build() {
-            return new SeedRuntime(_context, _diagnosticManager, _configuration, _validatorFactory, _seedVersion,
-                    _businessVersion, _applicationConfig);
+            return new SeedRuntime(
+                    _context,
+                    _diagnosticManager,
+                    _configuration,
+                    _validatorFactory,
+                    _seedVersion,
+                    _businessVersion
+            );
         }
     }
 

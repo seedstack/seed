@@ -47,6 +47,11 @@ public class TestSeedInitializer implements SeedInitializer {
     }
 
     @Override
+    public void afterRefresh() {
+        // TODO
+    }
+
+    @Override
     public void onClose() {
         throw new IllegalStateException("Should not be called from tests");
     }

@@ -41,7 +41,7 @@ public class ServerFactoryTest {
         when(sslProvider.sslContext()).thenReturn(Optional.empty());
         when(manager.start()).thenReturn(httpHandler);
 
-        Undertow server = new ServerFactory().createServer(manager, serverConfig, undertowConfig, null);
+        Undertow server = new ServerFactory(serverConfig, undertowConfig).createServer(manager, null);
 
         Assertions.assertThat(server).isNotNull();
     }

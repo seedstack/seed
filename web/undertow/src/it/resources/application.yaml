@@ -6,10 +6,10 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 #
 
-logging: WARN
+logging: INFO
 web:
   server:
-    port: 9001
+    port: ${sys.customUndertowPort:'9001'}
     https: true
 crypto:
   keystores:

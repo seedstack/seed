@@ -82,6 +82,11 @@ public class ProxyManager {
         }
     }
 
+    public void refresh(ProxyConfig proxyConfig) {
+        uninstall();
+        install(proxyConfig);
+    }
+
     private String getValue(String configuredValue, String variable, boolean auto) {
         if (Strings.isNullOrEmpty(configuredValue) && auto) {
             String value = System.getenv(variable);
@@ -120,7 +125,7 @@ public class ProxyManager {
      *
      * @param url The proxy host URL.
      * @return An optional containing an array of the user name and the password or empty when none are present or
-     * the url is empty.
+     *         the url is empty.
      */
     private Optional<String[]> parseCredentials(String url) {
         if (!Strings.isNullOrEmpty(url)) {

@@ -31,7 +31,7 @@
         <guice.version>4.1.0</guice.version>
         <typetools.version>0.5.0</typetools.version>
         <shiro.version>1.4.0</shiro.version>
-        <undertow.version>1.4.14.Final</undertow.version>
+        <undertow.version>1.4.21.Final</undertow.version>
         <jersey2.version>2.25.1</jersey2.version>
         <hibernate-validator.version>5.4.1.Final</hibernate-validator.version>
         <aopalliance.version>1.0</aopalliance.version>

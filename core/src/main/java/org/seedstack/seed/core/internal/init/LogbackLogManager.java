@@ -103,6 +103,11 @@ class LogbackLogManager implements LogManager {
         context.stop();
     }
 
+    @Override
+    public void refresh(LoggingConfig loggingConfig) {
+        configure(loggingConfig);
+    }
+
     private boolean isExplicitlyConfigured() {
         return ConfigurationWatchListUtil.getMainWatchURL(context) != null;
     }

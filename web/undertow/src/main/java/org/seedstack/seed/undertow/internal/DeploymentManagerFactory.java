@@ -8,6 +8,8 @@
 
 package org.seedstack.seed.undertow.internal;
 
+import static org.seedstack.shed.ClassLoaders.findMostCompleteClassLoader;
+
 import io.undertow.servlet.Servlets;
 import io.undertow.servlet.api.DeploymentInfo;
 import io.undertow.servlet.api.DeploymentManager;
@@ -17,19 +19,24 @@ import java.util.HashSet;
 import java.util.ServiceLoader;
 import java.util.Set;
 import javax.servlet.ServletContainerInitializer;
-import org.seedstack.coffig.Coffig;
 import org.seedstack.seed.web.WebConfig;
 
 class DeploymentManagerFactory {
-    DeploymentManager createDeploymentManager(Coffig baseConfiguration) {
-        WebConfig.ServerConfig serverConfig = baseConfiguration.get(WebConfig.ServerConfig.class);
+    private final WebConfig.ServerConfig serverConfig;
+    private final ClassLoader mostCompleteClassLoader = findMostCompleteClassLoader(DeploymentManagerFactory.class);
+
+    DeploymentManagerFactory(WebConfig.ServerConfig serverConfig) {
+        this.serverConfig = serverConfig;
+    }
+
+    DeploymentManager createDeploymentManager() {
         DeploymentInfo servletBuilder = configureDeploymentInfo(serverConfig.getContextPath());
         return Servlets.defaultContainer().addDeployment(servletBuilder);
     }
 
     private DeploymentInfo configureDeploymentInfo(String contextPath) {
         DeploymentInfo deploymentInfo = Servlets.deployment()
-                .setClassLoader(UndertowLauncher.class.getClassLoader())
+                .setClassLoader(mostCompleteClassLoader)
                 .setDeploymentName("app.war")
                 .setContextPath(contextPath);
 

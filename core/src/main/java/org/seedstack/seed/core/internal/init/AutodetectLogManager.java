@@ -47,6 +47,11 @@ public class AutodetectLogManager implements LogManager {
         logManager.close();
     }
 
+    @Override
+    public void refresh(LoggingConfig loggingConfig) {
+        logManager.refresh(loggingConfig);
+    }
+
     private boolean isLogbackInUse() {
         return isLoggerFactoryActive("ch.qos.logback.classic.LoggerContext");
     }

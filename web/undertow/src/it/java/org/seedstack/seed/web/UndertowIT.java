@@ -23,7 +23,6 @@ import org.seedstack.seed.spi.SeedLauncher;
  * Tests an undertow server exposing a simple hello world servlet.
  */
 public class UndertowIT {
-    private static final String BASE_HTTPS_URL = "localhost:9001/";
     private final SeedLauncher launcher = Seed.getLauncher();
 
     @Before
@@ -38,8 +37,20 @@ public class UndertowIT {
 
     @Test
     public void test_run_seed_app_with_SSL() throws Exception {
+        checkServer(9001);
+    }
+
+    @Test
+    public void refresh() throws Exception {
+        checkServer(9001);
+        System.setProperty("customUndertowPort", "9002");
+        launcher.refresh();
+        checkServer(9002);
+    }
+
+    private void checkServer(int port) {
         RestAssured.useRelaxedHTTPSValidation();
-        Response response = expect().statusCode(200).when().get("https://" + BASE_HTTPS_URL + "hello");
+        Response response = expect().statusCode(200).when().get("https://localhost:" + port + "/hello");
         Assertions.assertThat(response.asString()).isEqualTo("Hello World! value1");
     }
 }

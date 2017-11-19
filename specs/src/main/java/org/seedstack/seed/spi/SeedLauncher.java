@@ -27,4 +27,8 @@ public interface SeedLauncher {
      * @throws Exception when something goes wrong.
      */
     void shutdown() throws Exception;
+
+    default void refresh() {
+        throw new UnsupportedOperationException("Refresh is not supported by this launcher");
+    }
 }

@@ -5,6 +5,7 @@
 * [new] SPI `CrudActionResolver` has been added to security to allow for resolving the CRUD action of a particular method.
 * [new] Provides the ability to configure some Shiro implementation classes: `SubjectDAO`, `SubjectFactory`, `SubjectContext`, `Authenticator`, `AuthenticationStrategy`, `CacheManager` and `SessionStorageEvaluator`.  
 * [new] A JAX-RS implementation of `CrudActionResolver` detects the CRUD action based upon the JAX-RS annotations.
+* [new] Basic support for refreshing Web applications served with Undertow.
 * [fix] Prevent session fixation issue by regenerating the session (if any) upon successful login.
 * [fix] Make `SimplePrincipalProvider` serializable. 
 * [chg] Security sessions are now enabled by default.

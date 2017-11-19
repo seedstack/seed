@@ -14,4 +14,6 @@ public interface LogManager {
     void configure(LoggingConfig loggingConfig);
 
     void close();
+
+    void refresh(LoggingConfig loggingConfig);
 }

@@ -39,6 +39,11 @@ public interface SeedInitializer {
     void afterInitialization();
 
     /**
+     * Called after Seed refresh has been completed.
+     */
+    void afterRefresh();
+
+    /**
      * Called at explicit Seed global state cleanup.
      */
     void onClose();
