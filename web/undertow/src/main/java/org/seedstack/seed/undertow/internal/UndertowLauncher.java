@@ -87,6 +87,7 @@ public class UndertowLauncher implements SeedLauncher {
                 LOGGER.error("An error occurred when trying to stop the servlet context", e);
             }
             deploymentManager.undeploy();
+            deploymentManager = null;
         }
     }
 
@@ -102,19 +103,18 @@ public class UndertowLauncher implements SeedLauncher {
     private void stop() {
         if (undertow != null) {
             undertow.stop();
+            undertow = null;
         }
     }
 
     private UndertowPlugin getUndertowPlugin(DeploymentManager deploymentManager) {
         Kernel kernel = ServletContextUtils.getKernel(deploymentManager.getDeployment().getServletContext());
-        UndertowPlugin undertowPlugin = null;
-        Plugin plugin = kernel.plugins().get(UndertowPlugin.NAME);
-        if (plugin instanceof UndertowPlugin) {
-            undertowPlugin = (UndertowPlugin) plugin;
+        if (kernel != null) {
+            Plugin plugin = kernel.plugins().get(UndertowPlugin.NAME);
+            if (plugin instanceof UndertowPlugin) {
+                return (UndertowPlugin) plugin;
+            }
         }
-        if (undertowPlugin == null) {
-            throw SeedException.createNew(UndertowErrorCode.MISSING_UNDERTOW_PLUGIN);
-        }
-        return undertowPlugin;
+        throw SeedException.createNew(UndertowErrorCode.MISSING_UNDERTOW_PLUGIN);
     }
 }
