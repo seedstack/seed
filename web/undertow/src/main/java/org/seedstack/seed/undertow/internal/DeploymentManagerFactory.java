@@ -36,6 +36,7 @@ class DeploymentManagerFactory {
 
     private DeploymentInfo configureDeploymentInfo(String contextPath) {
         DeploymentInfo deploymentInfo = Servlets.deployment()
+                .setEagerFilterInit(true)
                 .setClassLoader(mostCompleteClassLoader)
                 .setDeploymentName("app.war")
                 .setContextPath(contextPath);

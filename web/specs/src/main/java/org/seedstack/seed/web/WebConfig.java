@@ -148,7 +148,7 @@ public class WebConfig {
         private static final String DEFAULT_CONTEXT_PATH = "/";
         private static final boolean DEFAULT_HTTP2_ACTIVATION = true;
         private static final boolean DEFAULT_HTTPS_ACTIVATION = false;
-        private static final String DEFAULT_WECOME_FILE = "index.html";
+        private static final String DEFAULT_WELCOME_FILE = "index.html";
 
         private String host = DEFAULT_HOST;
         @SingleValue
@@ -161,7 +161,7 @@ public class WebConfig {
         private List<String> welcomeFiles = new ArrayList<>();
 
         public ServerConfig() {
-            addWelcomeFile(DEFAULT_WECOME_FILE);
+            addWelcomeFile(DEFAULT_WELCOME_FILE);
         }
 
         public String getHost() {

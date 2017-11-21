@@ -8,11 +8,15 @@
 
 package org.seedstack.seed.web.internal;
 
+import static java.util.EnumSet.of;
+import static javax.servlet.SessionTrackingMode.valueOf;
+import static org.seedstack.seed.web.internal.ServletContextUtils.INJECTOR_ATTRIBUTE_NAME;
+import static org.seedstack.seed.web.internal.ServletContextUtils.KERNEL_ATTRIBUTE_NAME;
+
 import com.google.inject.Injector;
 import io.nuun.kernel.api.Kernel;
 import io.nuun.kernel.api.config.KernelConfiguration;
 import io.nuun.kernel.core.NuunCore;
-import java.util.EnumSet;
 import java.util.Enumeration;
 import java.util.Set;
 import javax.servlet.ServletContainerInitializer;
@@ -20,7 +24,6 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import javax.servlet.ServletException;
-import javax.servlet.SessionTrackingMode;
 import org.seedstack.seed.core.Seed;
 import org.seedstack.seed.web.WebConfig;
 import org.seedstack.shed.exception.BaseException;
@@ -29,36 +32,36 @@ public class SeedServletContainerInitializer implements ServletContainerInitiali
     private Kernel kernel;
 
     @Override
-    public void onStartup(Set<Class<?>> servletContextConfigurerClasses,
-            ServletContext servletContext) throws ServletException {
+    public void onStartup(Set<Class<?>> classes, ServletContext servletContext) throws ServletException {
         WebConfig webConfig = Seed.baseConfiguration().get(WebConfig.class);
-        servletContext.setSessionTrackingModes(
-                EnumSet.of(SessionTrackingMode.valueOf(webConfig.getSessionTrackingMode().name())));
-        servletContext.addListener(this);
+        servletContext.setSessionTrackingModes(of(valueOf(webConfig.getSessionTrackingMode().name())));
+
         try {
             kernel = Seed.createKernel(servletContext, buildKernelConfiguration(servletContext), true);
-            servletContext.setAttribute(ServletContextUtils.KERNEL_ATTRIBUTE_NAME, kernel);
-            servletContext
-                    .setAttribute(ServletContextUtils.INJECTOR_ATTRIBUTE_NAME,
-                            kernel.objectGraph().as(Injector.class));
         } catch (Exception e) {
             handleException(e);
         }
+
+        servletContext.setAttribute(KERNEL_ATTRIBUTE_NAME, kernel);
+        servletContext.setAttribute(INJECTOR_ATTRIBUTE_NAME, kernel.objectGraph().as(Injector.class));
+        servletContext.addListener(this);
     }
 
     @Override
     public void contextInitialized(ServletContextEvent sce) {
-        // already initialized
+        // nothing to do
     }
 
     @Override
     public void contextDestroyed(ServletContextEvent sce) {
+        ServletContext servletContext = sce.getServletContext();
+        servletContext.removeAttribute(INJECTOR_ATTRIBUTE_NAME);
+        servletContext.removeAttribute(KERNEL_ATTRIBUTE_NAME);
+
         if (kernel != null) {
             try {
-                ServletContext servletContext = sce.getServletContext();
-                servletContext.removeAttribute(ServletContextUtils.INJECTOR_ATTRIBUTE_NAME);
-                servletContext.removeAttribute(ServletContextUtils.KERNEL_ATTRIBUTE_NAME);
                 Seed.disposeKernel(kernel);
+                kernel = null;
             } catch (Exception e) {
                 handleException(e);
             }
