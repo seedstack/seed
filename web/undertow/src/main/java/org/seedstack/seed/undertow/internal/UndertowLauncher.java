@@ -38,13 +38,11 @@ public class UndertowLauncher implements SeedLauncher {
         // Start the HTTP server
         start(serverConfig, undertowConfig);
 
-        LOGGER.info("Undertow Web server listening on {}:{}", serverConfig.getHost(), serverConfig.getPort());
     }
 
     @Override
     public void shutdown() throws Exception {
         stop();
-        LOGGER.info("Undertow Web server stopped");
         undeploy();
     }
 
@@ -62,9 +60,6 @@ public class UndertowLauncher implements SeedLauncher {
 
             deploy(serverConfig);
             start(serverConfig, undertowConfig);
-
-            LOGGER.info("Refresh complete, Undertow Web server listening on {}:{}", serverConfig.getHost(),
-                    serverConfig.getPort());
         }
     }
 
@@ -98,11 +93,13 @@ public class UndertowLauncher implements SeedLauncher {
                 undertowPlugin.getSslProvider()
         );
         undertow.start();
+        LOGGER.info("Undertow Web server listening on {}:{}", serverConfig.getHost(), serverConfig.getPort());
     }
 
     private void stop() {
         if (undertow != null) {
             undertow.stop();
+            LOGGER.info("Undertow Web server stopped");
             undertow = null;
         }
     }
