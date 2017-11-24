@@ -17,10 +17,14 @@ public interface LifecycleListener {
     /**
      * This method is called by Seed just after the application has started up.
      */
-    void started();
+    default void started() {
+        // no-op
+    }
 
     /**
      * This method is called by Seed just before the application is shut down.
      */
-    void stopping();
+    default void stopping() {
+        // no-op
+    }
 }
