@@ -10,6 +10,11 @@ package org.seedstack.seed.spi;
 
 public class ConfigurationPriority {
     /**
+     * Runtime information has the highest priority to avoid any override.
+     */
+    public static final int RUNTIME_INFO = Integer.MAX_VALUE;
+
+    /**
      * Environment variables have the highest priority to avoid any override.
      */
     public static final int SYSTEM_PROPERTIES = Integer.MAX_VALUE;

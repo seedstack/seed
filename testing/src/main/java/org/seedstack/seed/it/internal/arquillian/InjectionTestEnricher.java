@@ -16,20 +16,19 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Arquillian TestEnricher to enable SEED injection on tests.
+ * Arquillian TestEnricher to enable SeedStack injection on tests.
  */
-public class InjectionEnricher implements TestEnricher {
+public class InjectionTestEnricher implements TestEnricher {
+    private static final Logger LOGGER = LoggerFactory.getLogger(InjectionTestEnricher.class);
     @Inject
     private static Injector injector;
-
-    private Logger logger = LoggerFactory.getLogger(InjectionEnricher.class);
 
     @Override
     public void enrich(Object testCase) {
         if (injector != null) {
             injector.injectMembers(testCase);
         } else {
-            logger.warn("Seed injector is not available, cannot inject Arquillian test {}",
+            LOGGER.warn("SeedStack injector is not available, cannot inject client-side Arquillian test {}",
                     testCase.getClass().getCanonicalName());
         }
     }

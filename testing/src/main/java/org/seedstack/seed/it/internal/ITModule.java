@@ -13,7 +13,6 @@ import com.google.inject.Module;
 import java.util.Collection;
 import java.util.Set;
 import org.seedstack.seed.core.internal.BindingDefinition;
-import org.seedstack.seed.it.internal.arquillian.InjectionEnricher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,8 +33,6 @@ class ITModule extends AbstractModule {
 
     @Override
     protected void configure() {
-        requestStaticInjection(InjectionEnricher.class);
-
         if (testClass != null) {
             bind(testClass);
         }

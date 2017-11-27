@@ -8,7 +8,7 @@
 
 package org.seedstack.seed.it.internal.arquillian;
 
-import org.jboss.arquillian.container.test.spi.RemoteLoadableExtension;
+import io.nuun.kernel.api.Plugin;
 import org.jboss.arquillian.container.test.spi.client.deployment.AuxiliaryArchiveAppender;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
@@ -21,8 +21,7 @@ public class SeedArchiveAppender implements AuxiliaryArchiveAppender {
     @Override
     public Archive<?> createAuxiliaryArchive() {
         return ShrinkWrap.create(JavaArchive.class, "seed-arquillian-support.jar")
-                .addClass(InjectionEnricher.class)
-                .addClass(SeedRemoteExtension.class)
-                .addAsServiceProvider(RemoteLoadableExtension.class, SeedRemoteExtension.class);
+                .addPackages(false, "org.seedstack.seed.it.internal.arquillian.remote")
+                .addAsServiceProvider(Plugin.class, WebITPlugin.class);
     }
 }

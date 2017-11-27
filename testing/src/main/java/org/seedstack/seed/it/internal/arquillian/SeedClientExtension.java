@@ -18,10 +18,9 @@ import org.jboss.arquillian.test.spi.TestEnricher;
 public class SeedClientExtension implements LoadableExtension {
     @Override
     public void register(final ExtensionBuilder builder) {
-        // append the SEED arquillian support to the deployed app
+        // append arquillian support to the deployed app
         builder.service(AuxiliaryArchiveAppender.class, SeedArchiveAppender.class);
-
-        // registers the enricher for embedded containers
-        builder.service(TestEnricher.class, InjectionEnricher.class);
+        // register the injection enricher
+        builder.service(TestEnricher.class, InjectionTestEnricher.class);
     }
 }

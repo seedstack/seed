@@ -27,6 +27,7 @@ import javax.servlet.ServletContext;
 import org.seedstack.seed.SeedException;
 import org.seedstack.seed.core.SeedRuntime;
 import org.seedstack.seed.core.internal.AbstractSeedPlugin;
+import org.seedstack.seed.spi.ConfigurationPriority;
 import org.seedstack.seed.web.spi.FilterDefinition;
 import org.seedstack.seed.web.spi.ListenerDefinition;
 import org.seedstack.seed.web.spi.SeedFilterPriority;
@@ -56,6 +57,12 @@ public class WebPlugin extends AbstractSeedPlugin {
     @Override
     protected void setup(SeedRuntime seedRuntime) {
         servletContext = seedRuntime.contextAs(ServletContext.class);
+        if (servletContext != null) {
+            seedRuntime.registerConfigurationProvider(
+                    new WebRuntimeConfigurationProvider(servletContext),
+                    ConfigurationPriority.RUNTIME_INFO
+            );
+        }
     }
 
     @Override
