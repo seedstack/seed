@@ -26,7 +26,7 @@
         <poms.version>3.1.1</poms.version>
         <nuun-kernel.version>1.0.M9</nuun-kernel.version>
         <shed.version>1.1.1</shed.version>
-        <coffig.version>3.0.0</coffig.version>
+        <coffig.version>3.0.1</coffig.version>
         <commons-cli.version>1.4</commons-cli.version>
         <guice.version>4.1.0</guice.version>
         <typetools.version>0.5.0</typetools.version>
