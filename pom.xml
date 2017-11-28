@@ -14,7 +14,7 @@
     <parent>
         <groupId>org.seedstack.poms</groupId>
         <artifactId>parent-internal</artifactId>
-        <version>3.1.1-SNAPSHOT</version>
+        <version>3.1.1</version>
     </parent>
 
     <groupId>org.seedstack.seed</groupId>
@@ -23,9 +23,9 @@
     <packaging>pom</packaging>
 
     <properties>
-        <poms.version>3.0.1</poms.version>
+        <poms.version>3.1.1</poms.version>
         <nuun-kernel.version>1.0.M9</nuun-kernel.version>
-        <shed.version>1.1.1-SNAPSHOT</shed.version>
+        <shed.version>1.1.1</shed.version>
         <coffig.version>3.0.0</coffig.version>
         <commons-cli.version>1.4</commons-cli.version>
         <guice.version>4.1.0</guice.version>
@@ -33,7 +33,7 @@
         <shiro.version>1.4.0</shiro.version>
         <undertow.version>1.4.21.Final</undertow.version>
         <jersey2.version>2.25.1</jersey2.version>
-        <hibernate-validator.version>5.4.1.Final</hibernate-validator.version>
+        <hibernate-validator.version>5.4.2.Final</hibernate-validator.version>
         <aopalliance.version>1.0</aopalliance.version>
         <glassfish-javax.el.version>3.0.0</glassfish-javax.el.version>
 

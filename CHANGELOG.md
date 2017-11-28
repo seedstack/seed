@@ -1,4 +1,4 @@
-# Version 3.4.0 (2017-09-30)
+# Version 3.4.0 (2017-11-28)
 
 * [new] Validation exceptions on REST resources are automatically mapped to a detailed response.
 * [new] A `@RequiresCrudPermissions` annotation allows to add permission checks based on the detected CRUD action of the called method.
