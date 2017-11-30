@@ -1,3 +1,7 @@
+# Version 3.4.1 (2017-11-29)
+
+* [fix] Undertow-based applications would not refresh after a startup failure.
+
 # Version 3.4.0 (2017-11-28)
 
 * [new] Validation exceptions on REST resources are automatically mapped to a detailed response.

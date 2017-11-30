@@ -28,7 +28,7 @@ public interface SeedLauncher {
      */
     void shutdown() throws Exception;
 
-    default void refresh() {
+    default void refresh() throws Exception {
         throw new UnsupportedOperationException("Refresh is not supported by this launcher");
     }
 }
