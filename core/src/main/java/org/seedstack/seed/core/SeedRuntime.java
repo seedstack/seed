@@ -106,10 +106,6 @@ public class SeedRuntime {
         return businessVersion;
     }
 
-    public ApplicationConfig getApplicationConfig() {
-        return configuration.get(ApplicationConfig.class);
-    }
-
     private void checkConsistency() {
         if (seedVersion != null) {
             for (Plugin plugin : ServiceLoader.load(Plugin.class)) {

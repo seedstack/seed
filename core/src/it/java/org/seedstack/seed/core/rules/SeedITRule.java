@@ -52,37 +52,28 @@ public class SeedITRule implements TestRule {
         env.put("KEY_PASSWD", "azerty");
 
         Properties systemProperties = buildSystemProperties(description.getAnnotation(SystemProperties.class));
-        if (systemProperties != null) {
-            new MockUp<System>() {
-                @Mock
-                public java.util.Map<String, String> getenv() {
-                    return env;
-                }
+        systemProperties.setProperty("seedstack.config.config.watchPeriod", "0");
+        new MockUp<System>() {
+            @Mock
+            public java.util.Map<String, String> getenv() {
+                return env;
+            }
 
-                @Mock
-                public Properties getProperties() {
-                    return systemProperties;
-                }
+            @Mock
+            public Properties getProperties() {
+                return systemProperties;
+            }
 
-                @Mock
-                public String getProperty(String property) {
-                    return systemProperties.getProperty(property);
-                }
+            @Mock
+            public String getProperty(String property) {
+                return systemProperties.getProperty(property);
+            }
 
-                @Mock
-                public String getProperty(String property, String def) {
-                    return systemProperties.getProperty(property, def);
-                }
-            };
-
-        } else {
-            new MockUp<System>() {
-                @Mock
-                public java.util.Map<String, String> getenv() {
-                    return env;
-                }
-            };
-        }
+            @Mock
+            public String getProperty(String property, String def) {
+                return systemProperties.getProperty(property, def);
+            }
+        };
 
         return new Statement() {
             @Override
@@ -121,13 +112,12 @@ public class SeedITRule implements TestRule {
     }
 
     private Properties buildSystemProperties(SystemProperties systemProperties) {
-        if (systemProperties == null) {
-            return null;
-        }
-        Properties properties = new Properties();
-        String[] value = systemProperties.value();
-        for (int i = 0; i < value.length; i += 2) {
-            properties.setProperty(value[i], value[i + 1]);
+        Properties properties = System.getProperties();
+        if (systemProperties != null) {
+            String[] value = systemProperties.value();
+            for (int i = 0; i < value.length; i += 2) {
+                properties.setProperty(value[i], value[i + 1]);
+            }
         }
         return properties;
     }

@@ -30,9 +30,9 @@ class ApplicationImpl implements Application {
     private final File storageDirectory;
     private final ApplicationConfig applicationConfig;
 
-    ApplicationImpl(Coffig coffig, ApplicationConfig applicationConfig) {
+    ApplicationImpl(Coffig coffig) {
         this.coffig = coffig;
-        this.applicationConfig = applicationConfig;
+        this.applicationConfig = coffig.get(ApplicationConfig.class);
         this.storageDirectory = configureLocalStorage(applicationConfig);
     }
 

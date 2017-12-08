@@ -23,6 +23,7 @@ import org.junit.Test;
 import org.mockito.internal.util.reflection.Whitebox;
 import org.seedstack.coffig.Coffig;
 import org.seedstack.seed.ApplicationConfig;
+import org.seedstack.seed.ConfigConfig;
 import org.seedstack.seed.core.SeedRuntime;
 import org.seedstack.seed.core.internal.diagnostic.DiagnosticManagerImpl;
 
@@ -33,8 +34,9 @@ public class ConfigurationPluginTest {
     public void before() {
         configurationPlugin = new ConfigurationPlugin();
         Coffig coffig = mock(Coffig.class);
+        when(coffig.get(ApplicationConfig.class)).thenReturn(new ApplicationConfig());
+        when(coffig.get(ConfigConfig.class)).thenReturn(new ConfigConfig());
         Whitebox.setInternalState(configurationPlugin, "coffig", coffig);
-        Whitebox.setInternalState(configurationPlugin, "applicationConfig", new ApplicationConfig());
         SeedRuntime seedRuntime = mock(SeedRuntime.class);
         Whitebox.setInternalState(configurationPlugin, "seedRuntime", seedRuntime);
         Whitebox.setInternalState(configurationPlugin, "diagnosticManager", new DiagnosticManagerImpl());

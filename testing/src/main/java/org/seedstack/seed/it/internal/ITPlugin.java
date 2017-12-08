@@ -66,6 +66,7 @@ public class ITPlugin extends AbstractSeedPlugin {
             temporaryAppStorage = Files.createTempDirectory("seedstack-it-").toFile();
             LOGGER.info("Created temporary application storage directory {}", temporaryAppStorage.getAbsolutePath());
             seedRuntime.setDefaultConfiguration("application.storage", temporaryAppStorage.getAbsolutePath());
+            seedRuntime.setDefaultConfiguration("config.watchPeriod", "0");
         } catch (IOException e) {
             LOGGER.warn("Unable to create temporary application storage directory");
         }

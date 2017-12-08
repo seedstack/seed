@@ -12,6 +12,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
+import org.seedstack.coffig.Coffig;
 import org.seedstack.coffig.node.MapNode;
 import org.seedstack.coffig.spi.ConfigurationComponent;
 import org.seedstack.coffig.spi.ConfigurationProvider;
@@ -33,9 +34,27 @@ public class PrioritizedProvider implements ConfigurationProvider {
     }
 
     @Override
+    public void initialize(Coffig coffig) {
+        providers.stream().map(PrioritizedConfigurationProvider::getConfigurationProvider)
+                .forEach(provider -> provider.initialize(coffig));
+    }
+
+    @Override
     public boolean isDirty() {
-        return dirty.get() || providers.stream().map(PrioritizedConfigurationProvider::getConfigurationProvider).filter(
-                ConfigurationComponent::isDirty).count() > 0;
+        return dirty.get() || providers.stream().map(PrioritizedConfigurationProvider::getConfigurationProvider)
+                .anyMatch(ConfigurationComponent::isDirty);
+    }
+
+    @Override
+    public void invalidate() {
+        providers.stream().map(PrioritizedConfigurationProvider::getConfigurationProvider)
+                .forEach(ConfigurationComponent::invalidate);
+    }
+
+    @Override
+    public boolean watch() {
+        return providers.stream().map(PrioritizedConfigurationProvider::getConfigurationProvider)
+                .anyMatch(ConfigurationComponent::watch);
     }
 
     @Override

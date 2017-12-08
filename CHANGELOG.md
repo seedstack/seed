@@ -1,3 +1,7 @@
+# Version 3.4.2 (2017-12-15)
+
+* [new] Add configuration watching for local files and automatic refresh after change.
+
 # Version 3.4.1 (2017-11-29)
 
 * [fix] Undertow-based applications would not refresh after a startup failure.

@@ -10,6 +10,7 @@ package org.seedstack.seed.core.internal.configuration;
 
 import com.google.common.collect.Sets;
 import io.nuun.kernel.api.plugin.InitState;
+import io.nuun.kernel.api.plugin.context.Context;
 import io.nuun.kernel.api.plugin.context.InitContext;
 import io.nuun.kernel.api.plugin.request.ClasspathScanRequest;
 import io.nuun.kernel.core.AbstractPlugin;
@@ -30,6 +31,7 @@ import org.seedstack.coffig.provider.JacksonProvider;
 import org.seedstack.coffig.provider.PropertiesProvider;
 import org.seedstack.seed.Application;
 import org.seedstack.seed.ApplicationConfig;
+import org.seedstack.seed.ConfigConfig;
 import org.seedstack.seed.SeedException;
 import org.seedstack.seed.core.SeedRuntime;
 import org.seedstack.seed.core.internal.CoreErrorCode;
@@ -56,8 +58,8 @@ public class ConfigurationPlugin extends AbstractPlugin implements ApplicationPr
     private SeedRuntime seedRuntime;
     private Coffig coffig;
     private DiagnosticManager diagnosticManager;
-    private ApplicationConfig applicationConfig;
     private Application application;
+    private ConfigConfig configConfig;
 
     @Override
     public String name() {
@@ -69,11 +71,11 @@ public class ConfigurationPlugin extends AbstractPlugin implements ApplicationPr
         seedRuntime = (SeedRuntime) containerContext;
         coffig = seedRuntime.getConfiguration();
         diagnosticManager = seedRuntime.getDiagnosticManager();
-        applicationConfig = seedRuntime.getApplicationConfig();
     }
 
     @Override
     public String pluginPackageRoot() {
+        ApplicationConfig applicationConfig = coffig.get(ApplicationConfig.class);
         if (applicationConfig.getBasePackages().isEmpty() && applicationConfig.isPackageScanWarning()) {
             LOGGER.warn("No base package configured, only classes in 'org.seedstack.*' packages will be scanned");
         }
@@ -99,11 +101,27 @@ public class ConfigurationPlugin extends AbstractPlugin implements ApplicationPr
         detectKernelParamConfig(initContext);
         detectConfigurationFiles(initContext);
 
-        application = new ApplicationImpl(coffig, applicationConfig);
+        application = new ApplicationImpl(coffig);
+        configConfig = coffig.get(ConfigConfig.class);
+
         diagnosticManager.registerDiagnosticInfoCollector("application",
                 new ApplicationDiagnosticCollector(application));
 
         return InitState.INITIALIZED;
+    }
+
+    @Override
+    public void start(Context context) {
+        int watchPeriod = configConfig.getWatchPeriod();
+        if (watchPeriod > 0) {
+            LOGGER.info("Watching configuration changes every {} second(s)", watchPeriod);
+            coffig.startWatching(watchPeriod);
+        }
+    }
+
+    @Override
+    public void stop() {
+        coffig.stopWatching();
     }
 
     private void detectKernelParamConfig(InitContext initContext) {
