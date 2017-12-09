@@ -112,10 +112,9 @@ public class ConfigurationPlugin extends AbstractPlugin implements ApplicationPr
 
     @Override
     public void start(Context context) {
-        int watchPeriod = configConfig.getWatchPeriod();
-        if (watchPeriod > 0) {
-            LOGGER.info("Watching configuration changes every {} second(s)", watchPeriod);
-            coffig.startWatching(watchPeriod);
+        if (configConfig.isWatch()) {
+            LOGGER.info("Configuration will be watched for changes");
+            coffig.startWatching();
         }
     }
 

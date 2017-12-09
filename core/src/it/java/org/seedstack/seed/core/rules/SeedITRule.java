@@ -52,7 +52,7 @@ public class SeedITRule implements TestRule {
         env.put("KEY_PASSWD", "azerty");
 
         Properties systemProperties = buildSystemProperties(description.getAnnotation(SystemProperties.class));
-        systemProperties.setProperty("seedstack.config.config.watchPeriod", "0");
+        systemProperties.setProperty("seedstack.config.config.watch", "false");
         new MockUp<System>() {
             @Mock
             public java.util.Map<String, String> getenv() {

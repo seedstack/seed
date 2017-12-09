@@ -12,14 +12,14 @@ import org.seedstack.coffig.Config;
 
 @Config("config")
 public class ConfigConfig {
-    private int watchPeriod = 2;
+    private boolean watch = true;
 
-    public int getWatchPeriod() {
-        return watchPeriod;
+    public boolean isWatch() {
+        return watch;
     }
 
-    public ConfigConfig setWatchPeriod(int watchPeriod) {
-        this.watchPeriod = watchPeriod;
+    public ConfigConfig setWatch(boolean watch) {
+        this.watch = watch;
         return this;
     }
 }

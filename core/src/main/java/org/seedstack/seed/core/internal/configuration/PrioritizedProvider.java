@@ -9,13 +9,16 @@
 package org.seedstack.seed.core.internal.configuration;
 
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
 import org.seedstack.coffig.Coffig;
 import org.seedstack.coffig.node.MapNode;
 import org.seedstack.coffig.spi.ConfigurationComponent;
 import org.seedstack.coffig.spi.ConfigurationProvider;
+import org.seedstack.coffig.spi.ConfigurationWatcher;
 
 public class PrioritizedProvider implements ConfigurationProvider {
     private final List<PrioritizedConfigurationProvider> providers = new CopyOnWriteArrayList<>();
@@ -52,9 +55,11 @@ public class PrioritizedProvider implements ConfigurationProvider {
     }
 
     @Override
-    public boolean watch() {
-        return providers.stream().map(PrioritizedConfigurationProvider::getConfigurationProvider)
-                .anyMatch(ConfigurationComponent::watch);
+    public Set<ConfigurationWatcher> watchers() {
+        Set<ConfigurationWatcher> configurationWatchers = new HashSet<>();
+        providers.stream().map(PrioritizedConfigurationProvider::getConfigurationProvider)
+                .forEach(item -> configurationWatchers.addAll(item.watchers()));
+        return configurationWatchers;
     }
 
     @Override
