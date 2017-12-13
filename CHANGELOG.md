@@ -1,6 +1,7 @@
 # Version 3.4.2 (2017-12-15)
 
 * [new] Add configuration watching for local files and automatic refresh after change.
+* [fix] Fix `config` tool NullPointerException when dumping a config tree with generics and no null value.
 
 # Version 3.4.1 (2017-11-29)
 

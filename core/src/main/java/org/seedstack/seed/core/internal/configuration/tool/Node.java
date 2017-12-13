@@ -218,7 +218,9 @@ class Node implements Comparable<Node> {
                         buildPropertyInfo(
                                 Types.rawClassOf(itemType),
                                 parentPropertyName.isEmpty() ? name : parentPropertyName + "." + name,
-                                itemType.equals(genericType) ? ReflectUtils.getValue(field, defaultInstance) : null
+                                defaultInstance != null && itemType.equals(genericType) ?
+                                        ReflectUtils.getValue(field, defaultInstance)
+                                        : null
                         )
                 );
             }
