@@ -203,17 +203,16 @@ class Node implements Comparable<Node> {
             }
 
             Class<?> rawClass = Types.rawClassOf(genericType);
-            Type itemType;
+            Type itemType = null;
             if (Collection.class.isAssignableFrom(rawClass) && genericType instanceof ParameterizedType) {
                 itemType = Types.rawClassOf(((ParameterizedType) genericType).getActualTypeArguments()[0]);
             } else if (Map.class.isAssignableFrom(rawClass) && genericType instanceof ParameterizedType) {
                 itemType = Types.rawClassOf(((ParameterizedType) genericType).getActualTypeArguments()[1]);
             } else if (genericType instanceof Class<?> && ((Class<?>) genericType).isArray()) {
                 itemType = ((Class<?>) genericType).getComponentType();
-            } else {
-                itemType = genericType;
             }
-            if (!coffig.getMapper().canHandle(itemType)) {
+
+            if (itemType != null && !coffig.getMapper().canHandle(itemType)) {
                 propertyInfo.addInnerPropertyInfo(
                         buildPropertyInfo(
                                 Types.rawClassOf(itemType),
