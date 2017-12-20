@@ -1,6 +1,6 @@
 <!--
 
-    Copyright © 2013-2017, The SeedStack authors <http://seedstack.org>
+    Copyright © 2013-2018, The SeedStack authors <http://seedstack.org>
 
     This Source Code Form is subject to the terms of the Mozilla Public
     License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -14,16 +14,15 @@
     <parent>
         <groupId>org.seedstack.poms</groupId>
         <artifactId>parent-internal</artifactId>
-        <version>3.1.1</version>
+        <version>3.2.0-SNAPSHOT</version>
     </parent>
 
     <groupId>org.seedstack.seed</groupId>
     <artifactId>seed</artifactId>
-    <version>3.4.2-SNAPSHOT</version>
+    <version>3.5.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <properties>
-        <poms.version>3.1.1</poms.version>
         <nuun-kernel.version>1.0.M9</nuun-kernel.version>
         <shed.version>1.1.2-SNAPSHOT</shed.version>
         <coffig.version>3.1.0-SNAPSHOT</coffig.version>
@@ -36,6 +35,8 @@
         <hibernate-validator.version>5.4.2.Final</hibernate-validator.version>
         <aopalliance.version>1.0</aopalliance.version>
         <glassfish-javax.el.version>3.0.0</glassfish-javax.el.version>
+        <arquillian.version>1.1.5.Final</arquillian.version>
+        <tomcat.version>8.5.24</tomcat.version>
 
         <compatibility.version>3.1.0</compatibility.version>
 
@@ -117,6 +118,7 @@
                                 <exclude>org.seedstack.seed.DataSet</exclude>
                                 <exclude>org.seedstack.seed.spi.ToolContext</exclude>
                                 <exclude>org.seedstack.seed.cli.spi.CliContext</exclude>
+                                <exclude>org.seedstack.seed.cli.WithCommandLine</exclude>
                                 <exclude>org.seedstack.seed.security.SecurityConfig</exclude>
                                 <exclude>org.seedstack.seed.security.principals.SimplePrincipalProvider</exclude>
                                 <exclude>org.seedstack.seed.security.principals.X509CertificatePrincipalProvider</exclude>
@@ -129,6 +131,21 @@
             </plugins>
         </pluginManagement>
     </build>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.hamcrest</groupId>
+                <artifactId>hamcrest-core</artifactId>
+                <version>1.3</version>
+            </dependency>
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-api</artifactId>
+                <version>${slf4j.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
     <scm>
         <url>https://github.com/seedstack/seed</url>

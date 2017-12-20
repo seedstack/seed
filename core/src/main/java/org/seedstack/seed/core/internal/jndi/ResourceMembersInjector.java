@@ -1,5 +1,5 @@
 /*
- * Copyright © 2013-2017, The SeedStack authors <http://seedstack.org>
+ * Copyright © 2013-2018, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -12,6 +12,9 @@ import static org.seedstack.shed.reflect.ReflectUtils.makeAccessible;
 
 import com.google.inject.MembersInjector;
 import java.lang.reflect.Field;
+import javax.naming.Context;
+import javax.naming.NamingException;
+import org.seedstack.seed.SeedException;
 
 /**
  * Custom field injector for JNDI resources.
@@ -20,19 +23,26 @@ import java.lang.reflect.Field;
  */
 class ResourceMembersInjector<T> implements MembersInjector<T> {
     private final Field field;
-    private final Object toInject;
+    private final Context context;
+    private final String contextName;
+    private final String resourceName;
 
-    ResourceMembersInjector(Field field, Object toInject) {
+    ResourceMembersInjector(Field field, Context context, String contextName, String resourceName) {
         this.field = makeAccessible(field);
-        this.toInject = toInject;
+        this.context = context;
+        this.contextName = contextName;
+        this.resourceName = resourceName;
     }
 
     @Override
     public void injectMembers(T t) {
         try {
-            field.set(t, this.toInject);
-        } catch (IllegalAccessException e) {
-            throw new RuntimeException(e);
+            field.set(t, context.lookup(resourceName));
+        } catch (NamingException | IllegalAccessException e) {
+            throw SeedException.wrap(e, JndiErrorCode.UNABLE_TO_INJECT_JNDI_RESOURCE)
+                    .put("field", field)
+                    .put("context", contextName)
+                    .put("resource", resourceName);
         }
     }
 }

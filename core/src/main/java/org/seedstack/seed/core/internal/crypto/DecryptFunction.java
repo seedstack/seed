@@ -1,5 +1,5 @@
 /*
- * Copyright © 2013-2017, The SeedStack authors <http://seedstack.org>
+ * Copyright © 2013-2018, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -9,9 +9,9 @@
 package org.seedstack.seed.core.internal.crypto;
 
 import com.google.common.base.Strings;
+import com.google.common.io.BaseEncoding;
 import java.nio.charset.StandardCharsets;
 import java.security.KeyStore;
-import javax.xml.bind.DatatypeConverter;
 import org.seedstack.coffig.Coffig;
 import org.seedstack.coffig.spi.ConfigFunction;
 import org.seedstack.coffig.spi.ConfigFunctionHolder;
@@ -59,6 +59,6 @@ public class DecryptFunction implements ConfigFunctionHolder {
         }
         EncryptionService encryptionService = encryptionServiceFactory.create(alias,
                 aliasConfig.getPassword().toCharArray());
-        return new String(encryptionService.decrypt(DatatypeConverter.parseHexBinary(value)), StandardCharsets.UTF_8);
+        return new String(encryptionService.decrypt(BaseEncoding.base16().decode(value)), StandardCharsets.UTF_8);
     }
 }

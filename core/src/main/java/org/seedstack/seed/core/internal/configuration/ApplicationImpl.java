@@ -1,5 +1,5 @@
 /*
- * Copyright © 2013-2017, The SeedStack authors <http://seedstack.org>
+ * Copyright © 2013-2018, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -10,6 +10,8 @@ package org.seedstack.seed.core.internal.configuration;
 
 import com.google.inject.util.Types;
 import java.io.File;
+import java.util.Collections;
+import java.util.Map;
 import org.seedstack.coffig.Coffig;
 import org.seedstack.coffig.node.ValueNode;
 import org.seedstack.seed.Application;
@@ -29,10 +31,14 @@ class ApplicationImpl implements Application {
     private final Coffig coffig;
     private final File storageDirectory;
     private final ApplicationConfig applicationConfig;
+    private final Map<String, String> kernelParameters;
+    private final String[] arguments;
 
-    ApplicationImpl(Coffig coffig) {
+    ApplicationImpl(Coffig coffig, Map<String, String> kernelParameters, String[] arguments) {
         this.coffig = coffig;
         this.applicationConfig = coffig.get(ApplicationConfig.class);
+        this.kernelParameters = kernelParameters;
+        this.arguments = arguments;
         this.storageDirectory = configureLocalStorage(applicationConfig);
     }
 
@@ -88,6 +94,16 @@ class ApplicationImpl implements Application {
     @Override
     public String substituteWithConfiguration(String value) {
         return (String) coffig.getMapper().map(new ValueNode(value), String.class);
+    }
+
+    @Override
+    public Map<String, String> getKernelParameters() {
+        return Collections.unmodifiableMap(kernelParameters);
+    }
+
+    @Override
+    public String[] getArguments() {
+        return arguments.clone();
     }
 
     private File configureLocalStorage(ApplicationConfig applicationConfig) {

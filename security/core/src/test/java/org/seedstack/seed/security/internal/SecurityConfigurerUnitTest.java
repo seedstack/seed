@@ -1,5 +1,5 @@
 /*
- * Copyright © 2013-2017, The SeedStack authors <http://seedstack.org>
+ * Copyright © 2013-2018, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -28,12 +28,9 @@ import org.seedstack.seed.security.internal.authorization.SameRoleMapping;
 import org.seedstack.seed.security.internal.realms.ConfigurationRealm;
 
 public class SecurityConfigurerUnitTest {
-
-    SecurityConfigurer underTest;
-
-    SecurityConfig configuration;
-
-    Map<Class<?>, Collection<Class<?>>> securityClasses;
+    private SecurityConfigurer underTest;
+    private SecurityConfig configuration;
+    private Map<Class<?>, Collection<Class<?>>> securityClasses;
 
     @Before
     public void before() {

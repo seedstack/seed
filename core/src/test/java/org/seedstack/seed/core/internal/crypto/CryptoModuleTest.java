@@ -1,5 +1,5 @@
 /*
- * Copyright © 2013-2017, The SeedStack authors <http://seedstack.org>
+ * Copyright © 2013-2018, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -14,14 +14,18 @@ import com.google.inject.name.Names;
 import java.security.KeyStore;
 import java.util.HashMap;
 import java.util.Map;
+import javax.net.ssl.SSLContext;
 import mockit.Mocked;
 import mockit.Verifications;
+import mockit.integration.junit4.JMockit;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.seedstack.seed.crypto.EncryptionService;
 
 /**
  * Unit test for {@link CryptoModule}
  */
+@RunWith(JMockit.class)
 public class CryptoModuleTest {
 
     /**
@@ -30,7 +34,7 @@ public class CryptoModuleTest {
      */
     @Test
     public void testConfigure(@Mocked final EncryptionServiceImpl asymetricCryptingRSA, @Mocked final KeyStore keyStore,
-            @Mocked final Binder binder) {
+            @Mocked final Binder binder, @Mocked final SSLContext sslContext) {
 
         final Map<String, KeyStore> keyStores = new HashMap<>();
         keyStores.put("k1", keyStore);
@@ -38,7 +42,7 @@ public class CryptoModuleTest {
         rsaServices.put(Key.get(EncryptionService.class, Names.named("k1")), asymetricCryptingRSA);
         rsaServices.put(Key.get(EncryptionService.class, Names.named("k2")), asymetricCryptingRSA);
 
-        CryptoModule module = new CryptoModule(rsaServices, keyStores);
+        CryptoModule module = new CryptoModule(rsaServices, keyStores, sslContext);
         module.configure(binder);
         new Verifications() {
             {
@@ -47,6 +51,8 @@ public class CryptoModuleTest {
                 binder.bind(Key.get(EncryptionService.class, Names.named("k2"))).toInstance(asymetricCryptingRSA);
                 times = 1;
                 binder.bind(Key.get(KeyStore.class, Names.named("k1"))).toInstance(keyStore);
+                times = 1;
+                binder.bind(SSLContext.class).toInstance(sslContext);
                 times = 1;
             }
         };

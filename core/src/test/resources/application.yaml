@@ -1,0 +1,77 @@
+#
+# Copyright © 2013-2018, The SeedStack authors <http://seedstack.org>
+#
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+#
+
+classes:
+  org:
+    seedstack:
+      key1: value1
+      seed:
+        core:
+          key2: value2
+          fixtures:
+            Service:
+              key2:
+          ConfigurationIT:
+            key2: value2bis
+            key3: value3
+logging:
+  level: INFO
+application:
+  id: seed-it
+  basePackages: some.other.pkg
+jndi:
+  additionalContexts:
+    test1: jndi-test1.properties
+    test2: jndi-test2.properties
+secret1: "**I am ${person${index1}}**"
+person1: Alice
+index1: 1
+someEnum: FOO
+someShorts: [ 2, 3, 4 ]
+anInt: 5
+empty: ""
+null:
+debugMode: off
+debugMode<debug>: on
+testProperty<dev>: devValue
+testProperty<preprod>: preprodValue
+testProperty<prod>:
+  subProperty1: prodValue
+  subProperty2: prodValue
+testProperty: baseValue
+someObject:
+  property1: value
+  property2: [ 5, 6, 7 ]
+customProperty: customValue
+crypto:
+  keystores:
+    master:
+      path: src/test/resources/internal/testkeystore.jck
+      password: azerty
+      aliases:
+        seed: azerty
+    ssl:
+      path: src/test/resources/node.keystore
+      password: $decrypt('seed', '5BC99359A5D29F5192CEBDAC25C17A9CC52CA0CC8D3325A2DC92C3DF05AABE37DBF32480DC2F8E629CEBE4903BC645BFFF33CB8D4B3910281DB0AF47DF5E739D346BE56E91BB33882407B71DF4F9193DCD1D7FE9CB82E195E42816770AF8472680FF894A80602CBD3C4D0B080B474960E49688E7C1677945ECBB1A49580F0DE3')
+      aliases:
+        client:
+          password: $decrypt('seed', '70E65711ACFEF03F59AFCED4BCF8E4C51F84A0A621B06221FC9EC83BAADA0229303027A4AD470B5B7DDC27D684D8BB68BEFBDBA4E06E0EDFAC3B0251E01F5E12F00764BC85BAF58F2438EAA57F8404B5C96C44AE728A7CF5926C434172E0B85E7A6A4B1BF9AFF2112A6B24687115B55C03226383BBF96563A19B18954B49DD59')
+          qualifier: ssl
+    myKeyStore:
+      path: src/test/resources/node.keystore
+      password: $decrypt('seed', '5BC99359A5D29F5192CEBDAC25C17A9CC52CA0CC8D3325A2DC92C3DF05AABE37DBF32480DC2F8E629CEBE4903BC645BFFF33CB8D4B3910281DB0AF47DF5E739D346BE56E91BB33882407B71DF4F9193DCD1D7FE9CB82E195E42816770AF8472680FF894A80602CBD3C4D0B080B474960E49688E7C1677945ECBB1A49580F0DE3')
+      aliases:
+        client:
+          password: $decrypt('seed', '70E65711ACFEF03F59AFCED4BCF8E4C51F84A0A621B06221FC9EC83BAADA0229303027A4AD470B5B7DDC27D684D8BB68BEFBDBA4E06E0EDFAC3B0251E01F5E12F00764BC85BAF58F2438EAA57F8404B5C96C44AE728A7CF5926C434172E0B85E7A6A4B1BF9AFF2112A6B24687115B55C03226383BBF96563A19B18954B49DD59')
+  certificates:
+    client:
+      resource: client.cer
+  ssl:
+    keystore: ssl
+    truststore: ssl
+    alias: client

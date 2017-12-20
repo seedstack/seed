@@ -1,5 +1,5 @@
 /*
- * Copyright © 2013-2017, The SeedStack authors <http://seedstack.org>
+ * Copyright © 2013-2018, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -8,5 +8,6 @@
 /**
  * Provides classes to expose immutable SSL configuration. This is meant for external modules e.g. embedded servers.
  */
+
 
 package org.seedstack.seed.crypto.spi;

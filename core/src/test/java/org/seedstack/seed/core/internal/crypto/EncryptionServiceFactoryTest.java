@@ -1,5 +1,5 @@
 /*
- * Copyright © 2013-2017, The SeedStack authors <http://seedstack.org>
+ * Copyright © 2013-2018, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -21,15 +21,19 @@ import mockit.Mock;
 import mockit.MockUp;
 import mockit.Mocked;
 import mockit.Verifications;
+import mockit.integration.junit4.JMockit;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.seedstack.seed.SeedException;
 import org.seedstack.seed.crypto.CryptoConfig;
 import org.seedstack.seed.crypto.EncryptionService;
+import org.seedstack.shed.ClassLoaders;
 
 /**
  * Unit test for {@link EncryptionServiceFactory}.
  */
+@RunWith(JMockit.class)
 public class EncryptionServiceFactoryTest {
     private static final String ALIAS = "key1";
     private static final char[] PASSWORD = "password".toCharArray();
@@ -58,7 +62,6 @@ public class EncryptionServiceFactoryTest {
             }
         };
 
-        KeyPairConfig keyPairConfig = new KeyPairConfig("keyStoreName", ALIAS, "password", null, null);
         EncryptionServiceFactory factory = new EncryptionServiceFactory(configuration, keyStore);
         EncryptionService encryptionService = factory.create(ALIAS, PASSWORD);
 
@@ -127,12 +130,26 @@ public class EncryptionServiceFactoryTest {
     }
 
     @Test
-    public void testCreateWithExternalCertificateFromResource(@Mocked final URL url,
+    public void testCreateWithExternalCertificateFromResource(
             @Mocked CryptoConfig.CertificateConfig certificateConfig) throws Exception {
-        new MockUp<ClassLoader>() {
+        final URL url = new URL("http://nowhere");
+
+        new Expectations(url) {
+            {
+                url.getFile();
+                result = null;
+            }
+        };
+
+        new MockUp<ClassLoaders>() {
             @Mock
-            public URL getResource(String name) {
-                return url;
+            public ClassLoader findMostCompleteClassLoader(Class<?> target) {
+                return new ClassLoader() {
+                    @Override
+                    public URL getResource(String name) {
+                        return url;
+                    }
+                };
             }
         };
 

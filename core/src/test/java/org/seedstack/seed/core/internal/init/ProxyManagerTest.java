@@ -1,5 +1,5 @@
 /*
- * Copyright © 2013-2017, The SeedStack authors <http://seedstack.org>
+ * Copyright © 2013-2018, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -14,7 +14,7 @@ import java.net.ProxySelector;
 import java.net.URI;
 import java.util.List;
 import mockit.Deencapsulation;
-import mockit.NonStrictExpectations;
+import mockit.Expectations;
 import mockit.integration.junit4.JMockit;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
@@ -106,19 +106,33 @@ public class ProxyManagerTest {
 
     private void givenProxy(String type, String host, Integer port, boolean upperCase, String... exclusions) {
         if (type != null) {
-            new NonStrictExpectations(System.class) {{
-                System.getenv(upperCase ? (type.toUpperCase() + "_PROXY") : (type.toLowerCase() + "_proxy"));
-                result = String.format("http://%s:%d", host, port);
-                System.getenv(!upperCase ? (type.toUpperCase() + "_PROXY") : (type.toLowerCase() + "_proxy"));
-                result = null;
-
-                System.getenv(upperCase ? "NO_PROXY" : "no_proxy");
-                result = String.join(",", (CharSequence[]) exclusions);
-                System.getenv(!upperCase ? "NO_PROXY" : "no_proxy");
-                result = null;
+            new Expectations(System.class) {{
+                if (upperCase) {
+                    System.getenv(type.toUpperCase() + "_PROXY");
+                    result = String.format("http://%s:%d", host, port);
+                    System.getenv(type.toLowerCase() + "_proxy");
+                    result = null;
+                    times = -1;
+                    System.getenv("NO_PROXY");
+                    result = String.join(",", (CharSequence[]) exclusions);
+                    System.getenv("no_proxy");
+                    result = null;
+                    times = -1;
+                } else {
+                    System.getenv(type.toLowerCase() + "_proxy");
+                    result = String.format("http://%s:%d", host, port);
+                    System.getenv(type.toUpperCase() + "_PROXY");
+                    result = null;
+                    times = -1;
+                    System.getenv("no_proxy");
+                    result = String.join(",", (CharSequence[]) exclusions);
+                    System.getenv("NO_PROXY");
+                    result = null;
+                    times = -1;
+                }
             }};
         } else {
-            new NonStrictExpectations(System.class) {{
+            new Expectations(System.class) {{
                 System.getenv("http_proxy");
                 result = null;
                 System.getenv("HTTP_PROXY");

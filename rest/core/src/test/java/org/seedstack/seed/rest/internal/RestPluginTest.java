@@ -1,5 +1,5 @@
 /*
- * Copyright © 2013-2017, The SeedStack authors <http://seedstack.org>
+ * Copyright © 2013-2018, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -27,7 +27,6 @@ import javax.ws.rs.ext.Provider;
 import mockit.Deencapsulation;
 import mockit.Expectations;
 import mockit.Mocked;
-import mockit.NonStrictExpectations;
 import mockit.integration.junit4.JMockit;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -119,7 +118,7 @@ public class RestPluginTest {
         for (Pair<Specification<Class<?>>, Class<?>> specEntry : specEntries) {
             specsMap.put(specEntry.getValue0(), Lists.newArrayList(specEntry.getValue1()));
         }
-        new NonStrictExpectations() {{
+        new Expectations() {{
             initContext.scannedTypesBySpecification();
             result = specsMap;
         }};

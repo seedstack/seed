@@ -1,5 +1,5 @@
 /*
- * Copyright © 2013-2017, The SeedStack authors <http://seedstack.org>
+ * Copyright © 2013-2018, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -10,9 +10,8 @@ package org.seedstack.seed.rest.jersey2.internal;
 
 import com.google.common.collect.Lists;
 import io.nuun.kernel.api.plugin.context.InitContext;
+import mockit.Expectations;
 import mockit.Mocked;
-import mockit.NonStrictExpectations;
-import mockit.StrictExpectations;
 import mockit.integration.junit4.JMockit;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -38,7 +37,7 @@ public class Jersey2PluginTest {
 
     @Test
     public void testInit() {
-        new StrictExpectations() {{
+        new Expectations() {{
             initContext.dependency(RestPlugin.class);
             result = restPlugin;
 
@@ -57,20 +56,12 @@ public class Jersey2PluginTest {
 
     @Test
     public void testInitWithoutServletContext() {
-        new NonStrictExpectations() {{
+        new Expectations() {{
             restPlugin.isEnabled();
             result = false;
 
             initContext.dependency(RestPlugin.class);
             result = restPlugin;
-
-            initContext.dependencies(RestProvider.class);
-            result = Lists.newArrayList(restProvider);
-
-            restProvider.resources();
-            result = null;
-            restProvider.providers();
-            result = null;
         }};
 
         underTest.init(initContext);

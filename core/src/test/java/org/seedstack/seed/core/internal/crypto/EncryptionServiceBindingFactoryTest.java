@@ -1,5 +1,5 @@
 /*
- * Copyright © 2013-2017, The SeedStack authors <http://seedstack.org>
+ * Copyright © 2013-2018, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -17,18 +17,21 @@ import java.util.List;
 import java.util.Map;
 import mockit.Expectations;
 import mockit.Mocked;
+import mockit.integration.junit4.JMockit;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.seedstack.seed.SeedException;
 import org.seedstack.seed.core.internal.crypto.fixtures.AliasQualifier;
 import org.seedstack.seed.crypto.CryptoConfig;
 import org.seedstack.seed.crypto.EncryptionService;
 
+@RunWith(JMockit.class)
 public class EncryptionServiceBindingFactoryTest {
 
-    public static final String KEY_STORE_NAME = "keyStoreName";
-    public static final String ALIAS_NAME = "aliasName";
-    public static final String PASSWORD = "password";
+    private static final String KEY_STORE_NAME = "keyStoreName";
+    private static final String ALIAS_NAME = "aliasName";
+    private static final String PASSWORD = "password";
     public static final String KEYSTORE_PATH = "path/to/keystore";
 
     @Mocked

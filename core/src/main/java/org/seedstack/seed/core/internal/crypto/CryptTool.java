@@ -1,5 +1,5 @@
 /*
- * Copyright © 2013-2017, The SeedStack authors <http://seedstack.org>
+ * Copyright © 2013-2018, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -10,12 +10,12 @@ package org.seedstack.seed.core.internal.crypto;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
+import com.google.common.io.BaseEncoding;
 import io.nuun.kernel.api.plugin.InitState;
 import io.nuun.kernel.api.plugin.context.InitContext;
 import java.nio.charset.Charset;
 import java.security.KeyStore;
 import java.util.Collection;
-import javax.xml.bind.DatatypeConverter;
 import org.seedstack.seed.SeedException;
 import org.seedstack.seed.cli.CliArgs;
 import org.seedstack.seed.cli.CliOption;
@@ -68,7 +68,7 @@ public class CryptTool extends AbstractSeedTool {
         EncryptionService encryptionService = encryptionServiceFactory.create(alias,
                 aliasConfig.getPassword().toCharArray());
         System.out.println(
-                DatatypeConverter.printHexBinary(
+                BaseEncoding.base16().encode(
                         encryptionService.encrypt(
                                 args[0].getBytes(Charset.forName(encoding))
                         )

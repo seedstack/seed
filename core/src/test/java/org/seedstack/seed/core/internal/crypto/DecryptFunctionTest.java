@@ -1,5 +1,5 @@
 /*
- * Copyright © 2013-2017, The SeedStack authors <http://seedstack.org>
+ * Copyright © 2013-2018, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -8,14 +8,16 @@
 
 package org.seedstack.seed.core.internal.crypto;
 
+import com.google.common.io.BaseEncoding;
 import java.security.InvalidKeyException;
 import java.security.KeyStore;
-import javax.xml.bind.DatatypeConverter;
 import mockit.Expectations;
 import mockit.Injectable;
 import mockit.Mocked;
+import mockit.integration.junit4.JMockit;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.seedstack.coffig.Coffig;
 import org.seedstack.seed.SeedException;
 import org.seedstack.seed.crypto.CryptoConfig;
@@ -24,9 +26,10 @@ import org.seedstack.seed.crypto.EncryptionService;
 /**
  * Unit test for {@link DecryptFunction}.
  */
+@RunWith(JMockit.class)
 public class DecryptFunctionTest {
     private static final String toDecrypt = "essai crypting";
-    private static final String cryptingString = DatatypeConverter.printHexBinary(toDecrypt.getBytes());
+    private static final String cryptingString = BaseEncoding.base16().encode(toDecrypt.getBytes());
 
     @Mocked
     private EncryptionServiceFactory encryptionServiceFactory;
@@ -58,7 +61,7 @@ public class DecryptFunctionTest {
             result = new CryptoConfig.KeyStoreConfig().addAlias("seed",
                     new CryptoConfig.KeyStoreConfig.AliasConfig().setPassword("toto"));
 
-            encryptionService.decrypt(DatatypeConverter.parseHexBinary(cryptingString));
+            encryptionService.decrypt(BaseEncoding.base16().decode(cryptingString));
             result = toDecrypt.getBytes();
         }};
 
@@ -93,7 +96,7 @@ public class DecryptFunctionTest {
             cryptoConfig.masterKeyStore();
             result = keyStoreConfig;
 
-            encryptionService.decrypt(DatatypeConverter.parseHexBinary(cryptingString));
+            encryptionService.decrypt(BaseEncoding.base16().decode(cryptingString));
             result = SeedException.wrap(new InvalidKeyException("dummy exception"), CryptoErrorCode.INVALID_KEY);
         }};
 

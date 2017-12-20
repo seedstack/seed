@@ -1,0 +1,6 @@
+org.seedstack.seed.testing.internal.ArgumentsTestPlugin
+org.seedstack.seed.testing.internal.ConfigurationPropertiesTestPlugin
+org.seedstack.seed.testing.internal.ExpectedTestPlugin
+org.seedstack.seed.testing.internal.KernelParametersTestPlugin
+org.seedstack.seed.testing.internal.LaunchTestPlugin
+org.seedstack.seed.testing.internal.SystemPropertiesTestPlugin

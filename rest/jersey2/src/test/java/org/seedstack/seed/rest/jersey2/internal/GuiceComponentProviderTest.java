@@ -1,5 +1,5 @@
 /*
- * Copyright © 2013-2017, The SeedStack authors <http://seedstack.org>
+ * Copyright © 2013-2018, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -13,7 +13,6 @@ import static org.junit.Assert.fail;
 
 import com.google.common.collect.Sets;
 import com.google.inject.Injector;
-import com.sun.org.apache.xpath.internal.operations.String;
 import io.nuun.kernel.api.annotations.Ignore;
 import javax.servlet.ServletContext;
 import javax.ws.rs.Path;
@@ -23,7 +22,6 @@ import mockit.Expectations;
 import mockit.Mock;
 import mockit.MockUp;
 import mockit.Mocked;
-import mockit.NonStrictExpectations;
 import mockit.Tested;
 import mockit.Verifications;
 import mockit.integration.junit4.JMockit;
@@ -79,7 +77,7 @@ public class GuiceComponentProviderTest {
     }
 
     private void givenServiceLocator() {
-        new NonStrictExpectations() {{
+        new Expectations() {{
             serviceLocator.getService(ServletContext.class);
             result = servletContext;
             servletContext.getAttribute(Injector.class.getName());
@@ -101,7 +99,7 @@ public class GuiceComponentProviderTest {
     }
 
     private void givenMissingServletContext() {
-        new NonStrictExpectations() {{
+        new Expectations() {{
             serviceLocator.getService(ServletContext.class);
             result = null;
         }};
@@ -119,7 +117,7 @@ public class GuiceComponentProviderTest {
     }
 
     private void givenServletContextAndMissingInjector() {
-        new NonStrictExpectations() {{
+        new Expectations() {{
             serviceLocator.getService(ServletContext.class);
             result = servletContext;
             servletContext.getAttribute(Injector.class.getName());

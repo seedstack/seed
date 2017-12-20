@@ -1,5 +1,5 @@
 /*
- * Copyright © 2013-2017, The SeedStack authors <http://seedstack.org>
+ * Copyright © 2013-2018, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -16,7 +16,7 @@ import javax.websocket.server.ServerEndpointConfig;
 
 /**
  * This implementation of {@link javax.websocket.server.ServerApplicationConfig} disables automatic scanning of
- * server endpoints (already scanned by SEED).
+ * server endpoints (already scanned by SeedStack).
  */
 public class ServerApplicationConfigImpl implements ServerApplicationConfig {
     @Override

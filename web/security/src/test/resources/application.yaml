@@ -1,0 +1,58 @@
+#
+# Copyright © 2013-2018, The SeedStack authors <http://seedstack.org>
+#
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+#
+
+security:
+  users:
+    Obiwan:
+      password: yodarulez
+      roles: SEED.JEDI
+    Anakin:
+      password: imsodark
+      roles: SEED.PADAWAN
+  roles:
+    padawan: SEED.PADAWAN
+    jedi: SEED.JEDI
+  permissions:
+    jedi: ['lightSaber:*', 'academy:*']
+    padawan: 'academy:learn'
+  web:
+    loginUrl: /login.html
+    logoutUrl: /logout.html
+    successUrl: /success.html
+    form:
+      usernameParameter: user
+      passwordParameter: pw
+    urls:
+      -
+        pattern: /jediCouncil.html
+        filters: [authcBasic, 'perms[lightSaber:wield, academy:learn]']
+      -
+        pattern: /jediAcademy.html
+        filters: [authcBasic, 'perms[academy:learn]']
+      -
+        pattern: /protected
+        filters: authc
+      -
+        pattern: /login.html
+        filters: authc
+      -
+        pattern: /success.html
+        filters: authc
+      -
+        pattern: /logout
+        filters: logout
+      -
+        pattern: /teapot
+        filters: 'teapot[param]'
+      -
+        pattern: /xsrf-protected-without-session
+        filters: xsrf
+      -
+        pattern: /xsrf-protected-with-session
+        filters: [authcBasic, xsrf]
+

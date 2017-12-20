@@ -1,5 +1,5 @@
 /*
- * Copyright © 2013-2017, The SeedStack authors <http://seedstack.org>
+ * Copyright © 2013-2018, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -15,12 +15,14 @@ import java.net.URLStreamHandler;
 import java.util.List;
 import mockit.Mocked;
 import mockit.Verifications;
+import mockit.integration.junit4.JMockit;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.reflections.vfs.Vfs;
 
+@RunWith(JMockit.class)
 public class WebsphereClasspathScanHandlerTest {
-
     @Test
     public void testUrlTypes(@SuppressWarnings("unused") @Mocked final WsInputDir wsInputDir) throws Exception {
         WebsphereClasspathScanHandler handler = new WebsphereClasspathScanHandler();
@@ -50,5 +52,4 @@ public class WebsphereClasspathScanHandlerTest {
             }
         };
     }
-
 }

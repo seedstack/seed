@@ -1,5 +1,5 @@
 /*
- * Copyright © 2013-2017, The SeedStack authors <http://seedstack.org>
+ * Copyright © 2013-2018, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -102,11 +102,8 @@ public class KernelManager {
         // Log if any URL were not scanned
         int failedUrlCount = fallbackUrlType.getFailedUrls().size();
         if (failedUrlCount > 0) {
-            LOGGER.info("{} URL(s) were not scanned, enable debug logging to see them", failedUrlCount);
-            if (LOGGER.isDebugEnabled()) {
-                for (String failedUrl : fallbackUrlType.getFailedUrls()) {
-                    LOGGER.debug("URL not scanned: {}", failedUrl);
-                }
+            for (String failedUrl : fallbackUrlType.getFailedUrls()) {
+                LOGGER.warn("URL not scanned: {}", failedUrl);
             }
         }
 

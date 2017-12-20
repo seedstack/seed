@@ -1,5 +1,5 @@
 /*
- * Copyright © 2013-2017, The SeedStack authors <http://seedstack.org>
+ * Copyright © 2013-2018, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -18,9 +18,7 @@ import java.util.List;
 import java.util.Set;
 import javax.servlet.ServletContext;
 import javax.websocket.ClientEndpoint;
-import javax.websocket.ClientEndpointConfig;
 import javax.websocket.server.ServerEndpoint;
-import javax.websocket.server.ServerEndpointConfig;
 import org.seedstack.seed.core.SeedRuntime;
 import org.seedstack.seed.core.internal.AbstractSeedPlugin;
 import org.seedstack.seed.web.spi.FilterDefinition;
@@ -37,9 +35,6 @@ public class WebSocketPlugin extends AbstractSeedPlugin implements WebProvider {
     private final boolean webSocketPresent = Classes.optional("javax.websocket.server.ServerEndpoint").isPresent();
     private final Set<Class<?>> serverEndpointClasses = new HashSet<>();
     private final Set<Class<?>> clientEndpointClasses = new HashSet<>();
-    private final Set<Class<? extends ServerEndpointConfig.Configurator>> serverConfiguratorClasses = new HashSet<>();
-    private final HashSet<Class<? extends ClientEndpointConfig.Configurator>> clientConfiguratorClasses = new
-            HashSet<>();
     private ServletContext servletContext;
 
     @Override
@@ -65,14 +60,8 @@ public class WebSocketPlugin extends AbstractSeedPlugin implements WebProvider {
     @Override
     public InitState initialize(InitContext initContext) {
         if (isEnabled()) {
-            for (Class<?> candidate : initContext.scannedClassesByAnnotationClass().get(ServerEndpoint.class)) {
-                serverConfiguratorClasses.add(candidate.getAnnotation(ServerEndpoint.class).configurator());
-                serverEndpointClasses.add(candidate);
-            }
-            for (Class<?> candidate : initContext.scannedClassesByAnnotationClass().get(ClientEndpoint.class)) {
-                clientConfiguratorClasses.add(candidate.getAnnotation(ClientEndpoint.class).configurator());
-                clientEndpointClasses.add(candidate);
-            }
+            serverEndpointClasses.addAll(initContext.scannedClassesByAnnotationClass().get(ServerEndpoint.class));
+            clientEndpointClasses.addAll(initContext.scannedClassesByAnnotationClass().get(ClientEndpoint.class));
         }
         return InitState.INITIALIZED;
     }
@@ -80,8 +69,7 @@ public class WebSocketPlugin extends AbstractSeedPlugin implements WebProvider {
     @Override
     public Object nativeUnitModule() {
         if (isEnabled()) {
-            return new WebSocketModule(serverEndpointClasses, serverConfiguratorClasses, clientEndpointClasses,
-                    clientConfiguratorClasses);
+            return new WebSocketModule(serverEndpointClasses, clientEndpointClasses);
         } else {
             return super.nativeUnitModule();
         }
@@ -100,7 +88,7 @@ public class WebSocketPlugin extends AbstractSeedPlugin implements WebProvider {
     @Override
     public List<ListenerDefinition> listeners() {
         if (isEnabled()) {
-            return Lists.newArrayList(new ListenerDefinition(WebSocketServletContextListener.class));
+            return Lists.newArrayList(new ListenerDefinition(WebSocketListener.class));
         } else {
             return null;
         }

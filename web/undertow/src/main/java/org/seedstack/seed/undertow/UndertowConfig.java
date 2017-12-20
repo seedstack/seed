@@ -1,5 +1,5 @@
 /*
- * Copyright © 2013-2017, The SeedStack authors <http://seedstack.org>
+ * Copyright © 2013-2018, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -8,7 +8,6 @@
 
 package org.seedstack.seed.undertow;
 
-import java.util.Optional;
 import org.seedstack.coffig.Config;
 
 /**
@@ -16,40 +15,42 @@ import org.seedstack.coffig.Config;
  */
 @Config("web.server.undertow")
 public class UndertowConfig {
-    private Optional<Integer> bufferSize = Optional.empty();
-    private Optional<Integer> ioThreads = Optional.empty();
-    private Optional<Integer> workerThreads = Optional.empty();
-    private Optional<Boolean> directBuffers = Optional.empty();
+    private static final int coreCount = Math.max(1, Runtime.getRuntime().availableProcessors());
+    private static final boolean tinyMemory = Runtime.getRuntime().maxMemory() < 256 * 1024 * 1024;
+    private int ioThreads = coreCount * 2;
+    private int workerThreads = coreCount * 10;
+    private boolean directBuffers = !tinyMemory;
+    private int bufferSize = tinyMemory ? 1024 : 1024 * 16 - 20; // UNDERTOW-1209
 
-    public Optional<Integer> getBufferSize() {
+    public int getBufferSize() {
         return bufferSize;
     }
 
-    public void setBufferSize(Integer bufferSize) {
-        this.bufferSize = Optional.of(bufferSize);
+    public void setBufferSize(int bufferSize) {
+        this.bufferSize = bufferSize;
     }
 
-    public Optional<Integer> getIoThreads() {
+    public int getIoThreads() {
         return ioThreads;
     }
 
-    public void setIoThreads(Integer ioThreads) {
-        this.ioThreads = Optional.of(ioThreads);
+    public void setIoThreads(int ioThreads) {
+        this.ioThreads = ioThreads;
     }
 
-    public Optional<Integer> getWorkerThreads() {
+    public int getWorkerThreads() {
         return workerThreads;
     }
 
-    public void setWorkerThreads(Integer workerThreads) {
-        this.workerThreads = Optional.of(workerThreads);
+    public void setWorkerThreads(int workerThreads) {
+        this.workerThreads = workerThreads;
     }
 
-    public Optional<Boolean> getDirectBuffers() {
+    public boolean isDirectBuffers() {
         return directBuffers;
     }
 
-    public void setDirectBuffers(Boolean directBuffers) {
-        this.directBuffers = Optional.of(directBuffers);
+    public void setDirectBuffers(boolean directBuffers) {
+        this.directBuffers = directBuffers;
     }
 }

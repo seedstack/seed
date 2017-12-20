@@ -1,5 +1,5 @@
 /*
- * Copyright © 2013-2017, The SeedStack authors <http://seedstack.org>
+ * Copyright © 2013-2018, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -54,7 +54,8 @@ class KeyPairConfigFactory {
             // Find the certificate location from the classpath
             String certResource = certificateConfig.getResource();
             if (certResource != null) {
-                URL urlResource = ClassLoaders.findMostCompleteClassLoader().getResource(certResource);
+                URL urlResource = ClassLoaders.findMostCompleteClassLoader(KeyPairConfigFactory.class)
+                        .getResource(certResource);
                 if (urlResource == null) {
                     throw SeedException.createNew(CryptoErrorCode.CERTIFICATE_NOT_FOUND)
                             .put("certificateName", certificateName).put("certResource", certResource);

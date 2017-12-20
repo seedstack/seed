@@ -1,5 +1,5 @@
 /*
- * Copyright © 2013-2017, The SeedStack authors <http://seedstack.org>
+ * Copyright © 2013-2018, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -20,5 +20,5 @@ public enum WebErrorCode implements ErrorCode {
     UNABLE_TO_SCAN_TOMCAT_JNDI_DIRECTORY,
     UNABLE_TO_SCAN_TOMCAT_JNDI_JAR,
     UNABLE_TO_SCAN_WEBSPHERE_DIRECTORY,
-    UNEXPECTED_EXCEPTION
+    CANNOT_PUBLISH_WEBSOCKET_ENDPOINT, UNEXPECTED_EXCEPTION
 }

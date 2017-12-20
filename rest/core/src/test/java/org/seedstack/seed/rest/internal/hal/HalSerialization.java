@@ -1,5 +1,5 @@
 /*
- * Copyright © 2013-2017, The SeedStack authors <http://seedstack.org>
+ * Copyright © 2013-2018, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -13,7 +13,7 @@ import java.io.IOException;
 import org.json.JSONException;
 import org.junit.Test;
 import org.seedstack.seed.rest.hal.HalRepresentation;
-import org.seedstack.seed.rest.internal.hal.fixture.RepresentationFactory;
+import org.seedstack.seed.rest.fixtures.RepresentationFactory;
 import org.skyscreamer.jsonassert.JSONAssert;
 
 public class HalSerialization {
