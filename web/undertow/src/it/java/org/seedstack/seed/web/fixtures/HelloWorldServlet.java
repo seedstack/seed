@@ -20,7 +20,8 @@ import javax.servlet.http.HttpServletResponse;
 import org.seedstack.seed.Logging;
 import org.slf4j.Logger;
 
-@WebServlet(value = {"/hello"}, initParams = {@WebInitParam(name = "param1", value = HelloWorldServlet.PARAM1_VALUE)})
+@WebServlet(value = {"/helloServlet"}, initParams = {@WebInitParam(name = "param1", value = HelloWorldServlet
+        .PARAM1_VALUE)})
 public class HelloWorldServlet extends HttpServlet {
     public static final String CONTENT = "Hello World!";
     public static final String PARAM1_VALUE = "value1";

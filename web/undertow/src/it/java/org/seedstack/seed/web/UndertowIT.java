@@ -20,7 +20,7 @@ import org.seedstack.seed.core.Seed;
 import org.seedstack.seed.spi.SeedLauncher;
 
 /**
- * Tests an undertow server exposing a simple hello world servlet.
+ * Tests an undertow server exposing a simple hello world servlet and filter.
  */
 public class UndertowIT {
     private final SeedLauncher launcher = Seed.getLauncher();
@@ -50,7 +50,9 @@ public class UndertowIT {
 
     private void checkServer(int port) {
         RestAssured.useRelaxedHTTPSValidation();
-        Response response = expect().statusCode(200).when().get("https://localhost:" + port + "/hello");
-        Assertions.assertThat(response.asString()).isEqualTo("Hello World! value1");
+        Response servletResponse = expect().statusCode(200).when().get("https://localhost:" + port + "/helloServlet");
+        Assertions.assertThat(servletResponse.asString()).isEqualTo("Hello World! value1");
+        Response filterResponse = expect().statusCode(200).when().get("https://localhost:" + port + "/helloFilter");
+        Assertions.assertThat(filterResponse.asString()).isEqualTo("Hello World! value2");
     }
 }
