@@ -19,8 +19,11 @@ import org.seedstack.coffig.node.MapNode;
 import org.seedstack.coffig.spi.ConfigurationComponent;
 import org.seedstack.coffig.spi.ConfigurationProvider;
 import org.seedstack.coffig.spi.ConfigurationWatcher;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class PrioritizedProvider implements ConfigurationProvider {
+    private static final Logger LOGGER = LoggerFactory.getLogger(PrioritizedProvider.class);
     private final List<PrioritizedConfigurationProvider> providers = new CopyOnWriteArrayList<>();
     private final AtomicBoolean dirty = new AtomicBoolean(true);
 
@@ -28,11 +31,19 @@ public class PrioritizedProvider implements ConfigurationProvider {
     public MapNode provide() {
         MapNode mapNode = providers.stream()
                 .sorted(Comparator.comparingInt(o -> o.priority))
-                .map(PrioritizedConfigurationProvider::getConfigurationProvider)
+                .map(prioritizedConfigurationProvider -> {
+                    if (LOGGER.isDebugEnabled()) {
+                        LOGGER.debug("Fetching configuration from provider {} at priority {}",
+                                prioritizedConfigurationProvider.getConfigurationProvider().name(),
+                                prioritizedConfigurationProvider.getPriority());
+                    }
+                    return prioritizedConfigurationProvider.getConfigurationProvider();
+                })
                 .map(ConfigurationProvider::provide)
                 .reduce((conf1, conf2) -> (MapNode) conf1.merge(conf2))
                 .orElse(new MapNode());
         dirty.set(false);
+        LOGGER.debug("Configuration fetching complete");
         return mapNode;
     }
 

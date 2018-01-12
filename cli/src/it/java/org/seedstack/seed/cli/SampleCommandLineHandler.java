@@ -13,7 +13,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.util.Map;
 
 @CliCommand("test")
-public class SampleCommandLineHandler implements CommandLineHandler {
+public class SampleCommandLineHandler extends AbstractCliHandler implements CommandLineHandler {
     static boolean called = false;
 
     @CliOption(name = "a")

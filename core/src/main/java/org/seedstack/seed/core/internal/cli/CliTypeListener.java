@@ -40,9 +40,9 @@ class CliTypeListener implements TypeListener {
         for (Class<?> c = typeLiteral.getRawType(); c != Object.class; c = c.getSuperclass()) {
             if (cliCommand == null) {
                 cliCommand = c.getAnnotation(CliCommand.class);
-            } else {
-                throw SeedException.createNew(CliErrorCode.CONFLICTING_COMMAND_ANNOTATIONS).put("class",
-                        c.getCanonicalName());
+            } else if (c.isAnnotationPresent(CliCommand.class)) {
+                throw SeedException.createNew(CliErrorCode.CONFLICTING_COMMAND_ANNOTATIONS)
+                        .put("class", c.getCanonicalName());
             }
             Arrays.stream(c.getDeclaredFields()).filter(this::isCandidate).forEach(fields::add);
         }

@@ -12,7 +12,7 @@ import org.seedstack.coffig.Config;
 
 @Config("config")
 public class ConfigConfig {
-    private boolean watch = true;
+    private boolean watch = false;
 
     public boolean isWatch() {
         return watch;
