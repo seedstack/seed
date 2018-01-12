@@ -13,9 +13,9 @@ package org.seedstack.seed.web.spi;
  */
 public class SeedFilterPriority {
     /**
-     * Above all filter to enable usage of Web-specific injection scopes.
+     * Above all filters to enable usage of Web-specific injection scopes.
      */
-    public static final int GUICE = 10000;
+    public static final int GUICE = Integer.MAX_VALUE;
 
     /**
      * Diagnostic filter is at the top to be able to catch all errors if enabled.

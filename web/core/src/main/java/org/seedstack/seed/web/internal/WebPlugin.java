@@ -106,6 +106,9 @@ public class WebPlugin extends AbstractSeedPlugin {
         if (servletContext != null) {
             List<WebProvider> webProviders = initContext.dependencies(WebProvider.class);
 
+            // Always add Guice filter
+            filterDefinitions.add(buildGuiceFilterDefinition());
+
             for (WebProvider webProvider : webProviders) {
                 List<FilterDefinition> filters = webProvider.filters();
                 if (filters != null) {
@@ -145,22 +148,22 @@ public class WebPlugin extends AbstractSeedPlugin {
                     context.applicationObjectGraph().as(Injector.class));
 
             for (ListenerDefinition listenerDefinition : listenerDefinitions) {
-                LOGGER.trace("Registering servlet listener {}", listenerDefinition.getListenerClass());
+                LOGGER.debug("Registering servlet listener {} ((priority {})",
+                        listenerDefinition.getListenerClass().getName(),
+                        listenerDefinition.getPriority());
                 servletContextConfigurer.addListener(listenerDefinition);
             }
             LOGGER.debug("Registered {} servlet listener(s)", listenerDefinitions.size());
 
-            LOGGER.trace("Registering Guice servlet filter");
-            servletContextConfigurer.addFilter(buildGuiceFilterDefinition());
             for (FilterDefinition filterDefinition : filterDefinitions) {
-                LOGGER.trace("Registering servlet filter {} with {} priority", filterDefinition.getFilterClass(),
+                LOGGER.debug("Registering servlet filter {} (priority {})", filterDefinition.getFilterClass().getName(),
                         filterDefinition.getPriority());
                 servletContextConfigurer.addFilter(filterDefinition);
             }
-            LOGGER.debug("Registered {} servlet filter(s)", filterDefinitions.size() + 1);
+            LOGGER.debug("Registered {} servlet filter(s)", filterDefinitions.size());
 
             for (ServletDefinition servletDefinition : servletDefinitions) {
-                LOGGER.trace("Registering servlet {}", servletDefinition.getServletClass());
+                LOGGER.debug("Registering servlet {}", servletDefinition.getServletClass().getName());
                 servletContextConfigurer.addServlet(servletDefinition);
             }
             LOGGER.debug("Registered {} servlet(s)", servletDefinitions.size());
