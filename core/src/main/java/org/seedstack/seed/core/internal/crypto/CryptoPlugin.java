@@ -1,5 +1,5 @@
 /*
- * Copyright © 2013-2017, The SeedStack authors <http://seedstack.org>
+ * Copyright © 2013-2018, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -48,7 +48,7 @@ public class CryptoPlugin extends AbstractSeedPlugin implements SSLProvider {
 
     @Override
     public Object nativeUnitModule() {
-        return new CryptoModule(encryptionServices, keyStores);
+        return new CryptoModule(encryptionServices, keyStores, sslContext);
     }
 
     @Override
@@ -69,8 +69,9 @@ public class CryptoPlugin extends AbstractSeedPlugin implements SSLProvider {
         }
 
         // Prepare encryption service bindings
-        encryptionServices.putAll(
-                new EncryptionServiceBindingFactory().createBindings(cryptoConfig, this.keyPairConfigs, keyStores));
+        encryptionServices.putAll(new EncryptionServiceBindingFactory().createBindings(cryptoConfig,
+                this.keyPairConfigs,
+                keyStores));
         LOGGER.debug("Registered {} cryptographic key(s)", encryptionServices.size());
 
         // init SSL context if possible

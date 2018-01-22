@@ -1,5 +1,5 @@
 /*
- * Copyright © 2013-2017, The SeedStack authors <http://seedstack.org>
+ * Copyright © 2013-2018, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -14,9 +14,9 @@ import java.util.List;
 import org.junit.Test;
 import org.seedstack.seed.rest.hal.HalDefaultRepresentation;
 import org.seedstack.seed.rest.hal.Link;
-import org.seedstack.seed.rest.internal.hal.fixture.OrderRepresentation;
-import org.seedstack.seed.rest.internal.hal.fixture.OrdersRepresentation;
-import org.seedstack.seed.rest.internal.hal.fixture.RepresentationFactory;
+import org.seedstack.seed.rest.fixtures.OrderRepresentation;
+import org.seedstack.seed.rest.fixtures.OrdersRepresentation;
+import org.seedstack.seed.rest.fixtures.RepresentationFactory;
 
 public class HalBuilderTest {
 

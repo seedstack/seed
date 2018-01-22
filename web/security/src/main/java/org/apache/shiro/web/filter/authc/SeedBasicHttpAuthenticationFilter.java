@@ -1,5 +1,5 @@
 /*
- * Copyright © 2013-2017, The SeedStack authors <http://seedstack.org>
+ * Copyright © 2013-2018, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -12,10 +12,15 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import org.apache.shiro.authc.AuthenticationToken;
 import org.apache.shiro.subject.Subject;
-import org.seedstack.seed.web.security.internal.SessionRegenerationCapable;
+import org.seedstack.seed.web.security.SessionRegeneratingFilter;
 
+/**
+ * This override of {@link BasicHttpAuthenticationFilter} ensures that the subject session is regenerated on login
+ * success, avoiding potential session fixation vulnerability. It is used by default when SeedStack web security module
+ * is in use.
+ */
 public class SeedBasicHttpAuthenticationFilter extends BasicHttpAuthenticationFilter
-        implements SessionRegenerationCapable {
+        implements SessionRegeneratingFilter {
     @Override
     protected boolean onLoginSuccess(AuthenticationToken token, Subject subject, ServletRequest request,
             ServletResponse response) throws Exception {

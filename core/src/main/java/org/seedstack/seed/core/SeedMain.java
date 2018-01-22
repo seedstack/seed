@@ -1,5 +1,5 @@
 /*
- * Copyright © 2013-2017, The SeedStack authors <http://seedstack.org>
+ * Copyright © 2013-2018, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -37,39 +37,30 @@ public class SeedMain {
      * @param args The command-line arguments.
      */
     public static void main(String[] args) {
-        SeedLauncher seedLauncher = getSeedLauncher();
-
-        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-            try {
-                seedLauncher.shutdown();
-            } catch (Exception e) {
-                handleException(e);
-            }
-            Seed.close();
-        }, "shutdown"));
-
         try {
+            final SeedLauncher seedLauncher;
+            final String toolName = System.getProperty("seedstack.tool");
+            if (!Strings.isNullOrEmpty(toolName)) {
+                seedLauncher = Seed.getToolLauncher(toolName);
+            } else {
+                seedLauncher = Seed.getLauncher();
+            }
+
+            Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+                try {
+                    seedLauncher.shutdown();
+                    Seed.close();
+                } catch (Exception e) {
+                    handleException(e);
+                }
+            }, "shutdown"));
             Seed.markLifecycleExceptionHandlerEnabled();
+
             seedLauncher.launch(args);
         } catch (Exception e) {
             handleException(e);
             System.exit(EXIT_FAILURE);
         }
-    }
-
-    private static SeedLauncher getSeedLauncher() {
-        final String toolName = System.getProperty("seedstack.tool");
-        try {
-            if (!Strings.isNullOrEmpty(toolName)) {
-                return Seed.getToolLauncher(toolName);
-            } else {
-                return Seed.getLauncher();
-            }
-        } catch (Exception e) {
-            handleException(e);
-            System.exit(EXIT_FAILURE);
-        }
-        throw new IllegalStateException("SeedMain should have already exited");
     }
 
     private static void handleException(Exception e) {

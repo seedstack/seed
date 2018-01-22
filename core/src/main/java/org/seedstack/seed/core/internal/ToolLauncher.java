@@ -1,5 +1,5 @@
 /*
- * Copyright © 2013-2017, The SeedStack authors <http://seedstack.org>
+ * Copyright © 2013-2018, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -14,6 +14,7 @@ import io.nuun.kernel.api.Kernel;
 import io.nuun.kernel.api.Plugin;
 import io.nuun.kernel.api.config.KernelConfiguration;
 import io.nuun.kernel.core.NuunCore;
+import java.util.Map;
 import java.util.ServiceLoader;
 import org.seedstack.seed.SeedException;
 import org.seedstack.seed.core.Seed;
@@ -30,7 +31,7 @@ public class ToolLauncher implements SeedLauncher {
 
     @Override
     @SuppressFBWarnings(value = "DM_EXIT", justification = "ToolLauncher must be able to return a code to the system")
-    public void launch(String[] args) throws Exception {
+    public void launch(String[] args, Map<String, String> kernelParameters) throws Exception {
         // no logs wanted for tools
         Seed.disableLogs();
 
@@ -49,14 +50,19 @@ public class ToolLauncher implements SeedLauncher {
         if (seedTool == null) {
             throw SeedException.createNew(CoreErrorCode.TOOL_NOT_FOUND).put("toolName", toolName);
         } else {
-            kernel = Seed.createKernel(new ToolContext(toolName, args), buildKernelConfiguration(seedTool), true);
+            kernel = Seed.createKernel(new ToolContext(toolName, args),
+                    buildKernelConfiguration(seedTool, kernelParameters),
+                    true);
             System.exit(((SeedTool) kernel.plugins().get(seedTool.name())).call());
         }
     }
 
     @SuppressWarnings("unchecked")
-    private KernelConfiguration buildKernelConfiguration(SeedTool seedTool) {
+    private KernelConfiguration buildKernelConfiguration(SeedTool seedTool, Map<String, String> kernelParameters) {
         KernelConfiguration kernelConfiguration = NuunCore.newKernelConfiguration();
+        for (Map.Entry<String, String> kernelParameter : kernelParameters.entrySet()) {
+            kernelConfiguration.param(kernelParameter.getKey(), kernelParameter.getValue());
+        }
         if (seedTool.startMode() == SeedTool.StartMode.MINIMAL) {
             kernelConfiguration
                     .param(CorePlugin.AUTODETECT_MODULES_KERNEL_PARAM, "false")

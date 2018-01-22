@@ -1,5 +1,5 @@
 /*
- * Copyright © 2013-2017, The SeedStack authors <http://seedstack.org>
+ * Copyright © 2013-2018, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -14,18 +14,20 @@ import com.google.inject.name.Names;
 import java.security.KeyStore;
 import java.util.Map;
 import java.util.Map.Entry;
+import javax.net.ssl.SSLContext;
 import org.seedstack.seed.crypto.EncryptionService;
 import org.seedstack.seed.crypto.HashingService;
 
 class CryptoModule extends AbstractModule {
-
     private final Map<Key<EncryptionService>, EncryptionService> encryptionServices;
     private final Map<String, KeyStore> keyStores;
+    private final SSLContext sslContext;
 
-    public CryptoModule(Map<Key<EncryptionService>, EncryptionService> encryptionServices,
-            Map<String, KeyStore> keyStores) {
+    CryptoModule(Map<Key<EncryptionService>, EncryptionService> encryptionServices, Map<String, KeyStore> keyStores,
+            SSLContext sslContext) {
         this.encryptionServices = encryptionServices;
         this.keyStores = keyStores;
+        this.sslContext = sslContext;
     }
 
     @Override
@@ -39,6 +41,9 @@ class CryptoModule extends AbstractModule {
         }
 
         bind(HashingService.class).to(PBKDF2HashingService.class);
-    }
 
+        if (sslContext != null) {
+            bind(SSLContext.class).toInstance(sslContext);
+        }
+    }
 }

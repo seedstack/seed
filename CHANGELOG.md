@@ -1,3 +1,11 @@
+# Version 3.5.0 (2018-02-28)
+
+* [new] Java 9 compatibility.
+* [new] Refactored and improved integration testing API.
+* [brk] Removed Arquillian support (to its own add-on) in favor of Undertow-based Web integration testing.
+* [fix] Defer JNDI lookup through `@Resource` annotation until the instance containing the injection is created.
+
+
 # Version 3.4.2 (2018-01-12)
 
 * [new] Add configuration watching for local files and automatic refresh after change (enable by setting config property `config.watch` to true).

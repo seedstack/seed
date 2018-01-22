@@ -1,5 +1,5 @@
 /*
- * Copyright © 2013-2017, The SeedStack authors <http://seedstack.org>
+ * Copyright © 2013-2018, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -22,13 +22,12 @@ import javax.naming.NamingEnumeration;
 import javax.naming.NamingException;
 
 /**
- * SEED JNDI context that can lookup for instances from the injector.
+ * SeedStack JNDI context that can lookup for instances from the injector.
  */
 class JndiContext implements Context {
     private static final String THIS_CONTEXT_IS_IMMUTABLE = "This context is immutable";
-
     @Inject
-    static Injector injector;
+    private static Injector injector;
     private Hashtable<?, ?> environment;
 
     JndiContext(Hashtable<?, ?> environment) {
@@ -43,7 +42,7 @@ class JndiContext implements Context {
     @Override
     public Object lookup(String name) throws NamingException {
         if (injector == null) {
-            throw new IllegalStateException("seed-jndi-plugin is missing, cannot lookup for " + name);
+            throw new IllegalStateException("Missing SeedStack injector, cannot lookup for " + name);
         }
 
         try {

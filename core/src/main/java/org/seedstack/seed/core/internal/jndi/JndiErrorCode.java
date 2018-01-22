@@ -1,5 +1,5 @@
 /*
- * Copyright © 2013-2017, The SeedStack authors <http://seedstack.org>
+ * Copyright © 2013-2018, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -17,5 +17,5 @@ enum JndiErrorCode implements ErrorCode {
     MISSING_JNDI_PROPERTIES,
     UNABLE_TO_CONFIGURE_ADDITIONAL_JNDI_CONTEXT,
     UNABLE_TO_CONFIGURE_DEFAULT_JNDI_CONTEXT,
-    UNABLE_TO_REGISTER_INJECTION_FOR_RESOURCE
+    UNKNOWN_JNDI_CONTEXT, UNABLE_TO_INJECT_JNDI_RESOURCE
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright © 2013-2017, The SeedStack authors <http://seedstack.org>
+ * Copyright © 2013-2018, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -33,6 +33,7 @@ import org.seedstack.seed.Application;
 import org.seedstack.seed.ApplicationConfig;
 import org.seedstack.seed.ConfigConfig;
 import org.seedstack.seed.SeedException;
+import org.seedstack.seed.cli.CliContext;
 import org.seedstack.seed.core.SeedRuntime;
 import org.seedstack.seed.core.internal.CoreErrorCode;
 import org.seedstack.seed.diagnostic.DiagnosticManager;
@@ -47,7 +48,7 @@ import org.slf4j.LoggerFactory;
  */
 public class ConfigurationPlugin extends AbstractPlugin implements ApplicationProvider {
     public static final String NAME = "config";
-    public static final String EXTERNAL_CONFIG_PREFIX = "seedstack.config.";
+    private static final String EXTERNAL_CONFIG_PREFIX = "seedstack.config.";
     private static final Logger LOGGER = LoggerFactory.getLogger(ConfigurationPlugin.class);
     private static final String CONFIGURATION_PACKAGE = "META-INF.configuration";
     private static final String CONFIGURATION_LOCATION = "META-INF/configuration/";
@@ -101,9 +102,11 @@ public class ConfigurationPlugin extends AbstractPlugin implements ApplicationPr
         detectKernelParamConfig(initContext);
         detectConfigurationFiles(initContext);
 
-        application = new ApplicationImpl(coffig);
+        CliContext cliContext = seedRuntime.contextAs(CliContext.class);
+        application = new ApplicationImpl(coffig,
+                initContext.kernelParams(),
+                cliContext != null ? cliContext.getArgs() : new String[0]);
         configConfig = coffig.get(ConfigConfig.class);
-
         diagnosticManager.registerDiagnosticInfoCollector("application",
                 new ApplicationDiagnosticCollector(application));
 
@@ -174,7 +177,7 @@ public class ConfigurationPlugin extends AbstractPlugin implements ApplicationPr
 
         for (String configurationResource : retrieveConfigurationResources(initContext)) {
             try {
-                ClassLoader classLoader = ClassLoaders.findMostCompleteClassLoader();
+                ClassLoader classLoader = ClassLoaders.findMostCompleteClassLoader(ConfigurationPlugin.class);
                 Enumeration<URL> urlEnumeration = classLoader.getResources(configurationResource);
                 while (urlEnumeration.hasMoreElements()) {
                     URL url = urlEnumeration.nextElement();

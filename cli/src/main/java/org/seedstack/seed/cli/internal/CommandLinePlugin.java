@@ -1,5 +1,5 @@
 /*
- * Copyright © 2013-2017, The SeedStack authors <http://seedstack.org>
+ * Copyright © 2013-2018, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -34,7 +34,7 @@ public class CommandLinePlugin extends AbstractSeedPlugin {
 
     @Override
     public String name() {
-        return "cli";
+        return "command-line";
     }
 
     @Override
@@ -55,16 +55,16 @@ public class CommandLinePlugin extends AbstractSeedPlugin {
             return InitState.INITIALIZED;
         }
 
-        Collection<Class<?>> cliHandlerCandidates = initContext.scannedTypesBySpecification().get(
-                CommandLineHandlerSpecification.INSTANCE);
+        Collection<Class<?>> cliHandlerCandidates = initContext.scannedTypesBySpecification()
+                .get(CommandLineHandlerSpecification.INSTANCE);
         for (Class<?> candidate : cliHandlerCandidates) {
             CliCommand cliCommand = candidate.getAnnotation(CliCommand.class);
             if (CommandLineHandler.class.isAssignableFrom(candidate) && cliCommand != null) {
-                LOGGER.trace("Detected CLI handler {}", candidate.getCanonicalName());
+                LOGGER.debug("Detected CLI handler {}", candidate.getCanonicalName());
                 cliHandlers.put(cliCommand.value(), (Class<? extends CommandLineHandler>) candidate);
             }
         }
-        LOGGER.debug("Detected {} CLI handler(s)", cliHandlers.size());
+        LOGGER.info("Detected {} CLI handler(s)", cliHandlers.size());
 
         return InitState.INITIALIZED;
     }

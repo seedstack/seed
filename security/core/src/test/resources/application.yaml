@@ -1,0 +1,41 @@
+#
+# Copyright © 2013-2018, The SeedStack authors <http://seedstack.org>
+#
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+#
+
+logging: INFO
+security:
+  realms: ConfigurationRealm
+  users:
+    Obiwan:
+      password: yodarulez
+      roles: [SEED.JEDI, UNKNOWN.ROLE]
+    Anakin:
+      password: imsodark
+      roles: [SEED.PADAWAN, OTHER.UNKNOWN.ROLE]
+    R2D2:
+      password: beep
+      roles: [SEED.RESTBOT]
+    C3P0:
+      password: ewokgod
+      roles: [SEED.RESTBOT.INTERPRETER]
+    ThePoltergeist:
+      password: bouh
+      roles: [SEED.JEDI, SEED.MU.GHOST, SEED.SX.GHOST]
+    nobody: foreverAlone
+  roles:
+    padawan: SEED.PADAWAN
+    jedi: SEED.JEDI
+    restbot: SEED.RESTBOT
+    interpreter: SEED.RESTBOT.INTERPRETER
+    ghost: SEED.{scope}.GHOST
+    nothing: '*'
+  permissions:
+    jedi: ['lightSaber:*', 'academy:*']
+    padawan: 'academy:learn'
+    restbot: ['*:read', '*:update', '*:create', '*:delete' ] 
+    interpreter: '*:read'
+    ghost: 'site:haunt'

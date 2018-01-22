@@ -1,5 +1,5 @@
 /*
- * Copyright © 2013-2017, The SeedStack authors <http://seedstack.org>
+ * Copyright © 2013-2018, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -18,21 +18,25 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Vector;
 import mockit.Expectations;
+import mockit.Mock;
 import mockit.MockUp;
 import mockit.Mocked;
+import mockit.integration.junit4.JMockit;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.seedstack.seed.crypto.CryptoConfig;
+import org.seedstack.shed.ClassLoaders;
 
+@RunWith(JMockit.class)
 public class KeyPairConfigFactoryTest {
-
-    public static final String KEY_STORE_NAME = "keystoreName";
-    public static final String ALIAS_NAME_1 = "aliasName1";
-    public static final String ALIAS_NAME_2 = "aliasName2";
-    public static final String PASSWORD = "aliasPassword";
-    public static final String CERT_RESOURCE = "certResource";
-    public static final String PATH_TO_CERT = "path/to/cert";
-    public static final String ALIAS_QUALIFIER = "aliasQualifier";
+    private static final String KEY_STORE_NAME = "keystoreName";
+    private static final String ALIAS_NAME_1 = "aliasName1";
+    private static final String ALIAS_NAME_2 = "aliasName2";
+    private static final String PASSWORD = "aliasPassword";
+    private static final String CERT_RESOURCE = "certResource";
+    private static final String PATH_TO_CERT = "path/to/cert";
+    private static final String ALIAS_QUALIFIER = "aliasQualifier";
 
     @Mocked
     private KeyStore keyStore;
@@ -98,15 +102,25 @@ public class KeyPairConfigFactoryTest {
     }
 
     @Test
-    public void test_key_pair_config_create_with_external_certificate(final @Mocked URL url) throws Exception {
-        new MockUp<ClassLoader>() {
-            @mockit.Mock
-            public URL getResource(String name) {
-                try {
-                    return new URL(CERT_RESOURCE);
-                } catch (MalformedURLException e) {
-                    throw new IllegalStateException(e);
-                }
+    public void test_key_pair_config_create_with_external_certificate() throws Exception {
+        final URL url = new URL("http://nowhere");
+
+        new Expectations(url) {
+            {
+                url.getFile();
+                result = null;
+            }
+        };
+
+        new MockUp<ClassLoaders>() {
+            @Mock
+            public ClassLoader findMostCompleteClassLoader(Class<?> target) {
+                return new ClassLoader() {
+                    @Override
+                    public URL getResource(String name) {
+                        return url;
+                    }
+                };
             }
         };
 

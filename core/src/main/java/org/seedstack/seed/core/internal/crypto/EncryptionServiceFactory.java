@@ -1,5 +1,5 @@
 /*
- * Copyright © 2013-2017, The SeedStack authors <http://seedstack.org>
+ * Copyright © 2013-2018, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -123,7 +123,8 @@ class EncryptionServiceFactory {
             // Find the certificate location from the classpath
             String resource = certificateConfig.getResource();
             if (resource != null) {
-                URL urlResource = ClassLoaders.findMostCompleteClassLoader().getResource(resource);
+                URL urlResource = ClassLoaders.findMostCompleteClassLoader(EncryptionServiceFactory.class)
+                        .getResource(resource);
                 if (urlResource == null) {
                     throw SeedException.createNew(CryptoErrorCode.CERTIFICATE_NOT_FOUND)
                             .put("alias", alias).put("certResource", resource);
