@@ -10,7 +10,7 @@ package org.seedstack.seed.core.internal.transaction;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
-import static org.mockito.Matchers.any;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -21,10 +21,10 @@ import com.google.inject.Injector;
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Method;
 import javax.transaction.Transactional;
+import mockit.Deencapsulation;
 import org.aopalliance.intercept.MethodInvocation;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.internal.util.reflection.Whitebox;
 import org.seedstack.seed.transaction.Propagation;
 import org.seedstack.seed.transaction.spi.ExceptionHandler;
 import org.seedstack.seed.transaction.spi.TransactionHandler;
@@ -33,50 +33,50 @@ import org.seedstack.seed.transaction.spi.TransactionMetadata;
 import org.seedstack.seed.transaction.spi.TransactionMetadataResolver;
 import org.seedstack.shed.reflect.ReflectUtils;
 
-@SuppressWarnings("unchecked")
 public abstract class AbstractTransactionManagerTest {
-    protected TransactionMetadata transactionMetadata;
-    protected TransactionMetadataResolver transactionMetadataResolver;
-    protected TransactionHandler transactionHandler;
-
-    private ExceptionHandler exceptionHandler;
+    private TransactionMetadata transactionMetadata;
+    private ExceptionHandler<?> exceptionHandler;
     private TransactionManager underTest;
+    TransactionHandler<Object> transactionHandler;
 
     @Before
+    @SuppressWarnings("unchecked")
     public void before() throws Exception {
         transactionHandler = mock(TransactionHandler.class);
 
         exceptionHandler = mock(ExceptionHandler.class);
 
-        transactionMetadata = new TransactionMetadata().defaults();
+        transactionMetadata = new TransactionMetadata();
         transactionMetadata.setHandler(TransactionHandler.class);
 
-        transactionMetadataResolver = mock(TransactionMetadataResolver.class);
+        TransactionMetadataResolver transactionMetadataResolver = mock(TransactionMetadataResolver.class);
         when(transactionMetadataResolver.resolve(any(MethodInvocation.class),
                 any(TransactionMetadata.class))).thenReturn(transactionMetadata);
 
         Injector injector = mock(Injector.class);
         when(injector.getInstance(TransactionHandler.class)).thenReturn(transactionHandler);
-        when(injector.getInstance(TransactionMetadata.class)).thenReturn(new TransactionMetadata());
         when(injector.getInstance(ExceptionHandler.class)).thenReturn(exceptionHandler);
 
         underTest = doProvideTransactionManager();
-        Whitebox.setInternalState(underTest, "transactionMetadataResolvers",
+        Deencapsulation.setField(underTest,
+                "transactionMetadataResolvers",
                 Sets.newHashSet(transactionMetadataResolver));
-        Whitebox.setInternalState(underTest, "injector", injector);
+        Deencapsulation.setField(underTest,
+                "injector",
+                injector);
     }
 
     protected abstract TransactionManager doProvideTransactionManager() throws Exception;
 
-    protected abstract void doAssertRollbackOccurred() throws Exception;
+    protected abstract void doAssertRollbackOccurred();
 
-    protected abstract void doAssertCommitOccurred() throws Exception;
+    protected abstract void doAssertCommitOccurred();
 
-    protected void invoke(TransactionalMethods.Enum methodToCall) throws Throwable {
+    void invoke(TransactionalMethods.Enum methodToCall) throws Throwable {
         underTest.getMethodInterceptor().invoke(methodToCall.getMethodInvocation());
     }
 
-    protected void invokeWithArguments(TransactionalMethods.Enum methodToCall, Object[] arguments) throws Throwable {
+    private void invokeWithArguments(TransactionalMethods.Enum methodToCall, Object[] arguments) throws Throwable {
         MethodInvocation methodInvocation = methodToCall.getMethodInvocation();
         ((SimpleMethodInvocation) methodInvocation).setArguments(arguments);
         underTest.getMethodInterceptor().invoke(methodInvocation);
@@ -173,7 +173,7 @@ public abstract class AbstractTransactionManagerTest {
     }
 
     @Test
-    public void error_always_results_in_rollback() throws Throwable {
+    public void error_always_results_in_rollback() {
         try {
             invokeWithArguments(TransactionalMethods.Enum.DEFAULT_ROLLBACK, new Object[]{new MyError()});
             fail("error should have been propagated");
@@ -194,6 +194,7 @@ public abstract class AbstractTransactionManagerTest {
         testReadTransactional("someSeedAnnotatedMethod");
     }
 
+    @SuppressWarnings("unchecked")
     private void testReadTransactional(String methodName) throws NoSuchMethodException {
         Method readTransactionMetadata = AbstractTransactionManager.class.getDeclaredMethod("readTransactionMetadata",
                 MethodInvocation.class);
@@ -222,7 +223,7 @@ public abstract class AbstractTransactionManagerTest {
             }
 
             @Override
-            public Object proceed() throws Throwable {
+            public Object proceed() {
                 return null;
             }
 

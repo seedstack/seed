@@ -8,7 +8,6 @@
 
 package org.seedstack.seed.web.internal.scan.websphere;
 
-import java.io.IOException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLStreamHandler;
@@ -32,7 +31,7 @@ public class WebsphereClasspathScanHandlerTest {
 
         URLStreamHandler goodStubUrlHandler = new URLStreamHandler() {
             @Override
-            protected URLConnection openConnection(URL u) throws IOException {
+            protected URLConnection openConnection(URL u) {
                 return null;
             }
         };

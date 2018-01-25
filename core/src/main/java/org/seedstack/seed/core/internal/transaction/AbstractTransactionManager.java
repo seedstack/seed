@@ -16,7 +16,9 @@ import com.google.inject.name.Names;
 import java.lang.reflect.Method;
 import java.util.Optional;
 import java.util.Set;
+import javax.annotation.Nullable;
 import javax.inject.Inject;
+import javax.inject.Named;
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
 import org.seedstack.seed.SeedException;
@@ -38,6 +40,10 @@ public abstract class AbstractTransactionManager implements TransactionManager {
     protected Injector injector;
     @Inject
     private Set<TransactionMetadataResolver> transactionMetadataResolvers;
+    @Inject
+    @Named("default")
+    @Nullable
+    private Class<? extends TransactionHandler<?>> defaultTransactionHandler;
 
     @Override
     public MethodInterceptor getMethodInterceptor() {
@@ -54,8 +60,8 @@ public abstract class AbstractTransactionManager implements TransactionManager {
      * @return the value of the method invocation
      * @throws Throwable if any problem occurs during interception.
      */
-    protected abstract Object doMethodInterception(TransactionLogger transactionLogger, MethodInvocation invocation,
-            TransactionMetadata transactionMetadata, TransactionHandler<Object> transactionHandler) throws Throwable;
+    protected abstract <T> Object doMethodInterception(TransactionLogger transactionLogger, MethodInvocation invocation,
+            TransactionMetadata transactionMetadata, TransactionHandler<T> transactionHandler) throws Throwable;
 
     /**
      * This method call the wrapped transactional method.
@@ -107,8 +113,10 @@ public abstract class AbstractTransactionManager implements TransactionManager {
                 } else {
                     exceptionHandler = injector.getInstance(transactionMetadata.getExceptionHandler());
                 }
-                if (exceptionHandler != null && exceptionHandler.handleException(exception,
-                        new TransactionMetadata().mergeFrom(transactionMetadata), currentTransaction)) {
+                if (exceptionHandler != null
+                        && exceptionHandler.handleException(exception,
+                        new TransactionMetadata().mergeFrom(transactionMetadata),
+                        currentTransaction)) {
                     transactionLogger.log("transaction exception has been handled", transactionLogger);
                 } else {
                     throw exception;
@@ -121,36 +129,49 @@ public abstract class AbstractTransactionManager implements TransactionManager {
 
     private TransactionMetadata readTransactionMetadata(MethodInvocation methodInvocation) {
         Method method = methodInvocation.getMethod();
-        TransactionMetadata transactionMetadataDefaults = injector.getInstance(TransactionMetadata.class).defaults();
-        TransactionMetadata transactionMetadata = injector.getInstance(TransactionMetadata.class).defaults();
+        TransactionMetadata defaults = defaultTransactionMetadata();
+        TransactionMetadata target = defaultTransactionMetadata();
 
         for (TransactionMetadataResolver transactionMetadataResolver : transactionMetadataResolvers) {
-            transactionMetadata.mergeFrom(
-                    transactionMetadataResolver.resolve(methodInvocation, transactionMetadataDefaults));
+            target.mergeFrom(transactionMetadataResolver.resolve(methodInvocation, defaults));
         }
 
         Optional<Transactional> nativeTransactional = TransactionalResolver.INSTANCE.apply(method);
         if (nativeTransactional.isPresent()) {
-            transactionMetadata.mergeFrom(nativeTransactional.get());
+            target.mergeFrom(nativeTransactional.get());
         } else if (TransactionPlugin.JTA_12_OPTIONAL.isPresent()) {
-            Optional<javax.transaction.Transactional> transactionalOptional = JtaTransactionalResolver.INSTANCE.apply(
-                    method);
+            Optional<javax.transaction.Transactional> transactionalOptional = JtaTransactionalResolver.INSTANCE
+                    .apply(method);
             if (transactionalOptional.isPresent()) {
                 javax.transaction.Transactional transactional = transactionalOptional.get();
-                transactionMetadata.setPropagation(Propagation.valueOf(transactional.value().name()));
+                target.setPropagation(Propagation.valueOf(transactional.value().name()));
                 if (transactional.rollbackOn().length > 0) {
-                    transactionMetadata.setRollbackOn(asExceptions(transactional.rollbackOn()));
+                    target.setRollbackOn(asExceptions(transactional.rollbackOn()));
                 }
                 if (transactional.dontRollbackOn().length > 0) {
-                    transactionMetadata.setNoRollbackFor(asExceptions(transactional.dontRollbackOn()));
+                    target.setNoRollbackFor(asExceptions(transactional.dontRollbackOn()));
                 }
             }
         }
 
-        return transactionMetadata;
+        return target;
     }
 
-    private <T extends TransactionHandler> T getTransactionHandler(Class<T> handlerClass, String resource) {
+    @SuppressWarnings("unchecked")
+    private TransactionMetadata defaultTransactionMetadata() {
+        TransactionMetadata defaults = new TransactionMetadata();
+        defaults.setPropagation(Propagation.REQUIRED);
+        defaults.setReadOnly(false);
+        defaults.setRollbackOnParticipationFailure(true);
+        defaults.setRollbackOn(new Class[]{Exception.class});
+        defaults.setNoRollbackFor(new Class[0]);
+        defaults.setHandler(defaultTransactionHandler);
+        defaults.setExceptionHandler(null);
+        defaults.setResource(null);
+        return defaults;
+    }
+
+    private <T extends TransactionHandler<?>> T getTransactionHandler(Class<T> handlerClass, String resource) {
         if (handlerClass == null) {
             throw SeedException.createNew(TransactionErrorCode.NO_TRANSACTION_HANDLER_SPECIFIED);
         }
@@ -189,7 +210,7 @@ public abstract class AbstractTransactionManager implements TransactionManager {
             TransactionMetadata transactionMetadata = readTransactionMetadata(invocation);
             transactionLogger.log("{}", transactionMetadata);
 
-            TransactionHandler<Object> transactionHandler;
+            TransactionHandler<?> transactionHandler;
             try {
                 transactionHandler = getTransactionHandler(transactionMetadata.getHandler(),
                         transactionMetadata.getResource());

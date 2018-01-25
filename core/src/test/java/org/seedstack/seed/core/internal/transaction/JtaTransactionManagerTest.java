@@ -10,7 +10,7 @@ package org.seedstack.seed.core.internal.transaction;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
-import static org.mockito.Matchers.any;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -18,8 +18,8 @@ import static org.mockito.Mockito.when;
 
 import javax.naming.Context;
 import javax.transaction.Status;
+import mockit.Deencapsulation;
 import org.junit.Test;
-import org.mockito.internal.util.reflection.Whitebox;
 import org.seedstack.seed.SeedException;
 import org.seedstack.seed.transaction.TransactionConfig;
 import org.seedstack.seed.transaction.spi.TransactionManager;
@@ -27,10 +27,10 @@ import org.seedstack.seed.transaction.spi.TransactionMetadata;
 
 @SuppressWarnings("unchecked")
 public class JtaTransactionManagerTest extends AbstractTransactionManagerTest {
-    UserTransactionMock userTransaction;
-    TransactionManagerMock transactionManager;
+    private UserTransactionMock userTransaction;
+    private TransactionManagerMock transactionManager;
 
-    private void setupActiveTransaction() throws Exception {
+    private void setupActiveTransaction() {
         userTransaction.begin();
     }
 
@@ -52,8 +52,12 @@ public class JtaTransactionManagerTest extends AbstractTransactionManagerTest {
         when(jndiContext.lookup("java:comp/TransactionManager")).thenReturn(transactionManager);
 
         JtaTransactionManager jtaTransactionManager = new JtaTransactionManager();
-        Whitebox.setInternalState(jtaTransactionManager, "jndiContext", jndiContext);
-        Whitebox.setInternalState(jtaTransactionManager, "jtaConfig", new TransactionConfig.JtaConfig());
+        Deencapsulation.setField(jtaTransactionManager,
+                "jndiContext",
+                jndiContext);
+        Deencapsulation.setField(jtaTransactionManager,
+                "jtaConfig",
+                new TransactionConfig.JtaConfig());
 
         return jtaTransactionManager;
     }
@@ -268,12 +272,12 @@ public class JtaTransactionManagerTest extends AbstractTransactionManagerTest {
     }
 
     @Override
-    protected void doAssertRollbackOccurred() throws Exception {
+    protected void doAssertRollbackOccurred() {
         assertThat(userTransaction.getStatus()).isEqualTo(Status.STATUS_ROLLEDBACK);
     }
 
     @Override
-    protected void doAssertCommitOccurred() throws Exception {
+    protected void doAssertCommitOccurred() {
         assertThat(userTransaction.getStatus()).isEqualTo(Status.STATUS_COMMITTED);
     }
 }

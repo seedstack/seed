@@ -20,9 +20,9 @@ import org.seedstack.seed.transaction.spi.TransactionMetadata;
  */
 public class LocalTransactionManager extends AbstractTransactionManager {
     @Override
-    protected Object doMethodInterception(TransactionLogger transactionLogger, MethodInvocation invocation,
-            TransactionMetadata transactionMetadata, TransactionHandler<Object> transactionHandler) throws Throwable {
-        Object currentTransaction = transactionHandler.getCurrentTransaction();
+    protected <T> Object doMethodInterception(TransactionLogger transactionLogger, MethodInvocation invocation,
+            TransactionMetadata transactionMetadata, TransactionHandler<T> transactionHandler) throws Throwable {
+        T currentTransaction = transactionHandler.getCurrentTransaction();
         PropagationResult propagationResult = handlePropagation(transactionMetadata.getPropagation(),
                 currentTransaction);
 

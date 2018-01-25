@@ -29,7 +29,7 @@ public class CommandIT {
     private CommandRegistry commandRegistry;
 
     @Test
-    public void commandRegistryIsInjectable() throws Exception {
+    public void commandRegistryIsInjectable() {
         assertThat(commandRegistry).isNotNull();
     }
 
@@ -42,14 +42,14 @@ public class CommandIT {
     }
 
     @Test
-    public void testArgumentInfo() throws Exception {
+    public void testArgumentInfo() {
         List<Argument> argumentsInfo = commandRegistry.getArgumentsInfo("core", "test");
         assertThat(argumentsInfo).hasSize(1);
         assertThat(argumentsInfo.get(0).name()).isEqualTo("arg1");
     }
 
     @Test
-    public void testOptionsInfo() throws Exception {
+    public void testOptionsInfo() {
         List<Option> optionsInfo = commandRegistry.getOptionsInfo("core", "test");
         assertThat(optionsInfo).hasSize(2);
         assertThat(optionsInfo.get(0).longName()).isEqualTo("option1");

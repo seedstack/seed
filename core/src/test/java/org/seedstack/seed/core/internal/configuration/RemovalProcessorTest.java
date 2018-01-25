@@ -21,7 +21,7 @@ public class RemovalProcessorTest {
     private MapNode config;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         config = new MapNode(
                 new NamedNode("a", "1"),
                 new NamedNode("b", "2"),
@@ -44,7 +44,7 @@ public class RemovalProcessorTest {
     }
 
     @Test
-    public void testRemoval() throws Exception {
+    public void testRemoval() {
         assertThat(config.get("a").get().value()).isEqualTo("1");
         assertThat(config.get("b").isPresent()).isFalse();
         assertThat(config.get("-b").isPresent()).isFalse();

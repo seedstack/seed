@@ -9,7 +9,6 @@
 package org.seedstack.seed.web.fixtures.servlet;
 
 import java.io.IOException;
-import javax.servlet.ServletException;
 import javax.servlet.annotation.WebInitParam;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -25,7 +24,7 @@ public class TestServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest httpServletRequest,
-            HttpServletResponse httpServletResponse) throws ServletException, IOException {
+            HttpServletResponse httpServletResponse) throws IOException {
         String text = CONTENT + " " + getServletConfig().getInitParameter("param1");
 
         httpServletResponse.setContentType("text/plain");

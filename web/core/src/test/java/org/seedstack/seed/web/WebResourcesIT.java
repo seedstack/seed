@@ -32,33 +32,33 @@ public class WebResourcesIT {
     }
 
     @BeforeClass
-    public static void setUp() throws Exception {
+    public static void setUp() {
         RestAssured.useRelaxedHTTPSValidation();
     }
 
     @Test
     @RunAsClient
-    public void classpathWebResourcesWithDefaultConfigurationAreGzippedAndMinified() throws Exception {
+    public void classpathWebResourcesWithDefaultConfigurationAreGzippedAndMinified() {
         RestAssured.expect().statusCode(200).header("Content-Encoding", Matchers.equalTo("gzip")).body(
                 Matchers.containsString("var minifiedJS = {};")).when().get(baseUrl + "test.js");
     }
 
     @Test
     @RunAsClient
-    public void classpathWebResourcesWithDefaultConfigurationAreGzippedOnTheFly() throws Exception {
+    public void classpathWebResourcesWithDefaultConfigurationAreGzippedOnTheFly() {
         RestAssured.expect().statusCode(200).header("Content-Encoding", Matchers.equalTo("gzip")).body(
                 Matchers.containsString("var JS2 = {};")).when().get(baseUrl + "test2.js");
     }
 
     @Test
     @RunAsClient
-    public void nonExistentResourceIs404() throws Exception {
+    public void nonExistentResourceIs404() {
         RestAssured.expect().statusCode(404).when().get(baseUrl + "non-existent-resource");
     }
 
     @Test
     @RunAsClient
-    public void notPregzippedResourceIsGzippedOnTheFlyTwice() throws Exception {
+    public void notPregzippedResourceIsGzippedOnTheFlyTwice() {
         RestAssured.expect().statusCode(200).header("Content-Encoding", Matchers.equalTo("gzip")).body(
                 Matchers.containsString("var JS2 = {};")).when().get(baseUrl + "test2.js");
 

@@ -15,21 +15,20 @@ import org.glassfish.hk2.api.ServiceLocator;
 /**
  * A generic HK2 factory backed by Guice.
  */
-class GuiceToHK2Factory implements Factory {
-
-    private final Class<?> componentClass;
+class GuiceToHK2Factory<T> implements Factory<T> {
+    private final Class<T> componentClass;
     private final Injector injector;
     private final ServiceLocator serviceLocator;
 
-    public GuiceToHK2Factory(Class<?> componentClass, Injector injector, ServiceLocator locator) {
+    GuiceToHK2Factory(Class<T> componentClass, Injector injector, ServiceLocator locator) {
         this.injector = injector;
         this.componentClass = componentClass;
         this.serviceLocator = locator;
     }
 
     @Override
-    public Object provide() {
-        Object instance = injector.getInstance(componentClass);
+    public T provide() {
+        T instance = injector.getInstance(componentClass);
         if (instance != null) {
             serviceLocator.inject(instance);
         }

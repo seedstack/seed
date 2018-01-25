@@ -21,13 +21,13 @@ public class HostAndPortMapperTest {
     private ConfigurationMapper mapper = Coffig.basic().getMapper();
 
     @Test
-    public void testMapHostAndPort() throws NoSuchFieldException {
+    public void testMapHostAndPort() {
         assertThat((HostAndPort) (mapper.map(new ValueNode(SOME_HOST_4576), HostAndPort.class))).isEqualTo(
                 HostAndPort.fromString(SOME_HOST_4576));
     }
 
     @Test
-    public void testUnmapHostAndPort() throws Exception {
+    public void testUnmapHostAndPort() {
         assertThat(mapper.unmap(HostAndPort.fromString(SOME_HOST_4576), HostAndPort.class)).isEqualTo(
                 new ValueNode(SOME_HOST_4576));
     }

@@ -17,7 +17,6 @@ import javax.annotation.Resource;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.naming.Context;
-import javax.naming.InvalidNameException;
 import javax.naming.Name;
 import javax.naming.NamingException;
 import org.assertj.core.api.Assertions;
@@ -34,7 +33,7 @@ public class JndiIT {
     private Injector injector;
 
     @Test
-    public void jndi_context_injection_is_working() throws Exception {
+    public void jndi_context_injection_is_working() {
         Holder holder = injector.getInstance(Holder.class);
         Assertions.assertThat(holder.defaultCtx).isNotNull();
         Assertions.assertThat(holder.defaultCtxViaName).isNotNull();
@@ -68,7 +67,7 @@ public class JndiIT {
     }
 
     @Test
-    public void two_identically_configured_jndi_contexts_are_not_the_same_instance() throws NamingException {
+    public void two_identically_configured_jndi_contexts_are_not_the_same_instance() {
         Holder holder = injector.getInstance(Holder.class);
         Assertions.assertThat(holder.ctx1).isNotSameAs(holder.ctx2);
     }
@@ -98,7 +97,7 @@ public class JndiIT {
     }
 
     @Test
-    public void jndi_context_is_immutable() throws Exception {
+    public void jndi_context_is_immutable() {
         Context context = injector.getInstance(Holder.class).ctx1;
         assertThatExceptionOfType(NamingException.class).isThrownBy(() -> context.bind(new DummyName(), new Object()));
         assertThatExceptionOfType(NamingException.class).isThrownBy(() -> context.bind("", new Object()));
@@ -204,27 +203,27 @@ public class JndiIT {
         }
 
         @Override
-        public Name addAll(Name suffix) throws InvalidNameException {
+        public Name addAll(Name suffix) {
             return null;
         }
 
         @Override
-        public Name addAll(int posn, Name n) throws InvalidNameException {
+        public Name addAll(int posn, Name n) {
             return null;
         }
 
         @Override
-        public Name add(String comp) throws InvalidNameException {
+        public Name add(String comp) {
             return null;
         }
 
         @Override
-        public Name add(int posn, String comp) throws InvalidNameException {
+        public Name add(int posn, String comp) {
             return null;
         }
 
         @Override
-        public Object remove(int posn) throws InvalidNameException {
+        public Object remove(int posn) {
             return null;
         }
 

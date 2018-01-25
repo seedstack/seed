@@ -21,15 +21,16 @@ public class HalRepresentationTest {
             + "\"_embedded\":{\"objects\":[{\"name\":\"toto\"}]}}";
 
     @Test
+    @SuppressWarnings("unchecked")
     public void test_hal_links() {
         HalRepresentation halRepresentation = new HalRepresentation();
         halRepresentation.link("curies", new Link("http://docs.acme.com/relations/{rel}").templated().name("acme"));
         Assertions.assertThat(halRepresentation.getLink("curies")).isInstanceOf(Link.class);
         halRepresentation.link("curies", new Link("http://example.org/{rel}").templated().name("example"));
         Assertions.assertThat(halRepresentation.getLink("curies")).isInstanceOf(List.class);
-        Assertions.assertThat(((List) halRepresentation.getLink("curies"))).hasSize(2);
+        Assertions.assertThat(((List<Link>) halRepresentation.getLink("curies"))).hasSize(2);
         halRepresentation.link("curies", new Link("http://example2.org/{rel}").templated().name("example2"));
-        Assertions.assertThat(((List) halRepresentation.getLink("curies"))).hasSize(3);
+        Assertions.assertThat(((List<Link>) halRepresentation.getLink("curies"))).hasSize(3);
     }
 
     @Test

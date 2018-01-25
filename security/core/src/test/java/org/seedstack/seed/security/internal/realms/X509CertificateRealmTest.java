@@ -42,12 +42,10 @@ public class X509CertificateRealmTest {
 
     @Before
     public void before() {
-        underTest = new X509CertificateRealm();
         x509Certificate = mock(X509Certificate.class);
         roleMapping = mock(RoleMapping.class);
         rolePermissionResolver = mock(RolePermissionResolver.class);
-        underTest.setRoleMapping(roleMapping);
-        underTest.setRolePermissionResolver(rolePermissionResolver);
+        underTest = new X509CertificateRealm(roleMapping, rolePermissionResolver);
     }
 
     @Test

@@ -12,9 +12,6 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-import javax.annotation.Nullable;
-import javax.inject.Inject;
-import javax.inject.Named;
 import org.seedstack.seed.transaction.Propagation;
 import org.seedstack.seed.transaction.Transactional;
 
@@ -22,11 +19,6 @@ import org.seedstack.seed.transaction.Transactional;
  * This class holds transaction metadata attributes.
  */
 public class TransactionMetadata {
-    @Inject
-    @Named("default")
-    @Nullable
-    private Class<? extends TransactionHandler> defaultTransactionHandler;
-
     private Propagation propagation;
     private Boolean readOnly;
     private Boolean rollbackOnParticipationFailure;
@@ -203,25 +195,6 @@ public class TransactionMetadata {
      */
     public void addMetadata(String key, Object value) {
         this.metadata.put(key, value);
-    }
-
-    /**
-     * Set or reset this instance to the defaults.
-     *
-     * @return this instance, (re-)set to the defaults.
-     */
-    @SuppressWarnings("unchecked")
-    public TransactionMetadata defaults() {
-        this.propagation = Propagation.REQUIRED;
-        this.readOnly = false;
-        this.rollbackOnParticipationFailure = true;
-        this.rollbackOn = new Class[]{Exception.class};
-        this.noRollbackFor = new Class[]{};
-        this.handler = defaultTransactionHandler;
-        this.exceptionHandler = null;
-        this.resource = null;
-
-        return this;
     }
 
     /**

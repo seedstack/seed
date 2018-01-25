@@ -33,7 +33,7 @@ public class JspIT {
 
     @Test
     @RunAsClient
-    public void jspIsWorking() throws Exception {
+    public void jspIsWorking() {
         String body = RestAssured.expect().statusCode(200).when().get(
                 baseUrl + "jsp-test?test=value1").getBody().asString();
         Assertions.assertThat(body.trim()).isEqualTo("value1");
@@ -41,7 +41,7 @@ public class JspIT {
 
     @Test
     @RunAsClient
-    public void jspInclusionIsWorking() throws Exception {
+    public void jspInclusionIsWorking() {
         String body = RestAssured.expect().statusCode(200).when().post(
                 baseUrl + "jsp-test?test=value2").getBody().asString();
         Assertions.assertThat(body.trim()).isEqualTo("value2");

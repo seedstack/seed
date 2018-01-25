@@ -13,7 +13,7 @@ public class UnusedCommandLineHandler implements CommandLineHandler {
     static boolean called = false;
 
     @Override
-    public Integer call() throws Exception {
+    public Integer call() {
         called = true;
         return 0;
     }

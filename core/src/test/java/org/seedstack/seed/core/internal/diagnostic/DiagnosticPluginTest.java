@@ -18,10 +18,10 @@ import java.util.AbstractMap;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import mockit.Deencapsulation;
 import org.fest.reflect.core.Reflection;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.internal.util.reflection.Whitebox;
 import org.seedstack.coffig.Coffig;
 import org.seedstack.seed.Application;
 import org.seedstack.seed.diagnostic.spi.DiagnosticDomain;
@@ -37,7 +37,7 @@ public class DiagnosticPluginTest {
     @Before
     public void before() {
         diagnosticPlugin = new DiagnosticPlugin();
-        Whitebox.setInternalState(diagnosticPlugin, "diagnosticManager", new DiagnosticManagerImpl());
+        Deencapsulation.setField(diagnosticPlugin, "diagnosticManager", new DiagnosticManagerImpl());
     }
 
     @Test

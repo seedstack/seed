@@ -20,17 +20,16 @@ import java.util.Set;
 import org.seedstack.seed.core.internal.utils.MethodMatcherBuilder;
 import org.seedstack.seed.transaction.spi.TransactionHandler;
 import org.seedstack.seed.transaction.spi.TransactionManager;
-import org.seedstack.seed.transaction.spi.TransactionMetadata;
 import org.seedstack.seed.transaction.spi.TransactionMetadataResolver;
 
 @TransactionConcern
 class TransactionModule extends AbstractModule {
     private final TransactionManager transactionManager;
-    private final Class<? extends TransactionHandler> defaultTransactionHandlerClass;
+    private final Class<? extends TransactionHandler<?>> defaultTransactionHandlerClass;
     private final Set<Class<? extends TransactionMetadataResolver>> transactionMetadataResolvers;
 
     TransactionModule(TransactionManager transactionManager,
-            Class<? extends TransactionHandler> defaultTransactionHandlerClass,
+            Class<? extends TransactionHandler<?>> defaultTransactionHandlerClass,
             Set<Class<? extends TransactionMetadataResolver>> transactionMetadataResolvers) {
         this.transactionManager = transactionManager;
         this.defaultTransactionHandlerClass = defaultTransactionHandlerClass;
@@ -47,26 +46,29 @@ class TransactionModule extends AbstractModule {
 
     @Override
     protected void configure() {
-        Multibinder<TransactionMetadataResolver> transactionMetadataResolverMultibinder = Multibinder.newSetBinder(
-                binder(), TransactionMetadataResolver.class);
+        Multibinder<TransactionMetadataResolver> transactionMetadataResolverMultibinder = Multibinder
+                .newSetBinder(binder(), TransactionMetadataResolver.class);
+
         for (Class<? extends TransactionMetadataResolver> transactionMetadataResolver : transactionMetadataResolvers) {
             transactionMetadataResolverMultibinder.addBinding().to(transactionMetadataResolver);
         }
 
         if (defaultTransactionHandlerClass != null) {
-            bind(new DefaultTransactionHandlerTypeLiteral()).annotatedWith(Names.named("default")).toInstance(
-                    defaultTransactionHandlerClass);
+            bind(new DefaultTransactionHandlerTypeLiteral())
+                    .annotatedWith(Names.named("default"))
+                    .toInstance(defaultTransactionHandlerClass);
         } else {
-            bind(new DefaultTransactionHandlerTypeLiteral()).annotatedWith(Names.named("default")).toProvider(
-                    Providers.of(null));
+            bind(new DefaultTransactionHandlerTypeLiteral())
+                    .annotatedWith(Names.named("default"))
+                    .toProvider(Providers.of(null));
         }
 
         requestInjection(transactionManager);
         bindInterceptor(Matchers.any(), buildMethodMatcher(), transactionManager.getMethodInterceptor());
         bind(TransactionManager.class).toInstance(transactionManager);
-        bind(TransactionMetadata.class);
     }
 
-    private static class DefaultTransactionHandlerTypeLiteral extends TypeLiteral<Class<? extends TransactionHandler>> {
+    private static class DefaultTransactionHandlerTypeLiteral
+            extends TypeLiteral<Class<? extends TransactionHandler<?>>> {
     }
 }

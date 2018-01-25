@@ -9,7 +9,6 @@
 package org.seedstack.seed.core.internal.transaction;
 
 import io.nuun.kernel.api.plugin.InitState;
-import io.nuun.kernel.api.plugin.PluginException;
 import io.nuun.kernel.api.plugin.context.InitContext;
 import io.nuun.kernel.api.plugin.request.ClasspathScanRequest;
 import java.lang.reflect.Method;
@@ -40,7 +39,7 @@ public class TransactionPlugin extends AbstractSeedPlugin {
     private static final Logger LOGGER = LoggerFactory.getLogger(TransactionPlugin.class);
     private final Set<Class<? extends TransactionMetadataResolver>> transactionMetadataResolvers = new HashSet<>();
     private TransactionManager transactionManager;
-    private Class<? extends TransactionHandler> defaultTransactionHandlerClass;
+    private Class<? extends TransactionHandler<?>> defaultTransactionHandlerClass;
 
     @Override
     public String name() {
@@ -55,16 +54,11 @@ public class TransactionPlugin extends AbstractSeedPlugin {
     @Override
     public InitState initialize(InitContext initContext) {
         TransactionConfig transactionConfig = getConfiguration(TransactionConfig.class);
-
-        Class<? extends TransactionManager> txManager = transactionConfig.getManager();
-        if (txManager == null) {
-            txManager = LocalTransactionManager.class;
+        Class<? extends TransactionManager> txManagerClass = transactionConfig.getManager();
+        if (txManagerClass == null) {
+            txManagerClass = LocalTransactionManager.class;
         }
-        try {
-            this.transactionManager = txManager.newInstance();
-        } catch (Exception e) {
-            throw new PluginException("Unable to instantiate transaction manager from class " + txManager, e);
-        }
+        this.transactionManager = Classes.instantiateDefault(txManagerClass);
         this.defaultTransactionHandlerClass = transactionConfig.getDefaultHandler();
 
         initContext.scannedSubTypesByParentClass().get(TransactionMetadataResolver.class).stream()

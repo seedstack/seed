@@ -26,7 +26,7 @@ public class DummyCommandLineHandler implements CommandLineHandler {
     private String[] args;
 
     @Override
-    public Integer call() throws Exception {
+    public Integer call() {
         assertThat(args.length).isEqualTo(2);
         assertThat(args[0]).isEqualTo("arg0");
         assertThat(args[1]).isEqualTo("arg1");

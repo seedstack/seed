@@ -57,7 +57,7 @@ public class ExpressionLanguageIT {
     }
 
     @Test
-    public void check_boolean_eval_expression_language() throws NoSuchMethodException {
+    public void check_boolean_eval_expression_language() {
         Boolean hasAuthorization = (Boolean) elService.withExpression("${falsy && falsy}", Boolean.class)
                 .withContext(elContextBuilder.defaultContext().withProperty("truthy", true)
                         .withProperty("falsy", false).build())

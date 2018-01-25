@@ -31,12 +31,12 @@ public class TransactionMock implements Transaction {
     }
 
     @Override
-    public boolean delistResource(XAResource xaRes, int flag) throws IllegalStateException, SystemException {
+    public boolean delistResource(XAResource xaRes, int flag) throws IllegalStateException {
         return false;
     }
 
     @Override
-    public boolean enlistResource(XAResource xaRes) throws RollbackException, IllegalStateException, SystemException {
+    public boolean enlistResource(XAResource xaRes) throws IllegalStateException {
         return false;
     }
 
@@ -47,7 +47,7 @@ public class TransactionMock implements Transaction {
 
     @Override
     public void registerSynchronization(
-            Synchronization sync) throws RollbackException, IllegalStateException, SystemException {
+            Synchronization sync) throws IllegalStateException {
 
     }
 

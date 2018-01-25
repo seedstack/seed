@@ -27,7 +27,7 @@ public class RequiresPermissionsInterceptorTest extends AbstractShiroTest {
     private Subject subjectUnderTest;
 
     @Before
-    public void setup() throws Exception {
+    public void setup() {
         subjectUnderTest = Mockito.mock(Subject.class);
         setSubject(subjectUnderTest);
     }

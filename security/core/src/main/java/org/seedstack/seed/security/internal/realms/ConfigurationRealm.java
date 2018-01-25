@@ -8,6 +8,7 @@
 
 package org.seedstack.seed.security.internal.realms;
 
+import com.google.common.collect.Sets;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -31,20 +32,20 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * A realm that authentifies users and gives authorities with a configuration file.
+ * A realm that authenticate users and gives authorities using SeedStack configuration.
  */
 public class ConfigurationRealm implements Realm {
-
-    /**
-     * props section suffix
-     */
-    public static final String USER_SECTION_NAME = "users";
     private static final Logger LOGGER = LoggerFactory.getLogger(ConfigurationRealm.class);
     private final Set<ConfigurationUser> users = new HashSet<>();
+    private final RoleMapping roleMapping;
+    private final RolePermissionResolver rolePermissionResolver;
 
-    private RoleMapping roleMapping;
-
-    private RolePermissionResolver rolePermissionResolver;
+    @Inject
+    public ConfigurationRealm(@Named("ConfigurationRealm-role-mapping") RoleMapping roleMapping,
+            @Named("ConfigurationRealm-role-permission-resolver") RolePermissionResolver rolePermissionResolver) {
+        this.roleMapping = roleMapping;
+        this.rolePermissionResolver = rolePermissionResolver;
+    }
 
     @Override
     public Set<String> getRealmRoles(PrincipalProvider<?> identityPrincipal,
@@ -79,11 +80,8 @@ public class ConfigurationRealm implements Realm {
         } else {
             users.clear();
             for (Map.Entry<String, SecurityConfig.UserConfig> entry : securityConfig.getUsers().entrySet()) {
-                ConfigurationUser user = new ConfigurationUser(entry.getKey());
                 SecurityConfig.UserConfig userConfig = entry.getValue();
-                user.password = userConfig.getPassword();
-                user.roles.addAll(userConfig.getRoles());
-                users.add(user);
+                users.add(new ConfigurationUser(entry.getKey(), userConfig.getPassword(), userConfig.getRoles()));
             }
         }
     }
@@ -93,30 +91,14 @@ public class ConfigurationRealm implements Realm {
         return this.roleMapping;
     }
 
-    /**
-     * Setter roleMapping
-     *
-     * @param roleMapping the role mapping
-     */
-    @Inject
-    public void setRoleMapping(@Named("ConfigurationRealm-role-mapping") RoleMapping roleMapping) {
-        this.roleMapping = roleMapping;
-    }
-
     @Override
     public RolePermissionResolver getRolePermissionResolver() {
         return this.rolePermissionResolver;
     }
 
-    /**
-     * Setter rolePermissionResolver
-     *
-     * @param rolePermissionResolver the rolePermissionResolver
-     */
-    @Inject
-    public void setRolePermissionResolver(
-            @Named("ConfigurationRealm-role-permission-resolver") RolePermissionResolver rolePermissionResolver) {
-        this.rolePermissionResolver = rolePermissionResolver;
+    @Override
+    public Class<? extends AuthenticationToken> supportedToken() {
+        return UsernamePasswordToken.class;
     }
 
     private ConfigurationUser findUser(String username) {
@@ -128,29 +110,27 @@ public class ConfigurationRealm implements Realm {
         return null;
     }
 
-    @Override
-    public Class<? extends AuthenticationToken> supportedToken() {
-        return UsernamePasswordToken.class;
-    }
-
     /**
      * Class to represent a user from the configuration. In the file, key is the name, first value is the password,
      * following values are the roles.
      */
     static class ConfigurationUser {
-
         private final String username;
-
-        private final Set<String> roles = new HashSet<>();
-
-        private String password;
+        private final String password;
+        private final Set<String> roles;
 
         ConfigurationUser(String username) {
-            this.username = username;
+            this(username, null, Sets.newHashSet());
         }
 
-        public Set<String> getRoles() {
-            return roles;
+        ConfigurationUser(String username, String password) {
+            this(username, password, Sets.newHashSet());
+        }
+
+        ConfigurationUser(String username, String password, Set<String> roles) {
+            this.username = username;
+            this.password = password;
+            this.roles = new HashSet<>(roles);
         }
 
         @Override

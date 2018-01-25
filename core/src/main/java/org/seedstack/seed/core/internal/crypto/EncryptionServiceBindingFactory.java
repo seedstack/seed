@@ -75,12 +75,13 @@ class EncryptionServiceBindingFactory {
         Optional<Class<Object>> optionalClass = Classes.optional(qualifier);
         if (optionalClass.isPresent()) {
             Class<?> qualifierClass = optionalClass.get();
-            if (!Annotation.class.isAssignableFrom(qualifierClass) || !qualifierClass.isAnnotationPresent(
-                    Qualifier.class)) {
-                throw SeedException.createNew(CryptoErrorCode.INVALID_QUALIFIER_ANNOTATION).put("qualifier", qualifier);
+            if (!Annotation.class.isAssignableFrom(qualifierClass)
+                    || !qualifierClass.isAnnotationPresent(Qualifier.class)) {
+                throw SeedException.createNew(CryptoErrorCode.INVALID_QUALIFIER_ANNOTATION)
+                        .put("qualifier", qualifier);
+            } else {
+                key = Key.get(EncryptionService.class, qualifierClass.asSubclass(Annotation.class));
             }
-            //noinspection unchecked
-            key = Key.get(EncryptionService.class, (Class<? extends Annotation>) qualifierClass);
         } else {
             key = Key.get(EncryptionService.class, Names.named(qualifier));
         }

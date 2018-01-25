@@ -22,13 +22,13 @@ public class IgnoreIT {
     private Injector injector;
 
     @Test
-    public void testScanWorks() throws Exception {
+    public void testScanWorks() {
         ScannedClass instance = injector.getInstance(ScannedClass.class);
         Assertions.assertThat(instance).isNotNull();
     }
 
     @Test(expected = ConfigurationException.class)
-    public void testIgnoreFeature() throws Exception {
+    public void testIgnoreFeature() {
         injector.getInstance(IgnoredClass.class);
     }
 

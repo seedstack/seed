@@ -25,7 +25,7 @@ public class CorsRestIT {
     private String baseUrl;
 
     @Test
-    public void cors_is_applied_to_rest_get() throws Exception {
+    public void cors_is_applied_to_rest_get() {
         given().header("Origin", WWW_OTHER_COM)
                 .header("Access-Control-Request-Method", "GET")
                 .expect()
@@ -36,7 +36,7 @@ public class CorsRestIT {
     }
 
     @Test
-    public void cors_is_applied_to_rest_post() throws Exception {
+    public void cors_is_applied_to_rest_post() {
         given().header("Origin", WWW_OTHER_COM)
                 .header("Access-Control-Request-Method", "POST")
                 .expect()
@@ -47,7 +47,7 @@ public class CorsRestIT {
     }
 
     @Test
-    public void cors_is_applied_to_rest_put() throws Exception {
+    public void cors_is_applied_to_rest_put() {
         given().header("Origin", WWW_OTHER_COM)
                 .header("Access-Control-Request-Method", "PUT")
                 .expect()
@@ -58,7 +58,7 @@ public class CorsRestIT {
     }
 
     @Test
-    public void cors_is_applied_to_rest_delete() throws Exception {
+    public void cors_is_applied_to_rest_delete() {
         given().header("Origin", WWW_OTHER_COM)
                 .header("Access-Control-Request-Method", "DELETE")
                 .expect()
@@ -69,7 +69,7 @@ public class CorsRestIT {
     }
 
     @Test
-    public void cors_is_applied_to_rest_head() throws Exception {
+    public void cors_is_applied_to_rest_head() {
         given().header("Origin", WWW_OTHER_COM)
                 .header("Access-Control-Request-Method", "HEAD")
                 .expect()
@@ -80,7 +80,7 @@ public class CorsRestIT {
     }
 
     @Test
-    public void cors_is_applied_to_rest_options() throws Exception {
+    public void cors_is_applied_to_rest_options() {
         given().header("Origin", WWW_OTHER_COM)
                 .header("Access-Control-Request-Method", "OPTIONS")
                 .expect()
@@ -91,7 +91,7 @@ public class CorsRestIT {
     }
 
     @Test
-    public void trace_request_should_be_refused() throws Exception {
+    public void trace_request_should_be_refused() {
         given().header("Origin", WWW_OTHER_COM)
                 .header("Access-Control-Request-Method", "TRACE")
                 .expect()

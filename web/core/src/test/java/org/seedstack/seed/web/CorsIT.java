@@ -32,7 +32,7 @@ public class CorsIT {
 
     @Test
     @RunAsClient
-    public void corsSupportIsEnabledForGet() throws Exception {
+    public void corsSupportIsEnabledForGet() {
         RestAssured.given().header("Origin", WWW_OTHER_COM)
                 .header("Access-Control-Request-Method", "GET")
                 .expect()
@@ -44,7 +44,7 @@ public class CorsIT {
 
     @Test
     @RunAsClient
-    public void corsSupportIsEnabledForPost() throws Exception {
+    public void corsSupportIsEnabledForPost() {
         RestAssured.given().header("Origin", WWW_OTHER_COM)
                 .header("Access-Control-Request-Method", "POST")
                 .expect()
@@ -56,7 +56,7 @@ public class CorsIT {
 
     @Test
     @RunAsClient
-    public void corsSupportIsEnabledForPut() throws Exception {
+    public void corsSupportIsEnabledForPut() {
         RestAssured.given().header("Origin", WWW_OTHER_COM)
                 .header("Access-Control-Request-Method", "PUT")
                 .expect()
@@ -68,7 +68,7 @@ public class CorsIT {
 
     @Test
     @RunAsClient
-    public void corsSupportIsEnabledForDelete() throws Exception {
+    public void corsSupportIsEnabledForDelete() {
         RestAssured.given().header("Origin", WWW_OTHER_COM)
                 .header("Access-Control-Request-Method", "DELETE")
                 .expect()
@@ -80,7 +80,7 @@ public class CorsIT {
 
     @Test
     @RunAsClient
-    public void corsSupportIsEnabledForHead() throws Exception {
+    public void corsSupportIsEnabledForHead() {
         RestAssured.given().header("Origin", WWW_OTHER_COM)
                 .header("Access-Control-Request-Method", "HEAD")
                 .expect()
@@ -92,7 +92,7 @@ public class CorsIT {
 
     @Test
     @RunAsClient
-    public void corsSupportIsEnabledForOptions() throws Exception {
+    public void corsSupportIsEnabledForOptions() {
         RestAssured.given().header("Origin", WWW_OTHER_COM)
                 .header("Access-Control-Request-Method", "OPTIONS")
                 .expect()
@@ -104,7 +104,7 @@ public class CorsIT {
 
     @Test
     @RunAsClient
-    public void traceRequestShouldBeRefused() throws Exception {
+    public void traceRequestShouldBeRefused() {
         RestAssured.given().header("Origin", WWW_OTHER_COM)
                 .header("Access-Control-Request-Method", "TRACE")
                 .expect()

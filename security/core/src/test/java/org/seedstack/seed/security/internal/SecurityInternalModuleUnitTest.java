@@ -9,7 +9,7 @@
 package org.seedstack.seed.security.internal;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Matchers.any;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -24,25 +24,21 @@ import java.lang.annotation.Annotation;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
+import mockit.Deencapsulation;
 import org.apache.shiro.realm.Realm;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.internal.util.reflection.Whitebox;
 import org.seedstack.seed.security.SecurityConfig;
 import org.seedstack.seed.security.internal.realms.ConfigurationRealm;
 
 public class SecurityInternalModuleUnitTest {
-
     private SecurityInternalModule underTest;
-
-    private PrivateBinder binder;
-
     private SecurityConfigurer securityConfigurer;
 
     @SuppressWarnings({"unchecked", "rawtypes"})
     @Before
     public void before() {
-        binder = mock(PrivateBinder.class);
+        PrivateBinder binder = mock(PrivateBinder.class);
         AnnotatedBindingBuilder ab = mock(AnnotatedBindingBuilder.class);
         when(binder.bind(any(Class.class))).thenReturn(ab);
         when(ab.annotatedWith(any(Annotation.class))).thenReturn(ab);
@@ -54,7 +50,7 @@ public class SecurityInternalModuleUnitTest {
         when(binder.skipSources(any(Class.class), any(Class.class))).thenReturn(binder);
         securityConfigurer = mock(SecurityConfigurer.class);
         underTest = new SecurityInternalModule(securityConfigurer, new HashMap<>());
-        Whitebox.setInternalState(underTest, "binder", binder);
+        Deencapsulation.setField(underTest, "binder", binder);
     }
 
     @Test
@@ -76,8 +72,8 @@ public class SecurityInternalModuleUnitTest {
         Set<Class<? extends org.seedstack.seed.security.Realm>> realmClasses = new HashSet<>();
         realmClasses.add(ConfigurationRealm.class);
 
-        Whitebox.setInternalState(rp, "injector", i);
-        Whitebox.setInternalState(rp, "realmClasses", realmClasses);
+        Deencapsulation.setField(rp, "injector", i);
+        Deencapsulation.setField(rp, "realmClasses", realmClasses);
 
         Set<Realm> realms = rp.get();
         assertEquals(1, realms.size());

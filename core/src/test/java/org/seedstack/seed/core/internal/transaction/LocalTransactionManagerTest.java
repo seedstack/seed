@@ -10,7 +10,7 @@ package org.seedstack.seed.core.internal.transaction;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
-import static org.mockito.Matchers.any;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -20,7 +20,6 @@ import org.seedstack.seed.SeedException;
 import org.seedstack.seed.transaction.spi.TransactionManager;
 import org.seedstack.seed.transaction.spi.TransactionMetadata;
 
-@SuppressWarnings("unchecked")
 public class LocalTransactionManagerTest extends AbstractTransactionManagerTest {
     private void setupCurrentTransaction() {
         when(transactionHandler.getCurrentTransaction()).thenReturn(new Object());

@@ -63,6 +63,7 @@ public class DiagnosticManagerIT {
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     public void seed_info_is_present() {
         Map<String, Object> diagnosticInfo = diagnosticManager.getDiagnosticInfo(null);
 

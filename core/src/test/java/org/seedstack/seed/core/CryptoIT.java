@@ -33,7 +33,7 @@ public class CryptoIT {
     private EncryptionService masterEncryptionService;
 
     @Test
-    public void testEncryption() throws Exception {
+    public void testEncryption() {
         final String chaine = "essai crypting";
         byte[] encrypt = key1EncryptionService.encrypt(chaine.getBytes());
         byte[] decrypt = key1EncryptionService.decrypt(encrypt);
@@ -41,7 +41,7 @@ public class CryptoIT {
     }
 
     @Test
-    public void testEncryptionWithMasterKey() throws Exception {
+    public void testEncryptionWithMasterKey() {
         final String chaine = "clientpasswd";
         byte[] encrypt = masterEncryptionService.encrypt(chaine.getBytes());
         byte[] decrypt = masterEncryptionService.decrypt(encrypt);

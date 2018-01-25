@@ -47,7 +47,7 @@ public class SampleCommandLineHandler extends AbstractCliHandler implements Comm
     private String[] args;
 
     @Override
-    public Integer call() throws Exception {
+    public Integer call() {
         assertThat(hasA).isNotNull();
         assertThat(hasA).isTrue();
 

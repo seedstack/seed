@@ -32,7 +32,7 @@ public class RestModuleTest {
     private RestConfig restConfig;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         Collection<Class<?>> resources = Lists.newArrayList(MyResource1.class, MyResource2.class);
         Collection<Class<?>> providers = Lists.newArrayList(MyProvider1.class, MyProvider2.class);
         underTest = new RestModule(restConfig, resources, providers, new HashMap<>());

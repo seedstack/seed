@@ -39,10 +39,8 @@ import org.seedstack.seed.SeedException;
 
 @RunWith(JMockit.class)
 public class GuiceComponentProviderTest {
-
     @Tested
     private GuiceComponentProvider underTest;
-
     @Mocked
     private ServiceLocator serviceLocator;
     @Mocked
@@ -52,12 +50,10 @@ public class GuiceComponentProviderTest {
     @Mocked
     private GuiceIntoHK2Bridge guiceIntoHK2Bridge;
     @Mocked
-    private ServiceBindingBuilder bindingBuilder;
-    @Mocked
     private DynamicConfiguration dynamicConfiguration;
 
     @Test
-    public void testInitializeSaveTheServiceLocator() throws Exception {
+    public void testInitializeSaveTheServiceLocator() {
         givenServiceLocator();
 
         underTest.initialize(serviceLocator);
@@ -67,7 +63,7 @@ public class GuiceComponentProviderTest {
     }
 
     @Test
-    public void testGetTheInjector() throws Exception {
+    public void testGetTheInjector() {
         givenServiceLocator();
 
         underTest.initialize(serviceLocator);
@@ -88,7 +84,7 @@ public class GuiceComponentProviderTest {
     }
 
     @Test
-    public void testMissingServletContext() throws Exception {
+    public void testMissingServletContext() {
         givenMissingServletContext();
         try {
             underTest.initialize(serviceLocator);
@@ -106,7 +102,7 @@ public class GuiceComponentProviderTest {
     }
 
     @Test
-    public void testMissingInjector() throws Exception {
+    public void testMissingInjector() {
         givenServletContextAndMissingInjector();
         try {
             underTest.initialize(serviceLocator);
@@ -126,7 +122,7 @@ public class GuiceComponentProviderTest {
     }
 
     @Test
-    public void testPrepareHK2Bridge(@Mocked final GuiceBridge guiceBridge) throws Exception {
+    public void testPrepareHK2Bridge(@Mocked final GuiceBridge guiceBridge) {
         givenServiceLocator();
         new Expectations() {{
             serviceLocator.getService(GuiceIntoHK2Bridge.class);
@@ -143,42 +139,40 @@ public class GuiceComponentProviderTest {
     }
 
     @Test
-    public void testDoNotBindNonResourceClasses() throws Exception {
+    public void testDoNotBindNonResourceClasses() {
         boolean isBound = underTest.bind(String.class, null);
         assertThat(isBound).isFalse();
     }
 
     @Test
-    public void testBindResourceClasses() throws Exception {
+    public <T> void testBindResourceClasses(@Mocked ServiceBindingBuilder<T> bindingBuilder) {
         givenServiceLocator();
-        givenInjections();
+        givenInjections(bindingBuilder);
         underTest.initialize(serviceLocator);
+
         @Ignore
         @Path("/")
         class MyResource {
         }
 
-        boolean isBound = underTest.bind(MyResource.class, null);
-
-        assertThat(isBound).isTrue();
+        assertThat(underTest.bind(MyResource.class, null)).isTrue();
     }
 
     @Test
     @SuppressWarnings("unchecked")
-    public void testBind() throws Exception {
+    public <T> void testBind(@Mocked ServiceBindingBuilder<T> bindingBuilder) {
         givenServiceLocator();
-        givenInjections();
+        givenInjections(bindingBuilder);
         underTest.initialize(serviceLocator);
 
         underTest.bind(MyProvider.class, Sets.newHashSet(MyProviderImpl.class));
 
         new Verifications() {{
-            bindingBuilder.to(MyProvider.class);
             bindingBuilder.to(MyProviderImpl.class);
         }};
     }
 
-    private void givenInjections() {
+    private <T> void givenInjections(ServiceBindingBuilder<T> bindingBuilder) {
         new MockUp<Injections>() {
             @Mock
             DynamicConfiguration getConfiguration(final ServiceLocator locator) {
@@ -186,12 +180,12 @@ public class GuiceComponentProviderTest {
             }
 
             @Mock
-            <T> ServiceBindingBuilder<T> newFactoryBinder(final Factory<T> factory) {
+            ServiceBindingBuilder<T> newFactoryBinder(final Factory<T> factory) {
                 return bindingBuilder;
             }
 
             @Mock
-            void addBinding(final BindingBuilder<?> builder, final DynamicConfiguration configuration) {
+            void addBinding(final BindingBuilder<T> builder, final DynamicConfiguration configuration) {
             }
         };
     }

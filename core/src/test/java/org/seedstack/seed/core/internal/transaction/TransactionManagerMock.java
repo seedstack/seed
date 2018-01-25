@@ -8,11 +8,6 @@
 
 package org.seedstack.seed.core.internal.transaction;
 
-import javax.transaction.HeuristicMixedException;
-import javax.transaction.HeuristicRollbackException;
-import javax.transaction.InvalidTransactionException;
-import javax.transaction.NotSupportedException;
-import javax.transaction.RollbackException;
 import javax.transaction.Status;
 import javax.transaction.SystemException;
 import javax.transaction.Transaction;
@@ -28,44 +23,44 @@ public class TransactionManagerMock implements TransactionManager {
     }
 
     @Override
-    public void begin() throws NotSupportedException, SystemException {
+    public void begin() {
         userTransaction.begin();
     }
 
     @Override
-    public void commit() throws RollbackException, HeuristicMixedException, HeuristicRollbackException,
-            SecurityException, IllegalStateException, SystemException {
+    public void commit() throws
+            SecurityException, IllegalStateException {
         userTransaction.commit();
     }
 
     @Override
-    public int getStatus() throws SystemException {
+    public int getStatus() {
         return userTransaction.getStatus();
     }
 
     @Override
-    public Transaction getTransaction() throws SystemException {
+    public Transaction getTransaction() {
         return new TransactionMock(userTransaction);
     }
 
     @Override
-    public void resume(Transaction tobj) throws InvalidTransactionException, IllegalStateException, SystemException {
+    public void resume(Transaction tobj) throws IllegalStateException, SystemException {
         this.userTransaction.setStatus(tobj.getStatus());
         this.resumeCallCount++;
     }
 
     @Override
-    public void rollback() throws IllegalStateException, SecurityException, SystemException {
+    public void rollback() throws IllegalStateException, SecurityException {
         userTransaction.rollback();
     }
 
     @Override
-    public void setRollbackOnly() throws IllegalStateException, SystemException {
+    public void setRollbackOnly() throws IllegalStateException {
         userTransaction.setRollbackOnly();
     }
 
     @Override
-    public void setTransactionTimeout(int seconds) throws SystemException {
+    public void setTransactionTimeout(int seconds) {
         userTransaction.setTransactionTimeout(seconds);
     }
 

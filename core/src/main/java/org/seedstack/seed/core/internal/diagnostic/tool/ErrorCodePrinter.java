@@ -44,8 +44,7 @@ class ErrorCodePrinter {
         Ansi subAnsi = new Ansi();
         boolean someProperty = false;
 
-        List<ErrorCode> errorCodes = new ArrayList<>();
-        Arrays.stream(errorCodeClass.getEnumConstants()).forEach(errorCodes::add);
+        List<ErrorCode> errorCodes = new ArrayList<>(Arrays.asList(errorCodeClass.getEnumConstants()));
         Collections.sort(errorCodes, Comparator.comparing(Object::toString));
 
         for (ErrorCode errorCode : errorCodes) {

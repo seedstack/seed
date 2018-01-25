@@ -14,7 +14,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import com.google.common.collect.Lists;
-import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
@@ -23,7 +22,6 @@ import java.util.Iterator;
 import java.util.List;
 import javax.naming.NameClassPair;
 import javax.naming.NamingEnumeration;
-import javax.naming.NamingException;
 import javax.naming.directory.DirContext;
 import org.junit.Before;
 import org.junit.Test;
@@ -67,14 +65,14 @@ public class JndiInputDirTest {
 
         URLStreamHandler goodStubUrlHandler = new URLStreamHandler() {
             @Override
-            protected URLConnection openConnection(URL u) throws IOException {
+            protected URLConnection openConnection(URL u) {
                 return goodUrlConnection;
             }
         };
 
         URLStreamHandler badStubUrlHandler = new URLStreamHandler() {
             @Override
-            protected URLConnection openConnection(URL u) throws IOException {
+            protected URLConnection openConnection(URL u) {
                 return badUrlConnection;
             }
         };
@@ -110,7 +108,7 @@ public class JndiInputDirTest {
     }
 
     @Test
-    public void bad_context_is_ignored_instead_of_throwing_exception() throws Exception {
+    public void bad_context_is_ignored_instead_of_throwing_exception() {
         JndiInputDir jndiInputDir = new JndiInputDir(badURL);
         assertThat(jndiInputDir.getFiles()).isEmpty();
         jndiInputDir.close();
@@ -124,17 +122,17 @@ public class JndiInputDirTest {
         }
 
         @Override
-        public T next() throws NamingException {
+        public T next() {
             return it.next();
         }
 
         @Override
-        public boolean hasMore() throws NamingException {
+        public boolean hasMore() {
             return it.hasNext();
         }
 
         @Override
-        public void close() throws NamingException {
+        public void close() {
 
         }
 

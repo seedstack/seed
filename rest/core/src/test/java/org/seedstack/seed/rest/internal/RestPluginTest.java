@@ -52,12 +52,12 @@ public class RestPluginTest {
     private ServletContext servletContext;
 
     @Test
-    public void testName() throws Exception {
+    public void testName() {
         assertThat(underTest.name()).isEqualTo("rest");
     }
 
     @Test
-    public void testRequestScanForJaxRsClasses() throws Exception {
+    public void testRequestScanForJaxRsClasses() {
         assertScanSpecification(JaxRsProviderSpecification.INSTANCE);
         assertScanSpecification(JaxRsResourceSpecification.INSTANCE);
     }
@@ -73,13 +73,12 @@ public class RestPluginTest {
         assertThat(scanSpecification).isTrue();
     }
 
-    @SuppressWarnings("unchecked")
     @Test
-    public void testWithoutServletContext() throws Exception {
+    public void testWithoutServletContext() {
         givenConfiguration();
         givenSpecifications(
-                new Pair(JaxRsResourceSpecification.INSTANCE, MyResource.class),
-                new Pair(JaxRsProviderSpecification.INSTANCE, MyProvider.class)
+                new Pair<>(JaxRsResourceSpecification.INSTANCE, MyResource.class),
+                new Pair<>(JaxRsProviderSpecification.INSTANCE, MyProvider.class)
         );
         InitState init = underTest.init(initContext);
         assertThat(init).isEqualTo(InitState.INITIALIZED);
@@ -87,7 +86,7 @@ public class RestPluginTest {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void testInitGetJaxRsClasses() throws Exception {
+    public void testInitGetJaxRsClasses() {
         givenConfiguration();
         givenSpecifications(
                 new Pair(JaxRsResourceSpecification.INSTANCE, MyResource.class),
@@ -113,7 +112,8 @@ public class RestPluginTest {
         );
     }
 
-    private void givenSpecifications(Pair<Specification<Class<?>>, Class<?>>... specEntries) {
+    @SafeVarargs
+    private final void givenSpecifications(Pair<Specification<Class<?>>, Class<?>>... specEntries) {
         final Map<Specification, Collection<Class<?>>> specsMap = new HashMap<>();
         for (Pair<Specification<Class<?>>, Class<?>> specEntry : specEntries) {
             specsMap.put(specEntry.getValue0(), Lists.newArrayList(specEntry.getValue1()));
@@ -147,20 +147,20 @@ public class RestPluginTest {
     private static class MyProvider {
     }
 
-    public class Pair<T1, T2> {
+    class Pair<T1, T2> {
         private final T1 t1;
         private final T2 t2;
 
-        public Pair(T1 t1, T2 t2) {
+        Pair(T1 t1, T2 t2) {
             this.t1 = t1;
             this.t2 = t2;
         }
 
-        public T1 getValue0() {
+        T1 getValue0() {
             return t1;
         }
 
-        public T2 getValue1() {
+        T2 getValue1() {
             return t2;
         }
     }

@@ -59,7 +59,7 @@ public class Jersey2IT {
     }
 
     @Test
-    public void multipart() throws JSONException {
+    public void multipart() {
         expect().statusCode(200).given()
                 .multiPart("file.txt", "Hello world!".getBytes())
                 .post(baseUrl + "multipart");

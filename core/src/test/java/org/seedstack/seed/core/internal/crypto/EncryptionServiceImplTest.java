@@ -56,7 +56,7 @@ public class EncryptionServiceImplTest {
      * @throws Exception if an error occurred
      */
     @Test(expected = SeedException.class)
-    public void testEncryptWithoutPublicKey() throws Exception {
+    public void testEncryptWithoutPublicKey() {
         EncryptionServiceImpl asymetricCrypting = new EncryptionServiceImpl("alias", null, null);
         final String toCrypt = "text to crypt";
         asymetricCrypting.encrypt(toCrypt.getBytes());
@@ -179,7 +179,7 @@ public class EncryptionServiceImplTest {
      * @throws Exception if an error occurred
      */
     @Test(expected = SeedException.class)
-    public void testDecryptWithoutPrivateKey() throws Exception {
+    public void testDecryptWithoutPrivateKey() {
         final String toDecrypt = "ADEF0985C";
 
         EncryptionServiceImpl asymetricCrypting = new EncryptionServiceImpl("alias", null, null);

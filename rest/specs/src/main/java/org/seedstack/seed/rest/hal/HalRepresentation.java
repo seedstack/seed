@@ -135,12 +135,12 @@ public class HalRepresentation {
         return links;
     }
 
+    @SuppressWarnings("unchecked")
     private void addLink(String rel, Link link) {
         Object obj = links.get(rel);
         if (obj == null) {
             links.put(rel, link);
         } else if (obj instanceof List) {
-            //noinspection unchecked
             List<Link> linksForRel = (List<Link>) obj;
             linksForRel.add(link);
             links.put(rel, linksForRel);

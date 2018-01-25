@@ -21,7 +21,7 @@ public class ProfileProcessorTest {
     private MapNode config;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         config = new MapNode(
                 new NamedNode("a", "1"),
                 new NamedNode("b<profile1>", "2"),
@@ -34,7 +34,7 @@ public class ProfileProcessorTest {
     }
 
     @Test
-    public void testNoProfile() throws Exception {
+    public void testNoProfile() {
         System.clearProperty("seedstack.profiles");
         profileProcessor.process(config);
         assertThat(config.get("a").get()).isEqualTo(new ValueNode("1"));
@@ -43,7 +43,7 @@ public class ProfileProcessorTest {
     }
 
     @Test
-    public void testProfile1() throws Exception {
+    public void testProfile1() {
         System.setProperty("seedstack.profiles", "profile1");
         profileProcessor.process(config);
         assertThat(config.get("a").get()).isEqualTo(new ValueNode("1"));
@@ -53,7 +53,7 @@ public class ProfileProcessorTest {
     }
 
     @Test
-    public void testProfile2() throws Exception {
+    public void testProfile2() {
         System.setProperty("seedstack.profiles", "profile2");
         profileProcessor.process(config);
         assertThat(config.get("a").get()).isEqualTo(new ValueNode("1"));
@@ -66,7 +66,7 @@ public class ProfileProcessorTest {
     }
 
     @Test
-    public void testProfile3() throws Exception {
+    public void testProfile3() {
         System.setProperty("seedstack.profiles", "profile3");
         profileProcessor.process(config);
         assertThat(config.get("a").get()).isEqualTo(new ValueNode("1"));
@@ -76,7 +76,7 @@ public class ProfileProcessorTest {
     }
 
     @Test
-    public void testProfile2And3() throws Exception {
+    public void testProfile2And3() {
         System.setProperty("seedstack.profiles", "profile2, profile3");
         profileProcessor.process(config);
         assertThat(config.get("a").get()).isEqualTo(new ValueNode("1"));
@@ -89,7 +89,7 @@ public class ProfileProcessorTest {
     }
 
     @Test
-    public void testProfile1And2() throws Exception {
+    public void testProfile1And2() {
         System.setProperty("seedstack.profiles", "profile1, profile2");
         profileProcessor.process(config);
         assertThat(config.get("a").get()).isEqualTo(new ValueNode("1"));

@@ -124,6 +124,7 @@
                                 <exclude>org.seedstack.seed.security.principals.X509CertificatePrincipalProvider</exclude>
                                 <exclude>org.seedstack.seed.rest.hal.Link</exclude>
                                 <exclude>org.seedstack.seed.undertow.UndertowConfig</exclude>
+                                <exclude>org.seedstack.seed.transaction.spi.TransactionMetadata</exclude>
                             </excludes>
                         </parameter>
                     </configuration>
@@ -131,21 +132,6 @@
             </plugins>
         </pluginManagement>
     </build>
-
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>org.hamcrest</groupId>
-                <artifactId>hamcrest-core</artifactId>
-                <version>1.3</version>
-            </dependency>
-            <dependency>
-                <groupId>org.slf4j</groupId>
-                <artifactId>slf4j-api</artifactId>
-                <version>${slf4j.version}</version>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
 
     <scm>
         <url>https://github.com/seedstack/seed</url>

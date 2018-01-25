@@ -31,7 +31,7 @@ public class JsonHomeResourceIT {
     private String contextPath;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         contextPath = "/" + contextPath;
     }
 

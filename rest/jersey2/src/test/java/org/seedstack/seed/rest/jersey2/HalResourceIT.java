@@ -34,7 +34,7 @@ public class HalResourceIT {
     private String orders;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         contextPath = "/" + contextPath;
         order1 = "{\"currency\":\"USD\",\"status\":\"shipped\",\"total\":10.2," +
                 "\"_links\":{\"invoice\":{\"href\":\"" + contextPath + "invoices/873\"},\"self\":{\"href\":\""

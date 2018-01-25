@@ -35,14 +35,14 @@ public class LifecycleIT implements LifecycleListener {
     private Kernel kernel;
 
     @BeforeClass
-    public static void setUpClass() throws Exception {
+    public static void setUpClass() {
         startedWasCalled = false;
         stoppingWasCalled = false;
         closedWasCalled = false;
     }
 
     @AfterClass
-    public static void tearDownClass() throws Exception {
+    public static void tearDownClass() {
         assertThat(startedWasCalled).isTrue();
         assertThat(stoppingWasCalled).isTrue();
         assertThat(closedWasCalled).isTrue();
@@ -50,7 +50,7 @@ public class LifecycleIT implements LifecycleListener {
     }
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         kernel = Seed.createKernel();
         kernel.objectGraph().as(Injector.class).createChildInjector((Module) binder -> {
             binder.bind(AutoCloseableFixture.class);
@@ -70,7 +70,7 @@ public class LifecycleIT implements LifecycleListener {
     }
 
     @After
-    public void tearDown() throws Exception {
+    public void tearDown() {
         assertThat(startedWasCalled).isTrue();
         assertThat(stoppingWasCalled).isFalse();
         assertThat(closedWasCalled).isFalse();
@@ -101,7 +101,7 @@ public class LifecycleIT implements LifecycleListener {
     @Singleton
     private static class AutoCloseableFixture implements AutoCloseable {
         @Override
-        public void close() throws Exception {
+        public void close() {
             closedWasCalled = true;
         }
     }
@@ -110,7 +110,7 @@ public class LifecycleIT implements LifecycleListener {
     private static class IgnoredAutoCloseableFixture implements AutoCloseable {
         @Override
         @Ignore
-        public void close() throws Exception {
+        public void close() {
             ignoredClosedWasCalled = true;
         }
     }
@@ -118,7 +118,7 @@ public class LifecycleIT implements LifecycleListener {
     @Singleton
     private static class ProxyAutoCloseableFixture implements AutoCloseable {
         @Override
-        public void close() throws Exception {
+        public void close() {
             proxyClosedWasCalled = true;
         }
     }
@@ -129,7 +129,7 @@ public class LifecycleIT implements LifecycleListener {
         }
 
         @Override
-        public void close() throws Exception {
+        public void close() {
             classProxyClosedWasCalled = true;
         }
     }

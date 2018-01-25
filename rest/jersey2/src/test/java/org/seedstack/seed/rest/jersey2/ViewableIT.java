@@ -18,7 +18,6 @@ import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.arquillian.test.api.ArquillianResource;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.json.JSONException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -35,7 +34,7 @@ public class ViewableIT {
 
     @Test
     @RunAsClient
-    public void viewable() throws JSONException {
+    public void viewable() {
         String body = expect().statusCode(200).when().get(baseUrl + "viewable?test=value1").asString();
         assertThat(body.trim()).isEqualTo("value1");
     }

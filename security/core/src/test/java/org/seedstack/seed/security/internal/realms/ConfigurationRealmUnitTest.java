@@ -10,11 +10,12 @@ package org.seedstack.seed.security.internal.realms;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import com.google.common.collect.Sets;
 import java.util.Collections;
 import java.util.Set;
+import mockit.Deencapsulation;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.internal.util.reflection.Whitebox;
 import org.seedstack.seed.security.AuthenticationInfo;
 import org.seedstack.seed.security.AuthenticationToken;
 import org.seedstack.seed.security.IncorrectCredentialsException;
@@ -27,25 +28,19 @@ import org.seedstack.seed.security.principals.PrincipalProvider;
 import org.seedstack.seed.security.principals.Principals;
 
 public class ConfigurationRealmUnitTest {
-
-    String username = "username";
-    String password = "password";
-    String role1 = "role1";
-    String role2 = "role2";
+    private String username = "username";
+    private String password = "password";
+    private String role1 = "role1";
+    private String role2 = "role2";
     private ConfigurationRealm underTest;
     private Set<ConfigurationUser> users;
 
     @Before
-    @SuppressWarnings("unchecked")
     public void before() {
-        underTest = new ConfigurationRealm();
-        users = (Set<ConfigurationUser>) Whitebox.getInternalState(underTest, "users");
-        ConfigurationUser user = new ConfigurationUser(username);
-        Whitebox.setInternalState(user, "password", password);
-        user.getRoles().add(role1);
-        user.getRoles().add(role2);
-        users.add(user);
-        users.add(new ConfigurationUser("toto"));
+        underTest = new ConfigurationRealm(null, null);
+        users = Deencapsulation.getField(underTest, "users");
+        users.add(new ConfigurationUser(username, password, Sets.newHashSet(role1, role2)));
+        users.add(new ConfigurationUser("toto", null, Sets.newHashSet()));
     }
 
     @Test

@@ -33,7 +33,7 @@ public class WebDiagnosticsIT {
     @Test
     @SuppressWarnings("unchecked")
     @RunAsClient
-    public void webDiagnosticInformationIsPresent() throws Exception {
+    public void webDiagnosticInformationIsPresent() {
         Map<String, Object> diagnosticInfo = diagnosticManager.getDiagnosticInfo(null);
 
         Assertions.assertThat(diagnosticInfo).isNotNull();

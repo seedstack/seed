@@ -35,12 +35,12 @@ public class PerTestIT {
     private Application application;
 
     @BeforeClass
-    public static void beforeClass() throws Exception {
+    public static void beforeClass() {
         assertThat(System.getProperty("seedstack.someTestProperty")).isNull();
     }
 
     @AfterClass
-    public static void afterClass() throws Exception {
+    public static void afterClass() {
         assertThat(System.getProperty("seedstack.someTestProperty")).isNull();
     }
 

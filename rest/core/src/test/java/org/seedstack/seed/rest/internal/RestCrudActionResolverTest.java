@@ -24,7 +24,7 @@ public class RestCrudActionResolverTest {
     private RestCrudActionResolver resolverUnderTest;
 
     @Before
-    public void setup() throws Exception {
+    public void setup() {
         resolverUnderTest = new RestCrudActionResolver();
     }
 

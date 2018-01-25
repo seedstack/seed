@@ -21,6 +21,7 @@ import org.seedstack.seed.rest.fixtures.RepresentationFactory;
 public class HalBuilderTest {
 
     @Test
+    @SuppressWarnings("unchecked")
     public void build_hal_representation() {
         HalDefaultRepresentation halRep = new RepresentationFactory().createOrders();
 
@@ -42,8 +43,8 @@ public class HalBuilderTest {
         assertThat((List) halRep.getEmbedded().get("orders")).hasSize(2);
 
         // check embedded 1
-        HalDefaultRepresentation halRep1 = ((HalDefaultRepresentation) ((List) halRep.getEmbedded().get("orders")).get(
-                0));
+        HalDefaultRepresentation halRep1 = ((HalDefaultRepresentation) ((List) halRep.getEmbedded().get("orders"))
+                .get(0));
         assertThat(halRep1.getLinks()).hasSize(3);
         assertThat(((Link) halRep1.getLink("self")).getHref()).isEqualTo("/rest/order/123");
         assertThat(((Link) halRep1.getLink("basket")).getHref()).isEqualTo("/rest/baskets/98712");
@@ -55,8 +56,8 @@ public class HalBuilderTest {
         assertThat(order1.getStatus()).isEqualTo("shipped");
 
         // check embedded 2
-        HalDefaultRepresentation halRep2 = ((HalDefaultRepresentation) ((List) halRep.getEmbedded().get("orders")).get(
-                1));
+        HalDefaultRepresentation halRep2 = ((HalDefaultRepresentation) ((List) halRep.getEmbedded().get("orders"))
+                .get(1));
         assertThat(halRep2.getLinks()).hasSize(3);
         assertThat(((Link) halRep2.getLink("self")).getHref()).isEqualTo("/rest/order/124");
         assertThat(((Link) halRep2.getLink("basket")).getHref()).isEqualTo("/rest/baskets/97213");

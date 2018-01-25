@@ -13,7 +13,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
-import javax.inject.Inject;
 import javax.inject.Named;
 import javax.naming.InvalidNameException;
 import javax.naming.ldap.LdapName;
@@ -39,12 +38,17 @@ import org.slf4j.LoggerFactory;
  * authenticates the user as this process should be done by Servlet container.
  */
 public class X509CertificateRealm implements Realm {
-
     private static final Logger LOGGER = LoggerFactory.getLogger(X509CertificateRealm.class);
     private static final String UID = "UID";
     private static final String CN = "CN";
-    private RoleMapping roleMapping;
-    private RolePermissionResolver rolePermissionResolver;
+    private final RoleMapping roleMapping;
+    private final RolePermissionResolver rolePermissionResolver;
+
+    public X509CertificateRealm(@Named("X509CertificateRealm-role-mapping") RoleMapping roleMapping,
+            @Named("X509CertificateRealm-role-permission-resolver") RolePermissionResolver rolePermissionResolver) {
+        this.roleMapping = roleMapping;
+        this.rolePermissionResolver = rolePermissionResolver;
+    }
 
     @Override
     public AuthenticationInfo getAuthenticationInfo(AuthenticationToken token) throws AuthenticationException {
@@ -121,20 +125,9 @@ public class X509CertificateRealm implements Realm {
         return roleMapping;
     }
 
-    @Inject
-    public void setRoleMapping(@Named("X509CertificateRealm-role-mapping") RoleMapping roleMapping) {
-        this.roleMapping = roleMapping;
-    }
-
     @Override
     public RolePermissionResolver getRolePermissionResolver() {
         return rolePermissionResolver;
-    }
-
-    @Inject
-    public void setRolePermissionResolver(
-            @Named("X509CertificateRealm-role-permission-resolver") RolePermissionResolver rolePermissionResolver) {
-        this.rolePermissionResolver = rolePermissionResolver;
     }
 
     @Override

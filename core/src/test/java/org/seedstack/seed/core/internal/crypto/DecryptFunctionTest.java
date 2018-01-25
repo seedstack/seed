@@ -41,21 +41,21 @@ public class DecryptFunctionTest {
     private KeyStore keyStore;
 
     @Test
-    public void testLookupWithoutMasterKeyStore() throws Exception {
+    public void testLookupWithoutMasterKeyStore() {
         DecryptFunction decryptFunction = new DecryptFunction();
         decryptFunction.initialize(Coffig.builder().build());
         Assertions.assertThat(decryptFunction).isNotNull();
     }
 
     @Test(expected = SeedException.class)
-    public void testLookupDecryptWithoutMasterKeyStore() throws Exception {
+    public void testLookupDecryptWithoutMasterKeyStore() {
         DecryptFunction decryptFunction = new DecryptFunction();
         decryptFunction.initialize(Coffig.builder().build());
         decryptFunction.decrypt("seed", "");
     }
 
     @Test
-    public void testLookupString(@Mocked CryptoConfig cryptoConfig) throws Exception {
+    public void testLookupString(@Mocked CryptoConfig cryptoConfig) {
         new Expectations() {{
             cryptoConfig.masterKeyStore();
             result = new CryptoConfig.KeyStoreConfig().addAlias("seed",
@@ -71,7 +71,7 @@ public class DecryptFunctionTest {
     }
 
     @Test(expected = SeedException.class)
-    public void testLookupStringWithoutPassword(@Mocked CryptoConfig cryptoConfig) throws Exception {
+    public void testLookupStringWithoutPassword(@Mocked CryptoConfig cryptoConfig) {
         CryptoConfig.KeyStoreConfig keyStoreConfig = new CryptoConfig.KeyStoreConfig().addAlias("seed",
                 new CryptoConfig.KeyStoreConfig.AliasConfig());
 
@@ -88,7 +88,7 @@ public class DecryptFunctionTest {
     }
 
     @Test(expected = SeedException.class)
-    public void testLookupStringWithInvalidKey(@Mocked CryptoConfig cryptoConfig) throws Exception {
+    public void testLookupStringWithInvalidKey(@Mocked CryptoConfig cryptoConfig) {
         CryptoConfig.KeyStoreConfig keyStoreConfig = new CryptoConfig.KeyStoreConfig().addAlias("seed",
                 new CryptoConfig.KeyStoreConfig.AliasConfig().setPassword("seedPassword"));
 

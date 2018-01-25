@@ -18,9 +18,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import mockit.Deencapsulation;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.internal.util.reflection.Whitebox;
 import org.seedstack.coffig.Coffig;
 import org.seedstack.seed.ApplicationConfig;
 import org.seedstack.seed.ConfigConfig;
@@ -36,10 +36,10 @@ public class ConfigurationPluginTest {
         Coffig coffig = mock(Coffig.class);
         when(coffig.get(ApplicationConfig.class)).thenReturn(new ApplicationConfig());
         when(coffig.get(ConfigConfig.class)).thenReturn(new ConfigConfig());
-        Whitebox.setInternalState(configurationPlugin, "coffig", coffig);
+        Deencapsulation.setField(configurationPlugin, "coffig", coffig);
         SeedRuntime seedRuntime = mock(SeedRuntime.class);
-        Whitebox.setInternalState(configurationPlugin, "seedRuntime", seedRuntime);
-        Whitebox.setInternalState(configurationPlugin, "diagnosticManager", new DiagnosticManagerImpl());
+        Deencapsulation.setField(configurationPlugin, "seedRuntime", seedRuntime);
+        Deencapsulation.setField(configurationPlugin, "diagnosticManager", new DiagnosticManagerImpl());
     }
 
     @Test

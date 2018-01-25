@@ -8,7 +8,6 @@
 
 package org.seedstack.seed.rest.jersey2.fixtures;
 
-import java.net.URISyntaxException;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -23,7 +22,7 @@ import javax.ws.rs.core.Response;
 @Path("/cors")
 public class CorsResource {
     @GET
-    public Response get(@Context HttpServletRequest httpServletRequest) throws URISyntaxException {
+    public Response get(@Context HttpServletRequest httpServletRequest) {
         if ((Boolean) httpServletRequest.getAttribute("cors.isCorsRequest"))
             return Response.ok().build();
         else
@@ -31,7 +30,7 @@ public class CorsResource {
     }
 
     @POST
-    public Response post(@Context HttpServletRequest httpServletRequest) throws URISyntaxException {
+    public Response post(@Context HttpServletRequest httpServletRequest) {
         if ((Boolean) httpServletRequest.getAttribute("cors.isCorsRequest"))
             return Response.ok().build();
         else
@@ -39,7 +38,7 @@ public class CorsResource {
     }
 
     @PUT
-    public Response put(@Context HttpServletRequest httpServletRequest) throws URISyntaxException {
+    public Response put(@Context HttpServletRequest httpServletRequest) {
         if ((Boolean) httpServletRequest.getAttribute("cors.isCorsRequest"))
             return Response.ok().build();
         else
@@ -47,7 +46,7 @@ public class CorsResource {
     }
 
     @DELETE
-    public Response delete(@Context HttpServletRequest httpServletRequest) throws URISyntaxException {
+    public Response delete(@Context HttpServletRequest httpServletRequest) {
         if ((Boolean) httpServletRequest.getAttribute("cors.isCorsRequest"))
             return Response.ok().build();
         else
@@ -55,7 +54,7 @@ public class CorsResource {
     }
 
     @HEAD
-    public Response head(@Context HttpServletRequest httpServletRequest) throws URISyntaxException {
+    public Response head(@Context HttpServletRequest httpServletRequest) {
         if ((Boolean) httpServletRequest.getAttribute("cors.isCorsRequest"))
             return Response.ok().build();
         else
@@ -63,7 +62,7 @@ public class CorsResource {
     }
 
     @OPTIONS
-    public Response options(@Context HttpServletRequest httpServletRequest) throws URISyntaxException {
+    public Response options(@Context HttpServletRequest httpServletRequest) {
         if ((Boolean) httpServletRequest.getAttribute("cors.isCorsRequest"))
             return Response.ok().build();
         else

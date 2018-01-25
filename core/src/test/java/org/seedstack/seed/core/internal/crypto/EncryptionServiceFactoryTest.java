@@ -185,7 +185,7 @@ public class EncryptionServiceFactoryTest {
 
     @Test(expected = SeedException.class)
     public void testMissingCertificateFromResource(
-            @Mocked CryptoConfig.CertificateConfig certificateConfig) throws Exception {
+            @Mocked CryptoConfig.CertificateConfig certificateConfig) {
 
         new Expectations() {
             {

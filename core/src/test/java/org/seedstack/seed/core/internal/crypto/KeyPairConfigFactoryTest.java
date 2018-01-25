@@ -10,7 +10,6 @@ package org.seedstack.seed.core.internal.crypto;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.security.KeyStore;
 import java.util.Enumeration;

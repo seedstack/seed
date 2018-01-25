@@ -103,7 +103,7 @@ public class EncryptionServiceBindingFactoryTest {
     }
 
     @Test
-    public void test_encryption_service_collect_with_qualifier_annotation() throws ClassNotFoundException {
+    public void test_encryption_service_collect_with_qualifier_annotation() {
         prepareMock();
         List<KeyPairConfig> keyPairConfigurations = prepareKeyPairWithQualifier(
                 "org.seedstack.seed.core.internal.crypto.fixtures.AliasQualifier");
@@ -115,7 +115,7 @@ public class EncryptionServiceBindingFactoryTest {
     }
 
     @Test(expected = SeedException.class)
-    public void test_encryption_service_collect_with_wrong_qualifier_class() throws ClassNotFoundException {
+    public void test_encryption_service_collect_with_wrong_qualifier_class() {
         prepareMock();
         // interface instead of annotation
         List<KeyPairConfig> keyPairConfigurations = prepareKeyPairWithQualifier(
@@ -124,7 +124,7 @@ public class EncryptionServiceBindingFactoryTest {
     }
 
     @Test(expected = SeedException.class)
-    public void test_encryption_service_collect_with_wrong_qualifier_annotation() throws ClassNotFoundException {
+    public void test_encryption_service_collect_with_wrong_qualifier_annotation() {
         prepareMock();
         // missing @Qualifier
         List<KeyPairConfig> keyPairConfigurations = prepareKeyPairWithQualifier(

@@ -9,7 +9,6 @@
 package org.seedstack.seed.web.security.fixtures;
 
 import java.io.IOException;
-import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -21,7 +20,7 @@ public class XsrfProtectedServlet extends HttpServlet {
     public static final String WELCOME = "WELCOME";
 
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         resp.setStatus(200);
         resp.setContentLength(WELCOME.length());
         resp.setContentType("text/plain");

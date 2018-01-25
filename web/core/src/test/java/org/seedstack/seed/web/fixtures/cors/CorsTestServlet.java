@@ -9,7 +9,6 @@
 package org.seedstack.seed.web.fixtures.cors;
 
 import java.io.IOException;
-import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -20,37 +19,37 @@ public class CorsTestServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         doIt(req, resp);
     }
 
     @Override
-    protected void doHead(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doHead(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         doIt(req, resp);
     }
 
     @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         doIt(req, resp);
     }
 
     @Override
-    protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         doIt(req, resp);
     }
 
     @Override
-    protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         doIt(req, resp);
     }
 
     @Override
-    protected void doOptions(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doOptions(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         doIt(req, resp);
     }
 
     protected void doIt(HttpServletRequest httpServletRequest,
-            HttpServletResponse httpServletResponse) throws ServletException, IOException {
+            HttpServletResponse httpServletResponse) throws IOException {
         String text = "CORS:" + httpServletRequest.getAttribute("cors.isCorsRequest");
 
         httpServletResponse.setContentType("text/plain");

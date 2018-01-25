@@ -36,19 +36,19 @@ public class ServletIT {
     }
 
     @BeforeClass
-    public static void setUp() throws Exception {
+    public static void setUp() {
         RestAssured.useRelaxedHTTPSValidation();
     }
 
     @Test
     @RunAsClient
-    public void listenerIsCorrectlyRegistered() throws Exception {
+    public void listenerIsCorrectlyRegistered() {
         Assertions.assertThat(TestListener.hasBeenCalled()).isTrue();
     }
 
     @Test
     @RunAsClient
-    public void servletIsCorrectlyRegistered() throws Exception {
+    public void servletIsCorrectlyRegistered() {
         RestAssured.expect()
                 .statusCode(200)
                 .body(Matchers.startsWith(TestServlet.CONTENT))
@@ -63,7 +63,7 @@ public class ServletIT {
 
     @Test
     @RunAsClient
-    public void servletParamsAreCorrectlyInitialized() throws Exception {
+    public void servletParamsAreCorrectlyInitialized() {
         RestAssured.expect()
                 .statusCode(200)
                 .body(Matchers.endsWith(TestServlet.PARAM1_VALUE))
@@ -78,7 +78,7 @@ public class ServletIT {
 
     @Test
     @RunAsClient
-    public void filterIsCorrectlyRegistered() throws Exception {
+    public void filterIsCorrectlyRegistered() {
         RestAssured.expect()
                 .statusCode(200)
                 .body(Matchers.startsWith(TestFilter.CONTENT))
@@ -93,7 +93,7 @@ public class ServletIT {
 
     @Test
     @RunAsClient
-    public void filterParamsAreCorrectlyInitialized() throws Exception {
+    public void filterParamsAreCorrectlyInitialized() {
         RestAssured.expect()
                 .statusCode(200)
                 .body(Matchers.endsWith(TestFilter.PARAM1_VALUE))

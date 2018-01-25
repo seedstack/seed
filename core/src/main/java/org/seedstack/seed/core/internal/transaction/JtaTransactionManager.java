@@ -38,8 +38,8 @@ public class JtaTransactionManager extends AbstractTransactionManager {
     private TransactionConfig.JtaConfig jtaConfig;
 
     @Override
-    protected Object doMethodInterception(TransactionLogger transactionLogger, MethodInvocation invocation,
-            TransactionMetadata transactionMetadata, TransactionHandler<Object> transactionHandler) throws Throwable {
+    protected <T> Object doMethodInterception(TransactionLogger transactionLogger, MethodInvocation invocation,
+            TransactionMetadata transactionMetadata, TransactionHandler<T> transactionHandler) throws Throwable {
         initJTAObjects(transactionLogger);
 
         PropagationResult propagationResult;

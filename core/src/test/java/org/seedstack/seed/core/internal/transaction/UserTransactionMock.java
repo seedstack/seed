@@ -8,10 +8,6 @@
 
 package org.seedstack.seed.core.internal.transaction;
 
-import javax.transaction.HeuristicMixedException;
-import javax.transaction.HeuristicRollbackException;
-import javax.transaction.NotSupportedException;
-import javax.transaction.RollbackException;
 import javax.transaction.Status;
 import javax.transaction.SystemException;
 import javax.transaction.UserTransaction;
@@ -27,7 +23,7 @@ public class UserTransactionMock implements UserTransaction {
     }
 
     @Override
-    public void begin() throws NotSupportedException, SystemException {
+    public void begin() {
         if (status != Status.STATUS_NO_TRANSACTION) {
             throw new IllegalStateException("Cannot begin transaction if there is an already existing one");
         }
@@ -35,8 +31,8 @@ public class UserTransactionMock implements UserTransaction {
     }
 
     @Override
-    public void commit() throws RollbackException, HeuristicMixedException, HeuristicRollbackException,
-            SecurityException, IllegalStateException, SystemException {
+    public void commit() throws
+            SecurityException, IllegalStateException {
         if (status != Status.STATUS_ACTIVE) {
             throw new IllegalStateException("Can only commit an active transaction");
         }
@@ -44,7 +40,7 @@ public class UserTransactionMock implements UserTransaction {
     }
 
     @Override
-    public void rollback() throws IllegalStateException, SecurityException, SystemException {
+    public void rollback() throws IllegalStateException, SecurityException {
         if (status != Status.STATUS_ACTIVE) {
             throw new IllegalStateException("Can only rollback an active transaction");
         }
@@ -52,7 +48,7 @@ public class UserTransactionMock implements UserTransaction {
     }
 
     @Override
-    public void setRollbackOnly() throws IllegalStateException, SystemException {
+    public void setRollbackOnly() throws IllegalStateException {
         if (status != Status.STATUS_ACTIVE) {
             throw new IllegalStateException("Can only mark an active transaction as rollback only");
         }
@@ -60,7 +56,7 @@ public class UserTransactionMock implements UserTransaction {
     }
 
     @Override
-    public int getStatus() throws SystemException {
+    public int getStatus() {
         return status;
     }
 
@@ -69,7 +65,7 @@ public class UserTransactionMock implements UserTransaction {
     }
 
     @Override
-    public void setTransactionTimeout(int seconds) throws SystemException {
+    public void setTransactionTimeout(int seconds) {
 
     }
 }

@@ -22,22 +22,19 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Set;
+import mockit.Deencapsulation;
 import org.apache.shiro.realm.Realm;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.internal.util.reflection.Whitebox;
 import org.seedstack.seed.security.SecurityConfig;
 import org.seedstack.seed.security.internal.authorization.ConfigurationRoleMapping;
 import org.seedstack.seed.security.internal.authorization.ConfigurationRolePermissionResolver;
 import org.seedstack.seed.security.internal.realms.ConfigurationRealm;
 
 public class SecurityInternalModuleIntegrationTest {
-
-    SecurityInternalModule underTest;
-
-    SecurityConfigurer securityConfigurer;
-
-    SecurityGuiceConfigurer securityGuiceConfigurer;
+    private SecurityInternalModule underTest;
+    private SecurityConfigurer securityConfigurer;
+    private SecurityGuiceConfigurer securityGuiceConfigurer;
 
     @Before
     public void before() {
@@ -69,15 +66,13 @@ public class SecurityInternalModuleIntegrationTest {
         assertEquals(ShiroRealmAdapter.class, exposedRealm.getClass());
 
         ConfigurationRealm innerRealm = (ConfigurationRealm) ((ShiroRealmAdapter) exposedRealm).getRealm();
-        Set<?> configurationUsers = (Set<?>) Whitebox.getInternalState(innerRealm, "users");
-        assertTrue(configurationUsers.size() > 0);
+        Set<?> users = Deencapsulation.getField(innerRealm, "users");
+        assertTrue(users.size() > 0);
 
-        Object roleMapping = Whitebox.getInternalState(innerRealm, "roleMapping");
-        assertNotNull(roleMapping);
-        assertEquals(ConfigurationRoleMapping.class, roleMapping.getClass());
+        assertNotNull(innerRealm.getRoleMapping());
+        assertEquals(ConfigurationRoleMapping.class, innerRealm.getRoleMapping().getClass());
 
-        Object rolePermissionResolver = Whitebox.getInternalState(innerRealm, "rolePermissionResolver");
-        assertNotNull(rolePermissionResolver);
-        assertEquals(ConfigurationRolePermissionResolver.class, rolePermissionResolver.getClass());
+        assertNotNull(innerRealm.getRolePermissionResolver());
+        assertEquals(ConfigurationRolePermissionResolver.class, innerRealm.getRolePermissionResolver().getClass());
     }
 }

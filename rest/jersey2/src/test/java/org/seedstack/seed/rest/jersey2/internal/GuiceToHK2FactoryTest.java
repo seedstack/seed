@@ -22,21 +22,20 @@ import org.junit.runner.RunWith;
 
 @RunWith(JMockit.class)
 public class GuiceToHK2FactoryTest {
-
-    final SomeClass someObject = new SomeClass();
-    private GuiceToHK2Factory underTest;
+    private final SomeClass someObject = new SomeClass();
+    private GuiceToHK2Factory<SomeClass> underTest;
     @Mocked
     private Injector injector;
     @Mocked
     private ServiceLocator serviceLocator;
 
     @Before
-    public void setUp() throws Exception {
-        underTest = new GuiceToHK2Factory(SomeClass.class, injector, serviceLocator);
+    public void setUp() {
+        underTest = new GuiceToHK2Factory<>(SomeClass.class, injector, serviceLocator);
     }
 
     @Test
-    public void testProvide() throws Exception {
+    public void testProvide() {
         new Expectations() {{
             injector.getInstance(SomeClass.class);
             result = someObject;
@@ -51,7 +50,7 @@ public class GuiceToHK2FactoryTest {
     }
 
     @Test
-    public void testProvideNull() throws Exception {
+    public void testProvideNull() {
         new Expectations() {{
             injector.getInstance(SomeClass.class);
             result = null;

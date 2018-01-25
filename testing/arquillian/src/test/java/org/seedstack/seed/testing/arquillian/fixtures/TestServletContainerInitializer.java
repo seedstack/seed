@@ -16,7 +16,6 @@ import javax.servlet.ServletContainerInitializer;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
-import javax.servlet.ServletException;
 import org.seedstack.seed.core.Seed;
 
 public class TestServletContainerInitializer implements ServletContainerInitializer, ServletContextListener {
@@ -25,7 +24,7 @@ public class TestServletContainerInitializer implements ServletContainerInitiali
     private Kernel kernel;
 
     @Override
-    public void onStartup(Set<Class<?>> classes, ServletContext servletContext) throws ServletException {
+    public void onStartup(Set<Class<?>> classes, ServletContext servletContext) {
         kernel = Seed.createKernel(servletContext, NuunCore.newKernelConfiguration(), true);
         servletContext.setAttribute(KERNEL_ATTRIBUTE_NAME, kernel);
         servletContext.setAttribute(INJECTOR_ATTRIBUTE_NAME, kernel.objectGraph().as(Injector.class));

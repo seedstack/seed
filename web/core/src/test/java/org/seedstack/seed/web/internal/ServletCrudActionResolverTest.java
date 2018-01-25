@@ -24,7 +24,7 @@ public class ServletCrudActionResolverTest {
     private ServletCrudActionResolver resolverUnderTest;
 
     @Before
-    public void setup() throws Exception {
+    public void setup() {
         resolverUnderTest = new ServletCrudActionResolver();
     }
 
