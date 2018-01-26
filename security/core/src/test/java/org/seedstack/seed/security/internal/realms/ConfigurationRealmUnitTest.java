@@ -13,9 +13,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import com.google.common.collect.Sets;
 import java.util.Collections;
 import java.util.Set;
-import mockit.Deencapsulation;
 import org.junit.Before;
 import org.junit.Test;
+import org.powermock.reflect.Whitebox;
 import org.seedstack.seed.security.AuthenticationInfo;
 import org.seedstack.seed.security.AuthenticationToken;
 import org.seedstack.seed.security.IncorrectCredentialsException;
@@ -38,7 +38,7 @@ public class ConfigurationRealmUnitTest {
     @Before
     public void before() {
         underTest = new ConfigurationRealm(null, null);
-        users = Deencapsulation.getField(underTest, "users");
+        users = Whitebox.getInternalState(underTest, "users");
         users.add(new ConfigurationUser(username, password, Sets.newHashSet(role1, role2)));
         users.add(new ConfigurationUser("toto", null, Sets.newHashSet()));
     }

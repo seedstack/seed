@@ -16,8 +16,8 @@ import com.google.inject.PrivateBinder;
 import com.google.inject.binder.AnnotatedBindingBuilder;
 import com.google.inject.binder.AnnotatedElementBuilder;
 import java.lang.annotation.Annotation;
-import mockit.Deencapsulation;
 import org.junit.Test;
+import org.powermock.reflect.Whitebox;
 
 public class DefaultSecurityModuleUnitTest {
     @SuppressWarnings({"rawtypes", "unchecked"})
@@ -31,7 +31,7 @@ public class DefaultSecurityModuleUnitTest {
         when(ab.annotatedWith(any(Annotation.class))).thenReturn(ab);
         AnnotatedElementBuilder aeb = mock(AnnotatedElementBuilder.class);
         when(b.expose(any(Class.class))).thenReturn(aeb);
-        Deencapsulation.setField(underTest, "binder", b);
+        Whitebox.setInternalState(underTest, "binder", b);
         underTest.configureShiro();
     }
 }

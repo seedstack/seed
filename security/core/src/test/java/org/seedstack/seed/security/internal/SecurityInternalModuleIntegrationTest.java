@@ -22,10 +22,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Set;
-import mockit.Deencapsulation;
 import org.apache.shiro.realm.Realm;
 import org.junit.Before;
 import org.junit.Test;
+import org.powermock.reflect.Whitebox;
 import org.seedstack.seed.security.SecurityConfig;
 import org.seedstack.seed.security.internal.authorization.ConfigurationRoleMapping;
 import org.seedstack.seed.security.internal.authorization.ConfigurationRolePermissionResolver;
@@ -66,7 +66,7 @@ public class SecurityInternalModuleIntegrationTest {
         assertEquals(ShiroRealmAdapter.class, exposedRealm.getClass());
 
         ConfigurationRealm innerRealm = (ConfigurationRealm) ((ShiroRealmAdapter) exposedRealm).getRealm();
-        Set<?> users = Deencapsulation.getField(innerRealm, "users");
+        Set<?> users = Whitebox.getInternalState(innerRealm, "users");
         assertTrue(users.size() > 0);
 
         assertNotNull(innerRealm.getRoleMapping());

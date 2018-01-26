@@ -24,10 +24,10 @@ import java.lang.annotation.Annotation;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
-import mockit.Deencapsulation;
 import org.apache.shiro.realm.Realm;
 import org.junit.Before;
 import org.junit.Test;
+import org.powermock.reflect.Whitebox;
 import org.seedstack.seed.security.SecurityConfig;
 import org.seedstack.seed.security.internal.realms.ConfigurationRealm;
 
@@ -50,7 +50,7 @@ public class SecurityInternalModuleUnitTest {
         when(binder.skipSources(any(Class.class), any(Class.class))).thenReturn(binder);
         securityConfigurer = mock(SecurityConfigurer.class);
         underTest = new SecurityInternalModule(securityConfigurer, new HashMap<>());
-        Deencapsulation.setField(underTest, "binder", binder);
+        Whitebox.setInternalState(underTest, "binder", binder);
     }
 
     @Test
@@ -72,8 +72,8 @@ public class SecurityInternalModuleUnitTest {
         Set<Class<? extends org.seedstack.seed.security.Realm>> realmClasses = new HashSet<>();
         realmClasses.add(ConfigurationRealm.class);
 
-        Deencapsulation.setField(rp, "injector", i);
-        Deencapsulation.setField(rp, "realmClasses", realmClasses);
+        Whitebox.setInternalState(rp, "injector", i);
+        Whitebox.setInternalState(rp, "realmClasses", realmClasses);
 
         Set<Realm> realms = rp.get();
         assertEquals(1, realms.size());
