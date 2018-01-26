@@ -14,8 +14,10 @@ import com.google.inject.Injector;
 import io.nuun.kernel.api.Kernel;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
 import java.util.Optional;
 import java.util.ServiceLoader;
@@ -47,8 +49,8 @@ public class JUnit4Runner extends BlockJUnit4ClassRunner {
             .map(c -> (Class<? extends SeedLauncher>) c.asSubclass(SeedLauncher.class))
             .orElse(null);
     private final JUnit4TestContext testContext;
-    private final List<TestPlugin> plugins = new ArrayList<>();
-    private final List<Class<? extends TestDecorator>> decorators = new ArrayList<>();
+    private final List<TestPlugin> plugins;
+    private final List<Class<? extends TestDecorator>> decorators;
     private final LaunchMode launchMode;
     private SeedLauncher seedLauncher;
 
@@ -59,17 +61,21 @@ public class JUnit4Runner extends BlockJUnit4ClassRunner {
         testContext = new JUnit4TestContext(someClass);
 
         // Discover test plugins
+        List<TestPlugin> discoveredPlugins = new ArrayList<>();
         for (TestPlugin testPlugin : ServiceLoader.load(TestPlugin.class,
                 ClassLoaders.findMostCompleteClassLoader(JUnit4Runner.class))) {
             if (testPlugin.enabled(testContext)) {
-                plugins.add(testPlugin);
+                discoveredPlugins.add(testPlugin);
             }
         }
-        sortByPriority(plugins, PriorityUtils::priorityOfClassOf);
+        sortByPriority(discoveredPlugins, PriorityUtils::priorityOfClassOf);
+        plugins = Collections.unmodifiableList(discoveredPlugins);
 
         // Discover decorators
-        plugins.forEach(plugin -> decorators.addAll(plugin.decorators()));
-        sortByPriority(decorators, PriorityUtils::priorityOf);
+        List<Class<? extends TestDecorator>> discoveredDecorators = new ArrayList<>();
+        plugins.forEach(plugin -> discoveredDecorators.addAll(plugin.decorators()));
+        sortByPriority(discoveredDecorators, PriorityUtils::priorityOf);
+        decorators = Collections.unmodifiableList(discoveredDecorators);
 
         // Determine launch mode
         launchMode = gatherLaunchMode();
@@ -110,8 +116,11 @@ public class JUnit4Runner extends BlockJUnit4ClassRunner {
                 decoratorInstances.forEach(decorator -> decorator.beforeTest(testContext));
                 super.runChild(method, notifier);
             } finally {
-                // Invoke decorator afterTest()
-                decoratorInstances.forEach(decorator -> decorator.afterTest(testContext));
+                // Invoke decorator afterTest() in reverse order
+                ListIterator<? extends TestDecorator> it = decoratorInstances.listIterator(decoratorInstances.size());
+                while (it.hasPrevious()) {
+                    it.previous().afterTest(testContext);
+                }
             }
         } catch (Throwable t) {
             notifyFailure(t, notifier);
@@ -332,8 +341,11 @@ public class JUnit4Runner extends BlockJUnit4ClassRunner {
             testContext.setKernel(null);
             seedLauncher = null;
 
-            // Invoke plugin afterShutdown()
-            plugins.forEach(plugin -> plugin.afterShutdown(testContext));
+            // Invoke plugin afterShutdown() in reverse order
+            ListIterator<TestPlugin> it = plugins.listIterator(plugins.size());
+            while (it.hasPrevious()) {
+                it.previous().afterShutdown(testContext);
+            }
         }
     }
 }

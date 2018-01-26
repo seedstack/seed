@@ -13,9 +13,9 @@ import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.seedstack.seed.Application;
+import org.seedstack.seed.testing.ConfigurationProfiles;
 import org.seedstack.seed.testing.LaunchMode;
 import org.seedstack.seed.testing.LaunchWith;
-import org.seedstack.seed.testing.SystemProperty;
 import org.seedstack.seed.testing.junit4.SeedITRunner;
 
 @RunWith(SeedITRunner.class)
@@ -31,26 +31,26 @@ public class ConfigurationProfilesIT {
     }
 
     @Test
-    @SystemProperty(name = "seedstack.profiles", value = "dev")
+    @ConfigurationProfiles("dev")
     public void devProfile() {
         Assertions.assertThat(getValue("testProperty")).isEqualTo("devValue");
     }
 
     @Test
-    @SystemProperty(name = "seedstack.profiles", value = "preprod")
+    @ConfigurationProfiles("preprod")
     public void preprodProfile() {
         Assertions.assertThat(getValue("testProperty")).isEqualTo("preprodValue");
     }
 
     @Test
-    @SystemProperty(name = "seedstack.profiles", value = "prod")
+    @ConfigurationProfiles("prod")
     public void prodProfile() {
         Assertions.assertThat(getValue("testProperty.subProperty1")).isEqualTo("prodValue");
         Assertions.assertThat(getValue("testProperty.subProperty2")).isEqualTo("prodValue");
     }
 
     @Test
-    @SystemProperty(name = "seedstack.profiles", value = "dev, debug")
+    @ConfigurationProfiles({"dev", "debug"})
     public void devDebugProfiles() {
         Assertions.assertThat(getValue("testProperty")).isEqualTo("devValue");
         Assertions.assertThat(getValue("debugMode")).isEqualTo("true");

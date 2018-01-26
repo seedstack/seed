@@ -15,6 +15,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.seedstack.seed.Application;
 import org.seedstack.seed.testing.Arguments;
+import org.seedstack.seed.testing.ConfigurationProfiles;
 import org.seedstack.seed.testing.ConfigurationProperty;
 import org.seedstack.seed.testing.KernelParameter;
 import org.seedstack.seed.testing.LaunchWith;
@@ -23,6 +24,7 @@ import org.seedstack.seed.testing.junit4.fixtures.TestITLauncher;
 
 @RunWith(SeedITRunner.class)
 @ConfigurationProperty(name = "someTestKey", value = "testValue")
+@ConfigurationProfiles({"profile1", "profile2"})
 @KernelParameter(name = "seedstack.config.someKernelParam", value = "testValue")
 @Arguments({"testArg", "-o", "testOption"})
 @SystemProperty(name = "seedstack.someTestProperty", value = "testValue")
@@ -56,5 +58,10 @@ public class PerClassIT {
     @Test
     public void systemProperty() {
         assertThat(System.getProperty("seedstack.someTestProperty")).isEqualTo("testValue");
+    }
+
+    @Test
+    public void configurationProfiles() {
+        assertThat(System.getProperty("seedstack.profiles")).isEqualTo("profile1,profile2");
     }
 }

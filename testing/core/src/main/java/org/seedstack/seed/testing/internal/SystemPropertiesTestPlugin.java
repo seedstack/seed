@@ -34,14 +34,17 @@ public class SystemPropertiesTestPlugin implements TestPlugin {
     }
 
     private static synchronized void overrideProperties(TestContext testContext) {
-        if (previousProperties != null) {
-            throw new IllegalStateException("Attempt to override system properties concurrently");
-        }
-        previousProperties = new HashMap<>();
         Properties overridingProperties = gatherSystemProperties(testContext);
-        for (String propertyName : overridingProperties.stringPropertyNames()) {
-            previousProperties.put(propertyName, System.getProperty(propertyName));
-            System.setProperty(propertyName, overridingProperties.getProperty(propertyName));
+        if (!overridingProperties.isEmpty()) {
+            if (previousProperties != null) {
+                throw new IllegalStateException("Attempt to override system properties concurrently");
+            } else {
+                previousProperties = new HashMap<>();
+                for (String propertyName : overridingProperties.stringPropertyNames()) {
+                    previousProperties.put(propertyName, System.getProperty(propertyName));
+                    System.setProperty(propertyName, overridingProperties.getProperty(propertyName));
+                }
+            }
         }
     }
 

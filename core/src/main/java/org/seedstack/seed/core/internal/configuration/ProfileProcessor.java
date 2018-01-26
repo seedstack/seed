@@ -41,17 +41,10 @@ public class ProfileProcessor implements ConfigurationProcessor {
                     Matcher matcher = keyWithProfilePattern.matcher(namedNode.name());
                     if (matcher.matches()) {
                         if (parseProfiles(matcher.group(2)).stream().noneMatch(activeProfiles::contains)) {
-                            List<String> strings = toRemove.get(mapNode);
-                            if (strings == null) {
-                                toRemove.put(mapNode, strings = new ArrayList<>());
-                            }
-                            strings.add(namedNode.name());
+                            toRemove.computeIfAbsent(mapNode, k -> new ArrayList<>()).add(namedNode.name());
                         } else {
-                            Map<String, String> move = moves.get(mapNode);
-                            if (move == null) {
-                                moves.put(mapNode, move = new HashMap<>());
-                            }
-                            move.put(matcher.group(0), matcher.group(1));
+                            moves.computeIfAbsent(mapNode, k -> new HashMap<>())
+                                    .put(matcher.group(0), matcher.group(1));
                         }
                     }
                 }));

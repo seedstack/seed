@@ -17,6 +17,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.seedstack.seed.Application;
 import org.seedstack.seed.testing.Arguments;
+import org.seedstack.seed.testing.ConfigurationProfiles;
 import org.seedstack.seed.testing.ConfigurationProperty;
 import org.seedstack.seed.testing.KernelParameter;
 import org.seedstack.seed.testing.LaunchMode;
@@ -27,6 +28,7 @@ import org.seedstack.seed.testing.junit4.fixtures.TestITLauncher;
 @RunWith(SeedITRunner.class)
 @LaunchWith(value = TestITLauncher.class, mode = LaunchMode.PER_TEST)
 @ConfigurationProperty(name = "someTestKey", value = "testValue")
+@ConfigurationProfiles({"profile1", "profile2"})
 @KernelParameter(name = "seedstack.config.someKernelParam", value = "testValue")
 @Arguments({"testArg", "-o", "testOption"})
 @SystemProperty(name = "seedstack.someTestProperty", value = "testValue")
@@ -126,5 +128,22 @@ public class PerTestIT {
     @SystemProperty(name = "seedstack.someTestProperty", value = "testValue2")
     public void overrideSystemProperty() {
         assertThat(System.getProperty("seedstack.someTestProperty")).isEqualTo("testValue2");
+    }
+
+    @Test
+    public void configurationProfiles() {
+        assertThat(System.getProperty("seedstack.profiles")).isEqualTo("profile1,profile2");
+    }
+
+    @Test
+    @ConfigurationProfiles("profile3")
+    public void appendConfigurationProfiles() {
+        assertThat(System.getProperty("seedstack.profiles")).isEqualTo("profile1,profile2,profile3");
+    }
+
+    @Test
+    @ConfigurationProfiles(value = "profile3", append = false)
+    public void overrideConfigurationProfiles() {
+        assertThat(System.getProperty("seedstack.profiles")).isEqualTo("profile3");
     }
 }

@@ -11,38 +11,30 @@ package org.seedstack.seed.testing;
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Inherited;
-import java.lang.annotation.Repeatable;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Specify a configuration property for the duration of the test.
+ * Specify one or more configuration profile to be active for the duration of the test.
  */
 @Target({ElementType.TYPE, ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
-@Repeatable(ConfigurationProperties.class)
 @Documented
 @Inherited
-public @interface ConfigurationProperty {
+public @interface ConfigurationProfiles {
     /**
-     * The name of the configuration property.
+     * The configuration profiles to be active during the test.
      *
-     * @return the name.
+     * @return the configuration profile list.
      */
-    String name();
+    String[] value() default {};
 
     /**
-     * The value of the configuration property.
+     * If true, only when the annotation is placed on a test method and there is already another annotation on the
+     * class, its profiles are appended to the class annotation instead of replacing them.
      *
-     * @return the value.
+     * @return if true, profiles are appended to the ones one the test class, otherwise they replace them.
      */
-    String value();
-
-    /**
-     * The profiles this configuration property applies with.
-     *
-     * @return the configuration profiles.
-     */
-    String[] profiles() default {};
+    boolean append() default true;
 }
