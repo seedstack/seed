@@ -125,6 +125,8 @@
                                 <exclude>org.seedstack.seed.rest.hal.Link</exclude>
                                 <exclude>org.seedstack.seed.undertow.UndertowConfig</exclude>
                                 <exclude>org.seedstack.seed.transaction.spi.TransactionMetadata</exclude>
+                                <exclude>org.seedstack.seed.transaction.spi.TransactionMetadata</exclude>
+                                <exclude>org.seedstack.seed.spi.DependencyProvider</exclude>
                             </excludes>
                         </parameter>
                     </configuration>

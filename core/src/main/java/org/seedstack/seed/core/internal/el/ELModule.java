@@ -19,18 +19,17 @@ import org.seedstack.seed.el.ELService;
 import org.seedstack.seed.el.spi.ELHandler;
 
 class ELModule extends AbstractModule {
-    private static final TypeLiteral<Map<Class<? extends Annotation>, Class<ELHandler>>> MAP_TYPE_LITERAL = new
-            TypeLiteral<Map<Class<? extends Annotation>, Class<ELHandler>>>() {
-            };
+    private final ExpressionFactory expressionFactory;
     private final Map<Class<? extends Annotation>, Class<ELHandler>> elMap;
 
-    ELModule(Map<Class<? extends Annotation>, Class<ELHandler>> elMap) {
+    ELModule(ExpressionFactory expressionFactory, Map<Class<? extends Annotation>, Class<ELHandler>> elMap) {
+        this.expressionFactory = expressionFactory;
         this.elMap = elMap;
     }
 
     @Override
     protected void configure() {
-        bind(ExpressionFactory.class).toInstance(ExpressionFactory.newInstance());
+        bind(ExpressionFactory.class).toInstance(expressionFactory);
         bind(ELService.class).to(ELServiceInternal.class);
         bind(ELContextBuilder.class).to(ELContextBuilderImpl.class);
 
@@ -39,6 +38,10 @@ class ELModule extends AbstractModule {
         }
 
         // bind the map of annotation -> ELHandler
-        bind(MAP_TYPE_LITERAL).toInstance(ImmutableMap.copyOf(elMap));
+        bind(new AnnotationHandlersTypeLiteral()).toInstance(ImmutableMap.copyOf(elMap));
+    }
+
+    private static class AnnotationHandlersTypeLiteral
+            extends TypeLiteral<Map<Class<? extends Annotation>, Class<ELHandler>>> {
     }
 }

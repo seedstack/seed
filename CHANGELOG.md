@@ -2,9 +2,8 @@
 
 * [new] Java 9 compatibility.
 * [new] Refactored and improved integration testing API.
-* [brk] Removed Arquillian support (to its own add-on) in favor of Undertow-based Web integration testing.
 * [fix] Defer JNDI lookup through `@Resource` annotation until the instance containing the injection is created.
-
+* [fix] Fix lack of injection in custom ConstraintValidators.
 
 # Version 3.4.2 (2018-01-12)
 

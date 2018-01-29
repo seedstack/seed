@@ -10,16 +10,13 @@ package org.seedstack.seed.core.internal.validation;
 
 import com.google.inject.spi.ProvisionListener;
 import java.util.Set;
+import javax.inject.Inject;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validator;
-import javax.validation.ValidatorFactory;
 
 class StaticValidationProvisionListener implements ProvisionListener {
-    private final Validator validator;
-
-    StaticValidationProvisionListener(ValidatorFactory validatorFactory) {
-        this.validator = validatorFactory.getValidator();
-    }
+    @Inject
+    private Validator validator;
 
     @Override
     public <A> void onProvision(ProvisionInvocation<A> provision) {

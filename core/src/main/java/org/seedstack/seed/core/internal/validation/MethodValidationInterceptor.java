@@ -9,6 +9,7 @@
 package org.seedstack.seed.core.internal.validation;
 
 import java.util.Set;
+import javax.inject.Inject;
 import javax.validation.ConstraintViolation;
 import javax.validation.ValidatorFactory;
 import javax.validation.executable.ExecutableValidator;
@@ -17,11 +18,8 @@ import org.aopalliance.intercept.MethodInvocation;
 import org.seedstack.seed.SeedException;
 
 class MethodValidationInterceptor implements MethodInterceptor {
-    private final ValidatorFactory validatorFactory;
-
-    MethodValidationInterceptor(ValidatorFactory validatorFactory) {
-        this.validatorFactory = validatorFactory;
-    }
+    @Inject
+    private ValidatorFactory validatorFactory;
 
     @Override
     public Object invoke(MethodInvocation invocation) throws Throwable {
