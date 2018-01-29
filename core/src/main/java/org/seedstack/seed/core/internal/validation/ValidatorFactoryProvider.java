@@ -6,29 +6,30 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-package org.seedstack.seed.core.internal.init;
+package org.seedstack.seed.core.internal.validation;
 
+import com.google.inject.Injector;
+import javax.inject.Inject;
+import javax.inject.Provider;
 import javax.validation.Validation;
 import javax.validation.ValidatorFactory;
 import org.hibernate.validator.parameternameprovider.ReflectionParameterNameProvider;
-import org.seedstack.seed.core.internal.validation.SeedMessageInterpolator;
 
-public class GlobalValidatorFactory {
-    private final ValidatorFactory validatorFactory;
+class ValidatorFactoryProvider implements Provider<ValidatorFactory> {
+    private final Injector injector;
 
-    private GlobalValidatorFactory() {
-        validatorFactory = Validation.byDefaultProvider()
+    @Inject
+    ValidatorFactoryProvider(Injector injector) {
+        this.injector = injector;
+    }
+
+    @Override
+    public ValidatorFactory get() {
+        return Validation.byDefaultProvider()
                 .configure()
                 .parameterNameProvider(new ReflectionParameterNameProvider())
                 .messageInterpolator(new SeedMessageInterpolator())
+                .constraintValidatorFactory(new SeedConstraintValidatorFactory(injector))
                 .buildValidatorFactory();
-    }
-
-    public static ValidatorFactory get() {
-        return Holder.INSTANCE.validatorFactory;
-    }
-
-    private static class Holder {
-        private static final GlobalValidatorFactory INSTANCE = new GlobalValidatorFactory();
     }
 }

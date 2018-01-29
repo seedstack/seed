@@ -12,11 +12,13 @@ import io.nuun.kernel.api.plugin.InitState;
 import io.nuun.kernel.api.plugin.context.InitContext;
 import io.nuun.kernel.api.plugin.request.ClasspathScanRequest;
 import java.lang.annotation.Annotation;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 import javax.el.ELContext;
+import javax.el.ExpressionFactory;
 import net.jodah.typetools.TypeResolver;
 import org.kametic.specifications.Specification;
 import org.seedstack.seed.SeedException;
@@ -27,12 +29,76 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class ELPlugin extends AbstractSeedPlugin {
-    static final Optional<Class<ELContext>> EL3_OPTIONAL = Classes.optional("javax.el.StandardELContext");
-    static final Optional<Class<ELContext>> JUEL_OPTIONAL = Classes.optional("de.odysseus.el.util.SimpleContext");
+    static final Class<? extends ELContext> EL_3_CONTEXT_CLASS;
+    static final Class<? extends ELContext> JUEL_CONTEXT_CLASS;
+    private static final Object EXPRESSION_FACTORY;
     private static final Logger LOGGER = LoggerFactory.getLogger(ELPlugin.class);
-    private static final Optional<Class<Object>> EL_OPTIONAL = Classes.optional("javax.el.Expression");
     private final Specification<Class<?>> specificationELHandlers = classImplements(ELHandler.class);
     private ELModule elModule;
+
+    static {
+        if (Classes.optional("javax.el.Expression").isPresent()) {
+            EXPRESSION_FACTORY = buildExpressionFactory();
+            EL_3_CONTEXT_CLASS = Classes.optional("javax.el.StandardELContext")
+                    .<Class<? extends ELContext>>map(objectClass -> objectClass.asSubclass(ELContext.class))
+                    .orElse(null);
+            JUEL_CONTEXT_CLASS = Classes.optional("de.odysseus.el.util.SimpleContext")
+                    .<Class<? extends ELContext>>map(objectClass -> objectClass.asSubclass(ELContext.class))
+                    .orElse(null);
+        } else {
+            EXPRESSION_FACTORY = null;
+            EL_3_CONTEXT_CLASS = null;
+            JUEL_CONTEXT_CLASS = null;
+        }
+    }
+
+    public static boolean isEnabled() {
+        return EXPRESSION_FACTORY != null;
+    }
+
+    public static boolean isLevel3() {
+        return isEnabled() && EL_3_CONTEXT_CLASS != null;
+    }
+
+    public static boolean isFunctionMappingAvailable() {
+        return isEnabled() && (EL_3_CONTEXT_CLASS != null || JUEL_CONTEXT_CLASS != null);
+    }
+
+    public static Object getExpressionFactory() {
+        if (!isEnabled()) {
+            throw new IllegalStateException("EL expression factory is not available");
+        }
+        return EXPRESSION_FACTORY;
+    }
+
+    private static Object buildExpressionFactory() {
+        try {
+            // EL will use the TCCL to find the implementation
+            return ExpressionFactory.newInstance();
+        } catch (Throwable t1) {
+            // If TCCL failed, we use the ClassLoader that loaded the ELPlugin
+            final ClassLoader originalTCCL = run(Thread.currentThread()::getContextClassLoader);
+            try {
+                run((PrivilegedAction<Void>) () -> {
+                    Thread.currentThread().setContextClassLoader(ELPlugin.class.getClassLoader());
+                    return null;
+                });
+                return ExpressionFactory.newInstance();
+            } catch (Throwable t2) {
+                throw SeedException.wrap(t2, ELErrorCode.UNABLE_TO_INSTANTIATE_EXPRESSION_FACTORY);
+            } finally {
+                // restore original TCCL
+                run((PrivilegedAction<Void>) () -> {
+                    Thread.currentThread().setContextClassLoader(originalTCCL);
+                    return null;
+                });
+            }
+        }
+    }
+
+    private static <T> T run(PrivilegedAction<T> action) {
+        return System.getSecurityManager() != null ? AccessController.doPrivileged(action) : action.run();
+    }
 
     @Override
     public String name() {
@@ -47,7 +113,7 @@ public class ELPlugin extends AbstractSeedPlugin {
     @SuppressWarnings("unchecked")
     @Override
     public InitState initialize(InitContext initContext) {
-        if (EL_OPTIONAL.isPresent()) {
+        if (isEnabled()) {
             Map<Class<? extends Annotation>, Class<ELHandler>> elMap = new HashMap<>();
 
             // Scan all the ExpressionLanguageHandler
@@ -65,11 +131,10 @@ public class ELPlugin extends AbstractSeedPlugin {
                             .put("annotation", typeParameterClass.getSimpleName())
                             .put("handler", elHandlerClass);
                 }
-
                 elMap.put(typeParameterClass, (Class<ELHandler>) elHandlerClass);
             }
 
-            elModule = new ELModule(elMap);
+            elModule = new ELModule((ExpressionFactory) EXPRESSION_FACTORY, elMap);
         } else {
             LOGGER.debug("Java EL is not present in the classpath, EL support disabled");
         }
@@ -80,17 +145,5 @@ public class ELPlugin extends AbstractSeedPlugin {
     @Override
     public Object nativeUnitModule() {
         return elModule;
-    }
-
-    public boolean isEnabled() {
-        return EL_OPTIONAL.isPresent();
-    }
-
-    public boolean isLevel3() {
-        return isEnabled() && EL3_OPTIONAL.isPresent();
-    }
-
-    public boolean isFunctionMappingAvailable() {
-        return isEnabled() && (EL3_OPTIONAL.isPresent() || JUEL_OPTIONAL.isPresent());
     }
 }

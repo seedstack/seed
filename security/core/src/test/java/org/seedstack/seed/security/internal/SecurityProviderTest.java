@@ -28,8 +28,7 @@ import org.seedstack.seed.security.internal.realms.ConfigurationRealm;
 import org.seedstack.seed.spi.ApplicationProvider;
 
 public class SecurityProviderTest {
-
-    SecurityPlugin underTest;
+    private SecurityPlugin underTest;
 
     @Before
     public void before() {
@@ -61,14 +60,13 @@ public class SecurityProviderTest {
         when(initContext.scannedSubTypesByAncestorClass()).thenReturn(types);
 
         ApplicationProvider applicationProvider = mock(ApplicationProvider.class);
-        ELPlugin elPlugin = mock(ELPlugin.class);
-        when(elPlugin.isEnabled()).thenReturn(true);
         SecurityConfig securityConfig = mock(SecurityConfig.class);
         when(initContext.dependency(ApplicationProvider.class)).thenReturn(applicationProvider);
         Coffig coffig = mock(Coffig.class);
         when(coffig.get(SecurityConfig.class)).thenReturn(securityConfig);
         when(initContext.dependency(ApplicationProvider.class)).thenReturn(() -> application);
-        when(initContext.dependency(ELPlugin.class)).thenReturn(elPlugin);
+        // Not pretty because we use real ELPlugin to avoid mocking static methods
+        when(initContext.dependency(ELPlugin.class)).thenReturn(new ELPlugin());
 
         return initContext;
     }

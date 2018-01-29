@@ -5,18 +5,13 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+package org.seedstack.seed.core.fixtures.validation;
 
-package org.seedstack.seed.spi;
+import javax.validation.constraints.Min;
 
-/**
- * Interface to use to discover optional dependencies.
- */
-public interface DependencyProvider {
+public interface MyInterface {
+    @Min(1)
+    int getColor();
 
-    /**
-     * Return the class to check in the classpath.
-     *
-     * @return the class to check in the classpath.
-     */
-    String getClassToCheck();
+    void setColor(int color);
 }

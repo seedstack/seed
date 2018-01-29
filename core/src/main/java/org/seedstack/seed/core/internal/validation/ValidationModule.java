@@ -10,14 +10,17 @@ package org.seedstack.seed.core.internal.validation;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Binding;
-import com.google.inject.Provides;
+import com.google.inject.PrivateModule;
+import com.google.inject.Scopes;
 import com.google.inject.matcher.AbstractMatcher;
 import com.google.inject.matcher.Matcher;
 import com.google.inject.matcher.Matchers;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.Set;
 import javax.validation.Constraint;
+import javax.validation.ConstraintValidator;
 import javax.validation.Valid;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
@@ -29,15 +32,34 @@ import org.slf4j.LoggerFactory;
 @ValidationConcern
 class ValidationModule extends AbstractModule {
     private static final Logger LOGGER = LoggerFactory.getLogger(ValidationModule.class);
-    private final ValidatorFactory validatorFactory;
+    private final ValidatorFactory globalValidatorFactory;
+    private final Set<Class<? extends ConstraintValidator>> constraintValidators;
 
-    ValidationModule(ValidatorFactory validatorFactory) {
-        this.validatorFactory = validatorFactory;
+    ValidationModule(ValidatorFactory globalValidatorFactory,
+            Set<Class<? extends ConstraintValidator>> constraintValidators) {
+        this.globalValidatorFactory = globalValidatorFactory;
+        this.constraintValidators = constraintValidators;
     }
 
     @Override
     protected void configure() {
-        bind(ValidatorFactory.class).toInstance(validatorFactory);
+        install(new PrivateModule() {
+            @Override
+            protected void configure() {
+                // Validator factory
+                bind(ValidatorFactory.class).toProvider(ValidatorFactoryProvider.class).in(Scopes.SINGLETON);
+                expose(ValidatorFactory.class);
+
+                // Validator
+                bind(Validator.class).toProvider(ValidatorProvider.class).in(Scopes.SINGLETON);
+                expose(Validator.class);
+
+                // Detected constraint validators
+                constraintValidators.forEach(this::bind);
+            }
+        });
+
+        // Validation on injection / method call
         enableValidationOnInjectionPoints();
         if (isDynamicValidationSupported()) {
             configureDynamicValidation();
@@ -45,26 +67,25 @@ class ValidationModule extends AbstractModule {
     }
 
     private void enableValidationOnInjectionPoints() {
-        bindListener(staticValidationMatcher(), new StaticValidationProvisionListener(validatorFactory));
+        StaticValidationProvisionListener staticValidationProvisionListener = new StaticValidationProvisionListener();
+        requestInjection(staticValidationProvisionListener);
+        bindListener(staticValidationMatcher(), staticValidationProvisionListener);
     }
 
     private void configureDynamicValidation() {
-        bindInterceptor(Matchers.any(), dynamicValidationMatcher(), new MethodValidationInterceptor(validatorFactory));
+        MethodValidationInterceptor methodValidationInterceptor = new MethodValidationInterceptor();
+        requestInjection(methodValidationInterceptor);
+        bindInterceptor(Matchers.any(), dynamicValidationMatcher(), methodValidationInterceptor);
     }
 
     private boolean isDynamicValidationSupported() {
         ExecutableValidator executableValidator = null;
         try {
-            executableValidator = validatorFactory.getValidator().forExecutables();
+            executableValidator = globalValidatorFactory.getValidator().forExecutables();
         } catch (Throwable t) {
             LOGGER.warn("Unable to create the dynamic validator, support for dynamic validation disabled", t);
         }
         return executableValidator != null;
-    }
-
-    @Provides
-    Validator provideValidator() {
-        return validatorFactory.getValidator();
     }
 
     private Matcher<? super Binding<?>> staticValidationMatcher() {

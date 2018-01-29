@@ -29,17 +29,17 @@ class ELContextBuilderImpl implements ELContextBuilder {
     private ExpressionFactory expressionFactory;
 
     static ELContext createDefaultELContext(ExpressionFactory expressionFactory) {
-        if (ELPlugin.EL3_OPTIONAL.isPresent()) {
+        if (ELPlugin.EL_3_CONTEXT_CLASS != null) {
             try {
-                return ELPlugin.EL3_OPTIONAL.get().getConstructor(ExpressionFactory.class).newInstance(
+                return ELPlugin.EL_3_CONTEXT_CLASS.getConstructor(ExpressionFactory.class).newInstance(
                         expressionFactory);
             } catch (InvocationTargetException | NoSuchMethodException | IllegalAccessException |
                     InstantiationException e) {
                 throw new RuntimeException("Unable to instantiate StandardELContext", e);
             }
-        } else if (ELPlugin.JUEL_OPTIONAL.isPresent()) {
+        } else if (ELPlugin.JUEL_CONTEXT_CLASS != null) {
             try {
-                return ELPlugin.JUEL_OPTIONAL.get().newInstance();
+                return ELPlugin.JUEL_CONTEXT_CLASS.newInstance();
             } catch (IllegalAccessException | InstantiationException e) {
                 throw new RuntimeException("Unable to instantiate JUEL SimpleContext", e);
             }
@@ -76,12 +76,12 @@ class ELContextBuilderImpl implements ELContextBuilder {
         @Override
         public ELPropertyProvider withFunction(String prefix, String localName, Method method) {
             checkArgument(!Strings.isNullOrEmpty(localName), "A function local name is required");
-            if (ELPlugin.EL3_OPTIONAL.isPresent()) {
+            if (ELPlugin.isLevel3()) {
                 elContext.getFunctionMapper().mapFunction(prefix, localName, method);
-            } else if (ELPlugin.JUEL_OPTIONAL.isPresent()) {
-                if (ELPlugin.JUEL_OPTIONAL.get().isAssignableFrom(elContext.getClass())) {
+            } else if (ELPlugin.JUEL_CONTEXT_CLASS != null) {
+                if (ELPlugin.JUEL_CONTEXT_CLASS.isAssignableFrom(elContext.getClass())) {
                     try {
-                        ELPlugin.JUEL_OPTIONAL.get().getMethod("setFunction", String.class, String.class,
+                        ELPlugin.JUEL_CONTEXT_CLASS.getMethod("setFunction", String.class, String.class,
                                 Method.class).invoke(elContext, prefix, localName, method);
                     } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
                         throw SeedException.wrap(e, ExpressionLanguageErrorCode.UNEXPECTED_EXCEPTION);
@@ -92,7 +92,7 @@ class ELContextBuilderImpl implements ELContextBuilder {
                 }
             } else {
                 throw new UnsupportedOperationException(
-                        "Function mapping is not supported in this environment (EL level 3+ required)");
+                        "Function mapping is not supported in this environment (EL level 3+ or JUEL required)");
             }
             return this;
         }
