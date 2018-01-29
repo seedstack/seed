@@ -16,13 +16,13 @@ import com.google.inject.name.Names;
 import java.lang.reflect.Method;
 import java.util.Optional;
 import java.util.Set;
-import javax.annotation.Nullable;
 import javax.inject.Inject;
-import javax.inject.Named;
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
+import org.seedstack.seed.Configuration;
 import org.seedstack.seed.SeedException;
 import org.seedstack.seed.transaction.Propagation;
+import org.seedstack.seed.transaction.TransactionConfig;
 import org.seedstack.seed.transaction.Transactional;
 import org.seedstack.seed.transaction.spi.ExceptionHandler;
 import org.seedstack.seed.transaction.spi.TransactionHandler;
@@ -40,10 +40,8 @@ public abstract class AbstractTransactionManager implements TransactionManager {
     protected Injector injector;
     @Inject
     private Set<TransactionMetadataResolver> transactionMetadataResolvers;
-    @Inject
-    @Named("default")
-    @Nullable
-    private Class<? extends TransactionHandler<?>> defaultTransactionHandler;
+    @Configuration
+    private TransactionConfig transactionConfig;
 
     @Override
     public MethodInterceptor getMethodInterceptor() {
@@ -165,7 +163,7 @@ public abstract class AbstractTransactionManager implements TransactionManager {
         defaults.setRollbackOnParticipationFailure(true);
         defaults.setRollbackOn(new Class[]{Exception.class});
         defaults.setNoRollbackFor(new Class[0]);
-        defaults.setHandler(defaultTransactionHandler);
+        defaults.setHandler(transactionConfig.getDefaultHandler());
         defaults.setExceptionHandler(null);
         defaults.setResource(null);
         return defaults;

@@ -26,6 +26,7 @@ import org.aopalliance.intercept.MethodInvocation;
 import org.junit.Before;
 import org.junit.Test;
 import org.seedstack.seed.transaction.Propagation;
+import org.seedstack.seed.transaction.TransactionConfig;
 import org.seedstack.seed.transaction.spi.ExceptionHandler;
 import org.seedstack.seed.transaction.spi.TransactionHandler;
 import org.seedstack.seed.transaction.spi.TransactionManager;
@@ -64,6 +65,9 @@ public abstract class AbstractTransactionManagerTest {
         Deencapsulation.setField(underTest,
                 "injector",
                 injector);
+        Deencapsulation.setField(underTest,
+                "transactionConfig",
+                new TransactionConfig());
     }
 
     protected abstract TransactionManager doProvideTransactionManager() throws Exception;

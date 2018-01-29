@@ -58,9 +58,6 @@ public class TransactionPluginTest {
         Object object = pluginUnderTest.nativeUnitModule();
         Assertions.assertThat(object).isNotNull();
         Assertions.assertThat(object).isInstanceOf(TransactionModule.class);
-        Class<?> defaultTransactionHandlerClass = Reflection.field("defaultTransactionHandlerClass").ofType(
-                Class.class).in(pluginUnderTest).get();
-        Assertions.assertThat(defaultTransactionHandlerClass).isNotNull();
         Set<TransactionMetadataResolver> transactionMetadataResolvers = Reflection.field(
                 "transactionMetadataResolvers").ofType(new TypeRef<Set<TransactionMetadataResolver>>() {
         }).in(pluginUnderTest).get();
@@ -102,9 +99,6 @@ public class TransactionPluginTest {
     public void initTransactionPluginTest7() {
         InitState initState = pluginUnderTest.init(mockInitContext(null, TransactionHandlerTestImpl.class));
         Assertions.assertThat(initState).isEqualTo(InitState.INITIALIZED);
-        Class<?> defaultTransactionHandlerClass = Reflection.field("defaultTransactionHandlerClass").ofType(
-                Class.class).in(pluginUnderTest).get();
-        Assertions.assertThat(defaultTransactionHandlerClass).isNotNull();
         Set<TransactionMetadataResolver> transactionMetadataResolvers = Reflection.field(
                 "transactionMetadataResolvers").ofType(new TypeRef<Set<TransactionMetadataResolver>>() {
         }).in(pluginUnderTest).get();

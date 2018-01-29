@@ -19,7 +19,6 @@ import java.util.Set;
 import javax.transaction.Transactional;
 import org.seedstack.seed.core.internal.AbstractSeedPlugin;
 import org.seedstack.seed.transaction.TransactionConfig;
-import org.seedstack.seed.transaction.spi.TransactionHandler;
 import org.seedstack.seed.transaction.spi.TransactionManager;
 import org.seedstack.seed.transaction.spi.TransactionMetadataResolver;
 import org.seedstack.shed.reflect.Classes;
@@ -39,7 +38,6 @@ public class TransactionPlugin extends AbstractSeedPlugin {
     private static final Logger LOGGER = LoggerFactory.getLogger(TransactionPlugin.class);
     private final Set<Class<? extends TransactionMetadataResolver>> transactionMetadataResolvers = new HashSet<>();
     private TransactionManager transactionManager;
-    private Class<? extends TransactionHandler<?>> defaultTransactionHandlerClass;
 
     @Override
     public String name() {
@@ -59,7 +57,6 @@ public class TransactionPlugin extends AbstractSeedPlugin {
             txManagerClass = LocalTransactionManager.class;
         }
         this.transactionManager = Classes.instantiateDefault(txManagerClass);
-        this.defaultTransactionHandlerClass = transactionConfig.getDefaultHandler();
 
         initContext.scannedSubTypesByParentClass().get(TransactionMetadataResolver.class).stream()
                 .filter(TransactionMetadataResolver.class::isAssignableFrom)
@@ -76,7 +73,6 @@ public class TransactionPlugin extends AbstractSeedPlugin {
     public Object nativeUnitModule() {
         return new TransactionModule(
                 this.transactionManager,
-                this.defaultTransactionHandlerClass,
                 this.transactionMetadataResolvers
         );
     }
