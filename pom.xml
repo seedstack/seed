@@ -30,7 +30,7 @@
         <guice.version>4.1.0</guice.version>
         <typetools.version>0.5.0</typetools.version>
         <shiro.version>1.4.0</shiro.version>
-        <undertow.version>1.4.21.Final</undertow.version>
+        <undertow.version>1.4.22.Final</undertow.version>
         <jersey2.version>2.25.1</jersey2.version>
         <hibernate-validator.version>5.4.2.Final</hibernate-validator.version>
         <aopalliance.version>1.0</aopalliance.version>
@@ -90,6 +90,7 @@
                             <licenseMerge>CDDL 1.1|Common Development and Distribution License</licenseMerge>
                             <licenseMerge>CDDL 1.1|CDDL + GPLv2 with classpath exception</licenseMerge>
                             <licenseMerge>CDDL 1.1|CDDL+GPL License</licenseMerge>
+                            <licenseMerge>CDDL 1.1|Common Development And Distribution License 1.1</licenseMerge>
                             <licenseMerge>EPL 1.0|Eclipse Public License 1.0</licenseMerge>
                             <licenseMerge>EPL 1.0|Eclipse Public License v1.0</licenseMerge>
                             <licenseMerge>LGPL 3.0|GNU Lesser Public License</licenseMerge>
@@ -99,6 +100,7 @@
                             <licenseMerge>IGNORED_LICENSE|GPL2 w/ CPE</licenseMerge>
                             <licenseMerge>IGNORED_LICENSE|MPL 1.1</licenseMerge>
                             <licenseMerge>IGNORED_LICENSE|GNU General Public License, Version 2 with the Classpath Exception</licenseMerge>
+                            <licenseMerge>IGNORED_LICENSE|GNU General Public License v2.0 only, with Classpath exception</licenseMerge>
                             <licenseMerge>IGNORED_LICENSE|Eclipse Public License - v 1.0</licenseMerge>
                         </licenseMerges>
                     </configuration>
