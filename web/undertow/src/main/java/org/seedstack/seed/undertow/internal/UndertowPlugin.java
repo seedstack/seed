@@ -25,6 +25,8 @@ import org.seedstack.seed.web.WebConfig;
 public class UndertowPlugin extends AbstractSeedPlugin {
     static final String NAME = "undertow";
     private SSLProvider sslProvider;
+    private WebConfig.ServerConfig serverConfig;
+    private SeedRuntime seedRuntime;
 
     @Override
     public String name() {
@@ -33,16 +35,7 @@ public class UndertowPlugin extends AbstractSeedPlugin {
 
     @Override
     protected void setup(SeedRuntime seedRuntime) {
-        ServletContext servletContext = seedRuntime.contextAs(ServletContext.class);
-        if (servletContext != null) {
-            seedRuntime.registerConfigurationProvider(
-                    new UndertowRuntimeConfigurationProvider(
-                            servletContext,
-                            seedRuntime.getConfiguration().get(WebConfig.ServerConfig.class)
-                    ),
-                    ConfigurationPriority.RUNTIME_INFO
-            );
-        }
+        this.seedRuntime = seedRuntime;
     }
 
     @Override
@@ -52,11 +45,26 @@ public class UndertowPlugin extends AbstractSeedPlugin {
 
     @Override
     public InitState initialize(InitContext initContext) {
-        sslProvider = initContext.dependency(SSLProvider.class);
+        ServletContext servletContext = seedRuntime.contextAs(ServletContext.class);
+        if (servletContext != null) {
+            sslProvider = initContext.dependency(SSLProvider.class);
+            serverConfig = getConfiguration(WebConfig.ServerConfig.class);
+            seedRuntime.registerConfigurationProvider(
+                    new UndertowRuntimeConfigurationProvider(
+                            servletContext,
+                            serverConfig
+                    ),
+                    ConfigurationPriority.RUNTIME_INFO
+            );
+        }
         return InitState.INITIALIZED;
     }
 
     SSLProvider getSslProvider() {
         return sslProvider;
+    }
+
+    WebConfig.ServerConfig getServerConfig() {
+        return serverConfig;
     }
 }

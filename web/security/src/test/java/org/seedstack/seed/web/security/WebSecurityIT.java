@@ -12,27 +12,19 @@ import static io.restassured.RestAssured.expect;
 import static io.restassured.RestAssured.given;
 
 import io.restassured.http.ContentType;
-import java.net.URL;
 import org.assertj.core.api.Assertions;
-import org.jboss.arquillian.container.test.api.Deployment;
-import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.arquillian.test.api.ArquillianResource;
-import org.jboss.shrinkwrap.api.ShrinkWrap;
-import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.seedstack.seed.Configuration;
+import org.seedstack.seed.testing.junit4.SeedITRunner;
+import org.seedstack.seed.undertow.LaunchWithUndertow;
 
-@RunWith(Arquillian.class)
+@RunWith(SeedITRunner.class)
+@LaunchWithUndertow
 public class WebSecurityIT {
-    @ArquillianResource
-    private URL baseUrl;
-
-    @Deployment
-    public static WebArchive createDeployment() {
-        return ShrinkWrap.create(WebArchive.class);
-    }
+    @Configuration("web.runtime.baseUrl")
+    private String baseUrl;
 
     @After
     public void tearDown() {
@@ -40,46 +32,39 @@ public class WebSecurityIT {
     }
 
     @Test
-    @RunAsClient
     public void requestOnSecuredResourceShouldSend401() {
         expect().statusCode(401).when().get(baseUrl + "jediCouncil.html");
     }
 
     @Test
-    @RunAsClient
     public void requestOnSecuredResourceWithGoodBasicauthShouldSend200OnAuthorizedResource() {
         given().auth().basic("Obiwan", "yodarulez").expect().statusCode(200).when().get(
                 baseUrl + "jediCouncil.html");
     }
 
     @Test
-    @RunAsClient
     public void requestOnSecuredResourceWithGoodBasicauthShouldSend401OnForbiddenResource() {
         given().auth().basic("Anakin", "imsodark").expect().statusCode(401).when().get(
                 baseUrl + "jediCouncil.html");
     }
 
     @Test
-    @RunAsClient
     public void requestOnAnonymousResourceShouldSend200() {
         expect().statusCode(200).when().get(baseUrl + "image.jpg");
     }
 
     @Test
-    @RunAsClient
     public void responseShouldBeATeapotWhenRequestingUrlTeapot() {
         expect().statusCode(418).when().get(baseUrl + "teapot");
     }
 
     @Test
-    @RunAsClient
     public void logoutShouldRedirect() {
         Assertions.assertThat(expect().statusCode(200).when().get(baseUrl + "logout").body().asString()).contains(
                 "You are logged out!");
     }
 
     @Test
-    @RunAsClient
     public void authcShouldRedirectToLogin() {
         Assertions.assertThat(expect().statusCode(200).when().get(baseUrl + "protected").body().asString())
                 .contains(
@@ -87,7 +72,6 @@ public class WebSecurityIT {
     }
 
     @Test
-    @RunAsClient
     public void loginSuccessShouldRedirect() {
         Assertions.assertThat(given()
                 .contentType(ContentType.URLENC)

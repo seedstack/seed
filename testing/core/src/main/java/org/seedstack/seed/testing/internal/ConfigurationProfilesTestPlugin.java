@@ -16,6 +16,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import org.seedstack.seed.testing.ConfigurationProfiles;
 import org.seedstack.seed.testing.spi.TestContext;
 import org.seedstack.seed.testing.spi.TestPlugin;
+import org.seedstack.shed.reflect.Annotations;
 
 public class ConfigurationProfilesTestPlugin implements TestPlugin {
     private static final String DUMMY_VALUE = "__DUMMY__";
@@ -68,23 +69,25 @@ public class ConfigurationProfilesTestPlugin implements TestPlugin {
         AtomicBoolean annotationPresent = new AtomicBoolean(false);
 
         // Configuration profiles on the class
-        ConfigurationProfiles classProfiles = testContext.testClass().getAnnotation(ConfigurationProfiles.class);
-        if (classProfiles != null) {
-            annotationPresent.set(true);
-            allProfiles.addAll(Arrays.asList(classProfiles.value()));
-        }
+        Annotations.on(testContext.testClass())
+                .includingMetaAnnotations()
+                .find(ConfigurationProfiles.class)
+                .ifPresent(profiles -> {
+                    annotationPresent.set(true);
+                    allProfiles.addAll(Arrays.asList(profiles.value()));
+                });
 
         // Configuration profiles on the method (taking precedence)
-        testContext.testMethod().ifPresent(testMethod -> {
-            ConfigurationProfiles methodProfiles = testMethod.getAnnotation(ConfigurationProfiles.class);
-            if (methodProfiles != null) {
-                annotationPresent.set(true);
-                if (!methodProfiles.append()) {
-                    allProfiles.clear();
-                }
-                allProfiles.addAll(Arrays.asList(methodProfiles.value()));
-            }
-        });
+        testContext.testMethod().ifPresent(testMethod -> Annotations.on(testMethod)
+                .includingMetaAnnotations()
+                .find(ConfigurationProfiles.class)
+                .ifPresent(profiles -> {
+                    annotationPresent.set(true);
+                    if (!profiles.append()) {
+                        allProfiles.clear();
+                    }
+                    allProfiles.addAll(Arrays.asList(profiles.value()));
+                }));
 
         return annotationPresent.get() ? Optional.of(String.join(",", allProfiles)) : Optional.empty();
     }

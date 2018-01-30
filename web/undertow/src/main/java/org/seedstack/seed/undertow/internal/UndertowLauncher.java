@@ -18,7 +18,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
-import org.seedstack.seed.ApplicationConfig;
+import org.seedstack.coffig.Coffig;
 import org.seedstack.seed.SeedException;
 import org.seedstack.seed.core.Seed;
 import org.seedstack.seed.spi.SeedLauncher;
@@ -85,11 +85,10 @@ public class UndertowLauncher implements SeedLauncher {
     }
 
     private void startAll() throws Exception {
-        UndertowConfig undertowConfig = Seed.baseConfiguration().get(UndertowConfig.class);
-        WebConfig.ServerConfig serverConfig = Seed.baseConfiguration().get(WebConfig.ServerConfig.class);
-        createWorker(undertowConfig);
-        deploy(serverConfig, undertowConfig);
-        start(serverConfig);
+        Coffig baseConfiguration = Seed.baseConfiguration();
+        createWorker(baseConfiguration);
+        deploy(baseConfiguration);
+        start();
     }
 
     private void stopAll() throws Exception {
@@ -98,7 +97,8 @@ public class UndertowLauncher implements SeedLauncher {
         shutdownWorker();
     }
 
-    private void createWorker(UndertowConfig undertowConfig) throws Exception {
+    private void createWorker(Coffig config) throws Exception {
+        UndertowConfig undertowConfig = config.get(UndertowConfig.class);
         try {
             xnioWorker = Xnio.getInstance().createWorker(OptionMap.builder()
                     .set(Options.WORKER_IO_THREADS, undertowConfig.getIoThreads())
@@ -124,15 +124,12 @@ public class UndertowLauncher implements SeedLauncher {
         }
     }
 
-    private void deploy(WebConfig.ServerConfig serverConfig, UndertowConfig undertowConfig) throws Exception {
-        ApplicationConfig applicationConfig = Seed.baseConfiguration().get(ApplicationConfig.class);
+    private void deploy(Coffig configuration) throws Exception {
         try {
             DeploymentManagerFactory factory = new DeploymentManagerFactory(
                     xnioWorker,
-                    serverConfig,
-                    undertowConfig,
-                    kernelParameters,
-                    applicationConfig.getId()
+                    configuration,
+                    kernelParameters
             );
             deploymentManager = factory.createDeploymentManager();
             deploymentManager.deploy();
@@ -156,9 +153,10 @@ public class UndertowLauncher implements SeedLauncher {
         }
     }
 
-    private void start(WebConfig.ServerConfig serverConfig) throws Exception {
+    private void start() throws Exception {
         try {
             UndertowPlugin undertowPlugin = getUndertowPlugin();
+            WebConfig.ServerConfig serverConfig = undertowPlugin.getServerConfig();
             undertow = new ServerFactory(xnioWorker, serverConfig).createServer(
                     httpHandler,
                     undertowPlugin.getSslProvider()

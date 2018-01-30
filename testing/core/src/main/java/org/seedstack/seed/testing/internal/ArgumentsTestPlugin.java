@@ -5,14 +5,16 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.testing.internal;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import org.seedstack.seed.testing.Arguments;
-import org.seedstack.seed.testing.spi.TestPlugin;
 import org.seedstack.seed.testing.spi.TestContext;
+import org.seedstack.seed.testing.spi.TestPlugin;
+import org.seedstack.shed.reflect.Annotations;
 
 public class ArgumentsTestPlugin implements TestPlugin {
     @Override
@@ -25,21 +27,21 @@ public class ArgumentsTestPlugin implements TestPlugin {
         List<String> args = new ArrayList<>();
 
         // Arguments on the class
-        Arguments classArgs = testContext.testClass().getAnnotation(Arguments.class);
-        if (classArgs != null) {
-            args.addAll(Arrays.asList(classArgs.value()));
-        }
+        Annotations.on(testContext.testClass())
+                .includingMetaAnnotations()
+                .find(Arguments.class)
+                .ifPresent(arguments -> args.addAll(Arrays.asList(arguments.value())));
 
         // Arguments on the method
-        testContext.testMethod().ifPresent(testMethod -> {
-            Arguments methodArgs = testMethod.getAnnotation(Arguments.class);
-            if (methodArgs != null) {
-                if (!methodArgs.append()) {
-                    args.clear();
-                }
-                args.addAll(Arrays.asList(methodArgs.value()));
-            }
-        });
+        testContext.testMethod().ifPresent(testMethod -> Annotations.on(testMethod)
+                .includingMetaAnnotations()
+                .find(Arguments.class)
+                .ifPresent(arguments -> {
+                    if (!arguments.append()) {
+                        args.clear();
+                    }
+                    args.addAll(Arrays.asList(arguments.value()));
+                }));
 
         return args.toArray(new String[args.size()]);
     }

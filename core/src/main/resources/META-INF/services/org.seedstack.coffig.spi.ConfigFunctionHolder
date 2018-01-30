@@ -1,1 +1,3 @@
 org.seedstack.seed.core.internal.crypto.DecryptFunction
+org.seedstack.seed.core.internal.configuration.AvailablePortFunctionHolder
+org.seedstack.seed.core.internal.configuration.UuidFunctionHolder

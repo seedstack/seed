@@ -12,5 +12,5 @@ import org.seedstack.shed.exception.ErrorCode;
 
 enum Jersey2ErrorCode implements ErrorCode {
     MISSING_INJECTOR,
-    MISSING_SERVLET_CONTEXT
+    UNSUPPORTED_JERSEY_DEPENDENCY_INJECTION, MISSING_SERVLET_CONTEXT
 }

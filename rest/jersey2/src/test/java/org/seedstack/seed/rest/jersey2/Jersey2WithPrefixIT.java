@@ -14,13 +14,12 @@ import javax.ws.rs.core.MediaType;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.seedstack.seed.Configuration;
-import org.seedstack.seed.testing.LaunchWith;
-import org.seedstack.seed.testing.junit4.SeedITRunner;
 import org.seedstack.seed.testing.SystemProperty;
-import org.seedstack.seed.undertow.internal.UndertowLauncher;
+import org.seedstack.seed.testing.junit4.SeedITRunner;
+import org.seedstack.seed.undertow.LaunchWithUndertow;
 
 @RunWith(SeedITRunner.class)
-@LaunchWith(UndertowLauncher.class)
+@LaunchWithUndertow
 @SystemProperty(name = "seedstack.profiles", value = "withPrefix")
 public class Jersey2WithPrefixIT {
     @Configuration("web.runtime.baseUrl")

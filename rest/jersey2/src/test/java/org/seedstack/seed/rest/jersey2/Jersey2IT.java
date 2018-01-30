@@ -17,13 +17,12 @@ import org.json.JSONException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.seedstack.seed.Configuration;
-import org.seedstack.seed.testing.LaunchWith;
 import org.seedstack.seed.testing.junit4.SeedITRunner;
-import org.seedstack.seed.undertow.internal.UndertowLauncher;
+import org.seedstack.seed.undertow.LaunchWithUndertow;
 import org.skyscreamer.jsonassert.JSONAssert;
 
 @RunWith(SeedITRunner.class)
-@LaunchWith(UndertowLauncher.class)
+@LaunchWithUndertow
 public class Jersey2IT {
     @Configuration("web.runtime.baseUrl")
     private String baseUrl;

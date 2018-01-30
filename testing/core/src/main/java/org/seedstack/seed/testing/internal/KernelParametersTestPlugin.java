@@ -5,13 +5,15 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.testing.internal;
 
 import java.util.HashMap;
 import java.util.Map;
 import org.seedstack.seed.testing.KernelParameter;
-import org.seedstack.seed.testing.spi.TestPlugin;
 import org.seedstack.seed.testing.spi.TestContext;
+import org.seedstack.seed.testing.spi.TestPlugin;
+import org.seedstack.shed.reflect.Annotations;
 
 public class KernelParametersTestPlugin implements TestPlugin {
     private static final String TEST_CLASS_KERNEL_PARAMETER = "seedstack.it.testClassName";
@@ -26,16 +28,18 @@ public class KernelParametersTestPlugin implements TestPlugin {
         Map<String, String> kernelParameters = new HashMap<>();
 
         // Kernel parameters on the class
-        for (KernelParameter kernelParameter : testContext.testClass().getAnnotationsByType(KernelParameter.class)) {
-            kernelParameters.put(kernelParameter.name(), kernelParameter.value());
-        }
+        Annotations.on(testContext.testClass())
+                .includingMetaAnnotations()
+                .findAll(KernelParameter.class)
+                .forEach(kernelParameter -> kernelParameters.put(kernelParameter.name(),
+                        kernelParameter.value()));
 
-        // Kernel parameters on the method (completing/overriding class parameters)
-        testContext.testMethod().ifPresent(testMethod -> {
-            for (KernelParameter kernelParameter : testMethod.getAnnotationsByType(KernelParameter.class)) {
-                kernelParameters.put(kernelParameter.name(), kernelParameter.value());
-            }
-        });
+        // Kernel parameters on the method (completing/overriding class kernel parameters)
+        testContext.testMethod().ifPresent(testMethod -> Annotations.on(testMethod)
+                .includingMetaAnnotations()
+                .findAll(KernelParameter.class)
+                .forEach(kernelParameter -> kernelParameters.put(kernelParameter.name(),
+                        kernelParameter.value())));
 
         // The test full class name
         kernelParameters.put(TEST_CLASS_KERNEL_PARAMETER, testContext.testClass().getName());

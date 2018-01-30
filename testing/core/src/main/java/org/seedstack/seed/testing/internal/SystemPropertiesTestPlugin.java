@@ -14,6 +14,7 @@ import java.util.Properties;
 import org.seedstack.seed.testing.SystemProperty;
 import org.seedstack.seed.testing.spi.TestContext;
 import org.seedstack.seed.testing.spi.TestPlugin;
+import org.seedstack.shed.reflect.Annotations;
 
 public class SystemPropertiesTestPlugin implements TestPlugin {
     private static Map<String, String> previousProperties;
@@ -68,17 +69,19 @@ public class SystemPropertiesTestPlugin implements TestPlugin {
     private static Properties gatherSystemProperties(TestContext testContext) {
         Properties systemProperties = new Properties();
 
-        // Configuration property on the class
-        for (SystemProperty systemProperty : testContext.testClass().getAnnotationsByType(SystemProperty.class)) {
-            systemProperties.setProperty(systemProperty.name(), systemProperty.value());
-        }
+        // System properties on the class
+        Annotations.on(testContext.testClass())
+                .includingMetaAnnotations()
+                .findAll(SystemProperty.class)
+                .forEach(systemProperty -> systemProperties.put(systemProperty.name(),
+                        systemProperty.value()));
 
-        // Configuration property on the method (completing/overriding class configuration properties)
-        testContext.testMethod().ifPresent(testMethod -> {
-            for (SystemProperty systemProperty : testMethod.getAnnotationsByType(SystemProperty.class)) {
-                systemProperties.setProperty(systemProperty.name(), systemProperty.value());
-            }
-        });
+        // System properties on the method (completing/overriding class system properties)
+        testContext.testMethod().ifPresent(testMethod -> Annotations.on(testMethod)
+                .includingMetaAnnotations()
+                .findAll(SystemProperty.class)
+                .forEach(systemProperty -> systemProperties.put(systemProperty.name(),
+                        systemProperty.value())));
 
         return systemProperties;
     }

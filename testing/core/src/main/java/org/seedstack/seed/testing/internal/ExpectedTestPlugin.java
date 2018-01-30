@@ -5,13 +5,15 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.testing.internal;
 
-import java.lang.reflect.Method;
+import java.lang.reflect.AnnotatedElement;
 import java.util.Optional;
 import org.seedstack.seed.testing.Expected;
 import org.seedstack.seed.testing.spi.TestContext;
 import org.seedstack.seed.testing.spi.TestPlugin;
+import org.seedstack.shed.reflect.Annotations;
 
 public class ExpectedTestPlugin implements TestPlugin {
     @Override
@@ -21,21 +23,14 @@ public class ExpectedTestPlugin implements TestPlugin {
 
     @Override
     public Optional<Class<? extends Exception>> expectedException(TestContext testContext) {
-        // Expected exception on the method (taking precedence)
-        Optional<Method> testMethod = testContext.testMethod();
-        if (testMethod.isPresent()) {
-            Expected expected = testMethod.get().getAnnotation(Expected.class);
-            if (expected != null && !Expected.None.class.equals(expected.value())) {
-                return Optional.of(expected.value());
-            }
-        }
+        return testContext.testMethod().map(this::findExpected).orElseGet(() -> findExpected(testContext.testClass()));
+    }
 
-        // Expected exception on the class
-        Expected classExpected = testContext.testClass().getAnnotation(Expected.class);
-        if (classExpected != null && !Expected.None.class.equals(classExpected.value())) {
-            return Optional.of(classExpected.value());
-        }
-
-        return Optional.empty();
+    private Optional<Class<? extends Exception>> findExpected(AnnotatedElement annotatedElement) {
+        return Annotations.on(annotatedElement)
+                .includingMetaAnnotations()
+                .find(Expected.class)
+                .filter(expected -> !Expected.None.class.equals(expected.value()))
+                .map(Expected::value);
     }
 }

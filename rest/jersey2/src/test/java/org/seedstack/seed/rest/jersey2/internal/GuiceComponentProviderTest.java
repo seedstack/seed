@@ -173,7 +173,7 @@ public class GuiceComponentProviderTest {
     }
 
     private <T> void givenInjections(ServiceBindingBuilder<T> bindingBuilder) {
-        new MockUp<Injections>() {
+        new MockUp<GuiceComponentProvider>() {
             @Mock
             DynamicConfiguration getConfiguration(final ServiceLocator locator) {
                 return dynamicConfiguration;

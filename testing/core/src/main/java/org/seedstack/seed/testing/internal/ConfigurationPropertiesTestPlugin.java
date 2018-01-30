@@ -13,6 +13,7 @@ import java.util.Map;
 import org.seedstack.seed.testing.ConfigurationProperty;
 import org.seedstack.seed.testing.spi.TestContext;
 import org.seedstack.seed.testing.spi.TestPlugin;
+import org.seedstack.shed.reflect.Annotations;
 
 public class ConfigurationPropertiesTestPlugin implements TestPlugin {
     @Override
@@ -24,18 +25,19 @@ public class ConfigurationPropertiesTestPlugin implements TestPlugin {
     public Map<String, String> configurationProperties(TestContext testContext) {
         Map<String, String> configuration = new HashMap<>();
 
-        // Configuration property on the class
-        for (ConfigurationProperty configProperty : testContext.testClass()
-                .getAnnotationsByType(ConfigurationProperty.class)) {
-            configuration.put(buildPropertyName(configProperty), configProperty.value());
-        }
+        // Configuration properties on the class
+        Annotations.on(testContext.testClass())
+                .includingMetaAnnotations()
+                .findAll(ConfigurationProperty.class)
+                .forEach(configProperty -> configuration.put(buildPropertyName(configProperty),
+                        configProperty.value()));
 
-        // Configuration property on the method (completing/overriding class configuration properties)
-        testContext.testMethod().ifPresent(testMethod -> {
-            for (ConfigurationProperty configProperty : testMethod.getAnnotationsByType(ConfigurationProperty.class)) {
-                configuration.put(buildPropertyName(configProperty), configProperty.value());
-            }
-        });
+        // Configuration properties on the method (completing/overriding class configuration properties)
+        testContext.testMethod().ifPresent(testMethod -> Annotations.on(testMethod)
+                .includingMetaAnnotations()
+                .findAll(ConfigurationProperty.class)
+                .forEach(configProperty -> configuration.put(buildPropertyName(configProperty),
+                        configProperty.value())));
 
         return configuration;
     }

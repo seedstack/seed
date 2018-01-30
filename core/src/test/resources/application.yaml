@@ -75,3 +75,7 @@ crypto:
     keystore: ssl
     truststore: ssl
     alias: client
+functions:
+  availableTcpPort: $availableTcpPort()
+  availableUdpPort: $availableUdpPort()
+  randomUuid: $randomUuid()

@@ -14,6 +14,7 @@ import com.google.inject.Injector;
 import javax.inject.Inject;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.seedstack.coffig.Coffig;
 import org.seedstack.coffig.Config;
 import org.seedstack.coffig.SingleValue;
 import org.seedstack.coffig.internal.ConfigurationException;
@@ -159,6 +160,14 @@ public class ConfigurationIT {
     public void configuration_substitution() {
         Application application = injector.getInstance(Application.class);
         assertThat(application.substituteWithConfiguration("Hello ${person1}!")).isEqualTo("Hello Alice!");
+    }
+
+    @Test
+    public void configuration_functions() {
+        Coffig configuration = injector.getInstance(Application.class).getConfiguration();
+        assertThat(configuration.get(String.class, "functions.availableTcpPort")).isNotEmpty();
+        assertThat(configuration.get(String.class, "functions.availableUdpPort")).isNotEmpty();
+        assertThat(configuration.get(String.class, "functions.randomUuid")).isNotEmpty();
     }
 
     @Test

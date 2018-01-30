@@ -22,6 +22,8 @@ import java.util.Map;
 import java.util.ServiceLoader;
 import java.util.Set;
 import javax.servlet.ServletContainerInitializer;
+import org.seedstack.coffig.Coffig;
+import org.seedstack.seed.ApplicationConfig;
 import org.seedstack.seed.undertow.UndertowConfig;
 import org.seedstack.seed.web.WebConfig;
 import org.xnio.XnioWorker;
@@ -29,30 +31,30 @@ import org.xnio.XnioWorker;
 class DeploymentManagerFactory {
     private final ClassLoader mostCompleteClassLoader = findMostCompleteClassLoader(DeploymentManagerFactory.class);
     private final XnioWorker xnioWorker;
-    private final WebConfig.ServerConfig serverConfig;
     private final UndertowConfig undertowConfig;
+    private final ApplicationConfig applicationConfig;
+    private final WebConfig.ServerConfig serverConfig;
     private final Map<String, String> initParameters;
-    private final String applicationId;
 
-    DeploymentManagerFactory(XnioWorker xnioWorker, WebConfig.ServerConfig serverConfig, UndertowConfig undertowConfig,
-            Map<String, String> initParameters, String applicationId) {
+    DeploymentManagerFactory(XnioWorker xnioWorker, Coffig configuration, Map<String, String> initParameters) {
         this.xnioWorker = xnioWorker;
-        this.serverConfig = serverConfig;
-        this.undertowConfig = undertowConfig;
+        this.undertowConfig = configuration.get(UndertowConfig.class);
+        this.applicationConfig = configuration.get(ApplicationConfig.class);
+        this.serverConfig = configuration.get(WebConfig.ServerConfig.class);
         this.initParameters = initParameters;
-        this.applicationId = applicationId;
     }
 
     DeploymentManager createDeploymentManager() {
-        DeploymentInfo servletBuilder = configureDeploymentInfo(serverConfig.getContextPath());
+        DeploymentInfo servletBuilder = configureDeploymentInfo();
         return Servlets.defaultContainer().addDeployment(servletBuilder);
     }
 
-    private DeploymentInfo configureDeploymentInfo(String contextPath) {
+    private DeploymentInfo configureDeploymentInfo() {
         DeploymentInfo deploymentInfo = Servlets.deployment()
                 .setEagerFilterInit(true)
                 .setClassLoader(mostCompleteClassLoader)
-                .setDeploymentName(applicationId)
+                .setDeploymentName(applicationConfig.getId())
+                .setDisplayName(applicationConfig.getName())
                 .addServletContextAttribute(
                         WebSocketDeploymentInfo.ATTRIBUTE_NAME,
                         new WebSocketDeploymentInfo()
@@ -61,7 +63,7 @@ class DeploymentManagerFactory {
                                         undertowConfig.getBufferSize()))
                                 .setWorker(xnioWorker)
                 )
-                .setContextPath(contextPath);
+                .setContextPath(serverConfig.getContextPath());
 
         for (Map.Entry<String, String> initParameter : initParameters.entrySet()) {
             deploymentInfo.addInitParameter(initParameter.getKey(), initParameter.getValue());

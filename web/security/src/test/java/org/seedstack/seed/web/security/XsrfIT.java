@@ -12,31 +12,22 @@ import static io.restassured.RestAssured.expect;
 import static io.restassured.RestAssured.given;
 
 import io.restassured.response.Response;
-import java.net.URL;
-import org.jboss.arquillian.container.test.api.Deployment;
-import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.arquillian.test.api.ArquillianResource;
-import org.jboss.shrinkwrap.api.ShrinkWrap;
-import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.seedstack.seed.Configuration;
+import org.seedstack.seed.testing.junit4.SeedITRunner;
+import org.seedstack.seed.undertow.LaunchWithUndertow;
 
-@RunWith(Arquillian.class)
+@RunWith(SeedITRunner.class)
+@LaunchWithUndertow
 public class XsrfIT {
     private static final String XSRF_COOKIE_NAME = "XSRF-TOKEN";
     private static final String XSRF_HEADER_NAME = "X-XSRF-TOKEN";
     private static final String SESSION_COOKIE_NAME = "JSESSIONID";
-    @ArquillianResource
-    private URL baseUrl;
-
-    @Deployment
-    public static WebArchive createDeployment() {
-        return ShrinkWrap.create(WebArchive.class);
-    }
+    @Configuration("web.runtime.baseUrl")
+    private String baseUrl;
 
     @Test
-    @RunAsClient
     public void requestWithoutSessionShouldSucceed() {
         expect()
                 .statusCode(200)
@@ -45,7 +36,6 @@ public class XsrfIT {
     }
 
     @Test
-    @RunAsClient
     public void requestWithoutTokenShouldFail() {
         String sessionId = initiateSession().getCookie("JSESSIONID");
         given()
@@ -57,7 +47,6 @@ public class XsrfIT {
     }
 
     @Test
-    @RunAsClient
     public void requestWithCookieOnlyShouldFail() {
         Response response = initiateSession();
         String sessionId = response.getCookie(SESSION_COOKIE_NAME);
@@ -73,7 +62,6 @@ public class XsrfIT {
     }
 
     @Test
-    @RunAsClient
     public void requestWithHeaderOnlyShouldFail() {
         Response response = initiateSession();
         String sessionId = response.getCookie(SESSION_COOKIE_NAME);
@@ -89,7 +77,6 @@ public class XsrfIT {
     }
 
     @Test
-    @RunAsClient
     public void requestWithCookieAndHeaderShouldSucceed() {
         Response response = initiateSession();
         String sessionId = response.getCookie(SESSION_COOKIE_NAME);
