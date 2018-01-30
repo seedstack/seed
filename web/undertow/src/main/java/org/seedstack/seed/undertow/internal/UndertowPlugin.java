@@ -27,6 +27,7 @@ public class UndertowPlugin extends AbstractSeedPlugin {
     private SSLProvider sslProvider;
     private WebConfig.ServerConfig serverConfig;
     private SeedRuntime seedRuntime;
+    private ServletContext servletContext;
 
     @Override
     public String name() {
@@ -36,6 +37,7 @@ public class UndertowPlugin extends AbstractSeedPlugin {
     @Override
     protected void setup(SeedRuntime seedRuntime) {
         this.seedRuntime = seedRuntime;
+        this.servletContext = seedRuntime.contextAs(ServletContext.class);
     }
 
     @Override
@@ -45,8 +47,7 @@ public class UndertowPlugin extends AbstractSeedPlugin {
 
     @Override
     public InitState initialize(InitContext initContext) {
-        ServletContext servletContext = seedRuntime.contextAs(ServletContext.class);
-        if (servletContext != null) {
+        if (seedRuntime != null && servletContext != null) {
             sslProvider = initContext.dependency(SSLProvider.class);
             serverConfig = getConfiguration(WebConfig.ServerConfig.class);
             seedRuntime.registerConfigurationProvider(

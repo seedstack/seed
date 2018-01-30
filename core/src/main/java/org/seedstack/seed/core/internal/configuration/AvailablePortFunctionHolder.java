@@ -8,6 +8,7 @@
 
 package org.seedstack.seed.core.internal.configuration;
 
+import java.io.IOException;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.ServerSocket;
@@ -44,7 +45,7 @@ public class AvailablePortFunctionHolder implements ConfigFunctionHolder {
                 port, 1, InetAddress.getByName("localhost"))) {
             socket.setReuseAddress(true);
             return true;
-        } catch (Exception e) {
+        } catch (IOException | RuntimeException e) {
             return false;
         }
     }
@@ -53,7 +54,7 @@ public class AvailablePortFunctionHolder implements ConfigFunctionHolder {
         try (DatagramSocket socket = new DatagramSocket(port, InetAddress.getByName("localhost"))) {
             socket.setReuseAddress(true);
             return true;
-        } catch (Exception e) {
+        } catch (IOException | RuntimeException e) {
             return false;
         }
     }
