@@ -14,10 +14,11 @@ import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-import org.seedstack.seed.spi.SeedLauncher;
 
 /**
- * This annotation can be used to specify the {@link SeedLauncher} used to launch the tested application.
+ * This annotation can be used to specify the expected error conditions to occur during the launch of the tested
+ * application.
+ * <p>It cannot be used to specify the expected error conditions to occur during the test itself.</p>
  */
 @Target({ElementType.TYPE, ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
@@ -25,7 +26,7 @@ import org.seedstack.seed.spi.SeedLauncher;
 @Inherited
 public @interface Expected {
     /**
-     * The exception class expected to occur during the test.
+     * The exception class expected to occur during the tested application launch.
      *
      * @return the exception class.
      */

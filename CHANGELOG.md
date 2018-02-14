@@ -1,7 +1,8 @@
-# Version 3.5.0 (2018-02-28)
+# Version 3.5.0 (2018-02-14)
 
 * [new] Java 9 compatibility.
 * [new] JAX-RS 2.1 support.
+* [new] Allow to inject custom ConstraintValidators.
 * [new] Integration testing now uses SeedStack launchers to execute the tested application.
 * [new] Ability to choose the tested application launcher with `@LaunchWith`
 * [new] Ability to define/override system properties for integration testing with `@SystemProperty`.
@@ -10,9 +11,8 @@
 * [new] Ability to select configuration profiles for integration testing with `@ConfigurationProfiles`.
 * [new] Ability to specify launch arguments for integration testing with `@Arguments`.
 * [new] Run Web integration tests with undertow by combining `@RunWith(SeedITRunner.class)` and `@LaunchWithUndertow`.
-* [brk] The integration testing API has been refactored to support other testing frameworks. 
+* [brk] The integration testing API has been refactored to support other testing frameworks.
 * [fix] Defer JNDI lookup through `@Resource` annotation until the instance containing the injection is created.
-* [fix] Fix lack of injection in custom ConstraintValidators.
 
 # Version 3.4.2 (2018-01-12)
 

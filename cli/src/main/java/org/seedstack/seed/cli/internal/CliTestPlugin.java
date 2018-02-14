@@ -60,6 +60,8 @@ public class CliTestPlugin implements TestPlugin {
             LOGGER.info("CLI command test finished with status code {}", statusCode);
             if (withCliCommand.expectedStatusCode() != statusCode) {
                 throw SeedException.createNew(CliErrorCode.UNEXPECTED_STATUS_CODE)
+                        .put("command", withCliCommand.command())
+                        .put("args", args)
                         .put("expectedStatusCode", withCliCommand.expectedStatusCode())
                         .put("effectiveStatusCode", statusCode);
             }
