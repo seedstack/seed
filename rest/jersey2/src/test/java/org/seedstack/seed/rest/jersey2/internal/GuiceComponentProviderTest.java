@@ -13,7 +13,6 @@ import static org.junit.Assert.fail;
 
 import com.google.common.collect.Sets;
 import com.google.inject.Injector;
-import com.sun.org.apache.xpath.internal.operations.String;
 import io.nuun.kernel.api.annotations.Ignore;
 import javax.servlet.ServletContext;
 import javax.ws.rs.Path;
