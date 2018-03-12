@@ -84,6 +84,7 @@ public class RestPlugin extends AbstractSeedPlugin implements RestProvider {
             addJacksonProviders(providers);
 
             configureExceptionMappers();
+            configureStreamSupport();
 
             if (restConfig.isJsonHome()) {
                 // The typed locale parameter resolves constructor ambiguity when the JAX-RS 2.0 spec is in the
@@ -111,6 +112,13 @@ public class RestPlugin extends AbstractSeedPlugin implements RestProvider {
 
         if (!restConfig.exceptionMapping().isValidation()) {
             providers.remove(ValidationExceptionMapper.class);
+        }
+    }
+
+    private void configureStreamSupport() {
+        if (!restConfig.isStreamSupport()) {
+            providers.remove(StreamMessageBodyReader.class);
+            providers.remove(StreamMessageBodyWriter.class);
         }
     }
 

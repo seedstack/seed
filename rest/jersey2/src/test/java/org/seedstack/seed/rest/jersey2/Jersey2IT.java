@@ -63,4 +63,22 @@ public class Jersey2IT {
                 .multiPart("file.txt", "Hello world!".getBytes())
                 .post(baseUrl + "multipart");
     }
+
+    @Test
+    public void streamWriting() throws JSONException {
+        String result = expect().statusCode(200).given()
+                .get(baseUrl + "stream")
+                .asString();
+        JSONAssert.assertEquals("[\"Hello\", \"world\"]", result, true);
+    }
+
+    @Test
+    public void streamReading() throws JSONException {
+        String result = expect().statusCode(200).given()
+                .body("[\"Hello\", \"world\"]")
+                .contentType("application/json")
+                .post(baseUrl + "stream")
+                .asString();
+        assertThat(result).isEqualTo("Hello world!");
+    }
 }

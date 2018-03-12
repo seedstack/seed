@@ -27,6 +27,7 @@ public class RestConfig {
     private Map<String, String> jerseyProperties = new HashMap<>();
     private Set<Class<?>> features = new HashSet<>();
     private ExceptionMappingConfig exceptionMapping = new ExceptionMappingConfig();
+    private boolean streamSupport = true;
 
     public String getPath() {
         return path;
@@ -58,6 +59,15 @@ public class RestConfig {
 
     public ExceptionMappingConfig exceptionMapping() {
         return exceptionMapping;
+    }
+
+    public boolean isStreamSupport() {
+        return streamSupport;
+    }
+
+    public RestConfig setStreamSupport(boolean streamSupport) {
+        this.streamSupport = streamSupport;
+        return this;
     }
 
     @Config("exceptionMapping")

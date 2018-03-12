@@ -2,6 +2,7 @@
 
 * [new] Java 9 compatibility.
 * [new] JAX-RS 2.1 support.
+* [new] Support reading and writing `java.util.stream.Stream` from JAX-RS resources.
 * [new] Allow to inject custom ConstraintValidators.
 * [new] Integration testing now uses SeedStack launchers to execute the tested application.
 * [new] Ability to choose the tested application launcher with `@LaunchWith`
