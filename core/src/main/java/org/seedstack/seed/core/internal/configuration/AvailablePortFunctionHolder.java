@@ -12,7 +12,6 @@ import java.io.IOException;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.ServerSocket;
-import java.util.function.Predicate;
 import javax.net.ServerSocketFactory;
 import org.seedstack.coffig.spi.ConfigFunction;
 import org.seedstack.coffig.spi.ConfigFunctionHolder;
@@ -20,24 +19,33 @@ import org.seedstack.coffig.spi.ConfigFunctionHolder;
 public class AvailablePortFunctionHolder implements ConfigFunctionHolder {
     private static final int PORT_RANGE_MIN = 49152;
     private static final int PORT_RANGE_MAX = 65535;
+    private static final Object TCP_SYNC = new Object();
+    private static final Object UDP_SYNC = new Object();
 
     @ConfigFunction
     int availableTcpPort() {
-        return findPort(PORT_RANGE_MIN, PORT_RANGE_MAX, this::isTcpPortAvailable);
+        synchronized (TCP_SYNC) {
+            for (int i = PORT_RANGE_MIN; i <= PORT_RANGE_MAX; i++) {
+                if (isTcpPortAvailable(i)) {
+                    return i;
+                }
+            }
+        }
+        throw new IllegalStateException("Unable to find an available TCP port in range " + PORT_RANGE_MIN + "-" +
+                PORT_RANGE_MAX);
     }
 
     @ConfigFunction
     int availableUdpPort() {
-        return findPort(PORT_RANGE_MIN, PORT_RANGE_MAX, this::isUdpPortAvailable);
-    }
-
-    private int findPort(int min, int max, Predicate<Integer> availablePredicate) {
-        for (int i = min; i <= max; i++) {
-            if (availablePredicate.test(i)) {
-                return i;
+        synchronized (UDP_SYNC) {
+            for (int i = PORT_RANGE_MIN; i <= PORT_RANGE_MAX; i++) {
+                if (isUdpPortAvailable(i)) {
+                    return i;
+                }
             }
         }
-        throw new IllegalStateException("Unable to find an available port in range " + min + "-" + max);
+        throw new IllegalStateException("Unable to find an available UDP port in range " + PORT_RANGE_MIN + "-" +
+                PORT_RANGE_MAX);
     }
 
     private boolean isTcpPortAvailable(int port) {

@@ -10,6 +10,7 @@ package org.seedstack.seed.rest.internal;
 
 import static com.google.inject.util.Types.newParameterizedType;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.ParameterizedType;
@@ -26,41 +27,37 @@ import javax.ws.rs.ext.Providers;
 
 @Provider
 class StreamMessageBodyReader<T> implements MessageBodyReader<Stream<T>> {
+    private static final ParameterizedType GENERIC_TYPE = newParameterizedType(
+            List.class,
+            Object.class
+    );
+
     @Context
     private Providers providers;
 
     @Override
     public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
-        return Stream.class.isAssignableFrom(type)
-                && genericType instanceof ParameterizedType
-                && ((ParameterizedType) genericType).getActualTypeArguments().length == 1;
+        return Stream.class.isAssignableFrom(type);
     }
 
     @Override
     @SuppressWarnings("unchecked")
     public Stream<T> readFrom(Class<Stream<T>> type, Type genericType, Annotation[] annotations, MediaType mediaType,
             MultivaluedMap<String, String> httpHeaders,
-            InputStream entityStream) throws WebApplicationException {
+            InputStream entityStream) throws IOException, WebApplicationException {
 
-        ParameterizedType listType = newParameterizedType(
-                List.class,
-                ((ParameterizedType) genericType).getActualTypeArguments()[0]
-        );
+        // If we don't use an intermediate list, the underlying stream gets closed before we
+        // get the chance to read the stream. Maybe this can be fixed/improved.
 
-        try {
-            return providers.getMessageBodyReader(List.class,
-                    listType,
-                    annotations,
-                    mediaType)
-                    .readFrom(List.class,
-                            listType,
-                            annotations,
-                            mediaType,
-                            httpHeaders,
-                            entityStream).stream();
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
+        return providers.getMessageBodyReader(List.class,
+                GENERIC_TYPE,
+                annotations,
+                mediaType)
+                .readFrom(List.class,
+                        GENERIC_TYPE,
+                        annotations,
+                        mediaType,
+                        httpHeaders,
+                        entityStream).stream();
     }
 }

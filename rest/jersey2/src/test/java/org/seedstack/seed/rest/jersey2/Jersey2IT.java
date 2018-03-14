@@ -73,7 +73,7 @@ public class Jersey2IT {
     }
 
     @Test
-    public void streamReading() throws JSONException {
+    public void streamReading() {
         String result = expect().statusCode(200).given()
                 .body("[\"Hello\", \"world\"]")
                 .contentType("application/json")

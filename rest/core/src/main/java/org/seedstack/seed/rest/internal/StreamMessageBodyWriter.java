@@ -27,14 +27,17 @@ import javax.ws.rs.ext.Providers;
 
 @Provider
 class StreamMessageBodyWriter<T> implements MessageBodyWriter<Stream<T>> {
+    private static final ParameterizedType GENERIC_TYPE = newParameterizedType(
+            Iterator.class,
+            Object.class
+    );
+
     @Context
     private Providers providers;
 
     @Override
     public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
-        return Stream.class.isAssignableFrom(type)
-                && genericType instanceof ParameterizedType
-                && ((ParameterizedType) genericType).getActualTypeArguments().length == 1;
+        return Stream.class.isAssignableFrom(type);
     }
 
     @Override
@@ -42,17 +45,13 @@ class StreamMessageBodyWriter<T> implements MessageBodyWriter<Stream<T>> {
             MediaType mediaType, MultivaluedMap<String, Object> httpHeaders,
             OutputStream entityStream) throws IOException, WebApplicationException {
 
-        ParameterizedType iteratorType = newParameterizedType(
-                Iterator.class,
-                ((ParameterizedType) genericType).getActualTypeArguments()[0]
-        );
         providers.getMessageBodyWriter(Iterator.class,
-                iteratorType,
+                GENERIC_TYPE,
                 annotations,
                 mediaType)
                 .writeTo(tStream.iterator(),
                         Iterator.class,
-                        iteratorType,
+                        GENERIC_TYPE,
                         annotations,
                         mediaType,
                         httpHeaders,
