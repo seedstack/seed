@@ -1,9 +1,9 @@
-# Version 3.5.0 (2018-02-14)
+# Version 3.5.0 (2018-03-16)
 
 * [new] Java 9 compatibility.
 * [new] JAX-RS 2.1 support.
-* [new] Support reading and writing `java.util.stream.Stream` from JAX-RS resources.
-* [new] Allow to inject custom ConstraintValidators.
+* [new] Support for serializing/de-serializing `java.util.stream.Stream` from JAX-RS resources.
+* [new] Support for custom constraint validator injection.
 * [new] Integration testing now uses SeedStack launchers to execute the tested application.
 * [new] Ability to choose the tested application launcher with `@LaunchWith`
 * [new] Ability to define/override system properties for integration testing with `@SystemProperty`.
