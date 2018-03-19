@@ -14,7 +14,7 @@
     <parent>
         <groupId>org.seedstack.seed</groupId>
         <artifactId>seed</artifactId>
-        <version>3.5.0-SNAPSHOT</version>
+        <version>3.5.1-SNAPSHOT</version>
     </parent>
 
     <artifactId>seed-core</artifactId>
@@ -77,6 +77,11 @@
             <groupId>org.slf4j</groupId>
             <artifactId>jul-to-slf4j</artifactId>
             <version>${slf4j.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-annotations</artifactId>
+            <version>${jackson.version}</version>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>

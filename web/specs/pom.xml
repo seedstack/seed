@@ -13,7 +13,7 @@
     <parent>
         <groupId>org.seedstack.seed</groupId>
         <artifactId>seed-web</artifactId>
-        <version>3.5.0-SNAPSHOT</version>
+        <version>3.5.1-SNAPSHOT</version>
     </parent>
 
     <artifactId>seed-web-specs</artifactId>
