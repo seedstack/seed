@@ -85,17 +85,12 @@
             <scope>provided</scope>
         </dependency>
 
-        <!-- The two dependencies below are not longer part of Java 9 but are required for now -->
-        <!-- Remove them when Jersey no longer relies on them -->
+        <!-- The dependency below is no longer part of Java 9 but is required for now -->
+        <!-- Remove it when Jersey no longer relies on it -->
         <dependency>
             <groupId>javax.activation</groupId>
             <artifactId>javax.activation-api</artifactId>
             <version>${javax.activation.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>javax.xml.bind</groupId>
-            <artifactId>jaxb-api</artifactId>
-            <version>${javax.jaxb.version}</version>
         </dependency>
 
         <!-- TESTS -->

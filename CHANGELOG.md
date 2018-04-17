@@ -1,3 +1,7 @@
+# Version 3.5.1 (2018-04-28)
+
+* [chg] Remove the need for `jaxb-api` dependency for `seed-rest-jersey2` module under Java 9.
+
 # Version 3.5.0 (2018-03-16)
 
 * [new] Java 9 compatibility.
