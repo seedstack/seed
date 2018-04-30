@@ -1,5 +1,6 @@
 # Version 3.5.1 (2018-04-28)
 
+* [new] Add an implementation of `javax.annotation.Nullable` avoiding the need of an additional dependency for null injection. 
 * [chg] Remove the need for `jaxb-api` dependency for `seed-rest-jersey2` module under Java 9.
 
 # Version 3.5.0 (2018-03-16)
