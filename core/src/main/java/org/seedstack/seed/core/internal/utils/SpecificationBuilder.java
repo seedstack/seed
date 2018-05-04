@@ -19,21 +19,23 @@ public class SpecificationBuilder<T> {
         this.predicate = predicate;
     }
 
-    public SpecificationBuilder and(Predicate<? super T>... others) {
+    @SafeVarargs
+    public final SpecificationBuilder and(Predicate<? super T>... others) {
         for (Predicate<? super T> other : others) {
             predicate = predicate.and(other);
         }
         return this;
     }
 
-    public SpecificationBuilder or(Predicate<? super T>... others) {
+    @SafeVarargs
+    public final SpecificationBuilder or(Predicate<? super T>... others) {
         for (Predicate<? super T> other : others) {
             predicate = predicate.or(other);
         }
         return this;
     }
 
-    public SpecificationBuilder negate() {
+    public final SpecificationBuilder negate() {
         predicate = predicate.negate();
         return this;
     }

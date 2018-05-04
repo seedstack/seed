@@ -1,7 +1,9 @@
-# Version 3.5.1 (2018-04-28)
+# Version 3.5.1 (2018-05-04)
 
 * [new] Add an implementation of `javax.annotation.Nullable` avoiding the need of an additional dependency for null injection. 
 * [chg] Remove the need for `jaxb-api` dependency for `seed-rest-jersey2` module under Java 9.
+* [chg] Update Guice to [4.2.0](https://github.com/google/guice/wiki/Guice42).
+* [chg] Update Guava to [25.0](https://github.com/google/guava/releases/tag/v25.0).
 
 # Version 3.5.0 (2018-03-16)
 

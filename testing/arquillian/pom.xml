@@ -41,18 +41,12 @@
             <version>${arquillian.version}</version>
         </dependency>
         <dependency>
-            <groupId>com.google.inject</groupId>
-            <artifactId>guice</artifactId>
-            <version>${guice.version}</version>
-            <optional>true</optional>
-        </dependency>
-
-        <dependency>
             <groupId>org.seedstack.seed</groupId>
             <artifactId>seed-core</artifactId>
             <version>${project.version}</version>
-            <scope>test</scope>
+            <optional>true</optional>
         </dependency>
+
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>

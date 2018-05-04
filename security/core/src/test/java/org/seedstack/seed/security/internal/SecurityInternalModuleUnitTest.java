@@ -48,6 +48,7 @@ public class SecurityInternalModuleUnitTest {
         when(ab.toProvider(any(Provider.class))).thenReturn(sb);
         when(binder.bind(any(TypeLiteral.class))).thenReturn(ab);
         when(binder.skipSources(any(Class.class), any(Class.class))).thenReturn(binder);
+        when(binder.skipSources(any(Class.class))).thenReturn(binder);
         securityConfigurer = mock(SecurityConfigurer.class);
         underTest = new SecurityInternalModule(securityConfigurer, new HashMap<>());
         Whitebox.setInternalState(underTest, "binder", binder);

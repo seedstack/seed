@@ -21,21 +21,23 @@ public class MethodMatcherBuilder {
         this.predicate = predicate;
     }
 
-    public MethodMatcherBuilder and(Predicate<? super Method>... others) {
+    @SafeVarargs
+    public final MethodMatcherBuilder and(Predicate<? super Method>... others) {
         for (Predicate<? super Method> other : others) {
             predicate = predicate.and(other);
         }
         return this;
     }
 
-    public MethodMatcherBuilder or(Predicate<? super Method>... others) {
+    @SafeVarargs
+    public final MethodMatcherBuilder or(Predicate<? super Method>... others) {
         for (Predicate<? super Method> other : others) {
             predicate = predicate.or(other);
         }
         return this;
     }
 
-    public MethodMatcherBuilder negate() {
+    public final MethodMatcherBuilder negate() {
         predicate = predicate.negate();
         return this;
     }
