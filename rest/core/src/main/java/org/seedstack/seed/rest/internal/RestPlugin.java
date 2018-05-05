@@ -41,8 +41,12 @@ import org.seedstack.seed.rest.internal.jsonhome.JsonHomeRootResource;
 import org.seedstack.seed.rest.internal.jsonhome.Resource;
 import org.seedstack.seed.rest.spi.RestProvider;
 import org.seedstack.seed.rest.spi.RootResource;
+import org.seedstack.shed.reflect.Classes;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class RestPlugin extends AbstractSeedPlugin implements RestProvider {
+    private static final Logger LOGGER = LoggerFactory.getLogger(RestPlugin.class);
     private final Map<Variant, Class<? extends RootResource>> rootResourcesByVariant = new HashMap<>();
     private RestConfig restConfig;
     private boolean enabled;
@@ -103,15 +107,24 @@ public class RestPlugin extends AbstractSeedPlugin implements RestProvider {
         if (!restConfig.exceptionMapping().isSecurity()) {
             providers.remove(AuthenticationExceptionMapper.class);
             providers.remove(AuthorizationExceptionMapper.class);
+            LOGGER.debug("Security exception mapping is disabled");
+        } else {
+            LOGGER.debug("Security exception mapping is enabled");
         }
 
         if (!restConfig.exceptionMapping().isAll()) {
             providers.remove(WebApplicationExceptionMapper.class);
             providers.remove(InternalErrorExceptionMapper.class);
+            LOGGER.debug("Default exception mapping is disabled");
+        } else {
+            LOGGER.debug("Default exception mapping is enabled");
         }
 
         if (!restConfig.exceptionMapping().isValidation()) {
             providers.remove(ValidationExceptionMapper.class);
+            LOGGER.debug("Validation exception mapping is disabled");
+        } else {
+            LOGGER.debug("Validation exception mapping is enabled");
         }
     }
 
@@ -119,14 +132,22 @@ public class RestPlugin extends AbstractSeedPlugin implements RestProvider {
         if (!restConfig.isStreamSupport()) {
             providers.remove(StreamMessageBodyReader.class);
             providers.remove(StreamMessageBodyWriter.class);
+            LOGGER.debug("Stream support is disabled");
+        } else {
+            LOGGER.debug("Stream support is enabled");
         }
     }
 
     private void addJacksonProviders(Collection<Class<?>> providers) {
         providers.add(JsonMappingExceptionMapper.class);
         providers.add(JsonParseExceptionMapper.class);
-        providers.add(JacksonJsonProvider.class);
-        providers.add(JacksonJaxbJsonProvider.class);
+        if (Classes.optional("javax.xml.bind.JAXBElement").isPresent()) {
+            LOGGER.debug("JSON and JAXB support is enabled");
+            providers.add(JacksonJaxbJsonProvider.class);
+        } else {
+            LOGGER.debug("JSON support is enabled");
+            providers.add(JacksonJsonProvider.class);
+        }
     }
 
     private void initializeHypermedia() {

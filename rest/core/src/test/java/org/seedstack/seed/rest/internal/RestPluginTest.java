@@ -12,7 +12,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import com.fasterxml.jackson.jaxrs.base.JsonMappingExceptionMapper;
 import com.fasterxml.jackson.jaxrs.base.JsonParseExceptionMapper;
-import com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider;
 import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 import com.google.common.collect.Lists;
 import io.nuun.kernel.api.plugin.InitState;
@@ -107,8 +106,7 @@ public class RestPluginTest {
                 MyProvider.class,
                 JsonMappingExceptionMapper.class,
                 JsonParseExceptionMapper.class,
-                JacksonJsonProvider.class,
-                JacksonJaxbJsonProvider.class
+                JacksonJsonProvider.class
         );
     }
 

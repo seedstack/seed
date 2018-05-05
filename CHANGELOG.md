@@ -1,3 +1,9 @@
+# Version 3.6.0 (2018-05-06)
+
+* [new] Support for Servlet 4.
+* [fix] Detect if JAXB is available before enabling its support for JAX-RS.
+* [chg] Update Undertow to 2.0.6.
+
 # Version 3.5.1 (2018-05-04)
 
 * [new] Add an implementation of `javax.annotation.Nullable` avoiding the need of an additional dependency for null injection. 

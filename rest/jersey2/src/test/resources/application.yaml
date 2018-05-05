@@ -6,7 +6,10 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 #
 
-logging: INFO
+logging:
+  level: INFO
+  loggers:
+    org.seedstack.seed.rest.internal.RestPlugin: DEBUG
 web:
   cors:
     enabled: true
