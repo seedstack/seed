@@ -142,7 +142,7 @@ public class RestPlugin extends AbstractSeedPlugin implements RestProvider {
         providers.add(JsonMappingExceptionMapper.class);
         providers.add(JsonParseExceptionMapper.class);
         if (Classes.optional("javax.xml.bind.JAXBElement").isPresent()) {
-            LOGGER.debug("JSON and JAXB support is enabled");
+            LOGGER.debug("JSON/XML support is enabled");
             providers.add(JacksonJaxbJsonProvider.class);
         } else {
             LOGGER.debug("JSON support is enabled");
