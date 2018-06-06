@@ -13,6 +13,8 @@
     <container qualifier="tomcat" default="true">
         <configuration>
             <property name="bindHttpPort">9090</property>
+            <!-- FIXME: Unpack is required for now because classpath URL for packed WAR triggers an exception in reflections -->
+            <property name="unpackArchive">true</property>
         </configuration>
     </container>
 </arquillian>

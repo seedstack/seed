@@ -41,6 +41,11 @@ class StreamMessageBodyWriter<T> implements MessageBodyWriter<Stream<T>> {
     }
 
     @Override
+    public long getSize(Stream<T> tStream, Class<?> aClass, Type type, Annotation[] annotations, MediaType mediaType) {
+        return -1L;
+    }
+
+    @Override
     public void writeTo(Stream<T> tStream, Class<?> type, Type genericType, Annotation[] annotations,
             MediaType mediaType, MultivaluedMap<String, Object> httpHeaders,
             OutputStream entityStream) throws IOException, WebApplicationException {

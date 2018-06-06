@@ -1,3 +1,8 @@
+# Version 3.6.1 (2018-06-06)
+
+* [fix] Downgrade requirement on Servlet API to 3.0 (for old Web containers).
+* [chg] Update Arquillian to 1.4.0.
+
 # Version 3.6.0 (2018-05-06)
 
 * [new] Support for Servlet 4.
