@@ -1,3 +1,7 @@
+# Version 3.6.2 (2018-??-??)
+
+* [chg] Also support proxy exclusions without wildcard (`*.somedomain.com`, `.somedomain.com` and `somedomain.com` are all supported).
+
 # Version 3.6.1 (2018-06-06)
 
 * [fix] Downgrade requirement on Servlet API to 3.0 (for old Web containers).

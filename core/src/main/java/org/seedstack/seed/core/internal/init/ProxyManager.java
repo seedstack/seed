@@ -103,7 +103,11 @@ public class ProxyManager {
         if (noProxy == null) {
             return Lists.newArrayList();
         }
-        return Arrays.stream(noProxy.split(",")).map(this::makePattern).collect(toList());
+        return Arrays.stream(noProxy.split(","))
+                .map(String::trim)
+                .filter(s -> !s.isEmpty())
+                .map(this::makePattern)
+                .collect(toList());
     }
 
     private Proxy buildProxy(String value, int defaultPort) {
@@ -196,7 +200,12 @@ public class ProxyManager {
      * @return the regexp pattern.
      */
     private Pattern makePattern(String noProxy) {
-        return Pattern.compile(noProxy.replaceAll("\\.", "\\\\.").replaceAll("\\*", ".*"));
+        String regex = noProxy.replaceAll("\\.", "\\\\.").replaceAll("\\*", ".*");
+        if (!regex.startsWith(".*")) {
+            regex = ".*" + regex;
+        }
+        regex = "^" + regex + "$";
+        return Pattern.compile(regex);
     }
 
     private static class Holder {

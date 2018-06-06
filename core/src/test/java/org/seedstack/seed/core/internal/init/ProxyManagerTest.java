@@ -55,11 +55,13 @@ public class ProxyManagerTest {
 
     @Test
     public void testProxyWithExclusion() throws Exception {
-        givenProxy("HTTP", "proxy.mycompany.com", 8080, false, "*.mycompany.com");
-        underTest.install(proxyConfig);
-        List<Proxy> proxies = getProxySelector().select(new URI("http://app.mycompany.com"));
-        underTest.uninstall();
-        assertNoProxy(proxies);
+        testProxyWithExclusion("http://app.mycompany.com", "*.mycompany.com");
+        testProxyWithExclusion("http://app.subdomain.mycompany.com", "*.mycompany.com");
+        testProxyWithExclusion("http://app.mycompany.com", ".mycompany.com");
+        testProxyWithExclusion("http://app.subdomain.mycompany.com", ".mycompany.com");
+        testProxyWithExclusion("http://app.mycompany.com", "mycompany.com");
+        testProxyWithExclusion("http://app.subdomain.mycompany.com", "mycompany.com");
+        testProxyWithExclusion("http://app.subdomain.mycompany.com", "subdomain.mycompany.com");
     }
 
     @Test
@@ -91,6 +93,14 @@ public class ProxyManagerTest {
         List<Proxy> proxies = getProxySelector().select(new URI("http://app.otherdomain.com"));
         underTest.uninstall();
         assertProxy(proxies, Proxy.Type.HTTP, "proxy.mycompany.com", 8080);
+    }
+
+    private void testProxyWithExclusion(String uri, String... exclusions) throws Exception {
+        givenProxy("HTTP", "proxy.mycompany.com", 8080, false, exclusions);
+        underTest.install(proxyConfig);
+        List<Proxy> proxies = getProxySelector().select(new URI(uri));
+        underTest.uninstall();
+        assertNoProxy(proxies);
     }
 
     private void assertNoProxy(List<Proxy> proxies) {
