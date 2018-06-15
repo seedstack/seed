@@ -1,6 +1,7 @@
-# Version 3.6.2 (2018-??-??)
+# Version 3.6.2 (2018-06-15)
 
 * [chg] Also support proxy exclusions without wildcard (`*.somedomain.com`, `.somedomain.com` and `somedomain.com` are all supported).
+* [fix] Prevent the session regeneration mechanism to create a session when none exists.
 
 # Version 3.6.1 (2018-06-06)
 

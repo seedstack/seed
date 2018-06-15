@@ -36,7 +36,7 @@ public interface SessionRegeneratingFilter extends Filter {
      * @param subject the successfully logged in subject
      */
     default void regenerateSession(Subject subject) {
-        Session session = subject.getSession();
+        Session session = subject.getSession(false);
         if (session != null) {
             // Retain session attributes
             Map<Object, Object> attributes = new LinkedHashMap<>();
