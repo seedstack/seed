@@ -12,7 +12,6 @@ import java.security.InvalidKeyException;
 import java.security.Key;
 import java.security.NoSuchAlgorithmException;
 import java.security.PublicKey;
-import javax.annotation.Nullable;
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
@@ -26,7 +25,7 @@ class EncryptionServiceImpl implements EncryptionService {
     private final PublicKey publicKey;
     private final Key privateKey;
 
-    EncryptionServiceImpl(String alias, @Nullable PublicKey publicKey, @Nullable Key privateKey) {
+    EncryptionServiceImpl(String alias, PublicKey publicKey, Key privateKey) {
         this.alias = alias;
         this.publicKey = publicKey;
         this.privateKey = privateKey;

@@ -16,7 +16,6 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.ServiceLoader;
 import java.util.Set;
-import javax.annotation.Nullable;
 import javax.validation.ValidatorFactory;
 import org.seedstack.coffig.Coffig;
 import org.seedstack.coffig.provider.CompositeProvider;
@@ -152,7 +151,7 @@ public class SeedRuntime {
             return this;
         }
 
-        public Builder version(@Nullable String seedVersion) {
+        public Builder version(String seedVersion) {
             this._seedVersion = seedVersion;
             return this;
         }

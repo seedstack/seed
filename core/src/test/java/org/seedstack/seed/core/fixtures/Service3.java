@@ -8,7 +8,7 @@
 
 package org.seedstack.seed.core.fixtures;
 
-import javax.annotation.Nullable;
+import org.seedstack.seed.Nullable;
 
 @Nullable
 public interface Service3 extends Service {

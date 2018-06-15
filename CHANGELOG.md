@@ -1,6 +1,8 @@
 # Version 3.6.2 (2018-06-15)
 
 * [chg] Also support proxy exclusions without wildcard (`*.somedomain.com`, `.somedomain.com` and `somedomain.com` are all supported).
+* [chg] Moved provided `javax.annotation.Nullable` to `org.seedstack.seed.Nullable` to avoid module clashes in Java 9+.
+* [chg] Various dependency improvements for Java9+ modules.
 * [fix] Prevent the session regeneration mechanism to create a session when none exists.
 
 # Version 3.6.1 (2018-06-06)

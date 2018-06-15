@@ -24,7 +24,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Scanner;
 import java.util.ServiceLoader;
-import javax.annotation.Nullable;
 import javax.validation.ValidatorFactory;
 import org.fusesource.jansi.Ansi;
 import org.fusesource.jansi.AnsiRenderer;
@@ -291,8 +290,8 @@ public class Seed {
      * @param autoStart           if true, the kernel is started automatically.
      * @return the {@link Kernel} instance.
      */
-    public static Kernel createKernel(@Nullable Object runtimeContext,
-            @Nullable KernelConfiguration kernelConfiguration, boolean autoStart) {
+    public static Kernel createKernel(Object runtimeContext, KernelConfiguration kernelConfiguration,
+            boolean autoStart) {
         Seed instance = getInstance();
         return instance.kernelManager.createKernel(
                 SeedRuntime.builder()

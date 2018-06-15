@@ -18,7 +18,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.ServiceLoader;
-import javax.annotation.Nullable;
 import org.reflections.vfs.Vfs;
 import org.seedstack.seed.core.SeedRuntime;
 import org.seedstack.seed.core.internal.configuration.ConfigurationPlugin;
@@ -59,8 +58,7 @@ public class KernelManager {
         return Holder.INSTANCE;
     }
 
-    public Kernel createKernel(SeedRuntime seedRuntime, @Nullable KernelConfiguration kernelConfiguration,
-            boolean autoStart) {
+    public Kernel createKernel(SeedRuntime seedRuntime, KernelConfiguration kernelConfiguration, boolean autoStart) {
         long startTime = System.currentTimeMillis();
         if (kernelConfiguration == null) {
             kernelConfiguration = NuunCore.newKernelConfiguration();

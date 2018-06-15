@@ -28,25 +28,14 @@
         <dependency>
             <groupId>io.nuun</groupId>
             <artifactId>kernel-core</artifactId>
-            <version>${nuun-kernel.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>com.google.inject</groupId>
-                    <artifactId>guice</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>com.google.code.findbugs</groupId>
-                    <artifactId>annotations</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.slf4j</groupId>
-                    <artifactId>slf4j-api</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.javassist</groupId>
-                    <artifactId>javassist</artifactId>
-                </exclusion>
-            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.google.inject</groupId>
+            <artifactId>guice</artifactId>
         </dependency>
         <dependency>
             <groupId>org.javassist</groupId>
@@ -54,25 +43,9 @@
             <version>${javassist.version}</version>
         </dependency>
         <dependency>
-            <groupId>com.google.inject</groupId>
-            <artifactId>guice</artifactId>
-            <version>${guice.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>com.google.guava</groupId>
-                    <artifactId>guava</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
             <groupId>com.google.inject.extensions</groupId>
             <artifactId>guice-assistedinject</artifactId>
             <version>${guice.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.google.guava</groupId>
-            <artifactId>guava</artifactId>
-            <version>${guava.version}</version>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>

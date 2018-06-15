@@ -23,17 +23,6 @@
         <dependency>
             <groupId>io.nuun</groupId>
             <artifactId>kernel-specs</artifactId>
-            <version>${nuun-kernel.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>com.google.code.findbugs</groupId>
-                    <artifactId>jsr305</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.slf4j</groupId>
-                    <artifactId>slf4j-api</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.seedstack.shed</groupId>

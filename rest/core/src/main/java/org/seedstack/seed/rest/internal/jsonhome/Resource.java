@@ -14,7 +14,6 @@ import com.damnhandy.uri.template.UriTemplate;
 import com.damnhandy.uri.template.UriTemplateBuilder;
 import java.util.HashMap;
 import java.util.Map;
-import javax.annotation.Nullable;
 import org.seedstack.seed.SeedException;
 import org.seedstack.seed.rest.internal.RestErrorCode;
 
@@ -39,7 +38,7 @@ public class Resource {
      * @param href  the href (can be an href-template)
      * @param hints the the resource hints
      */
-    public Resource(String rel, String href, @Nullable Hints hints) {
+    public Resource(String rel, String href, Hints hints) {
         this.rel = checkNotNull(rel, "The rel must not be null");
         this.href = checkNotNull(href, "The href must not be null");
         this.hrefTemplate = null;
@@ -54,8 +53,8 @@ public class Resource {
      * @param pathParams   the href variables
      * @param hints        the the resource hints
      */
-    public Resource(String rel, String hrefTemplate, @Nullable Map<String, String> pathParams,
-            @Nullable Map<String, String> queryParams, @Nullable Hints hints) {
+    public Resource(String rel, String hrefTemplate, Map<String, String> pathParams, Map<String, String> queryParams,
+            Hints hints) {
         this.rel = checkNotNull(rel, "The rel must not be null");
         this.hrefTemplate = checkNotNull(hrefTemplate, "The hrefTemplate must not be null");
         this.href = null;

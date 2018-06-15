@@ -22,7 +22,6 @@ import java.util.MissingResourceException;
 import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.regex.Matcher;
-import javax.annotation.Nullable;
 import org.fusesource.jansi.Ansi;
 import org.seedstack.shed.exception.ErrorCode;
 
@@ -88,7 +87,6 @@ class ErrorCodePrinter {
         return result.substring(0, 1).toUpperCase(Locale.ENGLISH) + result.substring(1);
     }
 
-    @Nullable
     private String getTemplate(ErrorCode errorCode) {
         try {
             return ResourceBundle

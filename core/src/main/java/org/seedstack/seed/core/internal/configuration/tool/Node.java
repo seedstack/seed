@@ -27,7 +27,6 @@ import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 import java.util.TreeMap;
-import javax.annotation.Nullable;
 import javax.validation.constraints.NotNull;
 import org.seedstack.coffig.Coffig;
 import org.seedstack.coffig.Config;
@@ -266,7 +265,6 @@ class Node implements Comparable<Node> {
         return sb.toString();
     }
 
-    @Nullable
     private ResourceBundle getResourceBundle() {
         ResourceBundle bundle;
         try {

@@ -12,7 +12,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import com.google.inject.ConfigurationException;
 import com.google.inject.Injector;
-import javax.annotation.Nullable;
+import org.seedstack.seed.Nullable;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.junit.Test;

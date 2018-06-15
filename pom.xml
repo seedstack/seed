@@ -29,7 +29,7 @@
         <coffig.version>3.1.0</coffig.version>
         <commons-cli.version>1.4</commons-cli.version>
         <guice.version>4.2.0</guice.version>
-        <guava.version>25.0-jre</guava.version>
+        <guava.version>25.1-jre</guava.version>
         <typetools.version>0.5.0</typetools.version>
         <shiro.version>1.4.0</shiro.version>
         <undertow.version>2.0.6.Final</undertow.version>
@@ -54,6 +54,71 @@
         <module>rest</module>
         <module>cli</module>
     </modules>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>io.nuun</groupId>
+                <artifactId>kernel-specs</artifactId>
+                <version>${nuun-kernel.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>com.google.code.findbugs</groupId>
+                        <artifactId>jsr305</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.slf4j</groupId>
+                        <artifactId>slf4j-api</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>io.nuun</groupId>
+                <artifactId>kernel-core</artifactId>
+                <version>${nuun-kernel.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>com.google.inject</groupId>
+                        <artifactId>guice</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>com.google.code.findbugs</groupId>
+                        <artifactId>annotations</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.javassist</groupId>
+                        <artifactId>javassist</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.slf4j</groupId>
+                        <artifactId>slf4j-api</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>com.google.inject</groupId>
+                <artifactId>guice</artifactId>
+                <version>${guice.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>com.google.guava</groupId>
+                        <artifactId>guava</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>com.google.guava</groupId>
+                <artifactId>guava</artifactId>
+                <version>${guava.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>com.google.code.findbugs</groupId>
+                        <artifactId>jsr305</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
     <build>
         <pluginManagement>
