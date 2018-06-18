@@ -9,6 +9,8 @@
 logging: INFO
 security:
   realms: ConfigurationRealm
+  cache:
+    manager: org.seedstack.seed.security.fixtures.TestCacheManager
   users:
     Obiwan:
       password: yodarulez

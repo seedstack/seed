@@ -106,18 +106,48 @@ class ShiroRealmAdapter extends AuthorizingRealm {
         return authcInfo;
     }
 
+    @Override
+    public boolean supports(AuthenticationToken token) {
+        org.seedstack.seed.security.AuthenticationToken seedToken = convertToken(token);
+        return seedToken != null && realm.supportedToken().isAssignableFrom(seedToken.getClass());
+    }
+
+    @Override
+    protected Object getAuthenticationCacheKey(AuthenticationToken token) {
+        Object authenticationCacheKey = super.getAuthenticationCacheKey(token);
+        if (authenticationCacheKey instanceof PrincipalProvider) {
+            return ((PrincipalProvider) authenticationCacheKey).getPrincipal();
+        } else {
+            return authenticationCacheKey;
+        }
+    }
+
+    @Override
+    protected Object getAuthenticationCacheKey(PrincipalCollection principals) {
+        Object authenticationCacheKey = super.getAuthenticationCacheKey(principals);
+        if (authenticationCacheKey instanceof PrincipalProvider) {
+            return ((PrincipalProvider) authenticationCacheKey).getPrincipal();
+        } else {
+            return authenticationCacheKey;
+        }
+    }
+
+    @Override
+    protected Object getAuthorizationCacheKey(PrincipalCollection principals) {
+        Object authenticationCacheKey = super.getAuthenticationCacheKey(principals);
+        if (authenticationCacheKey instanceof PrincipalProvider) {
+            return ((PrincipalProvider) authenticationCacheKey).getPrincipal();
+        } else {
+            return authenticationCacheKey;
+        }
+    }
+
     Realm getRealm() {
         return realm;
     }
 
     void setRealm(Realm realm) {
         this.realm = realm;
-    }
-
-    @Override
-    public boolean supports(AuthenticationToken token) {
-        org.seedstack.seed.security.AuthenticationToken seedToken = convertToken(token);
-        return seedToken != null && realm.supportedToken().isAssignableFrom(seedToken.getClass());
     }
 
     private org.seedstack.seed.security.AuthenticationToken convertToken(AuthenticationToken token) {
