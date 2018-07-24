@@ -41,7 +41,7 @@ public class ConfigurationRealm implements Realm {
     private final RolePermissionResolver rolePermissionResolver;
 
     @Inject
-    public ConfigurationRealm(@Named("ConfigurationRealm-role-mapping") RoleMapping roleMapping,
+    protected ConfigurationRealm(@Named("ConfigurationRealm-role-mapping") RoleMapping roleMapping,
             @Named("ConfigurationRealm-role-permission-resolver") RolePermissionResolver rolePermissionResolver) {
         this.roleMapping = roleMapping;
         this.rolePermissionResolver = rolePermissionResolver;

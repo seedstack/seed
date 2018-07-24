@@ -1,3 +1,7 @@
+# Version 3.6.2 (2018-07-25)
+
+* [fix] Add missing `@Inject` annotation on `org.seedstack.seed.security.internal.realms.X509CertificateRealm` constructor.
+
 # Version 3.6.2 (2018-06-18)
 
 * [chg] Also support proxy exclusions without wildcard (`*.somedomain.com`, `.somedomain.com` and `somedomain.com` are all supported).

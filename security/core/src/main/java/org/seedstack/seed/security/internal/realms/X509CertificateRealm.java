@@ -13,6 +13,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
+import javax.inject.Inject;
 import javax.inject.Named;
 import javax.naming.InvalidNameException;
 import javax.naming.ldap.LdapName;
@@ -44,7 +45,8 @@ public class X509CertificateRealm implements Realm {
     private final RoleMapping roleMapping;
     private final RolePermissionResolver rolePermissionResolver;
 
-    public X509CertificateRealm(@Named("X509CertificateRealm-role-mapping") RoleMapping roleMapping,
+    @Inject
+    protected X509CertificateRealm(@Named("X509CertificateRealm-role-mapping") RoleMapping roleMapping,
             @Named("X509CertificateRealm-role-permission-resolver") RolePermissionResolver rolePermissionResolver) {
         this.roleMapping = roleMapping;
         this.rolePermissionResolver = rolePermissionResolver;
