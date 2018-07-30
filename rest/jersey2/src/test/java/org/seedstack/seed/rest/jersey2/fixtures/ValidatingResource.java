@@ -9,13 +9,13 @@
 package org.seedstack.seed.rest.jersey2.fixtures;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
-import org.hibernate.validator.constraints.NotBlank;
 
 @Path("/validating")
 public class ValidatingResource {

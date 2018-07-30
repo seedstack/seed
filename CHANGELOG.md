@@ -1,5 +1,6 @@
-# Version 3.6.3 (2018-07-30)
+# Version 3.7.0 (2018-07-31)
 
+* [new] Bean Validation 2.0 support through Hibernate Validator 6 implementation.
 * [fix] Add missing `@Inject` annotation on `org.seedstack.seed.security.internal.realms.X509CertificateRealm` constructor.
 * [chg] X509-based authentication will use the subject `X500Principal` as identity if no `uid` attribute is available (instead of the whole chain).
 * [chg] X509-based authentication will use the subject certificate (first in the chain) as credentials (instead of the whole chain).

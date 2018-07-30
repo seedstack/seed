@@ -14,7 +14,7 @@
     <parent>
         <groupId>org.seedstack.seed</groupId>
         <artifactId>seed-rest</artifactId>
-        <version>3.6.3-SNAPSHOT</version>
+        <version>3.7.0-SNAPSHOT</version>
     </parent>
 
     <artifactId>seed-rest-core</artifactId>
@@ -85,6 +85,12 @@
             <artifactId>jersey-server</artifactId>
             <version>${jersey2.version}</version>
             <scope>test</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>javax.validation</groupId>
+                    <artifactId>validation-api</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>ch.qos.logback</groupId>

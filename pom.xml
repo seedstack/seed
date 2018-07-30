@@ -14,17 +14,17 @@
     <parent>
         <groupId>org.seedstack.poms</groupId>
         <artifactId>parent-internal</artifactId>
-        <version>3.3.2</version>
+        <version>3.4.0-SNAPSHOT</version>
     </parent>
 
     <groupId>org.seedstack.seed</groupId>
     <artifactId>seed</artifactId>
-    <version>3.6.3-SNAPSHOT</version>
+    <version>3.7.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <properties>
         <nuun-kernel.version>1.0.M9</nuun-kernel.version>
-        <javassist.version>3.22.0-GA</javassist.version>
+        <javassist.version>3.23.1-GA</javassist.version>
         <shed.version>1.1.3</shed.version>
         <coffig.version>3.1.0</coffig.version>
         <commons-cli.version>1.4</commons-cli.version>
@@ -33,8 +33,8 @@
         <typetools.version>0.5.0</typetools.version>
         <shiro.version>1.4.0</shiro.version>
         <undertow.version>2.0.6.Final</undertow.version>
-        <jersey2.version>2.26</jersey2.version>
-        <hibernate-validator.version>5.4.2.Final</hibernate-validator.version>
+        <jersey2.version>2.27</jersey2.version>
+        <hibernate-validator.version>6.0.11.Final</hibernate-validator.version>
         <aopalliance.version>1.0</aopalliance.version>
         <glassfish-javax.el.version>3.0.0</glassfish-javax.el.version>
         <arquillian.version>1.4.0.Final</arquillian.version>
@@ -151,6 +151,7 @@
                             <licenseMerge>Apache 2|Apache 2.0 License</licenseMerge>
                             <licenseMerge>Apache 2|Apache License, version 2.0</licenseMerge>
                             <licenseMerge>Apache 2|Apache License Version 2.0</licenseMerge>
+                            <licenseMerge>Apache 2|Apache License, 2.0</licenseMerge>
                             <licenseMerge>BSD|New BSD License</licenseMerge>
                             <licenseMerge>BSD|The New BSD License</licenseMerge>
                             <licenseMerge>BSD|The BSD License</licenseMerge>
@@ -171,6 +172,9 @@
                             <licenseMerge>IGNORED_LICENSE|MPL 1.1</licenseMerge>
                             <licenseMerge>IGNORED_LICENSE|GNU General Public License, Version 2 with the Classpath Exception</licenseMerge>
                             <licenseMerge>IGNORED_LICENSE|GNU General Public License v2.0 only, with Classpath exception</licenseMerge>
+                            <licenseMerge>IGNORED_LICENSE|Common Development and Distribution License (CDDL), Version 1.1</licenseMerge>
+                            <licenseMerge>IGNORED_LICENSE|The GNU General Public License (GPL), Version 2, With Classpath Exception</licenseMerge>
+                            <licenseMerge>IGNORED_LICENSE|Modified BSD</licenseMerge>
                             <licenseMerge>IGNORED_LICENSE|CDDL/GPLv2+CE</licenseMerge>
                             <licenseMerge>IGNORED_LICENSE|Eclipse Public License - v 1.0</licenseMerge>
                         </licenseMerges>

@@ -11,7 +11,7 @@ package org.seedstack.seed.rest.jersey2.fixtures;
 import javax.validation.Valid;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
-import org.hibernate.validator.constraints.NotBlank;
+import javax.validation.constraints.NotBlank;
 
 public class Something {
     @NotBlank(message = "someI18nKey")
