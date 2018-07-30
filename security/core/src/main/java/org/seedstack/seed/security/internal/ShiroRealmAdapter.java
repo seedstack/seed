@@ -34,8 +34,6 @@ import org.seedstack.seed.security.principals.PrincipalProvider;
 
 class ShiroRealmAdapter extends AuthorizingRealm {
     private Realm realm;
-
-    @SuppressWarnings("rawtypes")
     @Inject
     private Set<PrincipalCustomizer> principalCustomizers;
 
@@ -164,5 +162,4 @@ class ShiroRealmAdapter extends AuthorizingRealm {
             return null;
         }
     }
-
 }

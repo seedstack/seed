@@ -20,30 +20,45 @@ public class X509CertificateToken implements AuthenticationToken {
     private final X509Certificate[] certificates;
 
     /**
-     * Constructor
+     * Creates an X509 based authentication token.
      *
-     * @param x509Certificates the certificates
+     * @param x509Certificates the certificate chain.
      */
     public X509CertificateToken(X509Certificate[] x509Certificates) {
-        this.certificates = requireNonNull(x509Certificates, "X509 certificates array should not be null").clone();
+        this.certificates = requireNonNull(x509Certificates, "X509 certificate chain should not be null").clone();
+        if (this.certificates.length == 0) {
+            throw new IllegalArgumentException("Empty X509 certificate chain");
+        }
     }
 
     /**
-     * Gives the certificates that were validated by the server
+     * Returns the certificate chain
      *
-     * @return the certificates.
+     * @return the certificate chain.
      */
     public X509Certificate[] getAuthenticatingCertificates() {
         return certificates.clone();
     }
 
+    /**
+     * Returns the subject identity principal.
+     *
+     * @return the subject {@link javax.security.auth.x500.X500Principal} of the first certificate in the chain.
+     */
     @Override
     public Object getPrincipal() {
-        return getAuthenticatingCertificates();
+        // First certificate in the chain is the subject certificate
+        return certificates[0].getSubjectX500Principal();
     }
 
+    /**
+     * Returns the subject credentials.
+     *
+     * @return the first certificate in the chain, acting as credentials.
+     */
     @Override
     public Object getCredentials() {
-        return getAuthenticatingCertificates();
+        // The subject certificate acts as the credentials
+        return certificates[0];
     }
 }

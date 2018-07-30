@@ -31,11 +31,6 @@ public class WebResourcesIT {
         return ShrinkWrap.create(WebArchive.class);
     }
 
-    @BeforeClass
-    public static void setUp() {
-        RestAssured.useRelaxedHTTPSValidation();
-    }
-
     @Test
     @RunAsClient
     public void classpathWebResourcesWithDefaultConfigurationAreGzippedAndMinified() {

@@ -8,7 +8,6 @@
 
 package org.seedstack.seed.security.internal.realms;
 
-import com.google.common.collect.Sets;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -42,9 +41,18 @@ public class ConfigurationRealm implements Realm {
 
     @Inject
     protected ConfigurationRealm(@Named("ConfigurationRealm-role-mapping") RoleMapping roleMapping,
-            @Named("ConfigurationRealm-role-permission-resolver") RolePermissionResolver rolePermissionResolver) {
+            @Named("ConfigurationRealm-role-permission-resolver") RolePermissionResolver rolePermissionResolver,
+            SecurityConfig securityConfig) {
         this.roleMapping = roleMapping;
         this.rolePermissionResolver = rolePermissionResolver;
+        if (securityConfig.getUsers().isEmpty()) {
+            LOGGER.warn("{} is enabled, but no user is defined in configuration", getClass().getSimpleName());
+        } else {
+            for (Map.Entry<String, SecurityConfig.UserConfig> entry : securityConfig.getUsers().entrySet()) {
+                SecurityConfig.UserConfig userConfig = entry.getValue();
+                users.add(new ConfigurationUser(entry.getKey(), userConfig.getPassword(), userConfig.getRoles()));
+            }
+        }
     }
 
     @Override
@@ -71,19 +79,6 @@ public class ConfigurationRealm implements Realm {
             throw new IncorrectCredentialsException();
         }
         return new AuthenticationInfo(userNamePasswordToken.getUsername(), userNamePasswordToken.getPassword());
-    }
-
-    @Inject
-    void readConfiguration(SecurityConfig securityConfig) {
-        if (securityConfig.getUsers().isEmpty()) {
-            LOGGER.warn("{} defined, but the configuration defines no user", getClass().getSimpleName());
-        } else {
-            users.clear();
-            for (Map.Entry<String, SecurityConfig.UserConfig> entry : securityConfig.getUsers().entrySet()) {
-                SecurityConfig.UserConfig userConfig = entry.getValue();
-                users.add(new ConfigurationUser(entry.getKey(), userConfig.getPassword(), userConfig.getRoles()));
-            }
-        }
     }
 
     @Override
@@ -114,18 +109,10 @@ public class ConfigurationRealm implements Realm {
      * Class to represent a user from the configuration. In the file, key is the name, first value is the password,
      * following values are the roles.
      */
-    static class ConfigurationUser {
+    private static class ConfigurationUser {
         private final String username;
         private final String password;
         private final Set<String> roles;
-
-        ConfigurationUser(String username) {
-            this(username, null, Sets.newHashSet());
-        }
-
-        ConfigurationUser(String username, String password) {
-            this(username, password, Sets.newHashSet());
-        }
 
         ConfigurationUser(String username, String password, Set<String> roles) {
             this.username = username;
@@ -141,11 +128,8 @@ public class ConfigurationRealm implements Realm {
             if (o == null || getClass() != o.getClass()) {
                 return false;
             }
-
             ConfigurationUser configurationUser = (ConfigurationUser) o;
-
             return username.equals(configurationUser.username);
-
         }
 
         @Override

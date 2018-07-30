@@ -8,12 +8,17 @@
 
 package org.seedstack.seed.web.security;
 
-import static io.restassured.RestAssured.expect;
-import static io.restassured.RestAssured.given;
+import static org.assertj.core.api.Assertions.assertThat;
 
+import io.restassured.RestAssured;
+import io.restassured.config.SSLConfig;
 import io.restassured.http.ContentType;
-import org.assertj.core.api.Assertions;
+import io.restassured.specification.RequestSpecification;
+import java.security.KeyStore;
+import javax.inject.Inject;
+import javax.inject.Named;
 import org.junit.After;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.seedstack.seed.Configuration;
@@ -23,57 +28,70 @@ import org.seedstack.seed.undertow.LaunchWithUndertow;
 @RunWith(SeedITRunner.class)
 @LaunchWithUndertow
 public class WebSecurityIT {
+    @Inject
+    @Named("master")
+    private KeyStore keyStore;
     @Configuration("web.runtime.baseUrl")
     private String baseUrl;
 
     @After
     public void tearDown() {
-        expect().statusCode(200).when().get(baseUrl + "logout");
+        givenRelaxedSSL().expect().statusCode(200).when().get(baseUrl + "logout");
     }
 
     @Test
     public void requestOnSecuredResourceShouldSend401() {
-        expect().statusCode(401).when().get(baseUrl + "jediCouncil.html");
+        givenRelaxedSSL().expect().statusCode(401).when().get(baseUrl + "jediCouncil.html");
     }
 
     @Test
     public void requestOnSecuredResourceWithGoodBasicauthShouldSend200OnAuthorizedResource() {
-        given().auth().basic("Obiwan", "yodarulez").expect().statusCode(200).when().get(
+        givenRelaxedSSL().auth().basic("Obiwan", "yodarulez").expect().statusCode(200).when().get(
                 baseUrl + "jediCouncil.html");
     }
 
     @Test
     public void requestOnSecuredResourceWithGoodBasicauthShouldSend401OnForbiddenResource() {
-        given().auth().basic("Anakin", "imsodark").expect().statusCode(401).when().get(
+        givenRelaxedSSL().auth().basic("Anakin", "imsodark").expect().statusCode(401).when().get(
                 baseUrl + "jediCouncil.html");
     }
 
     @Test
     public void requestOnAnonymousResourceShouldSend200() {
-        expect().statusCode(200).when().get(baseUrl + "image.jpg");
+        givenRelaxedSSL().expect().statusCode(200).when().get(baseUrl + "image.jpg");
     }
 
     @Test
     public void responseShouldBeATeapotWhenRequestingUrlTeapot() {
-        expect().statusCode(418).when().get(baseUrl + "teapot");
+        givenRelaxedSSL().given().expect().statusCode(418).when().get(baseUrl + "teapot");
     }
 
     @Test
     public void logoutShouldRedirect() {
-        Assertions.assertThat(expect().statusCode(200).when().get(baseUrl + "logout").body().asString()).contains(
+        assertThat(givenRelaxedSSL().expect()
+                .statusCode(200)
+                .when()
+                .get(baseUrl + "logout")
+                .body()
+                .asString()).contains(
                 "You are logged out!");
     }
 
     @Test
     public void authcShouldRedirectToLogin() {
-        Assertions.assertThat(expect().statusCode(200).when().get(baseUrl + "protected").body().asString())
-                .contains(
-                        "Please login:");
+        assertThat(givenRelaxedSSL().expect().statusCode(200).when().get(baseUrl + "protected").body().asString())
+                .contains("Please login:");
+    }
+
+    @Test
+    @Ignore
+    public void requestWithCertificateShouldSend200() {
+        givenRelaxedSSL().expect().statusCode(200).when().get(baseUrl + "cert-protected");
     }
 
     @Test
     public void loginSuccessShouldRedirect() {
-        Assertions.assertThat(given()
+        assertThat(givenRelaxedSSL()
                 .contentType(ContentType.URLENC)
                 .formParam("user", "Obiwan")
                 .formParam("pw", "yodarulez")
@@ -83,5 +101,10 @@ public class WebSecurityIT {
                 .post(baseUrl + "login.html")
                 .header("Location"))
                 .endsWith("/success.html");
+    }
+
+    private RequestSpecification givenRelaxedSSL() {
+        return RestAssured.given()
+                .config(RestAssured.config().sslConfig(SSLConfig.sslConfig().relaxedHTTPSValidation("SSL")));
     }
 }

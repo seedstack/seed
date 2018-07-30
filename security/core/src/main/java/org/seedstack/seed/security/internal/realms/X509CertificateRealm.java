@@ -8,6 +8,9 @@
 
 package org.seedstack.seed.security.internal.realms;
 
+import com.google.common.base.Strings;
+import java.security.cert.CertificateExpiredException;
+import java.security.cert.CertificateNotYetValidException;
 import java.security.cert.X509Certificate;
 import java.util.Collection;
 import java.util.Collections;
@@ -30,6 +33,7 @@ import org.seedstack.seed.security.UnsupportedTokenException;
 import org.seedstack.seed.security.X509CertificateToken;
 import org.seedstack.seed.security.principals.PrincipalProvider;
 import org.seedstack.seed.security.principals.Principals;
+import org.seedstack.seed.security.principals.X500PrincipalProvider;
 import org.seedstack.seed.security.principals.X509CertificatePrincipalProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -57,17 +61,15 @@ public class X509CertificateRealm implements Realm {
         if (!(token instanceof X509CertificateToken)) {
             throw new UnsupportedTokenException();
         }
-        final X509Certificate[] certificates = ((X509CertificateToken) token).getAuthenticatingCertificates();
-        if (certificates.length == 0) {
-            throw new IncorrectCredentialsException();
-        }
+
+        X500Principal identityPrincipal = (X500Principal) token.getPrincipal();
+
+        // Extract UID and CN from the DN
         String uid = null;
         String cn = null;
-        // we take the first certificate to extract username
-        String dn = certificates[0].getSubjectX500Principal().getName(X500Principal.RFC2253);
         LdapName ln;
         try {
-            ln = new LdapName(dn);
+            ln = new LdapName(identityPrincipal.getName(X500Principal.RFC2253));
         } catch (InvalidNameException e) {
             throw new IncorrectCredentialsException("Certificate does not have a valid DN for user", e);
         }
@@ -78,17 +80,36 @@ public class X509CertificateRealm implements Realm {
                 cn = rdn.getValue().toString();
             }
         }
-        X509CertificatePrincipalProvider x509Pp = new X509CertificatePrincipalProvider(certificates);
-        AuthenticationInfo authInfo;
-        if (uid == null) {
-            authInfo = new AuthenticationInfo(x509Pp, certificates);
-        } else {
-            authInfo = new AuthenticationInfo(uid, certificates);
-            authInfo.getOtherPrincipals().add(x509Pp);
+
+        // Check certificate validity
+        X509Certificate subjectX509Certificate = (X509Certificate) token.getCredentials();
+        try {
+            subjectX509Certificate.checkValidity();
+        } catch (CertificateExpiredException | CertificateNotYetValidException e) {
+            throw new IncorrectCredentialsException("Subject X509 certificate is not valid", e);
         }
+
+        AuthenticationInfo authInfo;
+        if (!Strings.isNullOrEmpty(uid)) {
+            // If an uid is available, it is used as the subject identity principal
+            authInfo = new AuthenticationInfo(uid, subjectX509Certificate);
+            // The X500Principal is available as a separate principal
+            authInfo.getOtherPrincipals().add(new X500PrincipalProvider(identityPrincipal));
+        } else {
+            // If no uid is available, the X500Principal is used as the subject identity principal
+            authInfo = new AuthenticationInfo(new X500PrincipalProvider(identityPrincipal), subjectX509Certificate);
+        }
+
+        // If the subject full name is available, make it a well-known principal
         if (cn != null) {
             authInfo.getOtherPrincipals().add(Principals.fullNamePrincipal(cn));
         }
+
+        // Make the full certificate chain available as an additional principal
+        authInfo.getOtherPrincipals().add(
+                new X509CertificatePrincipalProvider(((X509CertificateToken) token).getAuthenticatingCertificates())
+        );
+
         return authInfo;
     }
 

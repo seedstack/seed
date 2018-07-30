@@ -12,6 +12,7 @@ import com.google.inject.Binder;
 import com.google.inject.name.Names;
 import java.util.Optional;
 import org.apache.shiro.authc.Authenticator;
+import org.apache.shiro.authc.credential.CredentialsMatcher;
 import org.apache.shiro.authc.pam.AuthenticationStrategy;
 import org.apache.shiro.cache.CacheManager;
 import org.apache.shiro.mgt.DefaultSubjectDAO;
@@ -40,6 +41,7 @@ public class SecurityGuiceConfigurer {
         SecurityConfig.AuthenticationConfig authenticationConfig = securityConfig.authentication();
         binder.bind(Authenticator.class).to(authenticationConfig.getAuthenticator());
         binder.bind(AuthenticationStrategy.class).to(authenticationConfig.getStrategy());
+        binder.bind(CredentialsMatcher.class).to(authenticationConfig.getCredentialsMatcher());
 
         // Cache configuration
         SecurityConfig.CacheConfig cacheConfig = securityConfig.cache();

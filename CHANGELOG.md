@@ -1,6 +1,9 @@
-# Version 3.6.2 (2018-07-25)
+# Version 3.6.3 (2018-07-30)
 
 * [fix] Add missing `@Inject` annotation on `org.seedstack.seed.security.internal.realms.X509CertificateRealm` constructor.
+* [chg] X509-based authentication will use the subject `X500Principal` as identity if no `uid` attribute is available (instead of the whole chain).
+* [chg] X509-based authentication will use the subject certificate (first in the chain) as credentials (instead of the whole chain).
+* [new] X509-based authentication will now (re-)check the subject certificate validity. 
 
 # Version 3.6.2 (2018-06-18)
 

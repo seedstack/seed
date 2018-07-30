@@ -35,11 +35,6 @@ public class ServletIT {
         return ShrinkWrap.create(WebArchive.class);
     }
 
-    @BeforeClass
-    public static void setUp() {
-        RestAssured.useRelaxedHTTPSValidation();
-    }
-
     @Test
     @RunAsClient
     public void listenerIsCorrectlyRegistered() {

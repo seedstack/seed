@@ -14,8 +14,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-@WebServlet({"/xsrf-protected-without-session", "/xsrf-protected-with-session"})
-public class XsrfProtectedServlet extends HttpServlet {
+@WebServlet({"/cert-protected"})
+public class CertProtectedServlet extends HttpServlet {
     private static final String WELCOME = "WELCOME";
 
     @Override

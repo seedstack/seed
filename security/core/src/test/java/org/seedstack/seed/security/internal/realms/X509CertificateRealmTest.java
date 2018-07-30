@@ -21,7 +21,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.seedstack.seed.security.AuthenticationInfo;
 import org.seedstack.seed.security.AuthenticationToken;
-import org.seedstack.seed.security.IncorrectCredentialsException;
 import org.seedstack.seed.security.RoleMapping;
 import org.seedstack.seed.security.RolePermissionResolver;
 import org.seedstack.seed.security.UnsupportedTokenException;
@@ -31,13 +30,9 @@ import org.seedstack.seed.security.principals.Principals;
 import org.seedstack.seed.security.principals.X509CertificatePrincipalProvider;
 
 public class X509CertificateRealmTest {
-
     private X509CertificateRealm underTest;
-
     private X509Certificate x509Certificate;
-
     private RoleMapping roleMapping;
-
     private RolePermissionResolver rolePermissionResolver;
 
     @Before
@@ -55,7 +50,7 @@ public class X509CertificateRealmTest {
     }
 
     @Test
-    public void getAuthenticationInfo_should_return_authentication_info() {
+    public void getAuthenticationInfoShouldReturnAuthenticationInfo() {
         String id = "a123456";
         AuthenticationToken token = new X509CertificateToken(new X509Certificate[]{x509Certificate});
         X500Principal x500Principal = new X500Principal("CN=John Doe, OU=SI, O=PSA, UID=" + id + ", C=foo");
@@ -69,28 +64,26 @@ public class X509CertificateRealmTest {
     }
 
     @Test(expected = UnsupportedTokenException.class)
-    public void getAuthenticationInfo_should_throw_exception_if_unsupported_token() {
+    public void getAuthenticationInfoShouldThrowExceptionIfUnsupportedToken() {
         underTest.getAuthenticationInfo(mock(AuthenticationToken.class));
     }
 
-    @Test(expected = IncorrectCredentialsException.class)
-    public void getAuthenticationInfo_should_throw_exception_if_token_empty() {
-        X509CertificateToken token = new X509CertificateToken(new X509Certificate[0]);
-        underTest.getAuthenticationInfo(token);
+    @Test(expected = IllegalArgumentException.class)
+    public void getAuthenticationInfoShouldThrowExceptionIfTokenEmpty() {
+        underTest.getAuthenticationInfo(new X509CertificateToken(new X509Certificate[0]));
     }
 
     @Test
-    public void getAuthenticationInfo_no_uid() {
+    public void getAuthenticationInfoNoUid() {
         AuthenticationToken token = new X509CertificateToken(new X509Certificate[]{x509Certificate});
         X500Principal x500Principal = new X500Principal("CN=John Doe, OU=SI, O=PSA");
         when(x509Certificate.getSubjectX500Principal()).thenReturn(x500Principal);
         AuthenticationInfo authInfo = underTest.getAuthenticationInfo(token);
-        X509Certificate[] principal = (X509Certificate[]) authInfo.getIdentityPrincipal().getPrincipal();
-        assertThat(principal[0]).isEqualTo(x509Certificate);
+        assertThat(authInfo.getIdentityPrincipal().getPrincipal()).isEqualTo(x500Principal);
     }
 
     @Test
-    public void getRealmRoles_should_return_roles() {
+    public void getRealmRolesShouldReturnRoles() {
         X509Certificate[] certificates = new X509Certificate[2];
         certificates[0] = x509Certificate;
         String cn1 = "foobar";

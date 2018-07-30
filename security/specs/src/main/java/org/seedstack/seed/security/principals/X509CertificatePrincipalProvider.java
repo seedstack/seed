@@ -13,19 +13,21 @@ import static java.util.Objects.requireNonNull;
 import java.security.cert.X509Certificate;
 
 /**
- * Principal provider that stores the user X509Certificates used for his
- * authentication.
+ * Principal provider that stores the subject X509 certificate chain provided during authentication.
  */
 public class X509CertificatePrincipalProvider implements PrincipalProvider<X509Certificate[]> {
-    private X509Certificate[] certificates;
+    private final X509Certificate[] certificates;
 
     /**
-     * Constructor
+     * Creates a X509CertificatePrincipalProvider.
      *
      * @param x509Certificates the user certificates.
      */
     public X509CertificatePrincipalProvider(X509Certificate[] x509Certificates) {
         this.certificates = requireNonNull(x509Certificates, "X509 certificates array should not be null").clone();
+        if (this.certificates.length == 0) {
+            throw new IllegalArgumentException("Empty X509 certificate chain");
+        }
     }
 
     @Override

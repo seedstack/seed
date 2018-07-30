@@ -10,12 +10,10 @@ package org.seedstack.seed.security.internal.realms;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.google.common.collect.Sets;
 import java.util.Collections;
 import java.util.Set;
 import org.junit.Before;
 import org.junit.Test;
-import org.powermock.reflect.Whitebox;
 import org.seedstack.seed.security.AuthenticationInfo;
 import org.seedstack.seed.security.AuthenticationToken;
 import org.seedstack.seed.security.IncorrectCredentialsException;
@@ -23,35 +21,31 @@ import org.seedstack.seed.security.SecurityConfig;
 import org.seedstack.seed.security.UnknownAccountException;
 import org.seedstack.seed.security.UnsupportedTokenException;
 import org.seedstack.seed.security.UsernamePasswordToken;
-import org.seedstack.seed.security.internal.realms.ConfigurationRealm.ConfigurationUser;
 import org.seedstack.seed.security.principals.PrincipalProvider;
 import org.seedstack.seed.security.principals.Principals;
 
 public class ConfigurationRealmUnitTest {
-    private String username = "username";
-    private String password = "password";
-    private String role1 = "role1";
-    private String role2 = "role2";
+    private static final String USERNAME = "username";
+    private static final String PASSWORD = "password";
+    private static final String ROLE_1 = "role1";
+    private static final String ROLE_2 = "role2";
     private ConfigurationRealm underTest;
-    private Set<ConfigurationUser> users;
 
     @Before
     public void before() {
-        underTest = new ConfigurationRealm(null, null);
-        users = Whitebox.getInternalState(underTest, "users");
-        users.add(new ConfigurationUser(username, password, Sets.newHashSet(role1, role2)));
-        users.add(new ConfigurationUser("toto", null, Sets.newHashSet()));
+        underTest = new ConfigurationRealm(null, null, new SecurityConfig()
+                .addUser(USERNAME,
+                        new SecurityConfig.UserConfig().setPassword(PASSWORD).addRole(ROLE_1).addRole(ROLE_2))
+                .addUser("toto", new SecurityConfig.UserConfig()));
     }
 
     @Test
     public void getRealmRoles_nominal() {
-        PrincipalProvider<String> identity = Principals.identityPrincipal(username);
-
+        PrincipalProvider<String> identity = Principals.identityPrincipal(USERNAME);
         Set<String> foundRoles = underTest.getRealmRoles(identity, Collections.emptyList());
-
         assertThat(foundRoles).hasSize(2);
-        assertThat(foundRoles).contains(role1);
-        assertThat(foundRoles).contains(role2);
+        assertThat(foundRoles).contains(ROLE_1);
+        assertThat(foundRoles).contains(ROLE_2);
     }
 
     @Test
@@ -66,31 +60,31 @@ public class ConfigurationRealmUnitTest {
 
     @Test
     public void getAuthenticationInfo_nominal() {
-        UsernamePasswordToken token = new UsernamePasswordToken(username, password);
+        UsernamePasswordToken token = new UsernamePasswordToken(USERNAME, PASSWORD);
         AuthenticationInfo authInfo = underTest.getAuthenticationInfo(token);
-        assertThat(authInfo.getIdentityPrincipal().getPrincipal()).isEqualTo("username");
+        assertThat(authInfo.getIdentityPrincipal().getPrincipal()).isEqualTo(USERNAME);
     }
 
     @Test(expected = IncorrectCredentialsException.class)
     public void getAuthenticationInfo_throws_exception_if_incorrect_password() {
-        UsernamePasswordToken token = new UsernamePasswordToken(username, "");
+        UsernamePasswordToken token = new UsernamePasswordToken(USERNAME, "");
         underTest.getAuthenticationInfo(token);
     }
 
     @Test(expected = UnknownAccountException.class)
     public void getAuthenticationInfo_throws_exception_if_unknown_user() {
-        UsernamePasswordToken token = new UsernamePasswordToken("", password);
+        UsernamePasswordToken token = new UsernamePasswordToken("", PASSWORD);
         underTest.getAuthenticationInfo(token);
     }
 
     @Test(expected = NullPointerException.class)
     public void null_user_is_invalid() {
-        new UsernamePasswordToken(null, password);
+        new UsernamePasswordToken(null, PASSWORD);
     }
 
     @Test(expected = NullPointerException.class)
     public void null_password_is_invalid() {
-        UsernamePasswordToken token = new UsernamePasswordToken(username, (String) null);
+        UsernamePasswordToken token = new UsernamePasswordToken(USERNAME, (String) null);
         underTest.getAuthenticationInfo(token);
     }
 
@@ -108,21 +102,5 @@ public class ConfigurationRealmUnitTest {
             }
         };
         underTest.getAuthenticationInfo(token);
-    }
-
-    @Test
-    public void readConfiguration_empty_props() {
-        underTest.readConfiguration(new SecurityConfig());
-    }
-
-    @Test
-    public void readConfiguration_with_users() {
-        SecurityConfig securityConfig = new SecurityConfig()
-                .addUser("Obiwan", new SecurityConfig.UserConfig().setPassword("yodarulez").addRole("SEED.JEDI"))
-                .addUser("Anakin", new SecurityConfig.UserConfig().setPassword("imsodark"));
-
-        underTest.readConfiguration(securityConfig);
-        assertThat(users).hasSize(2);
-        assertThat(users).containsOnly(new ConfigurationUser("Obiwan"), new ConfigurationUser("Anakin"));
     }
 }

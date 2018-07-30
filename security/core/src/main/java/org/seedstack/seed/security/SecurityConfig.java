@@ -17,6 +17,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import org.apache.shiro.authc.Authenticator;
+import org.apache.shiro.authc.credential.CredentialsMatcher;
+import org.apache.shiro.authc.credential.SimpleCredentialsMatcher;
 import org.apache.shiro.authc.pam.AtLeastOneSuccessfulStrategy;
 import org.apache.shiro.authc.pam.AuthenticationStrategy;
 import org.apache.shiro.authc.pam.ModularRealmAuthenticator;
@@ -229,6 +231,7 @@ public class SecurityConfig {
         @SingleValue
         private Class<? extends AuthenticationStrategy> strategy = AtLeastOneSuccessfulStrategy.class;
         private Class<? extends Authenticator> authenticator = ModularRealmAuthenticator.class;
+        private Class<? extends CredentialsMatcher> credentialsMatcher = SimpleCredentialsMatcher.class;
 
         public Class<? extends Authenticator> getAuthenticator() {
             return authenticator;
@@ -249,6 +252,14 @@ public class SecurityConfig {
             return this;
         }
 
+        public Class<? extends CredentialsMatcher> getCredentialsMatcher() {
+            return credentialsMatcher;
+        }
+
+        public AuthenticationConfig setCredentialsMatcher(Class<? extends CredentialsMatcher> credentialsMatcher) {
+            this.credentialsMatcher = credentialsMatcher;
+            return this;
+        }
     }
 
     @Config("cache")

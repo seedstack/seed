@@ -8,10 +8,10 @@
 
 package org.seedstack.seed.web.security;
 
-import static io.restassured.RestAssured.expect;
-import static io.restassured.RestAssured.given;
-
+import io.restassured.RestAssured;
+import io.restassured.config.SSLConfig;
 import io.restassured.response.Response;
+import io.restassured.specification.RequestSpecification;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.seedstack.seed.Configuration;
@@ -29,7 +29,7 @@ public class XsrfIT {
 
     @Test
     public void requestWithoutSessionShouldSucceed() {
-        expect()
+        givenRelaxedSSL().expect()
                 .statusCode(200)
                 .when()
                 .get(baseUrl + "xsrf-protected-without-session");
@@ -38,7 +38,7 @@ public class XsrfIT {
     @Test
     public void requestWithoutTokenShouldFail() {
         String sessionId = initiateSession().getCookie("JSESSIONID");
-        given()
+        givenRelaxedSSL()
                 .cookie(SESSION_COOKIE_NAME, sessionId)
                 .expect()
                 .statusCode(403)
@@ -51,7 +51,7 @@ public class XsrfIT {
         Response response = initiateSession();
         String sessionId = response.getCookie(SESSION_COOKIE_NAME);
         String token = response.getCookie(XSRF_COOKIE_NAME);
-        given()
+        givenRelaxedSSL()
                 .cookie(SESSION_COOKIE_NAME, sessionId)
                 .and()
                 .cookie(XSRF_COOKIE_NAME, token)
@@ -66,7 +66,7 @@ public class XsrfIT {
         Response response = initiateSession();
         String sessionId = response.getCookie(SESSION_COOKIE_NAME);
         String token = response.getCookie(XSRF_COOKIE_NAME);
-        given()
+        givenRelaxedSSL()
                 .cookie(SESSION_COOKIE_NAME, sessionId)
                 .and()
                 .header(XSRF_HEADER_NAME, token)
@@ -81,7 +81,7 @@ public class XsrfIT {
         Response response = initiateSession();
         String sessionId = response.getCookie(SESSION_COOKIE_NAME);
         String token = response.getCookie(XSRF_COOKIE_NAME);
-        given()
+        givenRelaxedSSL()
                 .cookie(SESSION_COOKIE_NAME, sessionId)
                 .and()
                 .cookie(XSRF_COOKIE_NAME, token)
@@ -94,11 +94,16 @@ public class XsrfIT {
     }
 
     private Response initiateSession() {
-        return given().auth()
+        return givenRelaxedSSL().auth()
                 .basic("Obiwan", "yodarulez")
                 .expect()
                 .statusCode(200)
                 .when()
                 .get(baseUrl + "xsrf-protected-with-session");
+    }
+
+    private RequestSpecification givenRelaxedSSL() {
+        return RestAssured.given()
+                .config(RestAssured.config().sslConfig(SSLConfig.sslConfig().relaxedHTTPSValidation("SSL")));
     }
 }
