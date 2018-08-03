@@ -132,12 +132,22 @@ class ShiroRealmAdapter extends AuthorizingRealm {
 
     @Override
     protected Object getAuthorizationCacheKey(PrincipalCollection principals) {
-        Object authenticationCacheKey = super.getAuthenticationCacheKey(principals);
-        if (authenticationCacheKey instanceof PrincipalProvider) {
-            return ((PrincipalProvider) authenticationCacheKey).getPrincipal();
+        Object primaryPrincipal = principals.getPrimaryPrincipal();
+        if (primaryPrincipal instanceof PrincipalProvider) {
+            return ((PrincipalProvider) primaryPrincipal).getPrincipal();
         } else {
-            return authenticationCacheKey;
+            return primaryPrincipal;
         }
+    }
+
+    @Override
+    public String getAuthenticationCacheName() {
+        return realm.getClass().getName() + ".authenticationCache";
+    }
+
+    @Override
+    public String getAuthorizationCacheName() {
+        return realm.getClass().getName() + ".authorizationCache";
     }
 
     Realm getRealm() {

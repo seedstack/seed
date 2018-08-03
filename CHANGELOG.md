@@ -5,6 +5,8 @@
 * [chg] X509-based authentication will use the subject `X500Principal` as identity if no `uid` attribute is available (instead of the whole chain).
 * [chg] X509-based authentication will use the subject certificate (first in the chain) as credentials (instead of the whole chain).
 * [new] X509-based authentication will now (re-)check the subject certificate validity. 
+* [new] Enable security session periodic validation (expiration check) when outside a Servlet environment.
+* [chg] Authorization cache will now use the primary principal as key. 
 
 # Version 3.6.2 (2018-06-18)
 

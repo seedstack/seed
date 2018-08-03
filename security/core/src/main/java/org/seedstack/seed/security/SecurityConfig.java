@@ -27,6 +27,7 @@ import org.apache.shiro.cache.MemoryConstrainedCacheManager;
 import org.apache.shiro.mgt.SessionStorageEvaluator;
 import org.apache.shiro.mgt.SubjectDAO;
 import org.apache.shiro.mgt.SubjectFactory;
+import org.apache.shiro.session.mgt.SessionValidationScheduler;
 import org.apache.shiro.subject.SubjectContext;
 import org.seedstack.coffig.Config;
 import org.seedstack.coffig.SingleValue;
@@ -162,7 +163,9 @@ public class SecurityConfig {
         @SingleValue
         private boolean enabled = true;
         private long timeout = 1000 * 60 * 15;
+        private long validationInterval = timeout / 2;
         private Class<? extends SessionStorageEvaluator> storageEvaluator = SeedSessionStorageEvaluator.class;
+        private Class<? extends SessionValidationScheduler> validationScheduler;
 
         public boolean isEnabled() {
             return enabled;
@@ -188,6 +191,25 @@ public class SecurityConfig {
 
         public SessionConfig setStorageEvaluator(Class<? extends SessionStorageEvaluator> storageEvaluator) {
             this.storageEvaluator = storageEvaluator;
+            return this;
+        }
+
+        public Class<? extends SessionValidationScheduler> getValidationScheduler() {
+            return validationScheduler;
+        }
+
+        public SessionConfig setValidationScheduler(
+                Class<? extends SessionValidationScheduler> validationScheduler) {
+            this.validationScheduler = validationScheduler;
+            return this;
+        }
+
+        public long getValidationInterval() {
+            return validationInterval;
+        }
+
+        public SessionConfig setValidationInterval(long validationInterval) {
+            this.validationInterval = validationInterval;
             return this;
         }
     }

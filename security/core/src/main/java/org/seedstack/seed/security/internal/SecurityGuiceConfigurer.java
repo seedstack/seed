@@ -19,6 +19,7 @@ import org.apache.shiro.mgt.DefaultSubjectDAO;
 import org.apache.shiro.mgt.SessionStorageEvaluator;
 import org.apache.shiro.mgt.SubjectDAO;
 import org.apache.shiro.mgt.SubjectFactory;
+import org.apache.shiro.session.mgt.SessionValidationScheduler;
 import org.apache.shiro.subject.SubjectContext;
 import org.seedstack.seed.security.SecurityConfig;
 
@@ -50,6 +51,11 @@ public class SecurityGuiceConfigurer {
         // Sessions
         SecurityConfig.SessionConfig sessionConfig = securityConfig.sessions();
         binder.bind(SessionStorageEvaluator.class).to(sessionConfig.getStorageEvaluator());
+        Optional.ofNullable(sessionConfig.getValidationScheduler())
+                .ifPresent(s -> binder.bind(SessionValidationScheduler.class).to(s));
+        binder.bindConstant()
+                .annotatedWith(Names.named("shiro.sessionValidationInterval"))
+                .to(sessionConfig.getValidationInterval());
         binder.bindConstant()
                 .annotatedWith(Names.named("shiro.globalSessionTimeout"))
                 .to(sessionConfig.getTimeout());

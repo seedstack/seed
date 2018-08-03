@@ -5,6 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.security.fixtures;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -39,23 +40,33 @@ public class TestCacheManager extends AbstractCacheManager {
 
         @Override
         public V get(K key) throws CacheException {
-            logger.info("Getting {} from {} security cache", key, name);
             assertKeyClass(key);
-            return super.get(key);
+            V v = super.get(key);
+            if (v == null) {
+                logger.info("Nothing found for key {} in security cache {}", key, name);
+            } else {
+                logger.info("Info found for key {} in security cache {}", key, name);
+            }
+            return v;
         }
 
         @Override
         public V put(K key, V value) throws CacheException {
-            logger.info("Putting {} / {} in {} security cache", key, value, name);
+            logger.info("Putting {} in security cache {}", key, name);
             assertKeyClass(key);
             return super.put(key, value);
         }
 
         @Override
         public V remove(K key) throws CacheException {
-            logger.info("Removing {} from {} security cache", key, name);
             assertKeyClass(key);
-            return super.remove(key);
+            V v = super.remove(key);
+            if (v == null) {
+                logger.info("Nothing was removed for key {} from security cache {}", name);
+            } else {
+                logger.info("{} was removed from security cache {}", key, name);
+            }
+            return v;
         }
 
         private synchronized void assertKeyClass(K key) {
