@@ -25,8 +25,11 @@ import org.seedstack.seed.spi.SeedLauncher;
 public class TestITLauncher implements SeedLauncher {
     private Kernel kernel;
 
+    private static int launchCount = 0;
+
     @Override
     public void launch(String[] args, Map<String, String> kernelParameters) {
+        launchCount += 1;
         KernelConfiguration kernelConfiguration = NuunCore.newKernelConfiguration();
         for (Map.Entry<String, String> kernelParameter : kernelParameters.entrySet()) {
             kernelConfiguration.param(kernelParameter.getKey(), kernelParameter.getValue());
@@ -68,6 +71,14 @@ public class TestITLauncher implements SeedLauncher {
     @Override
     public Optional<Kernel> getKernel() {
         return Optional.ofNullable(kernel);
+    }
+
+    public static void resetLaunchCount() {
+        launchCount = 0;
+    }
+
+    public static int getLaunchCount() {
+        return launchCount;
     }
 
     @Override
