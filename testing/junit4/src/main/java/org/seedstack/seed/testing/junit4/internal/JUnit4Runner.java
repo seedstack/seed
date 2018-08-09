@@ -107,7 +107,7 @@ public class JUnit4Runner extends BlockJUnit4ClassRunner {
                 .map(this::instantiate)
                 .collect(Collectors.toList());
         try {
-            if (launchMode == LaunchMode.PER_TEST) {
+            if (launchMode == LaunchMode.PER_TEST && !isIgnored(method)) {
                 doStart();
             }
 
