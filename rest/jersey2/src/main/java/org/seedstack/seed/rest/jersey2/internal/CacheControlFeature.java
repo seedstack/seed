@@ -50,7 +50,6 @@ class CacheControlFeature implements DynamicFeature {
     }
 
     private static class CacheResponseFilter implements ContainerResponseFilter {
-        private static final String MUST_REVALIDATE_PRIVATE = "must revalidate, private";
         private final CachePolicy policy;
 
         CacheResponseFilter(CachePolicy policy) {
@@ -63,9 +62,19 @@ class CacheControlFeature implements DynamicFeature {
             switch (this.policy) {
                 case NO_CACHE:
                     MultivaluedMap<String, Object> headers = responseContext.getHeaders();
-                    headers.putSingle(HttpHeaders.LAST_MODIFIED, new Date());
-                    headers.putSingle(HttpHeaders.EXPIRES, -1);
-                    headers.putSingle(HttpHeaders.CACHE_CONTROL, MUST_REVALIDATE_PRIVATE);
+
+                    // HTTP Caching is a tough subject thanks to the diversity of clients (browser and cache/proxy servers)
+                    // See below a pretty good reference on HTTP Caching:
+                    // https://stackoverflow.com/questions/49547/how-to-control-web-page-caching-across-all-browsers
+
+                    // For client that doesn't support newer `Cache-Control` HTTP header
+                    // https://tools.ietf.org/html/rfc7234#section-5.3
+                    headers.putSingle(HttpHeaders.EXPIRES, 0);
+
+                    // https://tools.ietf.org/html/rfc7234#section-5.2.2
+                    // Theoretically, `no-store` only would be sufficient
+                    // But for compatibility-purpose, adding other related headers doesn't hurt
+                    headers.putSingle(HttpHeaders.CACHE_CONTROL, "no-store, no-cache, must-revalidate, private");
                     break;
                 case CUSTOM:
                     break;
