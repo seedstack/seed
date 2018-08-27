@@ -46,9 +46,8 @@ public class Jersey2IT {
     @Test
     public void cacheIsDisabledByDefault() {
         Response response = expect().statusCode(200).when().get(baseUrl + "hello");
-        assertThat(response.header("Last-Modified")).isNotEmpty();
-        assertThat(response.header("Expires")).isEqualTo("-1");
-        assertThat(response.header("Cache-Control")).isEqualTo("must revalidate, private");
+        assertThat(response.header("Expires")).isEqualTo("0");
+        assertThat(response.header("Cache-Control")).isEqualTo("no-store, no-cache, must-revalidate, private");
     }
 
     @Test
