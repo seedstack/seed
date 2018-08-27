@@ -1,3 +1,7 @@
+# Version 3.7.1 (2018-09-??)
+
+* [fix] Fix HTTP headers sent when the NO_CACHE policy is applied on a JAX-RS resource (the default).
+
 # Version 3.7.0 (2018-07-31)
 
 * [new] Bean Validation 2.0 support through Hibernate Validator 6 implementation.
