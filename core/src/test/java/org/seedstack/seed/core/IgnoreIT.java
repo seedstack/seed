@@ -14,6 +14,8 @@ import javax.inject.Inject;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.seedstack.seed.Bind;
+import org.seedstack.seed.Ignore;
 import org.seedstack.seed.testing.junit4.SeedITRunner;
 
 @RunWith(SeedITRunner.class)
@@ -32,15 +34,12 @@ public class IgnoreIT {
         injector.getInstance(IgnoredClass.class);
     }
 
-    public @interface Scan {
-    }
-
-    @org.seedstack.seed.Ignore
-    @Scan
+    @Ignore
+    @Bind
     static class IgnoredClass {
     }
 
-    @Scan
+    @Bind
     static class ScannedClass {
     }
 }
