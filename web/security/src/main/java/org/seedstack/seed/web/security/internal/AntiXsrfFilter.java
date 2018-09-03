@@ -113,9 +113,7 @@ public class AntiXsrfFilter extends PathMatchingFilter {
     protected void deleteXsrfCookie(HttpServletResponse httpServletResponse) {
         String cookieSpec = String.format("%s=%s; Max-Age=0",
                 xsrfConfig.getCookieName(),
-                "deleteMe",
-                xsrfConfig.getCookiePath(),
-                xsrfConfig.getCookieSameSite());
+                "deleteMe");
         httpServletResponse.setHeader(SET_COOKIE_HEADER, cookieSpec);
     }
 
