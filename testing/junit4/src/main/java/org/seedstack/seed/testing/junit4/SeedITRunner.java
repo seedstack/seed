@@ -13,7 +13,7 @@ import org.seedstack.seed.testing.junit4.internal.JUnit4Runner;
 
 /**
  * This runner can be used to run JUnit tests with SeedStack integration. Tests launched with this runner will benefit
- * from Seed features (injection, AOP interception, test extensions, ...).
+ * from SeedStack features (injection, AOP interception, test extensions, ...).
  */
 public class SeedITRunner extends JUnit4Runner {
     /**

@@ -14,7 +14,7 @@ import org.jboss.arquillian.test.spi.TestEnricher;
 import org.seedstack.seed.testing.arquillian.internal.InjectionTestEnricher;
 
 /**
- * Arquillian extension to register SEED support in the client.
+ * Arquillian extension to register SeedStack support in the client.
  */
 public class SeedClientExtension implements LoadableExtension {
     @Override

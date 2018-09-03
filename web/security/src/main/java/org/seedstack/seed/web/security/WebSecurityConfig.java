@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import javax.validation.constraints.NotBlank;
 import org.seedstack.coffig.Config;
 
 @Config("security.web")
@@ -102,8 +103,8 @@ public class WebSecurityConfig {
         }
 
         public FormConfig setUsernameParameter(String usernameParameter) {
-                this.usernameParameter = usernameParameter;
-                return this;
+            this.usernameParameter = usernameParameter;
+            return this;
         }
 
         public String getPasswordParameter() {
@@ -136,10 +137,17 @@ public class WebSecurityConfig {
 
     @Config("xsrf")
     public static class XSRFConfig {
+        @NotBlank
         private String cookieName = "XSRF-TOKEN";
+        private String cookieSameSite = "Strict";
+        private boolean cookieHttpOnly = false;
+        private String cookiePath = "/";
+        @NotBlank
         private String headerName = "X-XSRF-TOKEN";
+        @NotBlank
         private String algorithm = "SHA1PRNG";
         private int length = 32;
+        private boolean perRequestToken = false;
 
         public String getCookieName() {
             return cookieName;
@@ -174,6 +182,42 @@ public class WebSecurityConfig {
 
         public XSRFConfig setLength(int length) {
             this.length = length;
+            return this;
+        }
+
+        public boolean isPerRequestToken() {
+            return perRequestToken;
+        }
+
+        public XSRFConfig setPerRequestToken(boolean perRequestToken) {
+            this.perRequestToken = perRequestToken;
+            return this;
+        }
+
+        public String getCookiePath() {
+            return cookiePath;
+        }
+
+        public XSRFConfig setCookiePath(String cookiePath) {
+            this.cookiePath = cookiePath;
+            return this;
+        }
+
+        public String getCookieSameSite() {
+            return cookieSameSite;
+        }
+
+        public XSRFConfig setCookieSameSite(String cookieSameSite) {
+            this.cookieSameSite = cookieSameSite;
+            return this;
+        }
+
+        public boolean isCookieHttpOnly() {
+            return cookieHttpOnly;
+        }
+
+        public XSRFConfig setCookieHttpOnly(boolean cookieHttpOnly) {
+            this.cookieHttpOnly = cookieHttpOnly;
             return this;
         }
     }

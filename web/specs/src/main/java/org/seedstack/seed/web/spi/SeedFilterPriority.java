@@ -9,7 +9,7 @@
 package org.seedstack.seed.web.spi;
 
 /**
- * Holds priorities used by Seed filters.
+ * Holds priorities used by SeedStack filters.
  */
 public class SeedFilterPriority {
     /**

@@ -16,9 +16,9 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Apply this annotation on a test method or a test class to execute a Seed CLI command with the specified arguments.
- * Standard Seed startup through SeedITRunner is disabled for the whole class test. Only methods with this annotation
- * (or all method if it is applied on the class) will start a Seed environment.
+ * Apply this annotation on a test method or a test class to execute a SeedStack CLI command with the specified
+ * arguments. Standard SeedStack startup through SeedITRunner is disabled for the whole class test. Only methods with
+ * this annotation (or all method if it is applied on the class) will start a SeedStack environment.
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE, ElementType.METHOD})

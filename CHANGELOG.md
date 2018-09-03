@@ -1,6 +1,7 @@
 # Version 3.7.1 (2018-09-??)
 
 * [fix] Fix HTTP headers sent when the NO_CACHE policy is applied on a JAX-RS resource (the default).
+* [new] Add `noCheck` option to the `xsrf` filter to only generate the token without checking it (use as `xsrf[noCheck]` in filter config).
 
 # Version 3.7.0 (2018-07-31)
 
@@ -109,7 +110,7 @@
 
 # Version 3.2.0 (2017-04-28)
 
-* [new] Add `SeedInitializer` interface that is called at Seed JVM-wide initialization and close (can be used to do early initialization). 
+* [new] Add `SeedInitializer` interface that is called at SeedStack JVM-wide initialization and close (can be used to do early initialization). 
 * [new] Tools can now be run in two modes: with the minimal set of plugins (minimal) or with all plugins loaded (full). 
 * [fix] Fix StackOverflowError under Tomcat in Eclipse WTP when auto-configuring Logback.
 * [fix] Fix resolution of `WEB-INF/classes` under Tomcat 8 when using resource overlay (PreResources, PostResources).

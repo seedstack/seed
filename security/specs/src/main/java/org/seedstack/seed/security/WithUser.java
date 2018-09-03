@@ -16,9 +16,9 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * This annotation is used to connect a user to the Seed security. If annotation
- * is present on the class, it will connect the provided id/pwd for each method
- * unless the method is itself annotated with a different id/pwd.
+ * This annotation is used to log a user on for the duration of an integration test. If annotation is present on the
+ * class, it will connect the provided id/pwd for each method unless the method is itself annotated with a different
+ * id/pwd.
  */
 @Target({ElementType.TYPE, ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
@@ -26,12 +26,12 @@ import java.lang.annotation.Target;
 @Inherited
 public @interface WithUser {
     /**
-     * @return id of the user
+     * @return id of the user.
      */
     String id();
 
     /**
-     * @return password of the user
+     * @return password of the user.
      */
     String password();
 }

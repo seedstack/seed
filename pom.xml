@@ -203,6 +203,7 @@
                                 <exclude>org.seedstack.seed.undertow.UndertowConfig</exclude>
                                 <exclude>org.seedstack.seed.transaction.spi.TransactionMetadata</exclude>
                                 <exclude>org.seedstack.seed.spi.DependencyProvider</exclude>
+                                <exclude>org.seedstack.seed.web.spi.AntiXsrfService</exclude>
                             </excludes>
                         </parameter>
                     </configuration>

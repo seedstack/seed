@@ -9,7 +9,7 @@
 package org.seedstack.seed.web.spi;
 
 /**
- * Holds priorities used by Seed listeners.
+ * Holds priorities used by SeedStack listeners.
  */
 public class SeedListenerPriority {
     /**

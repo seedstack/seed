@@ -18,7 +18,7 @@ import org.seedstack.seed.security.Role;
 import org.seedstack.seed.security.Scope;
 
 /**
- * AuthorizationInfo that keeps the Roles and Permissions from Seed API.
+ * AuthorizationInfo that keeps the Roles and Permissions for SeedStack API.
  */
 public class SeedAuthorizationInfo implements AuthorizationInfo {
     private static final long serialVersionUID = 1L;

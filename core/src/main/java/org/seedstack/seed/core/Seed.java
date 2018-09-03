@@ -208,9 +208,9 @@ public class Seed {
         List<SeedLauncher> entryPointServices = Lists.newArrayList(ServiceLoader.load(SeedLauncher.class));
 
         if (entryPointServices.size() < 1) {
-            throw SeedException.createNew(CoreErrorCode.MISSING_SEED_LAUNCHER);
+            throw SeedException.createNew(CoreErrorCode.MISSING_SEEDSTACK_LAUNCHER);
         } else if (entryPointServices.size() > 1) {
-            throw SeedException.createNew(CoreErrorCode.MULTIPLE_SEED_LAUNCHERS);
+            throw SeedException.createNew(CoreErrorCode.MULTIPLE_SEEDSTACK_LAUNCHERS);
         }
 
         return entryPointServices.get(0);
@@ -267,7 +267,7 @@ public class Seed {
     }
 
     /**
-     * Create and start a basic kernel without specifying a runtime context, nor a configuration. Seed JVM-global
+     * Create and start a basic kernel without specifying a runtime context, nor a configuration. SeedStack JVM-global
      * state is automatically initialized before the first time a kernel is created.
      * <p>
      * <p>Cannot be called from {@link SeedInitializer} methods.</p>
@@ -361,7 +361,7 @@ public class Seed {
             if (t instanceof ExceptionInInitializerError) {
                 t = t.getCause();
             }
-            throw SeedException.wrap(t, CoreErrorCode.UNABLE_TO_INITIALIZE_SEED);
+            throw SeedException.wrap(t, CoreErrorCode.UNABLE_TO_INITIALIZE_SEEDSTACK);
         }
     }
 

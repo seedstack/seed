@@ -29,7 +29,6 @@ import org.apache.shiro.web.filter.authc.SeedFormAuthenticationFilter;
 import org.seedstack.seed.security.internal.SecurityGuiceConfigurer;
 import org.seedstack.seed.web.SecurityFilter;
 import org.seedstack.seed.web.security.WebSecurityConfig;
-import org.seedstack.seed.web.spi.AntiXsrfService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,10 +39,6 @@ class WebSecurityModule extends ShiroWebModule {
     static {
         // Shiro filters
         DEFAULT_FILTERS.put("anon", ANON);
-        // Keep Seed flavor of authc to avoid potential session fixation vulnerability
-        DEFAULT_FILTERS.put("authc", Key.get(SeedFormAuthenticationFilter.class));
-        // Keep Seed flavor of authcBasic to avoid potential session fixation vulnerability
-        DEFAULT_FILTERS.put("authcBasic", Key.get(SeedBasicHttpAuthenticationFilter.class));
         DEFAULT_FILTERS.put("logout", LOGOUT);
         DEFAULT_FILTERS.put("noSessionCreation", NO_SESSION_CREATION);
         DEFAULT_FILTERS.put("perms", PERMS);
@@ -53,9 +48,11 @@ class WebSecurityModule extends ShiroWebModule {
         DEFAULT_FILTERS.put("ssl", SSL);
         DEFAULT_FILTERS.put("user", USER);
 
-        // Seed filters
-        DEFAULT_FILTERS.put("xsrf", Key.get(AntiXsrfFilter.class));
+        // SeedStack filters (authc and authcBasic prevent potential session fixation vulnerability)
+        DEFAULT_FILTERS.put("authc", Key.get(SeedFormAuthenticationFilter.class));
+        DEFAULT_FILTERS.put("authcBasic", Key.get(SeedBasicHttpAuthenticationFilter.class));
         DEFAULT_FILTERS.put("cert", Key.get(X509CertificateFilter.class));
+        DEFAULT_FILTERS.put("xsrf", Key.get(AntiXsrfFilter.class));
     }
 
     private final String applicationName;
@@ -83,10 +80,7 @@ class WebSecurityModule extends ShiroWebModule {
         }
         LOGGER.debug("{} URL(s) bound to security filters", securityConfig.getUrls().size());
 
-        bind(WebSecurityConfig.class);
-
         // Bind filters which are not PatchMatchingFilters
-        bind(AntiXsrfFilter.class);
         bind(LogoutFilter.class);
 
         // Bind custom filters not extending PathMatchingFilter as Shiro doesn't do it
@@ -95,9 +89,6 @@ class WebSecurityModule extends ShiroWebModule {
                 bind(customFilter);
             }
         }
-
-        // Additional web security bindings
-        bind(AntiXsrfService.class).to(StatelessAntiXsrfService.class);
 
         // General configuration attributes
         bindConstant().annotatedWith(Names.named("shiro.applicationName")).to(applicationName);
@@ -117,9 +108,6 @@ class WebSecurityModule extends ShiroWebModule {
 
         // Shiro filter
         bind(GuiceShiroFilter.class).in(Scopes.SINGLETON);
-
-        // Exposed binding
-        expose(AntiXsrfService.class);
     }
 
     @SuppressWarnings("unchecked")

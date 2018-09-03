@@ -11,7 +11,7 @@ package org.seedstack.seed.core.internal.command;
 import org.seedstack.shed.exception.ErrorCode;
 
 /**
- * SEED commands error codes.
+ * SeedStack commands error codes.
  */
 enum CommandErrorCode implements ErrorCode {
     ARGUMENT_INDEX_COLLISION,

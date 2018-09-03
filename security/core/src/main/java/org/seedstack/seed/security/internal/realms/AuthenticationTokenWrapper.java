@@ -11,16 +11,16 @@ package org.seedstack.seed.security.internal.realms;
 import org.apache.shiro.authc.AuthenticationToken;
 
 /**
- * A Shiro authentication token that wrap a Seed authentication token
+ * A Shiro authentication token that wrap a SeedStack authentication token.
  */
 public class AuthenticationTokenWrapper implements AuthenticationToken {
     private static final long serialVersionUID = 1L;
     private org.seedstack.seed.security.AuthenticationToken seedToken;
 
     /**
-     * Constructor with the Seed token
+     * Constructor with the SeedStack token.
      *
-     * @param seedToken the seed token to wrap
+     * @param seedToken the seed token to wrap.
      */
     public AuthenticationTokenWrapper(org.seedstack.seed.security.AuthenticationToken seedToken) {
         this.seedToken = seedToken;
@@ -37,9 +37,9 @@ public class AuthenticationTokenWrapper implements AuthenticationToken {
     }
 
     /**
-     * Gives the seed authentication token
+     * Gives the seed authentication token.
      *
-     * @return the seed authentication token
+     * @return the seed authentication token.
      */
     public org.seedstack.seed.security.AuthenticationToken getSeedToken() {
         return seedToken;

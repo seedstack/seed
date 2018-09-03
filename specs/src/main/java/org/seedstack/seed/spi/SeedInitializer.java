@@ -27,24 +27,24 @@ public interface SeedInitializer {
     void beforeInitialization();
 
     /**
-     * Called during Seed initialization, just after base configuration has been made available.
+     * Called during SeedStack initialization, just after base configuration has been made available.
      *
      * @param configuration the base configuration.
      */
     void onInitialization(Coffig configuration);
 
     /**
-     * Called after Seed initialization has been completed.
+     * Called after SeedStack initialization has been completed.
      */
     void afterInitialization();
 
     /**
-     * Called after Seed refresh has been completed.
+     * Called after SeedStack refresh has been completed.
      */
     void afterRefresh();
 
     /**
-     * Called at explicit Seed global state cleanup.
+     * Called at explicit SeedStack global state cleanup.
      */
     void onClose();
 }

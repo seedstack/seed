@@ -12,7 +12,7 @@ import org.seedstack.shed.exception.BaseException;
 import org.seedstack.shed.exception.ErrorCode;
 
 /**
- * This is the base class for all Seed exceptions.
+ * This is the base class for all SeedStack Java framework exceptions.
  */
 public class SeedException extends BaseException {
     protected SeedException(ErrorCode errorCode) {

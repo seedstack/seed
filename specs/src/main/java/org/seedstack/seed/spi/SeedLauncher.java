@@ -14,14 +14,14 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * This interface defines a method that can launch a Seed application.
+ * This interface defines a method that can launch a SeedStack application.
  * Implementations must be declared as a {@link java.util.ServiceLoader} service in META-INF/services to be detected.
  */
 public interface SeedLauncher {
     /**
      * Launches the SeedStack application.
      *
-     * @param args arguments of the Seed application.
+     * @param args arguments of the SeedStack application.
      * @throws Exception when something goes wrong.
      */
     default void launch(String[] args) throws Exception {
@@ -31,7 +31,7 @@ public interface SeedLauncher {
     /**
      * Launches the SeedStack application with custom kernel parameters.
      *
-     * @param args             arguments of the Seed application.
+     * @param args             arguments of the SeedStack application.
      * @param kernelParameters the custom kernel parameters.
      * @throws Exception when something goes wrong.
      */

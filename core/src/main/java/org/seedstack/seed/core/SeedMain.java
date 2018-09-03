@@ -15,9 +15,9 @@ import org.seedstack.shed.exception.BaseException;
 
 /**
  * <p>
- * Main Seed Java application entry point. It searches classes implementing {@link SeedLauncher} through the
+ * Main SeedStack Java application entry point. It searches classes implementing {@link SeedLauncher} through the
  * {@link ServiceLoader} mechanism. If no class or more than one class is found, it throws an exception. If exactly one
- * class is found, it delegates the Seed application startup to its {@link SeedLauncher#launch(String[])} method.
+ * class is found, it delegates the SeedStack application startup to its {@link SeedLauncher#launch(String[])} method.
  * </p>
  * <p>
  * Exception handling and diagnostic during startup and shutdown is done directly in this class. This is materialized

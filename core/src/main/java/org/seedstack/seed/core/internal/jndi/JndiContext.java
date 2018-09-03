@@ -55,7 +55,7 @@ class JndiContext implements Context {
                 return injector.getInstance(Class.forName(name));
             }
         } catch (ClassNotFoundException e) {
-            NamingException exception = new NamingException("Unable to find " + name + " in SEED JNDI context");
+            NamingException exception = new NamingException("Unable to find " + name + " in SeedStack JNDI context");
             exception.initCause(e);
             throw exception;
         }

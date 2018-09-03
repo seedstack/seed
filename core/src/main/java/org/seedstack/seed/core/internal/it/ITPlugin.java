@@ -27,7 +27,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * This plugin automatically enable integration tests to be managed by SEED.
+ * This plugin automatically enable integration tests to be managed by SeedStack.
  */
 public class ITPlugin extends AbstractSeedPlugin {
     private static final String TEST_CLASS_KERNEL_PARAMETER = "seedstack.it.testClassName";

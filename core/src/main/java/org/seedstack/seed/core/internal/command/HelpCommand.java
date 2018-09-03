@@ -20,9 +20,8 @@ import org.seedstack.seed.command.Argument;
 import org.seedstack.seed.command.Command;
 
 /**
- * This built-in SEED command displays a list of all available commands or can display available options for a
- * particular
- * command.
+ * This built-in SeedStack command displays a list of all available commands or can display available options for a
+ * particular command.
  */
 @org.seedstack.seed.command.CommandDefinition(scope = "", name = "help", description = "Display a list of available "
         + "commands or help on a specific command")

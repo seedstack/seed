@@ -11,7 +11,7 @@ package org.seedstack.seed.transaction.spi;
 import org.aopalliance.intercept.MethodInvocation;
 
 /**
- * This interface must be implemented by SEED transaction metadata resolvers. These are used by a transaction manager
+ * This interface must be implemented by SeedStack transaction metadata resolvers. These are used by a transaction manager
  * to determine the current transaction behavior.
  */
 public interface TransactionMetadataResolver {

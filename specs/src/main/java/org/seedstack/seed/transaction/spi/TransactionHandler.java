@@ -9,7 +9,7 @@
 package org.seedstack.seed.transaction.spi;
 
 /**
- * Classes implementing this interface can be used by a SEED transaction manager to handle a specific kind of
+ * Classes implementing this interface can be used by a SeedStack transaction manager to handle a specific kind of
  * transaction (e.g. JPA, JMS, ...). Any of the  do*() methods can be implemented with an empty body if they
  * are not applicable in this kind of transaction context.
  *

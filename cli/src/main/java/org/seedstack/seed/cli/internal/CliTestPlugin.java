@@ -23,8 +23,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * This plugin enables to run SEED command line applications from integration tests. It disables the global SEED
- * kernel start to start its own kernel for each test method.
+ * This plugin enables to run SeedStack command line applications from integration tests. It disables the global
+ * SeedStack kernel start to start its own kernel for each test method.
  */
 public class CliTestPlugin implements TestPlugin {
     @Override

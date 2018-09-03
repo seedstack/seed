@@ -119,7 +119,7 @@ public class DiagnosticManagerImpl implements DiagnosticManager {
                 Map<String, Object> causeInfo = new HashMap<>();
                 buildExceptionInfo(causeInfo, cause);
 
-                // only recurse when it is not a SEED exception
+                // only recurse when it is not a SeedStack exception
                 exceptionInfo.put("cause", causeInfo);
             }
         }

@@ -12,7 +12,7 @@ import javax.inject.Inject;
 import javax.websocket.server.ServerEndpointConfig;
 
 /**
- * This Configurator is used as default configurator for Seed ServerEndpoints.
+ * This Configurator is used as default configurator for SeedStack ServerEndpoints.
  * It overrides endpoint instantiation to use Guice.
  */
 public class BaseServerEndpointConfigurator extends ServerEndpointConfig.Configurator {

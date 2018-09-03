@@ -15,7 +15,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * This annotation marks loggers which will be automatically injected by the SEED core plugin.
+ * This annotation marks loggers which will be automatically injected by the SeedStack core plugin.
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)

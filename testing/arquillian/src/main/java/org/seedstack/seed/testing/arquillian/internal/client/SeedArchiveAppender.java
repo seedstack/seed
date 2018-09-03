@@ -15,7 +15,7 @@ import org.jboss.shrinkwrap.api.spec.JavaArchive;
 import org.seedstack.seed.testing.arquillian.internal.InjectionTestEnricher;
 
 /**
- * Arquillian AuxiliaryArchiveAppender to add SEED Arquillian support to deployed apps.
+ * Arquillian AuxiliaryArchiveAppender to add SeedStack Arquillian support to deployed apps.
  */
 public class SeedArchiveAppender implements AuxiliaryArchiveAppender {
     @Override

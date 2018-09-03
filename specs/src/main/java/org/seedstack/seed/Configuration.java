@@ -15,7 +15,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * This annotation marks fields which will be automatically valued by SEED, using application configuration.
+ * This annotation marks fields which will be automatically valued by SeedStack, using application configuration.
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)

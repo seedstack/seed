@@ -26,7 +26,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * This plugin manages transactional matters in SEED code:
+ * This plugin manages transactional matters in SeedStack code:
  * <ul>
  * <li>detects transaction-enabled methods and add the corresponding interceptor around them,</li>
  * <li>holds a registry of all transaction handlers,</li>
