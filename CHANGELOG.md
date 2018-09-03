@@ -1,4 +1,4 @@
-# Version 3.7.1 (2018-09-??)
+# Version 3.7.1 (2018-09-03)
 
 * [fix] Fix HTTP headers sent when the NO_CACHE policy is applied on a JAX-RS resource (the default).
 * [new] Add `noCheck` option to the `xsrf` filter to only generate the token without checking it (use as `xsrf[noCheck]` in filter config).
