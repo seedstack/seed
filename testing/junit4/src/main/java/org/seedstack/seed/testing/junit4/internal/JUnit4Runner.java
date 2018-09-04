@@ -103,13 +103,16 @@ public class JUnit4Runner extends BlockJUnit4ClassRunner {
     @Override
     protected void runChild(FrameworkMethod method, RunNotifier notifier) {
         testContext.setTestMethod(method.getMethod());
-        List<? extends TestDecorator> decoratorInstances = decorators.stream()
-                .map(this::instantiate)
-                .collect(Collectors.toList());
         try {
+            // Start the kernel if a launch per test is required
             if (launchMode == LaunchMode.PER_TEST && !isIgnored(method)) {
                 doStart();
             }
+
+            // Instantiate the decorators
+            List<? extends TestDecorator> decoratorInstances = decorators.stream()
+                    .map(this::instantiate)
+                    .collect(Collectors.toList());
 
             try {
                 // Invoke decorator beforeTest()
@@ -125,6 +128,7 @@ public class JUnit4Runner extends BlockJUnit4ClassRunner {
         } catch (Throwable t) {
             notifyFailure(t, notifier);
         } finally {
+            // Stop the kernel if a launch per test is required
             if (launchMode == LaunchMode.PER_TEST) {
                 doStop();
             }

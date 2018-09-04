@@ -1,3 +1,7 @@
+# Version 3.7.2 (2018-09-??)
+
+* [fix] Integration testing decorators were instantiated before the kernel in PER_TEST launch mode.
+
 # Version 3.7.1 (2018-09-03)
 
 * [fix] Fix HTTP headers sent when the NO_CACHE policy is applied on a JAX-RS resource (the default).
