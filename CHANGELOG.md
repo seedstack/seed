@@ -1,6 +1,8 @@
 # Version 3.7.2 (2018-09-??)
 
+* [new] Add the ability to specify the session timeout in embedded Web server configuration (`web.server.sessions.timeout` configuration property).
 * [fix] Integration testing decorators were instantiated before the kernel in PER_TEST launch mode.
+* [fix] Throw an explicit error when applying the `@Logging` annotation on a field type other than `org.slf4j.Logger`.
 
 # Version 3.7.1 (2018-09-03)
 

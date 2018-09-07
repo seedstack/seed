@@ -9,16 +9,20 @@
 package org.seedstack.seed.core;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
 
 import com.google.inject.ConfigurationException;
+import com.google.inject.CreationException;
 import com.google.inject.Injector;
-import org.seedstack.seed.Nullable;
+import com.google.inject.Module;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.seedstack.seed.Bind;
 import org.seedstack.seed.Logging;
+import org.seedstack.seed.Nullable;
+import org.seedstack.seed.SeedException;
 import org.seedstack.seed.core.fixtures.BoundFromInterface;
 import org.seedstack.seed.core.fixtures.BoundFromInterfaceWithName;
 import org.seedstack.seed.core.fixtures.BoundFromItself;
@@ -33,6 +37,7 @@ import org.seedstack.seed.core.fixtures.Service1;
 import org.seedstack.seed.core.fixtures.Service2;
 import org.seedstack.seed.core.fixtures.Service3;
 import org.seedstack.seed.core.fixtures.TestSeedInitializer;
+import org.seedstack.seed.core.internal.CoreErrorCode;
 import org.seedstack.seed.testing.junit4.SeedITRunner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,14 +49,14 @@ public class CorePluginIT {
     private Injector injector;
 
     @Test
-    public void initializers_are_called() {
+    public void initializersAreCalled() {
         assertThat(TestSeedInitializer.getBeforeCallCount()).isEqualTo(1);
         assertThat(TestSeedInitializer.getOnCallCount()).isEqualTo(1);
         assertThat(TestSeedInitializer.getAfterCallCount()).isEqualTo(1);
     }
 
     @Test
-    public void modules_are_installed_correctly() {
+    public void modulesAreInstalledCorrectly() {
         HolderNominal holder = injector.getInstance(HolderNominal.class);
 
         assertThat(holder).isNotNull();
@@ -63,20 +68,19 @@ public class CorePluginIT {
     }
 
     @Test(expected = ConfigurationException.class)
-    public void modules_without_install_are_not_installed_correctly() {
+    public void modulesWithoutInstallAreNotInstalledCorrectly() {
         injector.getInstance(HolderException.class);
     }
 
     @Test
-    public void logger_injection_is_working() {
+    public void loggerInjectionIsWorking() {
         LoggerHolder holder = injector.getInstance(LoggerHolder.class);
-
         assertThat(LoggerHolder.logger).isNotNull();
         assertThat(holder.logger1).isSameAs(LoggerHolder.logger);
     }
 
     @Test
-    public void logger_injection_with_subclasses() {
+    public void loggerInjectionWithSubclasses() {
         SubLoggerHolder1 subHolder1 = injector.getInstance(SubLoggerHolder1.class);
         SubLoggerHolder2 subHolder2 = injector.getInstance(SubLoggerHolder2.class);
 
@@ -86,15 +90,27 @@ public class CorePluginIT {
         assertThat(subHolder2.logger1).isNotNull();
     }
 
-    @Test
-    public void multiple_package_roots_can_be_used() {
-        HolderNominal holder = injector.getInstance(HolderNominal.class);
+    @Test(expected = CreationException.class)
+    public void loggerInjectionThrowsErrorOnUnexpectedType() {
+        try {
+            injector.createChildInjector((Module) binder -> binder.bind(BadLoggerHolder.class));
+        } catch (CreationException e) {
+            Throwable cause = e.getCause();
+            assertThat(cause).isInstanceOf(SeedException.class);
+            assertThat(((SeedException) cause).getErrorCode()).isEqualTo(CoreErrorCode.BAD_LOGGER_TYPE);
+            throw e;
+        }
+        fail("should have failed");
+    }
 
+    @Test
+    public void multiplePackageRootsCanBeUsed() {
+        HolderNominal holder = injector.getInstance(HolderNominal.class);
         assertThat(holder.foreignClass).isNotNull();
     }
 
     @Test
-    public void explicit_bindings_are_working() {
+    public void explicitBindingsAreWorking() {
         HolderNominal holder = injector.getInstance(HolderNominal.class);
         assertThat(holder.boundFromItself).isInstanceOf(BoundFromItself.class);
         assertThat(holder.boundFromInterface).isInstanceOf(BoundFromInterface.class);
@@ -104,11 +120,15 @@ public class CorePluginIT {
     }
 
     @Bind
-    static class LoggerHolder {
+    private static class LoggerHolder {
         private static final Logger logger = LoggerFactory.getLogger(LoggerHolder.class);
-
         @Logging
-        protected Logger logger1;
+        Logger logger1;
+    }
+
+    private static class BadLoggerHolder {
+        @Logging
+        private Object logger;
     }
 
     @Bind

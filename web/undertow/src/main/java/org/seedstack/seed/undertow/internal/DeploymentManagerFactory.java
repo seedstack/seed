@@ -55,6 +55,7 @@ class DeploymentManagerFactory {
                 .setClassLoader(mostCompleteClassLoader)
                 .setDeploymentName(applicationConfig.getId())
                 .setDisplayName(applicationConfig.getName())
+                .setDefaultSessionTimeout(serverConfig.sessions().getTimeout())
                 .addServletContextAttribute(
                         WebSocketDeploymentInfo.ATTRIBUTE_NAME,
                         new WebSocketDeploymentInfo()

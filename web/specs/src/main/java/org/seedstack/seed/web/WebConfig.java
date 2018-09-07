@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
+import javax.validation.constraints.NotBlank;
 import org.seedstack.coffig.Config;
 import org.seedstack.coffig.SingleValue;
 
@@ -150,11 +151,13 @@ public class WebConfig {
         private static final boolean DEFAULT_HTTPS_ACTIVATION = false;
         private static final String DEFAULT_WELCOME_FILE = "index.html";
 
+        private SessionsConfig sessions = new SessionsConfig();
         private String host = DEFAULT_HOST;
         @SingleValue
         @Min(0)
         @Max(65535)
         private int port = DEFAULT_PORT;
+        @NotBlank
         private String contextPath = DEFAULT_CONTEXT_PATH;
         private boolean http2 = DEFAULT_HTTP2_ACTIVATION;
         private boolean https = DEFAULT_HTTPS_ACTIVATION;
@@ -162,6 +165,10 @@ public class WebConfig {
 
         public ServerConfig() {
             addWelcomeFile(DEFAULT_WELCOME_FILE);
+        }
+
+        public SessionsConfig sessions() {
+            return sessions;
         }
 
         public String getHost() {
@@ -215,6 +222,22 @@ public class WebConfig {
 
         public void addWelcomeFile(String welcomeFile) {
             this.welcomeFiles.add(welcomeFile);
+        }
+
+        @Config("sessions")
+        public static class SessionsConfig {
+            private static final int DEFAULT_SESSION_TIMEOUT = 1000 * 60 * 15;
+            @SingleValue
+            private int timeout = DEFAULT_SESSION_TIMEOUT;
+
+            public int getTimeout() {
+                return timeout;
+            }
+
+            public SessionsConfig setTimeout(int timeout) {
+                this.timeout = timeout;
+                return this;
+            }
         }
     }
 }

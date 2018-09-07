@@ -55,9 +55,9 @@ public class SecurityGuiceConfigurer {
                 .ifPresent(s -> binder.bind(SessionValidationScheduler.class).to(s));
         binder.bindConstant()
                 .annotatedWith(Names.named("shiro.sessionValidationInterval"))
-                .to(sessionConfig.getValidationInterval());
+                .to(sessionConfig.getValidationInterval() * 1000);
         binder.bindConstant()
                 .annotatedWith(Names.named("shiro.globalSessionTimeout"))
-                .to(sessionConfig.getTimeout());
+                .to(sessionConfig.getTimeout() * 1000);
     }
 }

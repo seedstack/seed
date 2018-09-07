@@ -162,7 +162,7 @@ public class SecurityConfig {
     public static class SessionConfig {
         @SingleValue
         private boolean enabled = true;
-        private long timeout = 1000 * 60 * 15;
+        private long timeout = 60 * 15;
         private long validationInterval = timeout / 2;
         private Class<? extends SessionStorageEvaluator> storageEvaluator = SeedSessionStorageEvaluator.class;
         private Class<? extends SessionValidationScheduler> validationScheduler;
@@ -181,7 +181,7 @@ public class SecurityConfig {
         }
 
         public SessionConfig setTimeout(long timeout) {
-            this.timeout = timeout * 1000;
+            this.timeout = timeout;
             return this;
         }
 

@@ -13,6 +13,7 @@ web:
   server:
     port: ${sys.customUndertowPort:'9001'}
     https: true
+    sessions: 30
 
 crypto:
   keystores:
