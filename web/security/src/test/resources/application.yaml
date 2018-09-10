@@ -36,38 +36,30 @@ security:
     loginUrl: /login.html
     logoutUrl: /logout.html
     successUrl: /success.html
+    xsrf:
+      ignoreHttpMethods: []
     form:
       usernameParameter: user
       passwordParameter: pw
     urls:
-      -
-        pattern: /jediCouncil.html
-        filters: [authcBasic, 'perms[lightSaber:wield, academy:learn]']
-      -
-        pattern: /jediAcademy.html
-        filters: [authcBasic, 'perms[academy:learn]']
-      -
-        pattern: /protected
-        filters: authc
-      -
-        pattern: /cert-protected
-        filters: cert
-      -
-        pattern: /login.html
-        filters: authc
-      -
-        pattern: /success.html
-        filters: authc
-      -
-        pattern: /logout
-        filters: logout
-      -
-        pattern: /teapot
-        filters: 'teapot[param]'
-      -
-        pattern: /xsrf-protected-without-session
-        filters: xsrf
-      -
-        pattern: /xsrf-protected-with-session
-        filters: [authcBasic, xsrf]
+    - pattern: /jediCouncil.html
+      filters: [authcBasic, 'perms[lightSaber:wield, academy:learn]']
+    - pattern: /jediAcademy.html
+      filters: [authcBasic, 'perms[academy:learn]']
+    - pattern: /protected
+      filters: authc
+    - pattern: /cert-protected
+      filters: cert
+    - pattern: /login.html
+      filters: authc
+    - pattern: /success.html
+      filters: authc
+    - pattern: /logout
+      filters: logout
+    - pattern: /teapot
+      filters: 'teapot[param]'
+    - pattern: /xsrf-protected-without-session
+      filters: xsrf
+    - pattern: /xsrf-protected-with-session
+      filters: [authcBasic, xsrf]
 

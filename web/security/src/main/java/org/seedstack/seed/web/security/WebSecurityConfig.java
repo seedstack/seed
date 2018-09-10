@@ -8,6 +8,7 @@
 
 package org.seedstack.seed.web.security;
 
+import com.google.common.collect.Lists;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -145,9 +146,12 @@ public class WebSecurityConfig {
         @NotBlank
         private String headerName = "X-XSRF-TOKEN";
         @NotBlank
+        private String paramName = "xsrfToken";
+        @NotBlank
         private String algorithm = "SHA1PRNG";
         private int length = 32;
         private boolean perRequestToken = false;
+        private List<String> ignoreHttpMethods = Lists.newArrayList("GET", "HEAD", "OPTIONS");
 
         public String getCookieName() {
             return cookieName;
@@ -218,6 +222,24 @@ public class WebSecurityConfig {
 
         public XSRFConfig setCookieHttpOnly(boolean cookieHttpOnly) {
             this.cookieHttpOnly = cookieHttpOnly;
+            return this;
+        }
+
+        public String getParamName() {
+            return paramName;
+        }
+
+        public XSRFConfig setParamName(String paramName) {
+            this.paramName = paramName;
+            return this;
+        }
+
+        public List<String> getIgnoreHttpMethods() {
+            return ignoreHttpMethods;
+        }
+
+        public XSRFConfig setIgnoreHttpMethods(List<String> ignoreHttpMethods) {
+            this.ignoreHttpMethods = ignoreHttpMethods;
             return this;
         }
     }

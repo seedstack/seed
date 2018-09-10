@@ -9,6 +9,7 @@
 package org.seedstack.seed.web.security.internal;
 
 import java.security.SecureRandom;
+import java.util.List;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.Cookie;
@@ -35,12 +36,6 @@ public class AntiXsrfFilter extends PathMatchingFilter {
         HttpServletRequest httpServletRequest = (HttpServletRequest) request;
         HttpServletResponse httpServletResponse = (HttpServletResponse) response;
         final HttpSession session = httpServletRequest.getSession(false);
-        final boolean noCheck;
-        if (mappedValue != null && ((String[]) mappedValue).length != 0) {
-            noCheck = NO_CHECK.equals(((String[]) mappedValue)[0]);
-        } else {
-            noCheck = false;
-        }
 
         // Only apply XSRF protection when there is a session
         if (session != null) {
@@ -48,43 +43,76 @@ public class AntiXsrfFilter extends PathMatchingFilter {
             if (session.isNew()) {
                 setXsrfCookie(httpServletResponse);
             }
-            // Else, if noCheck is NOT set, check if the request and cookie tokens match
-            else if (!noCheck) {
-                String cookieToken = extractCookieToken(httpServletRequest);
-                String requestToken = httpServletRequest.getHeader(xsrfConfig.getHeaderName());
-
-                if (requestToken == null) {
-                    ((HttpServletResponse) response).sendError(HttpServletResponse.SC_FORBIDDEN,
-                            "Missing CSRF protection token in the request headers");
-                    return false;
+            // Else, apply XSRF protection logic
+            else {
+                final boolean noCheck;
+                if (mappedValue != null && ((String[]) mappedValue).length != 0) {
+                    noCheck = NO_CHECK.equals(((String[]) mappedValue)[0]);
+                } else {
+                    noCheck = false;
                 }
 
-                if (cookieToken == null) {
-                    ((HttpServletResponse) response).sendError(HttpServletResponse.SC_FORBIDDEN,
-                            "Missing CSRF protection token cookie");
-                    return false;
-                }
+                if (!noCheck && !isRequestIgnored(httpServletRequest)) {
+                    String cookieToken = getTokenFromCookie(httpServletRequest);
 
-                // Check for multiple headers (keep only the first one)
-                int commaIndex = requestToken.indexOf(',');
-                if (commaIndex != -1) {
-                    requestToken = requestToken.substring(0, commaIndex).trim();
-                }
+                    // If no cookie is available, send an error
+                    if (cookieToken == null) {
+                        ((HttpServletResponse) response).sendError(HttpServletResponse.SC_FORBIDDEN,
+                                "Missing CSRF protection token cookie");
+                        return false;
+                    }
 
-                // Check if tokens match
-                if (!cookieToken.equals(requestToken)) {
-                    ((HttpServletResponse) response).sendError(HttpServletResponse.SC_FORBIDDEN,
-                            "Request token does not match session token");
-                    return false;
-                }
+                    // Try to obtain the request token from a header
+                    String requestToken = getTokenFromHeader(httpServletRequest);
 
-                // Regenerate token if per-request tokens are in use
-                if (xsrfConfig.isPerRequestToken()) {
-                    setXsrfCookie(httpServletResponse);
+                    // Fallback to query parameter if we didn't a token in the headers
+                    if (requestToken == null) {
+                        requestToken = getTokenFromParameter(httpServletRequest);
+                    }
+
+                    // If no request token available, send an error
+                    if (requestToken == null) {
+                        ((HttpServletResponse) response).sendError(HttpServletResponse.SC_FORBIDDEN,
+                                "Missing CSRF protection token in the request headers");
+                        return false;
+                    }
+
+                    // If tokens don't match, send an error
+                    if (!cookieToken.equals(requestToken)) {
+                        ((HttpServletResponse) response).sendError(HttpServletResponse.SC_FORBIDDEN,
+                                "Request token does not match session token");
+                        return false;
+                    }
+
+                    // Regenerate token if per-request tokens are in use
+                    if (xsrfConfig.isPerRequestToken()) {
+                        setXsrfCookie(httpServletResponse);
+                    }
                 }
             }
         }
         return true;
+    }
+
+    protected boolean isRequestIgnored(HttpServletRequest httpServletRequest) {
+        List<String> ignoreHttpMethods = xsrfConfig.getIgnoreHttpMethods();
+        return ignoreHttpMethods != null && ignoreHttpMethods.contains(httpServletRequest.getMethod());
+    }
+
+    protected String getTokenFromParameter(HttpServletRequest httpServletRequest) {
+        return httpServletRequest.getParameter(xsrfConfig.getParamName());
+    }
+
+    protected String getTokenFromHeader(HttpServletRequest httpServletRequest) {
+        String header = httpServletRequest.getHeader(xsrfConfig.getHeaderName());
+        if (header != null) {
+            int commaIndex = header.indexOf(',');
+            if (commaIndex != -1) {
+                // If header is multi-valued, only keep the first one
+                header = header.substring(0, commaIndex).trim();
+            }
+        }
+        return header;
     }
 
     protected void postHandle(ServletRequest request, ServletResponse response) {
@@ -117,7 +145,7 @@ public class AntiXsrfFilter extends PathMatchingFilter {
         httpServletResponse.setHeader(SET_COOKIE_HEADER, cookieSpec);
     }
 
-    protected String extractCookieToken(HttpServletRequest httpServletRequest) {
+    protected String getTokenFromCookie(HttpServletRequest httpServletRequest) {
         String cookieName = xsrfConfig.getCookieName();
         for (Cookie cookie : httpServletRequest.getCookies()) {
             if (cookieName.equals(cookie.getName())) {
