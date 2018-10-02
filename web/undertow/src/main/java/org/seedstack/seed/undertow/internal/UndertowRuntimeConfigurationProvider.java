@@ -33,7 +33,7 @@ class UndertowRuntimeConfigurationProvider implements ConfigurationProvider {
                         new NamedNode("host", LOCALHOST),
                         new NamedNode("port", String.valueOf(port)),
                         new NamedNode("baseUrl",
-                                String.format("%s://%s:%d/%s",
+                                String.format("%s://%s:%d%s/",
                                         protocol,
                                         LOCALHOST,
                                         port,

@@ -14,6 +14,7 @@ web:
     port: ${sys.customUndertowPort:'9001'}
     https: true
     sessions: 30
+    contextPath: /context
 
 crypto:
   keystores:
