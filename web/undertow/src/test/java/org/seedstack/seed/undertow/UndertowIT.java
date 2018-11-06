@@ -12,7 +12,9 @@ import com.google.inject.Injector;
 import io.restassured.RestAssured;
 import io.restassured.config.SSLConfig;
 import io.restassured.response.Response;
+import io.restassured.specification.ResponseSpecification;
 import org.assertj.core.api.Assertions;
+import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -53,13 +55,26 @@ public class UndertowIT {
         checkServer();
     }
 
+    @Test
+    public void staticResource() {
+        expect()
+                .statusCode(200)
+                .body(Matchers.containsString("<h1>Hello</h1>"))
+                .when()
+                .get(baseUrl + "index.html");
+    }
+
     private void checkServer() {
-        Response servletResponse = RestAssured.given()
-                .config(RestAssured.config().sslConfig(SSLConfig.sslConfig().relaxedHTTPSValidation("SSL")))
-                .expect()
+        Response servletResponse = expect()
                 .statusCode(200)
                 .when()
                 .get(baseUrl + "hello");
         Assertions.assertThat(servletResponse.asString()).isEqualTo("Hello World!");
+    }
+
+    private ResponseSpecification expect() {
+        return RestAssured.given()
+                .config(RestAssured.config().sslConfig(SSLConfig.sslConfig().relaxedHTTPSValidation("SSL")))
+                .expect();
     }
 }

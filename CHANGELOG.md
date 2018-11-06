@@ -1,3 +1,7 @@
+# Version 3.7.4 (2018-11-29)
+
+* [fix] Normalize context path with Undertow (force a starting slash and remove any terminal slash). 
+
 # Version 3.7.3 (2018-10-18)
 
 * [fix] Fix the `web.runtime.baseUrl` dynamic configuration property when running with Undertow and having a context path set.

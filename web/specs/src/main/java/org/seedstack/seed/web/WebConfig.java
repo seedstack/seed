@@ -194,7 +194,14 @@ public class WebConfig {
         }
 
         public ServerConfig setContextPath(String contextPath) {
-            this.contextPath = contextPath;
+            String normalized = contextPath;
+            if (!normalized.startsWith("/")) {
+                normalized = "/" + normalized;
+            }
+            if (normalized.endsWith("/")) {
+                normalized = normalized.substring(0, normalized.length() - 1);
+            }
+            this.contextPath = normalized;
             return this;
         }
 
