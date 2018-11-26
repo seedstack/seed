@@ -24,7 +24,7 @@ public class XsrfIT {
     private static final String XSRF_COOKIE_NAME = "XSRF-TOKEN";
     private static final String XSRF_HEADER_NAME = "X-XSRF-TOKEN";
     private static final String SESSION_COOKIE_NAME = "JSESSIONID";
-    @Configuration("web.runtime.baseUrl")
+    @Configuration("runtime.web.baseUrl")
     private String baseUrl;
 
     @Test

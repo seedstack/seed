@@ -23,7 +23,7 @@ import org.skyscreamer.jsonassert.JSONAssert;
 @RunWith(SeedITRunner.class)
 @LaunchWithUndertow
 public class HalResourceIT {
-    @Configuration("web.runtime.baseUrl")
+    @Configuration("runtime.web.baseUrl")
     private String baseUrl;
     @Configuration("${web.runtime.contextPath}")
     private String contextPath;

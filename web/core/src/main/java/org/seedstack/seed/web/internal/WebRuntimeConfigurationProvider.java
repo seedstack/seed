@@ -40,8 +40,10 @@ class WebRuntimeConfigurationProvider implements ConfigurationProvider {
             }
         }
 
-        return new MapNode(new NamedNode("web", new MapNode(
-                new NamedNode("runtime", info)
+        return new MapNode(new NamedNode("runtime", new MapNode(
+                new NamedNode("web", new MapNode(
+                        new NamedNode("servlet", info)
+                ))
         )));
     }
 }

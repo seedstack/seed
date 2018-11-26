@@ -21,7 +21,7 @@ import org.seedstack.seed.undertow.LaunchWithUndertow;
 @LaunchWithUndertow
 @SystemProperty(name = "seedstack.profiles", value = "withoutRootResource")
 public class WithoutRootResourceIT {
-    @Configuration("web.runtime.baseUrl")
+    @Configuration("runtime.web.baseUrl")
     private String baseUrl;
 
     @Test

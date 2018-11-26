@@ -14,6 +14,7 @@ import com.google.inject.Injector;
 import com.google.inject.Module;
 import com.google.inject.name.Names;
 import io.nuun.kernel.api.Kernel;
+import javax.annotation.Priority;
 import javax.inject.Singleton;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -25,6 +26,7 @@ import org.seedstack.seed.LifecycleListener;
 import org.seedstack.seed.core.internal.transaction.TransactionalClassProxy;
 import org.seedstack.seed.core.internal.transaction.TransactionalProxy;
 
+@Priority(5)
 public class LifecycleIT implements LifecycleListener {
     private static boolean startedWasCalled;
     private static boolean stoppingWasCalled;

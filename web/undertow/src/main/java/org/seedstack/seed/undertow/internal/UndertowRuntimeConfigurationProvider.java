@@ -5,6 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.undertow.internal;
 
 import javax.servlet.ServletContext;
@@ -27,18 +28,19 @@ class UndertowRuntimeConfigurationProvider implements ConfigurationProvider {
     public MapNode provide() {
         String protocol = serverConfig.isHttps() ? "https" : "http";
         int port = serverConfig.getPort();
-        return new MapNode(new NamedNode("web", new MapNode(
-                new NamedNode("runtime", new MapNode(
-                        new NamedNode("protocol", protocol),
-                        new NamedNode("host", LOCALHOST),
-                        new NamedNode("port", String.valueOf(port)),
+        return new MapNode(new NamedNode("runtime", new MapNode(
+                new NamedNode("web", new MapNode(
+                        new NamedNode("server", new MapNode(
+                                new NamedNode("protocol", protocol),
+                                new NamedNode("host", LOCALHOST),
+                                new NamedNode("port", String.valueOf(port))
+                        )),
                         new NamedNode("baseUrl",
                                 String.format("%s://%s:%d%s/",
                                         protocol,
                                         LOCALHOST,
                                         port,
                                         servletContext.getContextPath()))
-                ))
-        )));
+                )))));
     }
 }

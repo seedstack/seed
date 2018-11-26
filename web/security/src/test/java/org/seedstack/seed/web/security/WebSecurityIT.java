@@ -31,7 +31,7 @@ public class WebSecurityIT {
     @Inject
     @Named("master")
     private KeyStore keyStore;
-    @Configuration("web.runtime.baseUrl")
+    @Configuration("runtime.web.baseUrl")
     private String baseUrl;
 
     @After

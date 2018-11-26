@@ -14,7 +14,7 @@
     <parent>
         <groupId>org.seedstack.seed</groupId>
         <artifactId>seed-testing</artifactId>
-        <version>3.7.4-SNAPSHOT</version>
+        <version>3.8.0-SNAPSHOT</version>
     </parent>
 
     <artifactId>seed-testing-specs</artifactId>

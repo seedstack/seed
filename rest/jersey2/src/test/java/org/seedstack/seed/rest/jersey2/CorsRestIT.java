@@ -20,7 +20,7 @@ import org.seedstack.seed.undertow.LaunchWithUndertow;
 @LaunchWithUndertow
 public class CorsRestIT {
     private static final String WWW_OTHER_COM = "www.other.com";
-    @Configuration("web.runtime.baseUrl")
+    @Configuration("runtime.web.baseUrl")
     private String baseUrl;
 
     @Test

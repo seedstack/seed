@@ -11,7 +11,6 @@ package org.seedstack.seed.core.internal.lifecycle;
 import com.google.inject.AbstractModule;
 import com.google.inject.multibindings.Multibinder;
 import java.util.Set;
-import javax.inject.Singleton;
 import org.seedstack.seed.LifecycleListener;
 
 class LifecycleModule extends AbstractModule {
@@ -30,11 +29,10 @@ class LifecycleModule extends AbstractModule {
         Multibinder<LifecycleListener> lifecycleListenerMultibinder = Multibinder.newSetBinder(binder(),
                 LifecycleListener.class);
         for (Class<? extends LifecycleListener> lifecycleListenerClass : lifecycleListenerClasses) {
-            lifecycleListenerMultibinder.addBinding().to(lifecycleListenerClass).in(Singleton.class);
+            lifecycleListenerMultibinder.addBinding().to(lifecycleListenerClass);
         }
 
         // Listen for singletons implementing Closeable
         bindListener(new AutoCloseableMatcher(), new AutoCloseableProvisionListener(lifecycleManager));
     }
-
 }

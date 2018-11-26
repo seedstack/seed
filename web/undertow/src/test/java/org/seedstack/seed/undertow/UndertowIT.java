@@ -27,7 +27,7 @@ import org.seedstack.seed.spi.SeedLauncher;
  */
 public class UndertowIT {
     private final SeedLauncher launcher = Seed.getLauncher();
-    @Configuration("web.runtime.baseUrl")
+    @Configuration("runtime.web.baseUrl")
     private String baseUrl;
 
     @Before

@@ -22,20 +22,16 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.seedstack.seed.Ignore;
-import org.seedstack.seed.rest.RestConfig;
 
 @RunWith(JMockit.class)
 public class RestModuleTest {
-
     private RestModule underTest;
-    @Mocked
-    private RestConfig restConfig;
 
     @Before
     public void setUp() {
         Collection<Class<?>> resources = Lists.newArrayList(MyResource1.class, MyResource2.class);
         Collection<Class<?>> providers = Lists.newArrayList(MyProvider1.class, MyProvider2.class);
-        underTest = new RestModule(restConfig, resources, providers, new HashMap<>());
+        underTest = new RestModule(resources, providers, new HashMap<>());
     }
 
     @Test

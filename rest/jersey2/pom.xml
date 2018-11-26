@@ -14,7 +14,7 @@
     <parent>
         <groupId>org.seedstack.seed</groupId>
         <artifactId>seed-rest</artifactId>
-        <version>3.7.4-SNAPSHOT</version>
+        <version>3.8.0-SNAPSHOT</version>
     </parent>
 
     <artifactId>seed-rest-jersey2</artifactId>
@@ -63,6 +63,10 @@
                 <exclusion>
                     <groupId>javax.servlet</groupId>
                     <artifactId>servlet-api</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>javax.validation</groupId>
+                    <artifactId>validation-api</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>

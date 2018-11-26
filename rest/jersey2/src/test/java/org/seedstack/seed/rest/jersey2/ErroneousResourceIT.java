@@ -19,7 +19,7 @@ import org.seedstack.seed.undertow.LaunchWithUndertow;
 @RunWith(SeedITRunner.class)
 @LaunchWithUndertow
 public class ErroneousResourceIT {
-    @Configuration("web.runtime.baseUrl")
+    @Configuration("runtime.web.baseUrl")
     private String baseUrl;
 
     @Test

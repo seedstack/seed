@@ -165,8 +165,7 @@ public class RestPlugin extends AbstractSeedPlugin implements RestProvider {
             protected void configure() {
                 install(new HypermediaModule(jsonHome, relRegistry));
                 if (enabled) {
-                    install(new RestModule(restConfig, filterResourceClasses(resources), providers,
-                            rootResourcesByVariant));
+                    install(new RestModule(filterResourceClasses(resources), providers, rootResourcesByVariant));
                 }
             }
         };

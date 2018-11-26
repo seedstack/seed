@@ -20,7 +20,7 @@ import org.skyscreamer.jsonassert.JSONAssert;
 @RunWith(SeedITRunner.class)
 @LaunchWithUndertow
 public class ValidationIT {
-    @Configuration("web.runtime.baseUrl")
+    @Configuration("runtime.web.baseUrl")
     private String baseUrl;
 
     @Test

@@ -8,13 +8,18 @@
 
 package org.seedstack.seed.core.internal.lifecycle;
 
+import static org.seedstack.shed.misc.PriorityUtils.sortByPriority;
+
 import com.google.common.collect.Sets;
 import io.nuun.kernel.api.plugin.InitState;
 import io.nuun.kernel.api.plugin.context.InitContext;
 import io.nuun.kernel.api.plugin.request.ClasspathScanRequest;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import javax.inject.Inject;
 import org.seedstack.seed.Ignore;
@@ -22,6 +27,7 @@ import org.seedstack.seed.LifecycleListener;
 import org.seedstack.seed.SeedException;
 import org.seedstack.seed.core.internal.AbstractSeedPlugin;
 import org.seedstack.seed.core.internal.CoreErrorCode;
+import org.seedstack.shed.misc.PriorityUtils;
 import org.seedstack.shed.reflect.Annotations;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -63,8 +69,12 @@ public class LifecyclePlugin extends AbstractSeedPlugin implements LifecycleMana
 
     @Override
     public void started() {
-        for (LifecycleListener lifecycleListener : lifecycleListeners) {
+        List<? extends LifecycleListener> sortedLifecycleListeners = new ArrayList<>(this.lifecycleListeners);
+        sortByPriority(sortedLifecycleListeners, PriorityUtils::priorityOfClassOf);
+
+        for (LifecycleListener lifecycleListener : sortedLifecycleListeners) {
             try {
+                LOGGER.info("Executing started method of lifecycle listener {}", lifecycleListener.getClass().getName());
                 lifecycleListener.started();
             } catch (Exception e) {
                 throw SeedException
@@ -87,8 +97,12 @@ public class LifecyclePlugin extends AbstractSeedPlugin implements LifecycleMana
             }
         });
 
-        for (LifecycleListener lifecycleListener : lifecycleListeners) {
+        List<? extends LifecycleListener> sortedLifecycleListeners = new ArrayList<>(this.lifecycleListeners);
+        sortByPriority(sortedLifecycleListeners, PriorityUtils::priorityOfClassOf);
+
+        for (LifecycleListener lifecycleListener : sortedLifecycleListeners) {
             try {
+                LOGGER.info("Executing stopping method of lifecycle listener {}", lifecycleListener.getClass().getName());
                 lifecycleListener.stopping();
             } catch (Exception e) {
                 LOGGER.error("An exception occurred in the stopping() method of lifecycle listener {}",

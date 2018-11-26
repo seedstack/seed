@@ -22,7 +22,7 @@ import org.seedstack.seed.undertow.LaunchWithUndertow;
 @LaunchWithUndertow
 @SystemProperty(name = "seedstack.profiles", value = "withPrefix")
 public class Jersey2WithPrefixIT {
-    @Configuration("web.runtime.baseUrl")
+    @Configuration("runtime.web.baseUrl")
     private String baseUrl;
 
     @Test

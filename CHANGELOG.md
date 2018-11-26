@@ -1,5 +1,13 @@
-# Version 3.7.4 (2018-11-29)
+# Version 3.8.0 (2018-11-27)
 
+* [chg] Classes implementing `LifecycleListener` are no longer singleton by default (add `@Singleton` on the class to force it).
+* [chg] Classes implementing `LifecycleListener` can be ordered by applying the `@Priority` annotation on them.
+* [chg] Configuration property `web.runtime.baseUrl` was renamed to `runtime.web.baseUrl` property.
+* [chg] Configuration property `web.runtime.protocol` was renamed to `runtime.web.server.protocol` property.
+* [chg] Configuration property `web.runtime.host` was renamed to `runtime.web.server.host` property.
+* [chg] Configuration property `web.runtime.port` was renamed to `runtime.web.server.port` property.
+* [chg] Configuration property `web.runtime.contextPath` was renamed to `runtime.web.servlet.contextPath` property.
+* [chg] Configuration property `web.runtime.virtualServerName` was renamed to `runtime.web.servlet.virtualServerName` property.
 * [fix] Normalize context path with Undertow (force a starting slash and remove any terminal slash). 
 
 # Version 3.7.3 (2018-10-18)
