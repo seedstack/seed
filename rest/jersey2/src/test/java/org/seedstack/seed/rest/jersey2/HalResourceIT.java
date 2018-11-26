@@ -61,7 +61,7 @@ public class HalResourceIT {
     @Test
     public void hal_builder() throws JSONException {
         Response response = expect().statusCode(200).given().header("Content-Type", "application/hal+json")
-                .get(baseUrl + "orders");
+                .get(baseUrl + "/orders");
 
         JSONAssert.assertEquals(orders, response.asString(), true);
     }
@@ -69,7 +69,7 @@ public class HalResourceIT {
     @Test
     public void hal_representation() throws JSONException {
         Response response = expect().statusCode(200).given().header("Content-Type", "application/hal+json")
-                .get(baseUrl + "orders/1");
+                .get(baseUrl + "/orders/1");
 
         JSONAssert.assertEquals(order1, response.asString(), true);
     }
@@ -77,7 +77,7 @@ public class HalResourceIT {
     @Test
     public void hal_representation2() throws JSONException {
         Response response = expect().statusCode(200).given().header("Content-Type", "application/hal+json")
-                .get(baseUrl + "orders/v2/1");
+                .get(baseUrl + "/orders/v2/1");
 
         JSONAssert.assertEquals(order2, response.asString(), true);
     }

@@ -36,34 +36,34 @@ public class WebSecurityIT {
 
     @After
     public void tearDown() {
-        givenRelaxedSSL().expect().statusCode(200).when().get(baseUrl + "logout");
+        givenRelaxedSSL().expect().statusCode(200).when().get(baseUrl + "/logout");
     }
 
     @Test
     public void requestOnSecuredResourceShouldSend401() {
-        givenRelaxedSSL().expect().statusCode(401).when().get(baseUrl + "jediCouncil.html");
+        givenRelaxedSSL().expect().statusCode(401).when().get(baseUrl + "/jediCouncil.html");
     }
 
     @Test
     public void requestOnSecuredResourceWithGoodBasicauthShouldSend200OnAuthorizedResource() {
         givenRelaxedSSL().auth().basic("Obiwan", "yodarulez").expect().statusCode(200).when().get(
-                baseUrl + "jediCouncil.html");
+                baseUrl + "/jediCouncil.html");
     }
 
     @Test
     public void requestOnSecuredResourceWithGoodBasicauthShouldSend401OnForbiddenResource() {
         givenRelaxedSSL().auth().basic("Anakin", "imsodark").expect().statusCode(401).when().get(
-                baseUrl + "jediCouncil.html");
+                baseUrl + "/jediCouncil.html");
     }
 
     @Test
     public void requestOnAnonymousResourceShouldSend200() {
-        givenRelaxedSSL().expect().statusCode(200).when().get(baseUrl + "image.jpg");
+        givenRelaxedSSL().expect().statusCode(200).when().get(baseUrl + "/image.jpg");
     }
 
     @Test
     public void responseShouldBeATeapotWhenRequestingUrlTeapot() {
-        givenRelaxedSSL().given().expect().statusCode(418).when().get(baseUrl + "teapot");
+        givenRelaxedSSL().given().expect().statusCode(418).when().get(baseUrl + "/teapot");
     }
 
     @Test
@@ -71,7 +71,7 @@ public class WebSecurityIT {
         assertThat(givenRelaxedSSL().expect()
                 .statusCode(200)
                 .when()
-                .get(baseUrl + "logout")
+                .get(baseUrl + "/logout")
                 .body()
                 .asString()).contains(
                 "You are logged out!");
@@ -79,14 +79,14 @@ public class WebSecurityIT {
 
     @Test
     public void authcShouldRedirectToLogin() {
-        assertThat(givenRelaxedSSL().expect().statusCode(200).when().get(baseUrl + "protected").body().asString())
+        assertThat(givenRelaxedSSL().expect().statusCode(200).when().get(baseUrl + "/protected").body().asString())
                 .contains("Please login:");
     }
 
     @Test
     @Ignore
     public void requestWithCertificateShouldSend200() {
-        givenRelaxedSSL().expect().statusCode(200).when().get(baseUrl + "cert-protected");
+        givenRelaxedSSL().expect().statusCode(200).when().get(baseUrl + "/cert-protected");
     }
 
     @Test
@@ -98,7 +98,7 @@ public class WebSecurityIT {
                 .expect()
                 .statusCode(302)
                 .when()
-                .post(baseUrl + "login.html")
+                .post(baseUrl + "/login.html")
                 .header("Location"))
                 .endsWith("/success.html");
     }

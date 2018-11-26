@@ -32,7 +32,7 @@ public class XsrfIT {
         givenRelaxedSSL().expect()
                 .statusCode(200)
                 .when()
-                .get(baseUrl + "xsrf-protected-without-session");
+                .get(baseUrl + "/xsrf-protected-without-session");
     }
 
     @Test
@@ -43,7 +43,7 @@ public class XsrfIT {
                 .expect()
                 .statusCode(403)
                 .when()
-                .get(baseUrl + "xsrf-protected-with-session");
+                .get(baseUrl + "/xsrf-protected-with-session");
     }
 
     @Test
@@ -58,7 +58,7 @@ public class XsrfIT {
                 .expect()
                 .statusCode(403)
                 .when()
-                .get(baseUrl + "xsrf-protected-with-session");
+                .get(baseUrl + "/xsrf-protected-with-session");
     }
 
     @Test
@@ -73,7 +73,7 @@ public class XsrfIT {
                 .expect()
                 .statusCode(403)
                 .when()
-                .get(baseUrl + "xsrf-protected-with-session");
+                .get(baseUrl + "/xsrf-protected-with-session");
     }
 
     @Test
@@ -90,7 +90,7 @@ public class XsrfIT {
                 .expect()
                 .statusCode(200)
                 .when()
-                .get(baseUrl + "xsrf-protected-with-session");
+                .get(baseUrl + "/xsrf-protected-with-session");
     }
 
     private Response initiateSession() {
@@ -99,7 +99,7 @@ public class XsrfIT {
                 .expect()
                 .statusCode(200)
                 .when()
-                .get(baseUrl + "xsrf-protected-with-session");
+                .get(baseUrl + "/xsrf-protected-with-session");
     }
 
     private RequestSpecification givenRelaxedSSL() {

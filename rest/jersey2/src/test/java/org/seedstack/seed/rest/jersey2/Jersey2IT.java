@@ -30,7 +30,7 @@ public class Jersey2IT {
     @Test
     public void basicResource() throws JSONException {
         Response response = expect().statusCode(200).given().contentType(MediaType.APPLICATION_JSON).body(
-                "{ \"body\": \"hello world!\", \"author\": \"test\" }").post(baseUrl + "message");
+                "{ \"body\": \"hello world!\", \"author\": \"test\" }").post(baseUrl + "/message");
         JSONAssert.assertEquals(response.asString(), "{\"body\":\"test says: hello world!\",\"author\":\"computer\"}",
                 true);
     }
@@ -38,21 +38,21 @@ public class Jersey2IT {
     @Test
     public void basicAsyncResource() throws JSONException {
         Response response = expect().statusCode(200).given().contentType(MediaType.APPLICATION_JSON).body(
-                "{ \"body\": \"hello world!\", \"author\": \"test\" }").post(baseUrl + "async");
+                "{ \"body\": \"hello world!\", \"author\": \"test\" }").post(baseUrl + "/async");
         JSONAssert.assertEquals(response.asString(), "{\"body\":\"test says: hello world!\",\"author\":\"computer\"}",
                 true);
     }
 
     @Test
     public void cacheIsDisabledByDefault() {
-        Response response = expect().statusCode(200).when().get(baseUrl + "hello");
+        Response response = expect().statusCode(200).when().get(baseUrl + "/hello");
         assertThat(response.header("Expires")).isEqualTo("0");
         assertThat(response.header("Cache-Control")).isEqualTo("no-store, no-cache, must-revalidate, private");
     }
 
     @Test
     public void subResourceLocator() {
-        String result = expect().statusCode(200).when().get(baseUrl + "locator/sub/1").asString();
+        String result = expect().statusCode(200).when().get(baseUrl + "/locator/sub/1").asString();
         assertThat(result).isEqualTo("sub:1");
     }
 
@@ -60,13 +60,13 @@ public class Jersey2IT {
     public void multipart() {
         expect().statusCode(200).given()
                 .multiPart("file.txt", "Hello world!".getBytes())
-                .post(baseUrl + "multipart");
+                .post(baseUrl + "/multipart");
     }
 
     @Test
     public void streamWriting() throws JSONException {
         String result = expect().statusCode(200).given()
-                .get(baseUrl + "stream")
+                .get(baseUrl + "/stream")
                 .asString();
         JSONAssert.assertEquals("[\"Hello\", \"world\"]", result, true);
     }
@@ -76,7 +76,7 @@ public class Jersey2IT {
         String result = expect().statusCode(200).given()
                 .body("[\"Hello\", \"world\"]")
                 .contentType("application/json")
-                .post(baseUrl + "stream")
+                .post(baseUrl + "/stream")
                 .asString();
         assertThat(result).isEqualTo("Hello world!");
     }

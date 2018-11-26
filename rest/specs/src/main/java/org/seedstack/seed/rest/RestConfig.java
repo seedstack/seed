@@ -33,28 +33,70 @@ public class RestConfig {
         return path;
     }
 
+    public RestConfig setPath(String path) {
+        String normalized = path;
+        if (!normalized.startsWith("/")) {
+            normalized = "/" + normalized;
+        }
+        if (normalized.endsWith("/")) {
+            normalized = normalized.substring(0, normalized.length() - 1);
+        }
+        this.path = normalized;
+        return this;
+    }
+
     public String getJspPath() {
         return jspPath;
+    }
+
+    public RestConfig setJspPath(String jspPath) {
+        this.jspPath = jspPath;
+        return this;
     }
 
     public String getBaseRel() {
         return baseRel;
     }
 
+    public RestConfig setBaseRel(String baseRel) {
+        this.baseRel = baseRel;
+        return this;
+    }
+
     public String getBaseParam() {
         return baseParam;
+    }
+
+    public RestConfig setBaseParam(String baseParam) {
+        this.baseParam = baseParam;
+        return this;
     }
 
     public boolean isJsonHome() {
         return jsonHome;
     }
 
+    public RestConfig setJsonHome(boolean jsonHome) {
+        this.jsonHome = jsonHome;
+        return this;
+    }
+
     public Map<String, String> getJerseyProperties() {
         return Collections.unmodifiableMap(jerseyProperties);
     }
 
+    public RestConfig setJerseyProperties(Map<String, String> jerseyProperties) {
+        this.jerseyProperties = jerseyProperties;
+        return this;
+    }
+
     public Set<Class<?>> getFeatures() {
         return Collections.unmodifiableSet(features);
+    }
+
+    public RestConfig setFeatures(Set<Class<?>> features) {
+        this.features = features;
+        return this;
     }
 
     public ExceptionMappingConfig exceptionMapping() {

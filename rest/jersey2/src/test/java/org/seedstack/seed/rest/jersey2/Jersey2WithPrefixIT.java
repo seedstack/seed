@@ -22,11 +22,11 @@ import org.seedstack.seed.undertow.LaunchWithUndertow;
 @LaunchWithUndertow
 @SystemProperty(name = "seedstack.profiles", value = "withPrefix")
 public class Jersey2WithPrefixIT {
-    @Configuration("runtime.web.baseUrl")
+    @Configuration("runtime.rest.baseUrl")
     private String baseUrl;
 
     @Test
     public void restPrefixIsHonored() {
-        expect().statusCode(200).given().contentType(MediaType.APPLICATION_JSON).get(baseUrl + "rest/hello");
+        expect().statusCode(200).given().contentType(MediaType.APPLICATION_JSON).get(baseUrl + "/hello");
     }
 }

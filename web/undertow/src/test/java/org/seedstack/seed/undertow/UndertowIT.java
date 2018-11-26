@@ -61,14 +61,14 @@ public class UndertowIT {
                 .statusCode(200)
                 .body(Matchers.containsString("<h1>Hello</h1>"))
                 .when()
-                .get(baseUrl + "index.html");
+                .get(baseUrl + "/index.html");
     }
 
     private void checkServer() {
         Response servletResponse = expect()
                 .statusCode(200)
                 .when()
-                .get(baseUrl + "hello");
+                .get(baseUrl + "/hello");
         Assertions.assertThat(servletResponse.asString()).isEqualTo("Hello World!");
     }
 

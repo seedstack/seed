@@ -28,6 +28,7 @@ class UndertowRuntimeConfigurationProvider implements ConfigurationProvider {
     public MapNode provide() {
         String protocol = serverConfig.isHttps() ? "https" : "http";
         int port = serverConfig.getPort();
+        String baseUrl = String.format("%s://%s:%d%s", protocol, LOCALHOST, port, servletContext.getContextPath());
         return new MapNode(new NamedNode("runtime", new MapNode(
                 new NamedNode("web", new MapNode(
                         new NamedNode("server", new MapNode(
@@ -35,12 +36,8 @@ class UndertowRuntimeConfigurationProvider implements ConfigurationProvider {
                                 new NamedNode("host", LOCALHOST),
                                 new NamedNode("port", String.valueOf(port))
                         )),
-                        new NamedNode("baseUrl",
-                                String.format("%s://%s:%d%s/",
-                                        protocol,
-                                        LOCALHOST,
-                                        port,
-                                        servletContext.getContextPath()))
+                        new NamedNode("baseUrl", baseUrl),
+                        new NamedNode("baseUrlSlash", baseUrl + "/")
                 )))));
     }
 }

@@ -2,13 +2,15 @@
 
 * [chg] Classes implementing `LifecycleListener` are no longer singleton by default (add `@Singleton` on the class to force it).
 * [chg] Classes implementing `LifecycleListener` can be ordered by applying the `@Priority` annotation on them.
-* [chg] Configuration property `web.runtime.baseUrl` was renamed to `runtime.web.baseUrl` property.
-* [chg] Configuration property `web.runtime.protocol` was renamed to `runtime.web.server.protocol` property.
-* [chg] Configuration property `web.runtime.host` was renamed to `runtime.web.server.host` property.
-* [chg] Configuration property `web.runtime.port` was renamed to `runtime.web.server.port` property.
-* [chg] Configuration property `web.runtime.contextPath` was renamed to `runtime.web.servlet.contextPath` property.
-* [chg] Configuration property `web.runtime.virtualServerName` was renamed to `runtime.web.servlet.virtualServerName` property.
 * [fix] Normalize context path with Undertow (force a starting slash and remove any terminal slash). 
+* [brk] Configuration property `web.runtime.baseUrl` was renamed to `runtime.web.baseUrl` property.
+* [brk] Configuration property `web.runtime.protocol` was renamed to `runtime.web.server.protocol` property.
+* [brk] Configuration property `web.runtime.host` was renamed to `runtime.web.server.host` property.
+* [brk] Configuration property `web.runtime.port` was renamed to `runtime.web.server.port` property.
+* [brk] Configuration property `web.runtime.contextPath` was renamed to `runtime.web.servlet.contextPath` property.
+* [brk] Configuration property `web.runtime.virtualServerName` was renamed to `runtime.web.servlet.virtualServerName` property.
+* [brk] Configuration property `runtime.web.baseUrl` do NOT end with a slash anymore (use `runtime.web.baseUrlSlash` if needed).
+* [new] Configuration property `runtime.rest.baseUrl` provides the base path for JAX-RS resources (and `runtime.rest.baseUrlSlash` with a terminal slash).
 
 # Version 3.7.3 (2018-10-18)
 

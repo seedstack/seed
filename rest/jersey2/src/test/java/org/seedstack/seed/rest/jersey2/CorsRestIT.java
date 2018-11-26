@@ -31,7 +31,7 @@ public class CorsRestIT {
                 .statusCode(200)
                 .header("Access-Control-Allow-Origin", WWW_OTHER_COM)
                 .when()
-                .options(baseUrl + "cors");
+                .options(baseUrl + "/cors");
     }
 
     @Test
@@ -42,7 +42,7 @@ public class CorsRestIT {
                 .statusCode(200)
                 .header("Access-Control-Allow-Origin", WWW_OTHER_COM)
                 .when()
-                .options(baseUrl + "cors");
+                .options(baseUrl + "/cors");
     }
 
     @Test
@@ -53,7 +53,7 @@ public class CorsRestIT {
                 .statusCode(200)
                 .header("Access-Control-Allow-Origin", WWW_OTHER_COM)
                 .when()
-                .options(baseUrl + "cors");
+                .options(baseUrl + "/cors");
     }
 
     @Test
@@ -64,7 +64,7 @@ public class CorsRestIT {
                 .statusCode(200)
                 .header("Access-Control-Allow-Origin", WWW_OTHER_COM)
                 .when()
-                .options(baseUrl + "cors");
+                .options(baseUrl + "/cors");
     }
 
     @Test
@@ -75,7 +75,7 @@ public class CorsRestIT {
                 .statusCode(200)
                 .header("Access-Control-Allow-Origin", WWW_OTHER_COM)
                 .when()
-                .options(baseUrl + "cors");
+                .options(baseUrl + "/cors");
     }
 
     @Test
@@ -86,7 +86,7 @@ public class CorsRestIT {
                 .statusCode(200)
                 .header("Access-Control-Allow-Origin", WWW_OTHER_COM)
                 .when()
-                .options(baseUrl + "cors");
+                .options(baseUrl + "/cors");
     }
 
     @Test
@@ -96,6 +96,6 @@ public class CorsRestIT {
                 .expect()
                 .statusCode(405)
                 .when()
-                .options(baseUrl + "cors");
+                .options(baseUrl + "/cors");
     }
 }

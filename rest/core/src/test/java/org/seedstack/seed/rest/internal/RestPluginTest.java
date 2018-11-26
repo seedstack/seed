@@ -25,7 +25,9 @@ import javax.ws.rs.Path;
 import javax.ws.rs.ext.Provider;
 import mockit.Deencapsulation;
 import mockit.Expectations;
+import mockit.Injectable;
 import mockit.Mocked;
+import mockit.Tested;
 import mockit.integration.junit4.JMockit;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -40,13 +42,16 @@ import org.seedstack.seed.spi.ApplicationProvider;
 
 @RunWith(JMockit.class)
 public class RestPluginTest {
-    private RestPlugin underTest = new RestPlugin();
+    @Tested
+    private RestPlugin underTest;
     @Mocked
     private InitContext initContext;
     @Mocked
     private ApplicationProvider applicationProvider;
     @Mocked
     private Application application;
+    @Injectable
+    private SeedRuntime seedRuntime;
     @Mocked
     private ServletContext servletContext;
 
@@ -95,7 +100,7 @@ public class RestPluginTest {
         underTest.provideContainerContext(SeedRuntime.builder()
                 .configuration(Coffig.builder().withProviders(new PrioritizedProvider()).build())
                 .diagnosticManager(new DiagnosticManagerImpl())
-                .context(servletContext)
+                .context(seedRuntime.contextAs(ServletContext.class))
                 .build());
         underTest.init(initContext);
 
@@ -131,6 +136,8 @@ public class RestPluginTest {
                 result = application;
                 application.getConfiguration();
                 result = Coffig.builder().build();
+                seedRuntime.contextAs(ServletContext.class);
+                result = servletContext;
             }
         };
     }

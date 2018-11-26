@@ -11,7 +11,6 @@ package org.seedstack.seed.rest.internal;
 import com.google.common.collect.Lists;
 import io.nuun.kernel.api.annotations.Ignore;
 import java.util.Map;
-import javax.servlet.ServletContext;
 import javax.ws.rs.GET;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
@@ -43,8 +42,6 @@ public class ResourceParserTest {
     private Map<String, Link> links;
     @Mocked
     private RestConfig restConfig;
-    @Mocked
-    private ServletContext servletContext;
 
     @Before
     public void before() {
@@ -56,12 +53,10 @@ public class ResourceParserTest {
                 result = BASE_REL;
                 restConfig.getBaseParam();
                 result = BASE_PARAM;
-                servletContext.getContextPath();
-                result = SERVLET_CONTEXT_PATH;
             }
         };
 
-        ResourceScanner resourceScanner = new ResourceScanner(restConfig, servletContext);
+        ResourceScanner resourceScanner = new ResourceScanner(restConfig, SERVLET_CONTEXT_PATH);
         resourceScanner.scan(Lists.newArrayList(MyLinkTemplateResource.class));
         resourceMap = resourceScanner.jsonHomeResources();
         links = resourceScanner.halLinks();

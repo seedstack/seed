@@ -31,7 +31,7 @@ public class ValidationIT {
                 .expect()
                 .statusCode(400)
                 .when()
-                .post(baseUrl + "validating/body")
+                .post(baseUrl + "/validating/body")
                 .body()
                 .asString();
         JSONAssert.assertEquals("{\"errors\":[{\"location\":\"REQUEST_BODY\",\"path\":\"attr1\"," +
@@ -45,7 +45,7 @@ public class ValidationIT {
                 .expect()
                 .statusCode(400)
                 .when()
-                .get(baseUrl + "validating/queryparam")
+                .get(baseUrl + "/validating/queryparam")
                 .body()
                 .asString();
         JSONAssert.assertEquals("{\"errors\":[{\"location\":\"QUERY_PARAMETER\",\"path\":\"param\"," +
@@ -59,7 +59,7 @@ public class ValidationIT {
                 .expect()
                 .statusCode(400)
                 .when()
-                .get(baseUrl + "validating/unknown")
+                .get(baseUrl + "/validating/unknown")
                 .body()
                 .asString();
         JSONAssert.assertEquals("{\"errors\":[{\"location\":\"UNKNOWN\",\"path\":\"arg0.attr1\"," +
@@ -73,7 +73,7 @@ public class ValidationIT {
                 .expect()
                 .statusCode(500)
                 .when()
-                .get(baseUrl + "validating/response")
+                .get(baseUrl + "/validating/response")
                 .body()
                 .asString();
         JSONAssert.assertEquals("{\"errors\":[{\"location\":\"RESPONSE_BODY\",\"path\":\"attr1\"," +

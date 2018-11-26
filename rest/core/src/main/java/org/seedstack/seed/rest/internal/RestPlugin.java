@@ -41,6 +41,7 @@ import org.seedstack.seed.rest.internal.jsonhome.JsonHomeRootResource;
 import org.seedstack.seed.rest.internal.jsonhome.Resource;
 import org.seedstack.seed.rest.spi.RestProvider;
 import org.seedstack.seed.rest.spi.RootResource;
+import org.seedstack.seed.spi.ConfigurationPriority;
 import org.seedstack.shed.reflect.Classes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,13 +49,13 @@ import org.slf4j.LoggerFactory;
 public class RestPlugin extends AbstractSeedPlugin implements RestProvider {
     private static final Logger LOGGER = LoggerFactory.getLogger(RestPlugin.class);
     private final Map<Variant, Class<? extends RootResource>> rootResourcesByVariant = new HashMap<>();
-    private RestConfig restConfig;
     private boolean enabled;
-    private ServletContext servletContext;
+    private RestConfig restConfig;
     private RelRegistry relRegistry;
     private JsonHome jsonHome;
     private Collection<Class<?>> resources;
     private Collection<Class<?>> providers;
+    private SeedRuntime seedRuntime;
 
     @Override
     public String name() {
@@ -63,7 +64,7 @@ public class RestPlugin extends AbstractSeedPlugin implements RestProvider {
 
     @Override
     protected void setup(SeedRuntime seedRuntime) {
-        servletContext = seedRuntime.contextAs(ServletContext.class);
+        this.seedRuntime = seedRuntime;
     }
 
     @Override
@@ -76,19 +77,20 @@ public class RestPlugin extends AbstractSeedPlugin implements RestProvider {
 
     @Override
     public InitState initialize(InitContext initContext) {
+        ServletContext servletContext = seedRuntime.contextAs(ServletContext.class);
         Map<Specification, Collection<Class<?>>> scannedClasses = initContext.scannedTypesBySpecification();
 
         restConfig = getConfiguration(RestConfig.class);
         resources = scannedClasses.get(JaxRsResourceSpecification.INSTANCE);
         providers = scannedClasses.get(JaxRsProviderSpecification.INSTANCE);
 
-        initializeHypermedia();
-
         if (servletContext != null) {
             addJacksonProviders(providers);
 
             configureExceptionMappers();
             configureStreamSupport();
+
+            initializeHypermedia(servletContext.getContextPath());
 
             if (restConfig.isJsonHome()) {
                 // The typed locale parameter resolves constructor ambiguity when the JAX-RS 2.0 spec is in the
@@ -97,7 +99,14 @@ public class RestPlugin extends AbstractSeedPlugin implements RestProvider {
                         JsonHomeRootResource.class);
             }
 
+            seedRuntime.registerConfigurationProvider(
+                    new RestRuntimeConfigurationProvider(restConfig),
+                    ConfigurationPriority.RUNTIME_INFO
+            );
+
             enabled = true;
+        } else {
+            initializeHypermedia("");
         }
 
         return InitState.INITIALIZED;
@@ -150,8 +159,8 @@ public class RestPlugin extends AbstractSeedPlugin implements RestProvider {
         }
     }
 
-    private void initializeHypermedia() {
-        ResourceScanner resourceScanner = new ResourceScanner(restConfig, servletContext).scan(resources);
+    private void initializeHypermedia(String contextPath) {
+        ResourceScanner resourceScanner = new ResourceScanner(restConfig, contextPath).scan(resources);
         Map<String, Resource> resourceMap = resourceScanner.jsonHomeResources();
 
         relRegistry = new RelRegistryImpl(resourceScanner.halLinks());

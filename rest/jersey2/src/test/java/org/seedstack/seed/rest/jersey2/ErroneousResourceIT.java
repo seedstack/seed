@@ -24,21 +24,21 @@ public class ErroneousResourceIT {
 
     @Test
     public void test_map_all_exception() {
-        expect().statusCode(500).given().get(baseUrl + "error/internal");
+        expect().statusCode(500).given().get(baseUrl + "/error/internal");
     }
 
     @Test
     public void test_map_authentication_exception() {
-        expect().statusCode(401).given().get(baseUrl + "error/authentication");
+        expect().statusCode(401).given().get(baseUrl + "/error/authentication");
     }
 
     @Test
     public void test_map_authorization_exception() {
-        expect().statusCode(403).given().get(baseUrl + "error/authorization");
+        expect().statusCode(403).given().get(baseUrl + "/error/authorization");
     }
 
     @Test
     public void test_map_web_application_exception() {
-        expect().statusCode(404).given().get(baseUrl + "error/notFound");
+        expect().statusCode(404).given().get(baseUrl + "/error/notFound");
     }
 }

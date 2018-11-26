@@ -18,7 +18,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import javax.servlet.ServletContext;
 import org.seedstack.seed.rest.Rel;
 import org.seedstack.seed.rest.RestConfig;
 import org.seedstack.seed.rest.hal.Link;
@@ -39,12 +38,12 @@ class ResourceScanner {
     /**
      * Constructor.
      *
-     * @param restConfig     the REST configuration object.
-     * @param servletContext the servlet context
+     * @param restConfig  the REST configuration object.
+     * @param contextPath the servlet context path or empty string if none
      */
-    ResourceScanner(RestConfig restConfig, ServletContext servletContext) {
+    ResourceScanner(RestConfig restConfig, String contextPath) {
         this.restConfig = restConfig;
-        this.servletContextPath = servletContext == null ? "" : servletContext.getContextPath();
+        this.servletContextPath = contextPath;
     }
 
     /**
