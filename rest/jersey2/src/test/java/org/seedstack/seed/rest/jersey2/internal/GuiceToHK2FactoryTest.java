@@ -14,13 +14,10 @@ import com.google.inject.Injector;
 import mockit.Expectations;
 import mockit.Mocked;
 import mockit.Verifications;
-import mockit.integration.junit4.JMockit;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 
-@RunWith(JMockit.class)
 public class GuiceToHK2FactoryTest {
     private final SomeClass someObject = new SomeClass();
     private GuiceToHK2Factory<SomeClass> underTest;

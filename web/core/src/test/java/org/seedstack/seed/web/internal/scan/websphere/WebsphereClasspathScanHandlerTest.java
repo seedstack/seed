@@ -14,13 +14,10 @@ import java.net.URLStreamHandler;
 import java.util.List;
 import mockit.Mocked;
 import mockit.Verifications;
-import mockit.integration.junit4.JMockit;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.reflections.vfs.Vfs;
 
-@RunWith(JMockit.class)
 public class WebsphereClasspathScanHandlerTest {
     @Test
     public void testUrlTypes(@SuppressWarnings("unused") @Mocked final WsInputDir wsInputDir) throws Exception {

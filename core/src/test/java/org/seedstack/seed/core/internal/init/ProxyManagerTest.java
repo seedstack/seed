@@ -14,14 +14,12 @@ import java.net.ProxySelector;
 import java.net.URI;
 import java.util.List;
 import mockit.Deencapsulation;
-import mockit.Expectations;
-import mockit.integration.junit4.JMockit;
+import mockit.Mock;
+import mockit.MockUp;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.seedstack.seed.ProxyConfig;
 
-@RunWith(JMockit.class)
 public class ProxyManagerTest {
     private ProxyManager underTest = ProxyManager.get();
     private ProxyConfig proxyConfig = new ProxyConfig();
@@ -114,52 +112,61 @@ public class ProxyManagerTest {
         Assertions.assertThat(((InetSocketAddress) proxies.get(0).address()).getPort()).isEqualTo(port);
     }
 
+    private ProxySelector getProxySelector() {
+        return Deencapsulation.getField(underTest, "seedProxySelector");
+    }
+
     private void givenProxy(String type, String host, Integer port, boolean upperCase, String... exclusions) {
         if (type != null) {
-            new Expectations(System.class) {{
-                if (upperCase) {
-                    System.getenv(type.toUpperCase() + "_PROXY");
-                    result = String.format("http://%s:%d", host, port);
-                    System.getenv(type.toLowerCase() + "_proxy");
-                    result = null;
-                    times = -1;
-                    System.getenv("NO_PROXY");
-                    result = String.join(",", (CharSequence[]) exclusions);
-                    System.getenv("no_proxy");
-                    result = null;
-                    times = -1;
-                } else {
-                    System.getenv(type.toLowerCase() + "_proxy");
-                    result = String.format("http://%s:%d", host, port);
-                    System.getenv(type.toUpperCase() + "_PROXY");
-                    result = null;
-                    times = -1;
-                    System.getenv("no_proxy");
-                    result = String.join(",", (CharSequence[]) exclusions);
-                    System.getenv("NO_PROXY");
-                    result = null;
-                    times = -1;
-                }
-            }};
+            new SystemProxyMockUp(upperCase, type, host, port, exclusions);
         } else {
-            new Expectations(System.class) {{
-                System.getenv("http_proxy");
-                result = null;
-                System.getenv("HTTP_PROXY");
-                result = null;
-                System.getenv("https_proxy");
-                result = null;
-                System.getenv("HTTPS_PROXY");
-                result = null;
-                System.getenv("no_proxy");
-                result = null;
-                System.getenv("NO_PROXY");
-                result = null;
-            }};
+            new SystemNoProxyMockUp();
         }
     }
 
-    private ProxySelector getProxySelector() {
-        return Deencapsulation.getField(underTest, "seedProxySelector");
+    private static class SystemProxyMockUp extends MockUp<System> {
+        private final boolean upperCase;
+        private final String type;
+        private final String host;
+        private final Integer port;
+        private final String[] exclusions;
+
+        SystemProxyMockUp(boolean upperCase, String type, String host, Integer port, String... exclusions) {
+            this.upperCase = upperCase;
+            this.type = type;
+            this.host = host;
+            this.port = port;
+            this.exclusions = exclusions;
+        }
+
+        @Mock
+        String getenv(String name) {
+            if (upperCase) {
+                if (name.equals(type.toUpperCase() + "_PROXY"))
+                    return String.format("http://%s:%d", host, port);
+                if (name.equals(type.toLowerCase() + "_proxy"))
+                    return null;
+                if (name.equals("NO_PROXY"))
+                    return String.join(",", (CharSequence[]) exclusions);
+                if (name.equals("no_proxy"))
+                    return null;
+            } else {
+                if (name.equals(type.toLowerCase() + "_proxy"))
+                    return String.format("http://%s:%d", host, port);
+                if (name.equals(type.toUpperCase() + "_PROXY"))
+                    return null;
+                if (name.equals("no_proxy"))
+                    return String.join(",", (CharSequence[]) exclusions);
+                if (name.equals("NO_PROXY"))
+                    return null;
+            }
+            return null;
+        }
+    }
+
+    private static class SystemNoProxyMockUp extends MockUp<System> {
+        String getenv(String name) {
+            return null;
+        }
     }
 }

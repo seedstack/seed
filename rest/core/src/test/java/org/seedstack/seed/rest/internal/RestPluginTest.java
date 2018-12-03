@@ -28,11 +28,10 @@ import mockit.Expectations;
 import mockit.Injectable;
 import mockit.Mocked;
 import mockit.Tested;
-import mockit.integration.junit4.JMockit;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.kametic.specifications.Specification;
 import org.seedstack.coffig.Coffig;
+import org.seedstack.coffig.provider.CompositeProvider;
 import org.seedstack.seed.Application;
 import org.seedstack.seed.Ignore;
 import org.seedstack.seed.core.SeedRuntime;
@@ -40,7 +39,6 @@ import org.seedstack.seed.core.internal.configuration.PrioritizedProvider;
 import org.seedstack.seed.core.internal.diagnostic.DiagnosticManagerImpl;
 import org.seedstack.seed.spi.ApplicationProvider;
 
-@RunWith(JMockit.class)
 public class RestPluginTest {
     @Tested
     private RestPlugin underTest;
@@ -54,6 +52,8 @@ public class RestPluginTest {
     private SeedRuntime seedRuntime;
     @Mocked
     private ServletContext servletContext;
+    @Mocked
+    private Coffig coffig;
 
     @Test
     public void testName() {
@@ -135,7 +135,10 @@ public class RestPluginTest {
                 applicationProvider.getApplication();
                 result = application;
                 application.getConfiguration();
-                result = Coffig.builder().build();
+                result = coffig;
+                coffig.getProvider();
+                times = -1;
+                result = new CompositeProvider(new PrioritizedProvider());
                 seedRuntime.contextAs(ServletContext.class);
                 result = servletContext;
             }

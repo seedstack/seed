@@ -20,14 +20,11 @@ import mockit.Expectations;
 import mockit.Mock;
 import mockit.MockUp;
 import mockit.Mocked;
-import mockit.integration.junit4.JMockit;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.seedstack.seed.crypto.CryptoConfig;
 import org.seedstack.shed.ClassLoaders;
 
-@RunWith(JMockit.class)
 public class KeyPairConfigFactoryTest {
     private static final String KEY_STORE_NAME = "keystoreName";
     private static final String ALIAS_NAME_1 = "aliasName1";

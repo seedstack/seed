@@ -14,10 +14,8 @@ import java.security.KeyStore;
 import mockit.Expectations;
 import mockit.Injectable;
 import mockit.Mocked;
-import mockit.integration.junit4.JMockit;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.seedstack.coffig.Coffig;
 import org.seedstack.seed.SeedException;
 import org.seedstack.seed.crypto.CryptoConfig;
@@ -26,7 +24,6 @@ import org.seedstack.seed.crypto.EncryptionService;
 /**
  * Unit test for {@link DecryptFunction}.
  */
-@RunWith(JMockit.class)
 public class DecryptFunctionTest {
     private static final String toDecrypt = "essai crypting";
     private static final String cryptingString = BaseEncoding.base16().encode(toDecrypt.getBytes());

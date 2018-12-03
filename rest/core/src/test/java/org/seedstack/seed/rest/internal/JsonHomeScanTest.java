@@ -20,11 +20,9 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 import mockit.Expectations;
 import mockit.Mocked;
-import mockit.integration.junit4.JMockit;
 import org.assertj.core.api.Assertions;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.seedstack.seed.rest.Rel;
 import org.seedstack.seed.rest.RestConfig;
 import org.seedstack.seed.rest.internal.jsonhome.Resource;
@@ -34,7 +32,6 @@ import org.seedstack.seed.rest.internal.jsonhome.Resource;
  * properly scanned.
  */
 @Ignore // Tells nuun to not scan the test class
-@RunWith(JMockit.class)
 public class JsonHomeScanTest {
 
     private static final String SERVLET_CONTEXT_PATH = "/app/";

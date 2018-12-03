@@ -17,17 +17,14 @@ import javax.net.ssl.SSLContext;
 import mockit.Deencapsulation;
 import mockit.Mocked;
 import mockit.Verifications;
-import mockit.integration.junit4.JMockit;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.seedstack.seed.crypto.EncryptionService;
 import org.seedstack.seed.spi.ApplicationProvider;
 
 /**
  * Unit test for {@link CryptoPlugin}.
  */
-@RunWith(JMockit.class)
 public class CryptoPluginTest {
 
     @Test

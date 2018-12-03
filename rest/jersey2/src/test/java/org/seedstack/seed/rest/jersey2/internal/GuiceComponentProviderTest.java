@@ -24,20 +24,16 @@ import mockit.MockUp;
 import mockit.Mocked;
 import mockit.Tested;
 import mockit.Verifications;
-import mockit.integration.junit4.JMockit;
 import org.glassfish.hk2.api.DynamicConfiguration;
 import org.glassfish.hk2.api.Factory;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.utilities.binding.BindingBuilder;
 import org.glassfish.hk2.utilities.binding.ServiceBindingBuilder;
-import org.glassfish.jersey.internal.inject.Injections;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.jvnet.hk2.guice.bridge.api.GuiceBridge;
 import org.jvnet.hk2.guice.bridge.api.GuiceIntoHK2Bridge;
 import org.seedstack.seed.SeedException;
 
-@RunWith(JMockit.class)
 public class GuiceComponentProviderTest {
     @Tested
     private GuiceComponentProvider underTest;

@@ -17,15 +17,12 @@ import java.util.Map;
 import javax.net.ssl.SSLContext;
 import mockit.Mocked;
 import mockit.Verifications;
-import mockit.integration.junit4.JMockit;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.seedstack.seed.crypto.EncryptionService;
 
 /**
  * Unit test for {@link CryptoModule}
  */
-@RunWith(JMockit.class)
 public class CryptoModuleTest {
 
     /**

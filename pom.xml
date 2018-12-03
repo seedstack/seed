@@ -14,7 +14,7 @@
     <parent>
         <groupId>org.seedstack.poms</groupId>
         <artifactId>parent-internal</artifactId>
-        <version>3.4.0</version>
+        <version>3.4.3-SNAPSHOT</version>
     </parent>
 
     <groupId>org.seedstack.seed</groupId>
@@ -24,17 +24,17 @@
 
     <properties>
         <nuun-kernel.version>1.0.M9</nuun-kernel.version>
-        <javassist.version>3.23.1-GA</javassist.version>
-        <shed.version>1.1.3</shed.version>
-        <coffig.version>3.1.1</coffig.version>
+        <javassist.version>3.24.0-GA</javassist.version>
+        <shed.version>1.1.4-SNAPSHOT</shed.version>
+        <coffig.version>3.1.3-SNAPSHOT</coffig.version>
         <commons-cli.version>1.4</commons-cli.version>
-        <guice.version>4.2.0</guice.version>
-        <guava.version>25.1-jre</guava.version>
+        <guice.version>4.2.2</guice.version>
+        <guava.version>27.0.1-jre</guava.version>
         <typetools.version>0.5.0</typetools.version>
         <shiro.version>1.4.0</shiro.version>
-        <undertow.version>2.0.6.Final</undertow.version>
+        <undertow.version>2.0.16.Final</undertow.version>
         <jersey2.version>2.27</jersey2.version>
-        <hibernate-validator.version>6.0.11.Final</hibernate-validator.version>
+        <hibernate-validator.version>6.0.13.Final</hibernate-validator.version>
         <aopalliance.version>1.0</aopalliance.version>
         <glassfish-javax.el.version>3.0.0</glassfish-javax.el.version>
         <arquillian.version>1.4.0.Final</arquillian.version>

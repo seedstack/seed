@@ -18,15 +18,12 @@ import javax.crypto.NoSuchPaddingException;
 import mockit.Expectations;
 import mockit.Mocked;
 import mockit.Verifications;
-import mockit.integration.junit4.JMockit;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.seedstack.seed.SeedException;
 
 /**
  * Unit test for {@link EncryptionServiceImpl}.
  */
-@RunWith(JMockit.class)
 public class EncryptionServiceImplTest {
 
     /**

@@ -21,10 +21,8 @@ import mockit.Mock;
 import mockit.MockUp;
 import mockit.Mocked;
 import mockit.Verifications;
-import mockit.integration.junit4.JMockit;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.seedstack.seed.SeedException;
 import org.seedstack.seed.crypto.CryptoConfig;
 import org.seedstack.seed.crypto.EncryptionService;
@@ -33,7 +31,6 @@ import org.seedstack.shed.ClassLoaders;
 /**
  * Unit test for {@link EncryptionServiceFactory}.
  */
-@RunWith(JMockit.class)
 public class EncryptionServiceFactoryTest {
     private static final String ALIAS = "key1";
     private static final char[] PASSWORD = "password".toCharArray();

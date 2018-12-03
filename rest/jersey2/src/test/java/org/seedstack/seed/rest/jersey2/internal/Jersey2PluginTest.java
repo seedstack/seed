@@ -12,15 +12,12 @@ import com.google.common.collect.Lists;
 import io.nuun.kernel.api.plugin.context.InitContext;
 import mockit.Expectations;
 import mockit.Mocked;
-import mockit.integration.junit4.JMockit;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.seedstack.seed.rest.RestConfig;
 import org.seedstack.seed.rest.internal.RestPlugin;
 import org.seedstack.seed.rest.spi.RestProvider;
 import org.seedstack.seed.web.internal.WebPlugin;
 
-@RunWith(JMockit.class)
 public class Jersey2PluginTest {
 
     private Jersey2Plugin underTest = new Jersey2Plugin();

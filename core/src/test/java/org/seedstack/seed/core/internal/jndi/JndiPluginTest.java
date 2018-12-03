@@ -13,14 +13,11 @@ import mockit.Mock;
 import mockit.MockUp;
 import mockit.Mocked;
 import mockit.Tested;
-import mockit.integration.junit4.JMockit;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.seedstack.seed.JndiConfig;
 import org.seedstack.seed.core.internal.AbstractSeedPlugin;
 
-@RunWith(JMockit.class)
 public class JndiPluginTest {
     @Tested
     private JndiPlugin pluginUnderTest;

@@ -17,16 +17,13 @@ import java.util.List;
 import java.util.Map;
 import mockit.Expectations;
 import mockit.Mocked;
-import mockit.integration.junit4.JMockit;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.seedstack.seed.SeedException;
 import org.seedstack.seed.core.internal.crypto.fixtures.AliasQualifier;
 import org.seedstack.seed.crypto.CryptoConfig;
 import org.seedstack.seed.crypto.EncryptionService;
 
-@RunWith(JMockit.class)
 public class EncryptionServiceBindingFactoryTest {
 
     private static final String KEY_STORE_NAME = "keyStoreName";

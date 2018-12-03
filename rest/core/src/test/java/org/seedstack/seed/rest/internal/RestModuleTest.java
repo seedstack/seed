@@ -17,13 +17,10 @@ import javax.ws.rs.Path;
 import javax.ws.rs.ext.Provider;
 import mockit.Mocked;
 import mockit.Verifications;
-import mockit.integration.junit4.JMockit;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.seedstack.seed.Ignore;
 
-@RunWith(JMockit.class)
 public class RestModuleTest {
     private RestModule underTest;
 
