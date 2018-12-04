@@ -11,7 +11,7 @@ package org.seedstack.seed.security;
 import java.io.Serializable;
 
 /**
- * An <tt>AuthenticationToken</tt> is a consolidation of an account's principals
+ * An <code>AuthenticationToken</code> is a consolidation of an account's principals
  * and supporting credentials submitted by a user during an authentication
  * attempt.
  * <p>
