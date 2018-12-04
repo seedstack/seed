@@ -41,7 +41,6 @@
         <tomcat.version>7.0.86</tomcat.version>
 
         <compatibility.version>3.1.0</compatibility.version>
-        <quality.skip>true</quality.skip>
 
         <bintray.package>seed</bintray.package>
     </properties>
