@@ -21,6 +21,7 @@
 
     <properties>
         <compatibility.skip>true</compatibility.skip>
+        <testArgLine>-javaagent:${settings.localRepository}/org/jmockit/jmockit/${jmockit.version}/jmockit-${jmockit.version}.jar</testArgLine>
     </properties>
 
     <dependencies>

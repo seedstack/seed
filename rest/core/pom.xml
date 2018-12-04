@@ -19,6 +19,10 @@
 
     <artifactId>seed-rest-core</artifactId>
 
+    <properties>
+        <testArgLine>-javaagent:${settings.localRepository}/org/jmockit/jmockit/${jmockit.version}/jmockit-${jmockit.version}.jar</testArgLine>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>org.seedstack.seed</groupId>
