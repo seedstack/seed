@@ -18,6 +18,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import javax.servlet.ServletException;
 import org.seedstack.coffig.Coffig;
 import org.seedstack.seed.SeedException;
 import org.seedstack.seed.core.Seed;
@@ -25,7 +26,6 @@ import org.seedstack.seed.spi.SeedLauncher;
 import org.seedstack.seed.undertow.UndertowConfig;
 import org.seedstack.seed.web.WebConfig;
 import org.seedstack.seed.web.internal.ServletContextUtils;
-import org.seedstack.shed.exception.BaseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xnio.OptionMap;
@@ -106,8 +106,8 @@ public class UndertowLauncher implements SeedLauncher {
                     .set(Options.WORKER_TASK_MAX_THREADS, undertowConfig.getWorkerThreads())
                     .set(Options.TCP_NODELAY, true)
                     .getMap());
-        } catch (Exception e) {
-            handleUndertowException(e);
+        } catch (RuntimeException e) {
+            unwrapUndertowException(e);
         }
     }
 
@@ -117,8 +117,8 @@ public class UndertowLauncher implements SeedLauncher {
                 xnioWorker.shutdownNow();
                 xnioWorker.awaitTermination(2, TimeUnit.SECONDS);
             }
-        } catch (Exception e) {
-            handleUndertowException(e);
+        } catch (RuntimeException e) {
+            unwrapUndertowException(e);
         } finally {
             xnioWorker = null;
         }
@@ -134,8 +134,8 @@ public class UndertowLauncher implements SeedLauncher {
             deploymentManager = factory.createDeploymentManager();
             deploymentManager.deploy();
             httpHandler = deploymentManager.start();
-        } catch (Exception e) {
-            handleUndertowException(e);
+        } catch (RuntimeException e) {
+            unwrapUndertowException(e);
         }
     }
 
@@ -144,8 +144,8 @@ public class UndertowLauncher implements SeedLauncher {
             try {
                 deploymentManager.stop();
                 deploymentManager.undeploy();
-            } catch (Exception e) {
-                handleUndertowException(e);
+            } catch (ServletException | RuntimeException e) {
+                unwrapUndertowException(e);
             } finally {
                 httpHandler = null;
                 deploymentManager = null;
@@ -163,8 +163,8 @@ public class UndertowLauncher implements SeedLauncher {
             );
             undertow.start();
             LOGGER.info("Undertow Web server listening on {}:{}", serverConfig.getHost(), serverConfig.getPort());
-        } catch (Exception e) {
-            handleUndertowException(e);
+        } catch (RuntimeException e) {
+            unwrapUndertowException(e);
         }
     }
 
@@ -173,8 +173,8 @@ public class UndertowLauncher implements SeedLauncher {
             try {
                 undertow.stop();
                 LOGGER.info("Undertow Web server stopped");
-            } catch (Exception e) {
-                handleUndertowException(e);
+            } catch (RuntimeException e) {
+                unwrapUndertowException(e);
             } finally {
                 undertow = null;
             }
@@ -189,12 +189,13 @@ public class UndertowLauncher implements SeedLauncher {
                 .orElseThrow(() -> SeedException.createNew(UndertowErrorCode.MISSING_UNDERTOW_PLUGIN));
     }
 
-    private void handleUndertowException(Exception e) throws Exception {
-        // Undertow always wraps exception in a RuntimeException
-        if (e instanceof RuntimeException && e.getCause() instanceof BaseException) {
-            throw (BaseException) e.getCause();
-        } else {
-            throw e;
+    private void unwrapUndertowException(Exception e) throws Exception {
+        if (e instanceof RuntimeException) {
+            Throwable cause = e.getCause();
+            if (cause instanceof Exception) {
+                throw Seed.translateException((Exception) cause);
+            }
         }
+        throw e;
     }
 }

@@ -19,7 +19,6 @@ import org.seedstack.seed.security.principals.PrincipalProvider;
  * RoleMapping that returns Roles which names are the realm data;
  */
 public class SameRoleMapping implements RoleMapping {
-
     @Override
     public Set<Role> resolveRoles(Set<String> realmData, Collection<PrincipalProvider<?>> principalProviders) {
         Set<Role> roles = new HashSet<>();

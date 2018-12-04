@@ -22,10 +22,10 @@ import org.seedstack.seed.security.Scope;
  */
 public class SeedAuthorizationInfo implements AuthorizationInfo {
     private static final long serialVersionUID = 1L;
-    private Set<Role> apiRoles = new HashSet<>();
-    private Set<String> roles = new HashSet<>();
-    private Set<String> stringPermissions = new HashSet<>();
-    private Set<Permission> objectPermissions = new HashSet<>();
+    private final Set<Role> apiRoles = new HashSet<>();
+    private final Set<String> roles = new HashSet<>();
+    private final Set<String> stringPermissions = new HashSet<>();
+    private final Set<ScopePermission> scopePermissions = new HashSet<>();
 
     @Override
     public Collection<String> getRoles() {
@@ -39,7 +39,7 @@ public class SeedAuthorizationInfo implements AuthorizationInfo {
 
     @Override
     public Collection<Permission> getObjectPermissions() {
-        return Collections.unmodifiableSet(objectPermissions);
+        return Collections.unmodifiableSet(scopePermissions);
     }
 
     /**
@@ -61,7 +61,7 @@ public class SeedAuthorizationInfo implements AuthorizationInfo {
             if (!role.getScopes().isEmpty()) {
                 for (Scope scope : role.getScopes()) {
                     ScopePermission sp = new ScopePermission(permission.getPermission(), scope);
-                    objectPermissions.add(sp);
+                    scopePermissions.add(sp);
                 }
             } else {
                 stringPermissions.add(permission.getPermission());

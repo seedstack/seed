@@ -11,6 +11,7 @@
 * [brk] Configuration property `web.runtime.virtualServerName` was renamed to `runtime.web.servlet.virtualServerName` property.
 * [brk] Configuration property `runtime.web.baseUrl` do NOT end with a slash anymore (use `runtime.web.baseUrlSlash` if needed).
 * [new] Configuration property `runtime.rest.baseUrl` provides the base path for JAX-RS resources (and `runtime.rest.baseUrlSlash` with a terminal slash).
+* [chg] Built and tested with OpenJDK 11 (minimum Java version still being 8).
 
 # Version 3.7.3 (2018-10-18)
 

@@ -21,6 +21,7 @@
 
     <properties>
         <testArgLine>-javaagent:${settings.localRepository}/org/jmockit/jmockit/${jmockit.version}/jmockit-${jmockit.version}.jar</testArgLine>
+        <spotbugsExclude>${project.basedir}/spotbugs-exclude.xml</spotbugsExclude>
     </properties>
 
     <dependencies>

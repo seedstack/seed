@@ -46,7 +46,7 @@ public class TransactionalClassProxy<T> implements MethodHandler {
             factory.setInterfaces(new Class<?>[]{IgnoreAutoCloseable.class});
             factory.setFilter(method -> !method.getDeclaringClass().equals(Object.class));
             return (T) factory.create(new Class<?>[0], new Object[0], new TransactionalClassProxy<>(transactionalLink));
-        } catch (Exception e) {
+        } catch (NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException e) {
             throw SeedException.wrap(e, TransactionErrorCode.UNABLE_TO_CREATE_TRANSACTIONAL_PROXY).put("class",
                     clazz.getName());
         }

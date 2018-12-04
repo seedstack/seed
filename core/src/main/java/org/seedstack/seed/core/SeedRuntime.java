@@ -10,6 +10,7 @@ package org.seedstack.seed.core;
 
 import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
 import io.nuun.kernel.api.Plugin;
+import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -29,7 +30,6 @@ import org.seedstack.seed.spi.ConfigurationPriority;
 public class SeedRuntime {
     private static final String SEED_PACKAGE_PREFIX = "org.seedstack.seed";
     private static final YAMLMapper yamlMapper = new YAMLMapper();
-
     private final Object context;
     private final DiagnosticManager diagnosticManager;
     private final Coffig configuration;
@@ -174,7 +174,6 @@ public class SeedRuntime {
     }
 
     private class RuntimeDiagnosticCollector implements DiagnosticInfoCollector {
-
         @Override
         public Map<String, Object> collect() {
             Map<String, Object> result = new HashMap<>();
@@ -185,7 +184,7 @@ public class SeedRuntime {
             result.put("contextClass", context == null ? "NONE" : context.getClass().getName());
             try {
                 result.put("configuration", yamlMapper.readValue(configuration.toString(), Map.class));
-            } catch (Exception e) {
+            } catch (IOException | RuntimeException e) {
                 result.put("rawConfiguration", configuration.toString());
             }
 

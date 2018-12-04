@@ -5,6 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.web.internal.resources;
 
 import com.google.common.cache.CacheBuilder;
@@ -88,47 +89,51 @@ public class WebResourcesFilter implements Filter {
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse,
             FilterChain filterChain) throws IOException, ServletException {
-        HttpServletRequest httpServletRequest = (HttpServletRequest) servletRequest;
-        HttpServletResponse httpServletResponse = (HttpServletResponse) servletResponse;
-        String path = httpServletRequest.getRequestURI().substring(httpServletRequest.getContextPath().length());
-        String acceptEncodingHeader = httpServletRequest.getHeader("Accept-Encoding");
-        boolean acceptGzip = acceptEncodingHeader != null && acceptEncodingHeader.contains("gzip");
+        if (servletRequest instanceof HttpServletRequest && servletResponse instanceof HttpServletResponse) {
+            HttpServletRequest httpServletRequest = (HttpServletRequest) servletRequest;
+            HttpServletResponse httpServletResponse = (HttpServletResponse) servletResponse;
+            String path = httpServletRequest.getRequestURI().substring(httpServletRequest.getContextPath().length());
+            String acceptEncodingHeader = httpServletRequest.getHeader("Accept-Encoding");
+            boolean acceptGzip = acceptEncodingHeader != null && acceptEncodingHeader.contains("gzip");
 
-        if (path.isEmpty() || path.endsWith(SLASH) || path.startsWith(WEB_INF)) {
-            filterChain.doFilter(servletRequest, servletResponse);
-        } else {
-            // Find resource
-            Optional<ResourceInfo> optionalResourceInfo;
-            try {
-                optionalResourceInfo = resourceInfoCache.get(new ResourceRequest(path, acceptGzip));
-            } catch (ExecutionException e) {
-                throw SeedException.wrap(e, WebErrorCode.UNABLE_TO_DETERMINE_RESOURCE_INFO).put("path", path);
-            }
-
-            if (!optionalResourceInfo.isPresent()) {
+            if (path.isEmpty() || path.endsWith(SLASH) || path.startsWith(WEB_INF)) {
                 filterChain.doFilter(servletRequest, servletResponse);
             } else {
-                long ifModifiedSince = ((HttpServletRequest) servletRequest).getDateHeader(HEADER_IFMODSINCE);
-                if (ifModifiedSince < servletInitTime) {
-                    // Set last modified header
-                    httpServletResponse.setDateHeader(HEADER_LASTMOD, servletInitTime);
+                // Find resource
+                Optional<ResourceInfo> optionalResourceInfo;
+                try {
+                    optionalResourceInfo = resourceInfoCache.get(new ResourceRequest(path, acceptGzip));
+                } catch (ExecutionException e) {
+                    throw SeedException.wrap(e, WebErrorCode.UNABLE_TO_DETERMINE_RESOURCE_INFO).put("path", path);
+                }
 
-                    // Prepare response
-                    ResourceInfo resourceInfo = optionalResourceInfo.get();
-                    httpServletResponse.setContentType(resourceInfo.getContentType());
-                    ResourceData resourceData = prepareResourceData(resourceInfo, acceptGzip);
-                    if (resourceData.gzipped) {
-                        httpServletResponse.addHeader("Content-Encoding", "gzip");
-                    }
-                    httpServletResponse.addHeader("Content-Length", Integer.toString(resourceData.data.length));
-
-                    // Write data
-                    httpServletResponse.getOutputStream().write(resourceData.data);
+                if (!optionalResourceInfo.isPresent()) {
+                    filterChain.doFilter(servletRequest, servletResponse);
                 } else {
-                    // Send that resource was not modified
-                    httpServletResponse.setStatus(HttpServletResponse.SC_NOT_MODIFIED);
+                    long ifModifiedSince = ((HttpServletRequest) servletRequest).getDateHeader(HEADER_IFMODSINCE);
+                    if (ifModifiedSince < servletInitTime) {
+                        // Set last modified header
+                        httpServletResponse.setDateHeader(HEADER_LASTMOD, servletInitTime);
+
+                        // Prepare response
+                        ResourceInfo resourceInfo = optionalResourceInfo.get();
+                        httpServletResponse.setContentType(resourceInfo.getContentType());
+                        ResourceData resourceData = prepareResourceData(resourceInfo, acceptGzip);
+                        if (resourceData.gzipped) {
+                            httpServletResponse.addHeader("Content-Encoding", "gzip");
+                        }
+                        httpServletResponse.addHeader("Content-Length", Integer.toString(resourceData.data.length));
+
+                        // Write data
+                        httpServletResponse.getOutputStream().write(resourceData.data);
+                    } else {
+                        // Send that resource was not modified
+                        httpServletResponse.setStatus(HttpServletResponse.SC_NOT_MODIFIED);
+                    }
                 }
             }
+        } else {
+            filterChain.doFilter(servletRequest, servletResponse);
         }
     }
 

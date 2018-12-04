@@ -14,6 +14,8 @@ import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.servlet.ServletContainer;
 
 class SeedServletContainer extends ServletContainer {
+    private static final long serialVersionUID = 1L;
+
     SeedServletContainer(Set<Class<?>> resources, Set<Class<?>> providers, Set<Class<?>> features,
             Map<String, ?> properties) {
         super(new InternalResourceConfig(resources, providers, features, properties));

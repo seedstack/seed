@@ -8,6 +8,7 @@
 
 package org.seedstack.seed.security.internal.authorization;
 
+import java.io.Serializable;
 import org.apache.shiro.authz.Permission;
 import org.apache.shiro.authz.permission.WildcardPermission;
 import org.seedstack.seed.security.Scope;
@@ -15,11 +16,10 @@ import org.seedstack.seed.security.Scope;
 /**
  * Represents a permission given on a limited scope
  */
-public class ScopePermission implements Permission {
-
-    private String permission;
-
-    private Scope scope;
+public class ScopePermission implements Permission, Serializable {
+    private static final long serialVersionUID = 1L;
+    private final WildcardPermission permission;
+    private final Scope scope;
 
     /**
      * Constructor with a permission
@@ -27,7 +27,8 @@ public class ScopePermission implements Permission {
      * @param permission the permission
      */
     public ScopePermission(String permission) {
-        this.permission = permission;
+        this.permission = new WildcardPermission(permission);
+        this.scope = null;
     }
 
     /**
@@ -37,7 +38,7 @@ public class ScopePermission implements Permission {
      * @param scope      the scope
      */
     public ScopePermission(String permission, Scope scope) {
-        this.permission = permission;
+        this.permission = new WildcardPermission(permission);
         this.scope = scope;
     }
 
@@ -45,14 +46,10 @@ public class ScopePermission implements Permission {
     public boolean implies(Permission p) {
         if (scope != null && p instanceof ScopePermission) {
             ScopePermission sp = (ScopePermission) p;
-            return scope.includes(sp.getScope()) && buildWildcardPermission().implies(sp.buildWildcardPermission());
+            return scope.includes(sp.getScope()) && permission.implies(sp.permission);
         } else {
-            return buildWildcardPermission().implies(p);
+            return permission.implies(p);
         }
-    }
-
-    private WildcardPermission buildWildcardPermission() {
-        return new WildcardPermission(permission);
     }
 
     /**
@@ -61,7 +58,7 @@ public class ScopePermission implements Permission {
      * @return the permission
      */
     public String getPermission() {
-        return permission;
+        return permission.toString();
     }
 
     /**
