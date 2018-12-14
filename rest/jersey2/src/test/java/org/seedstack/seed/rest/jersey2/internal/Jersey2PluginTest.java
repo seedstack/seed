@@ -17,6 +17,9 @@ import org.seedstack.seed.rest.RestConfig;
 import org.seedstack.seed.rest.internal.RestPlugin;
 import org.seedstack.seed.rest.spi.RestProvider;
 import org.seedstack.seed.web.internal.WebPlugin;
+import org.seedstack.seed.web.spi.SeedFilterPriority;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class Jersey2PluginTest {
 
@@ -62,5 +65,26 @@ public class Jersey2PluginTest {
         }};
 
         underTest.init(initContext);
+    }
+
+    @Test
+    public void testJerseyFilterPriority() {
+        new Expectations() {{
+            initContext.dependency(RestPlugin.class);
+            result = restPlugin;
+
+            restPlugin.isEnabled();
+            result = true;
+
+            restPlugin.getRestConfig();
+            result = restConfig;
+
+            initContext.dependencies(RestProvider.class);
+            result = Lists.newArrayList(restProvider);
+        }};
+
+        underTest.init(initContext);
+        assertThat(underTest.filters().get(0).getFilterClass()).isEqualTo(org.seedstack.seed.rest.jersey2.internal.SeedServletContainer.class);
+        assertThat(underTest.filters().get(0).getPriority()).isEqualTo(SeedFilterPriority.JERSEY);
     }
 }
