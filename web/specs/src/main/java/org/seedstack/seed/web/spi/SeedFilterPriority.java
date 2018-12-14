@@ -39,7 +39,12 @@ public class SeedFilterPriority {
     public static final int NORMAL = 0;
 
     /**
+     * Jersey filter has a priority lower than normal, so that user filters can use default priority.
+     */
+    public static final int JERSEY = -1000;
+
+    /**
      * Static resources are served after all normal filters.
      */
-    public static final int RESOURCES = -1000;
+    public static final int RESOURCES = -2000;
 }

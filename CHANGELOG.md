@@ -1,3 +1,7 @@
+# Version 3.8.1 (xxxx-xx-xx)
+* [chg] Filter priorities updated: resource filter has -2000 priority, and Jersey filter has -1000 priority.
+
+
 # Version 3.8.0 (2018-11-27)
 
 * [chg] Classes implementing `LifecycleListener` are no longer singleton by default (add `@Singleton` on the class to force it).
