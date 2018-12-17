@@ -11,25 +11,31 @@ import com.google.common.collect.Lists;
 import io.nuun.kernel.api.plugin.InitState;
 import io.nuun.kernel.api.plugin.context.InitContext;
 import io.nuun.kernel.core.AbstractPlugin;
+import org.glassfish.jersey.media.multipart.MultiPartFeature;
+import org.glassfish.jersey.server.ServerProperties;
+import org.glassfish.jersey.server.mvc.freemarker.FreemarkerMvcFeature;
+import org.glassfish.jersey.server.mvc.jsp.JspMvcFeature;
+import org.glassfish.jersey.servlet.ServletProperties;
+import org.seedstack.seed.rest.RestConfig;
+import org.seedstack.seed.rest.internal.RestPlugin;
+import org.seedstack.seed.rest.spi.RestProvider;
+import org.seedstack.seed.web.spi.FilterDefinition;
+import org.seedstack.seed.web.spi.ListenerDefinition;
+import org.seedstack.seed.web.spi.SeedFilterPriority;
+import org.seedstack.seed.web.spi.ServletDefinition;
+import org.seedstack.seed.web.spi.WebProvider;
+import org.seedstack.shed.reflect.Classes;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.ws.rs.ConstrainedTo;
+import javax.ws.rs.RuntimeType;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import javax.ws.rs.ConstrainedTo;
-import javax.ws.rs.RuntimeType;
-import org.glassfish.jersey.media.multipart.MultiPartFeature;
-import org.glassfish.jersey.server.ServerProperties;
-import org.glassfish.jersey.server.mvc.jsp.JspMvcFeature;
-import org.glassfish.jersey.servlet.ServletProperties;
-import org.seedstack.seed.rest.RestConfig;
-import org.seedstack.seed.rest.internal.RestPlugin;
-import org.seedstack.seed.rest.spi.RestProvider;
-import org.seedstack.seed.web.spi.*;
-import org.seedstack.shed.reflect.Classes;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class Jersey2Plugin extends AbstractPlugin implements WebProvider {
     private static final Logger LOGGER = LoggerFactory.getLogger(Jersey2Plugin.class);
@@ -69,6 +75,12 @@ public class Jersey2Plugin extends AbstractPlugin implements WebProvider {
                 enabledFeatures.add(MultiPartFeature.class);
                 LOGGER.trace("Detected and enabled JAX-RS multipart feature");
             }
+
+            if ( isFreemarkerFeaturePresent() ) {
+                enabledFeatures.add(FreemarkerMvcFeature.class);
+                LOGGER.trace("Detected and enabled Freemaker feature");
+            }
+
             if (isJspFeaturePresent()) {
                 enabledFeatures.add(JspMvcFeature.class);
                 LOGGER.trace("Detected and enabled JAX-RS JSP feature");
@@ -147,6 +159,10 @@ public class Jersey2Plugin extends AbstractPlugin implements WebProvider {
 
     private boolean isJspFeaturePresent() {
         return Classes.optional("org.glassfish.jersey.server.mvc.jsp.JspMvcFeature").isPresent();
+    }
+
+    private boolean isFreemarkerFeaturePresent() {
+        return Classes.optional("org.glassfish.jersey.server.mvc.freemarker.FreemarkerMvcFeature").isPresent();
     }
 
     private boolean isMultipartFeaturePresent() {
