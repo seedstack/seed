@@ -17,12 +17,10 @@ import javax.ws.rs.core.MediaType;
 @Path("/freemarker")
 public class FreemarkerResource {
 
+    private String key = "hervé";
     public String getKey() {
         return key;
     }
-
-    public String key = "hervé";
-
 
     @GET
     @Produces(MediaType.TEXT_HTML)
