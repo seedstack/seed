@@ -7,7 +7,7 @@
 #
 
 logging:
-  level: DEBUG
+  level: INFO
   loggers:
     org.seedstack.seed.rest.internal.RestPlugin: DEBUG
 web:
