@@ -51,6 +51,13 @@ public class WebSecurityIT {
     }
 
     @Test
+    public void testSessionContinuity() {
+        String sessionId = givenRelaxedSSL().auth().basic("Obiwan", "yodarulez").expect().statusCode(200).when().get(
+                baseUrl + "/jediCouncil.html").cookie("JSESSIONID");
+        givenRelaxedSSL().auth().basic("Obiwan", "yodarulez").expect().statusCode(200).when().get(
+                baseUrl + "/jediCouncil.html");
+    }
+    @Test
     public void requestOnSecuredResourceWithGoodBasicauthShouldSend401OnForbiddenResource() {
         givenRelaxedSSL().auth().basic("Anakin", "imsodark").expect().statusCode(401).when().get(
                 baseUrl + "/jediCouncil.html");
