@@ -5,6 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.undertow.internal;
 
 import io.nuun.kernel.api.Kernel;
@@ -35,7 +36,7 @@ import org.xnio.XnioWorker;
 public class UndertowLauncher implements SeedLauncher {
     private static final Logger LOGGER = LoggerFactory.getLogger(UndertowLauncher.class);
     private static final AtomicBoolean firstRun = new AtomicBoolean(true);
-    private static final AtomicBoolean launched = new AtomicBoolean(false);
+    private final AtomicBoolean launched = new AtomicBoolean(false);
     private XnioWorker xnioWorker;
     private DeploymentManager deploymentManager;
     private Undertow undertow;
