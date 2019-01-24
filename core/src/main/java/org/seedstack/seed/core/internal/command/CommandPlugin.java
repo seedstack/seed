@@ -5,6 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.core.internal.command;
 
 import static org.seedstack.shed.reflect.ReflectUtils.makeAccessible;
@@ -66,12 +67,11 @@ public class CommandPlugin extends AbstractSeedPlugin {
                     }
 
                     commandDefinitions.put(commandDefinition.getQualifiedName(), commandDefinition);
-                    LOGGER.trace("Command {} registered with {}", commandDefinition.getQualifiedName(),
+                    LOGGER.debug("Command {} detected, implemented in {}", commandDefinition.getQualifiedName(),
                             commandDefinition.getCommandActionClass().getCanonicalName());
                 }
             }
         }
-        LOGGER.debug("Registered " + commandDefinitions.size() + " command(s)");
 
         return InitState.INITIALIZED;
     }

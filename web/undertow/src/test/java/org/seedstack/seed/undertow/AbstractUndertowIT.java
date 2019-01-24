@@ -8,9 +8,7 @@
 
 package org.seedstack.seed.undertow;
 
-import io.restassured.response.Response;
 import io.restassured.specification.ResponseSpecification;
-import org.assertj.core.api.Assertions;
 import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -28,16 +26,7 @@ import org.seedstack.seed.undertow.internal.UndertowLauncher;
 @RunWith(SeedITRunner.class)
 public abstract class AbstractUndertowIT {
     @Configuration("runtime.web.baseUrl")
-    private String baseUrl;
-
-    @Test
-    public void servlet() {
-        Response servletResponse = expect()
-                .statusCode(200)
-                .when()
-                .get(baseUrl + "/hello");
-        Assertions.assertThat(servletResponse.asString()).isEqualTo("Hello World!");
-    }
+    protected String baseUrl;
 
     @Test
     public void staticResource() {

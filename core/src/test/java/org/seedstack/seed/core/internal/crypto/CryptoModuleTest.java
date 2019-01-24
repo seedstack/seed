@@ -5,12 +5,14 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.core.internal.crypto;
 
 import com.google.inject.Binder;
 import com.google.inject.Key;
 import com.google.inject.name.Names;
 import java.security.KeyStore;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import javax.net.ssl.SSLContext;
@@ -38,7 +40,8 @@ public class CryptoModuleTest {
         rsaServices.put(Key.get(EncryptionService.class, Names.named("k1")), asymetricCryptingRSA);
         rsaServices.put(Key.get(EncryptionService.class, Names.named("k2")), asymetricCryptingRSA);
 
-        CryptoModule module = new CryptoModule(rsaServices, keyStores, sslContext);
+        CryptoModule module = new CryptoModule(rsaServices, keyStores, keyStore, sslContext, new ArrayList<>(),
+                null);
         module.configure(binder);
         new Verifications() {
             {

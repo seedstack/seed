@@ -5,6 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.web.security.internal;
 
 import com.google.common.base.Strings;
@@ -74,10 +75,9 @@ class WebSecurityModule extends ShiroWebModule {
         for (WebSecurityConfig.UrlConfig urlConfig : securityConfig.getUrls()) {
             String pattern = urlConfig.getPattern();
             List<String> filters = urlConfig.getFilters();
-            LOGGER.trace("Binding {} to security filter chain {}", pattern, filters);
+            LOGGER.debug("URL pattern {} is secured with filter chain {}", pattern, filters);
             addFilterChain(pattern, getFilterKeys(filters));
         }
-        LOGGER.debug("{} URL(s) bound to security filters", securityConfig.getUrls().size());
 
         // Bind filters which are not PatchMatchingFilters
         bind(LogoutFilter.class);

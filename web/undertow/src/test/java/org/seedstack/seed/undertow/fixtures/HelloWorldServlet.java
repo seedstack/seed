@@ -5,6 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.undertow.fixtures;
 
 import java.io.IOException;
@@ -20,7 +21,7 @@ public class HelloWorldServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest httpServletRequest,
             HttpServletResponse httpServletResponse) throws IOException {
-        String text = "Hello World!";
+        String text = "Hello World" + (httpServletRequest.isSecure() ? " (secure)" : "") + "!";
         httpServletResponse.setContentType("text/plain");
         httpServletResponse.setContentLength(text.length());
         httpServletResponse.getWriter().write(text);

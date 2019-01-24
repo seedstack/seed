@@ -5,6 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.core.internal.diagnostic;
 
 import io.nuun.kernel.api.plugin.InitState;
@@ -62,12 +63,10 @@ public class DiagnosticPlugin extends AbstractSeedPlugin {
                     if (diagnosticDomain != null) {
                         diagnosticInfoCollectorClasses.put(diagnosticDomain.value(),
                                 (Class<? extends DiagnosticInfoCollector>) candidate);
-                        LOGGER.trace("Detected diagnostic collector {} for diagnostic domain {}",
+                        LOGGER.debug("Diagnostic collector {} detected for diagnostic domain {}",
                                 candidate.getCanonicalName(), diagnosticDomain.value());
                     }
                 });
-        LOGGER.debug("Detected {} diagnostic collector(s)", diagnosticInfoCollectorClasses.size());
-
         return InitState.INITIALIZED;
     }
 

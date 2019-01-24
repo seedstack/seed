@@ -5,9 +5,9 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.core.internal.crypto;
 
-import java.net.URL;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.util.ArrayList;
@@ -15,7 +15,6 @@ import java.util.Enumeration;
 import java.util.List;
 import org.seedstack.seed.SeedException;
 import org.seedstack.seed.crypto.CryptoConfig;
-import org.seedstack.shed.ClassLoaders;
 
 class KeyPairConfigFactory {
 
@@ -40,33 +39,10 @@ class KeyPairConfigFactory {
     }
 
     private KeyPairConfig createKeyPairFromAlias(String alias, String keyStoreName) {
-        String aliasPassword = getPassword(alias, keyStoreName);
-        String location = getLocation(alias);
-        String qualifier = getQualifier(alias, keyStoreName);
-        return new KeyPairConfig(keyStoreName, alias, aliasPassword, location, qualifier);
-    }
-
-    private String getLocation(String certificateName) {
-        CryptoConfig.CertificateConfig certificateConfig = cryptoConfig.certificates().get(certificateName);
-
-        if (certificateConfig != null) {
-            // Find the certificate location from the classpath
-            String certResource = certificateConfig.getResource();
-            if (certResource != null) {
-                URL urlResource = ClassLoaders.findMostCompleteClassLoader(KeyPairConfigFactory.class)
-                        .getResource(certResource);
-                if (urlResource == null) {
-                    throw SeedException.createNew(CryptoErrorCode.CERTIFICATE_NOT_FOUND)
-                            .put("certificateName", certificateName).put("certResource", certResource);
-                }
-                return urlResource.getFile();
-            } else {
-                // Otherwise get the file path from the configuration
-                return certificateConfig.getFile();
-            }
-        } else {
-            return null;
-        }
+        return new KeyPairConfig(keyStoreName,
+                alias,
+                getPassword(alias, keyStoreName),
+                getQualifier(alias, keyStoreName));
     }
 
     private String getPassword(String alias, String keyStoreName) {

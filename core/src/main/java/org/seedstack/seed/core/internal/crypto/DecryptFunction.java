@@ -8,7 +8,6 @@
 
 package org.seedstack.seed.core.internal.crypto;
 
-import com.google.common.base.Strings;
 import com.google.common.io.BaseEncoding;
 import java.nio.charset.StandardCharsets;
 import java.security.KeyStore;
@@ -31,17 +30,15 @@ public class DecryptFunction implements ConfigFunctionHolder {
     public void initialize(Coffig coffig) {
         try {
             initInProgress.set(true);
-            CryptoConfig cryptoConfig = coffig.get(CryptoConfig.class);
-            masterKeyStoreConfig = cryptoConfig.masterKeyStore();
-            if (masterKeyStoreConfig != null) {
+            coffig.getOptional(CryptoConfig.KeyStoreConfig.class, "crypto.keystores.master").ifPresent(cfg -> {
                 try {
-                    KeyStore keyStore = new KeyStoreLoader().load(CryptoConfig.MASTER_KEY_STORE_NAME,
-                            masterKeyStoreConfig);
-                    encryptionServiceFactory = new EncryptionServiceFactory(cryptoConfig, keyStore);
+                    KeyStore keyStore = new KeyStoreLoader().load(CryptoConfig.MASTER_KEY_STORE_NAME, cfg);
+                    encryptionServiceFactory = new EncryptionServiceFactory(keyStore);
+                    masterKeyStoreConfig = cfg;
                 } catch (Exception e) {
                     storedException = e;
                 }
-            }
+            });
         } finally {
             initInProgress.set(false);
         }
@@ -65,12 +62,9 @@ public class DecryptFunction implements ConfigFunctionHolder {
                     throw SeedException.createNew(CryptoErrorCode.MISSING_MASTER_KEYSTORE);
                 }
             }
-            CryptoConfig.KeyStoreConfig.AliasConfig aliasConfig = masterKeyStoreConfig.getAliases().get(alias);
-            if (aliasConfig == null || Strings.isNullOrEmpty(aliasConfig.getPassword())) {
-                throw SeedException.createNew(CryptoErrorCode.MISSING_MASTER_KEY_PASSWORD);
-            }
-            EncryptionService encryptionService = encryptionServiceFactory.create(alias,
-                    aliasConfig.getPassword().toCharArray());
+            EncryptionService encryptionService = CryptoPlugin.getMasterEncryptionService(encryptionServiceFactory,
+                    masterKeyStoreConfig,
+                    alias);
             return new String(encryptionService.decrypt(BaseEncoding.base16().decode(value)), StandardCharsets.UTF_8);
         }
     }

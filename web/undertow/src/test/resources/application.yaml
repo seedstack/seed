@@ -24,10 +24,14 @@ web:
   server<refresh>:
     port: ${sys.customUndertowPort:'9001'}
 
-crypto:
+crypto<https>:
+  truststore:
+    path: src/test/resources/master.jks
+    password: changeMe
   keystores:
     master:
-      path: src/test/resources/ssl.keystore
-      password: kspasswd
-      aliases:
-        ssl: clientpasswd
+      path: src/test/resources/master.jks
+      password: changeMe
+  ssl:
+    clientAuthMode<cert>: REQUIRED
+    keyPassword: changeMe

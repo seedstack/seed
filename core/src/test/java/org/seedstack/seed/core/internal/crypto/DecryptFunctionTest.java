@@ -5,11 +5,13 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.core.internal.crypto;
 
 import com.google.common.io.BaseEncoding;
 import java.security.InvalidKeyException;
 import java.security.KeyStore;
+import java.util.Optional;
 import mockit.Expectations;
 import mockit.Injectable;
 import mockit.Mocked;
@@ -47,15 +49,15 @@ public class DecryptFunctionTest {
     public void testLookupDecryptWithoutMasterKeyStore() {
         DecryptFunction decryptFunction = new DecryptFunction();
         decryptFunction.initialize(Coffig.builder().build());
-        decryptFunction.decrypt("seed", "");
+        decryptFunction.decrypt("master", "");
     }
 
     @Test
-    public void testLookupString(@Mocked CryptoConfig cryptoConfig) {
+    public void testLookupString(@Mocked Coffig coffig) {
         new Expectations() {{
-            cryptoConfig.masterKeyStore();
-            result = new CryptoConfig.KeyStoreConfig().addAlias("seed",
-                    new CryptoConfig.KeyStoreConfig.AliasConfig().setPassword("toto"));
+            coffig.getOptional(CryptoConfig.KeyStoreConfig.class, "crypto.keystores.master");
+            result = Optional.of(new CryptoConfig.KeyStoreConfig().addAlias("master",
+                    new CryptoConfig.KeyStoreConfig.AliasConfig().setPassword("toto")));
 
             encryptionService.decrypt(BaseEncoding.base16().decode(cryptingString));
             result = toDecrypt.getBytes();
@@ -63,34 +65,34 @@ public class DecryptFunctionTest {
 
         DecryptFunction decryptFunction = new DecryptFunction();
         decryptFunction.initialize(Coffig.builder().build());
-        Assertions.assertThat(decryptFunction.decrypt("seed", cryptingString)).isEqualTo(toDecrypt);
+        Assertions.assertThat(decryptFunction.decrypt("master", cryptingString)).isEqualTo(toDecrypt);
     }
 
     @Test(expected = SeedException.class)
-    public void testLookupStringWithoutPassword(@Mocked CryptoConfig cryptoConfig) {
-        CryptoConfig.KeyStoreConfig keyStoreConfig = new CryptoConfig.KeyStoreConfig().addAlias("seed",
+    public void testLookupStringWithoutPassword(@Mocked Coffig coffig) {
+        CryptoConfig.KeyStoreConfig keyStoreConfig = new CryptoConfig.KeyStoreConfig().addAlias("master",
                 new CryptoConfig.KeyStoreConfig.AliasConfig());
 
         new Expectations() {{
-            cryptoConfig.masterKeyStore();
-            result = keyStoreConfig;
+            coffig.getOptional(CryptoConfig.KeyStoreConfig.class, "crypto.keystores.master");
+            result = Optional.of(keyStoreConfig);
 
             keyStoreLoader.load("master", keyStoreConfig);
             result = keyStore;
         }};
         DecryptFunction decryptFunction = new DecryptFunction();
         decryptFunction.initialize(Coffig.builder().build());
-        decryptFunction.decrypt("seed", cryptingString);
+        decryptFunction.decrypt("master", cryptingString);
     }
 
     @Test(expected = SeedException.class)
-    public void testLookupStringWithInvalidKey(@Mocked CryptoConfig cryptoConfig) {
-        CryptoConfig.KeyStoreConfig keyStoreConfig = new CryptoConfig.KeyStoreConfig().addAlias("seed",
-                new CryptoConfig.KeyStoreConfig.AliasConfig().setPassword("seedPassword"));
+    public void testLookupStringWithInvalidKey(@Mocked Coffig coffig) {
+        CryptoConfig.KeyStoreConfig keyStoreConfig = new CryptoConfig.KeyStoreConfig().addAlias("master",
+                new CryptoConfig.KeyStoreConfig.AliasConfig().setPassword("changeMe"));
 
         new Expectations() {{
-            cryptoConfig.masterKeyStore();
-            result = keyStoreConfig;
+            coffig.getOptional(CryptoConfig.KeyStoreConfig.class, "crypto.keystores.master");
+            result = Optional.of(keyStoreConfig);
 
             encryptionService.decrypt(BaseEncoding.base16().decode(cryptingString));
             result = SeedException.wrap(new InvalidKeyException("dummy exception"), CryptoErrorCode.INVALID_KEY);
@@ -98,6 +100,6 @@ public class DecryptFunctionTest {
 
         DecryptFunction decryptFunction = new DecryptFunction();
         decryptFunction.initialize(Coffig.builder().build());
-        decryptFunction.decrypt("seed", cryptingString);
+        decryptFunction.decrypt("master", cryptingString);
     }
 }

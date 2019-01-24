@@ -1,7 +1,10 @@
-# Version 3.8.6 (2019-07-30)
+# Version 3.9.0 (2019-08-12)
 
 * [new] Introduce the `diag` tool to manually write a diagnostic report to standard output or in a file.
 * [new] Enable configuration of Undertow error pages for specific HTTP codes or exceptions as well as a default error page (`web.server.errorPages` config).
+* [new] SSL truststore can be configured separately from the master keystore (if no configuration it will default to the Java default truststore).
+* [new] A custom X509KeyManager can now be configured to allow control of the chosen key material during SSL handshake.
+* [brk] Plain file X509 certificates (outside a keystore) can no longer be configured as it is less secure and not so useful.
 
 # Version 3.8.5 (2019-03-22)
 

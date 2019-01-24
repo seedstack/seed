@@ -5,6 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.core.internal.crypto;
 
 import com.google.common.collect.Lists;
@@ -45,7 +46,7 @@ public class EncryptionServiceBindingFactoryTest {
     public void test_encryption_service_collect_never_return_null() {
         EncryptionServiceBindingFactory encryptionService = new EncryptionServiceBindingFactory();
         Map<Key<EncryptionService>, EncryptionService> encryptionServiceMap = encryptionService.createBindings(null,
-                null, null);
+                null);
         Assertions.assertThat(encryptionServiceMap).isNotNull();
     }
 
@@ -54,8 +55,9 @@ public class EncryptionServiceBindingFactoryTest {
         prepareMock();
 
         EncryptionServiceBindingFactory collector = new EncryptionServiceBindingFactory();
-        Map<Key<EncryptionService>, EncryptionService> encryptionServiceMap = collector.createBindings(configuration,
-                prepareKeyPairs(ALIAS_NAME, ALIAS_NAME + "2"), keyStores);
+        Map<Key<EncryptionService>, EncryptionService> encryptionServiceMap = collector.createBindings(prepareKeyPairs(
+                ALIAS_NAME,
+                ALIAS_NAME + "2"), keyStores);
         Assertions.assertThat(encryptionServiceMap).hasSize(2);
         Assertions.assertThat(encryptionServiceMap).containsKey(
                 Key.get(EncryptionService.class, Names.named(ALIAS_NAME)));
@@ -69,8 +71,9 @@ public class EncryptionServiceBindingFactoryTest {
         prepareMock();
 
         EncryptionServiceBindingFactory collector = new EncryptionServiceBindingFactory();
-        Map<Key<EncryptionService>, EncryptionService> encryptionServiceMap = collector.createBindings(configuration,
-                prepareKeyPairWithQualifier("foo"), keyStores);
+        Map<Key<EncryptionService>, EncryptionService> encryptionServiceMap = collector.createBindings(
+                prepareKeyPairWithQualifier("foo"),
+                keyStores);
         Assertions.assertThat(encryptionServiceMap).hasSize(1);
         Assertions.assertThat(encryptionServiceMap).containsKey(Key.get(EncryptionService.class, Names.named("foo")));
         Assertions.assertThat(encryptionServiceMap).containsValue(encryptionService);
@@ -80,7 +83,7 @@ public class EncryptionServiceBindingFactoryTest {
     public void test_encryption_service_collect_alias_without_private_key() {
         new Expectations() {
             {
-                new EncryptionServiceFactory(configuration, keyStore);
+                new EncryptionServiceFactory(keyStore);
                 result = encryptionServiceFactory;
 
                 encryptionServiceFactory.create(ALIAS_NAME);
@@ -90,9 +93,10 @@ public class EncryptionServiceBindingFactoryTest {
 
         EncryptionServiceBindingFactory collector = new EncryptionServiceBindingFactory();
         List<KeyPairConfig> keyPairConfigurations = Lists.newArrayList(
-                new KeyPairConfig(KEY_STORE_NAME, ALIAS_NAME, null, null, "foo"));
-        Map<Key<EncryptionService>, EncryptionService> encryptionServiceMap = collector.createBindings(configuration,
-                keyPairConfigurations, keyStores);
+                new KeyPairConfig(KEY_STORE_NAME, ALIAS_NAME, null, "foo"));
+        Map<Key<EncryptionService>, EncryptionService> encryptionServiceMap = collector.createBindings(
+                keyPairConfigurations,
+                keyStores);
         Assertions.assertThat(encryptionServiceMap).hasSize(1);
         Assertions.assertThat(encryptionServiceMap).containsKey(Key.get(EncryptionService.class, Names.named("foo")));
         Assertions.assertThat(encryptionServiceMap).containsValue(encryptionService);
@@ -105,8 +109,9 @@ public class EncryptionServiceBindingFactoryTest {
                 "org.seedstack.seed.core.internal.crypto.fixtures.AliasQualifier");
 
         EncryptionServiceBindingFactory collector = new EncryptionServiceBindingFactory();
-        Map<Key<EncryptionService>, EncryptionService> encryptionServiceMap = collector.createBindings(configuration,
-                keyPairConfigurations, keyStores);
+        Map<Key<EncryptionService>, EncryptionService> encryptionServiceMap = collector.createBindings(
+                keyPairConfigurations,
+                keyStores);
         Assertions.assertThat(encryptionServiceMap).containsKey(Key.get(EncryptionService.class, AliasQualifier.class));
     }
 
@@ -116,7 +121,7 @@ public class EncryptionServiceBindingFactoryTest {
         // interface instead of annotation
         List<KeyPairConfig> keyPairConfigurations = prepareKeyPairWithQualifier(
                 "org.seedstack.seed.core.internal.crypto.fixtures.BadAliasQualifier");
-        new EncryptionServiceBindingFactory().createBindings(configuration, keyPairConfigurations, keyStores);
+        new EncryptionServiceBindingFactory().createBindings(keyPairConfigurations, keyStores);
     }
 
     @Test(expected = SeedException.class)
@@ -125,13 +130,13 @@ public class EncryptionServiceBindingFactoryTest {
         // missing @Qualifier
         List<KeyPairConfig> keyPairConfigurations = prepareKeyPairWithQualifier(
                 "org.seedstack.seed.core.internal.crypto.fixtures.BadAliasQualifier2");
-        new EncryptionServiceBindingFactory().createBindings(configuration, keyPairConfigurations, keyStores);
+        new EncryptionServiceBindingFactory().createBindings(keyPairConfigurations, keyStores);
     }
 
     private void prepareMock() {
         new Expectations() {
             {
-                new EncryptionServiceFactory(configuration, keyStore);
+                new EncryptionServiceFactory(keyStore);
                 result = encryptionServiceFactory;
 
                 encryptionServiceFactory.create(ALIAS_NAME, PASSWORD.toCharArray());
@@ -143,12 +148,12 @@ public class EncryptionServiceBindingFactoryTest {
     private List<KeyPairConfig> prepareKeyPairs(String... aliasNames) {
         List<KeyPairConfig> keyPairConfigs = new ArrayList<>();
         for (String aliasName : aliasNames) {
-            keyPairConfigs.add(new KeyPairConfig(KEY_STORE_NAME, aliasName, PASSWORD, null, null));
+            keyPairConfigs.add(new KeyPairConfig(KEY_STORE_NAME, aliasName, PASSWORD, null));
         }
         return keyPairConfigs;
     }
 
     private List<KeyPairConfig> prepareKeyPairWithQualifier(String qualifier) {
-        return Lists.newArrayList(new KeyPairConfig(KEY_STORE_NAME, ALIAS_NAME, PASSWORD, null, qualifier));
+        return Lists.newArrayList(new KeyPairConfig(KEY_STORE_NAME, ALIAS_NAME, PASSWORD, qualifier));
     }
 }

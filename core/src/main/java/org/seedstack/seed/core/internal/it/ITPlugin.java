@@ -5,6 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.core.internal.it;
 
 import static org.seedstack.shed.ClassLoaders.findMostCompleteClassLoader;
@@ -47,7 +48,7 @@ public class ITPlugin extends AbstractSeedPlugin {
         // Create temporary directory for application storage
         try {
             temporaryAppStorage = Files.createTempDirectory("seedstack-it-").toFile();
-            LOGGER.info("Created temporary application storage directory {}", temporaryAppStorage.getAbsolutePath());
+            LOGGER.debug("Created temporary application storage directory {}", temporaryAppStorage.getAbsolutePath());
             seedRuntime.setDefaultConfiguration(APPLICATION_STORAGE, temporaryAppStorage.getAbsolutePath());
             seedRuntime.setDefaultConfiguration(CONFIG_WATCH, "false");
         } catch (IOException e) {
@@ -84,7 +85,7 @@ public class ITPlugin extends AbstractSeedPlugin {
         try {
             if (temporaryAppStorage != null) {
                 deleteRecursively(temporaryAppStorage);
-                LOGGER.info("Deleted temporary application storage directory {}",
+                LOGGER.debug("Deleted temporary application storage directory {}",
                         temporaryAppStorage.getAbsolutePath());
             }
         } catch (Exception e) {

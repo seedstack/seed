@@ -29,7 +29,7 @@ import org.slf4j.LoggerFactory;
 class KeyStoreLoader {
     private static final Logger LOGGER = LoggerFactory.getLogger(KeyStoreLoader.class);
 
-    KeyStore load(String name, CryptoConfig.KeyStoreConfig ksConfig) {
+    KeyStore load(String name, CryptoConfig.StoreConfig ksConfig) {
         String path = ksConfig.getPath();
         if (Strings.isNullOrEmpty(name) || Strings.isNullOrEmpty(path) || Strings.isNullOrEmpty(
                 ksConfig.getPassword())) {
@@ -50,7 +50,7 @@ class KeyStoreLoader {
         return inputStream;
     }
 
-    private KeyStore loadFromInputStream(String name, InputStream inputStream, CryptoConfig.KeyStoreConfig ksConfig) {
+    private KeyStore loadFromInputStream(String name, InputStream inputStream, CryptoConfig.StoreConfig ksConfig) {
         KeyStore ks;
         String type = ksConfig.getType();
         String provider = ksConfig.getProvider();

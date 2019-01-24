@@ -103,6 +103,13 @@ public class ConfigurationPlugin extends AbstractPlugin implements ApplicationPr
     @SuppressWarnings("unchecked")
     @Override
     public InitState init(InitContext initContext) {
+        Set<String> activeProfiles = ProfileProcessor.activeProfiles();
+        if (activeProfiles.isEmpty()) {
+            LOGGER.info("No configuration profile is active");
+        } else {
+            LOGGER.info("Active configuration profile(s): {}", String.join(", ", activeProfiles));
+        }
+
         detectKernelParamConfig(initContext);
         detectConfigurationFiles(initContext);
 

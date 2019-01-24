@@ -168,7 +168,7 @@ public class UndertowLauncher implements SeedLauncher {
                     undertowPlugin.getSslProvider()
             );
             undertow.start();
-            LOGGER.info("Undertow Web server listening on {}:{}", serverConfig.getHost(), serverConfig.getPort());
+            LOGGER.info("Undertow Web server started");
         } catch (RuntimeException e) {
             unwrapUndertowException(e);
         }
