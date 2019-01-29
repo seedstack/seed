@@ -7,6 +7,7 @@
  */
 package org.seedstack.seed.core.internal.crypto;
 
+import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
@@ -52,7 +53,7 @@ class PBKDF2HashingService implements HashingService {
         // Compute the hash of the provided password, using the same salt
         byte[] testHash = pbkdf2(password, correctHash.getSalt());
         // Compare the hashes in constant time. The password is correct if both hashes match.
-        return ByteArrays.slowEquals(correctHash.getHash(), testHash);
+        return MessageDigest.isEqual(correctHash.getHash(), testHash);
     }
 
     /**
