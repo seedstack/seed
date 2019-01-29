@@ -107,7 +107,10 @@ public class UndertowLauncher implements SeedLauncher {
                     .set(Options.WORKER_IO_THREADS, undertowConfig.getIoThreads())
                     .set(Options.WORKER_TASK_CORE_THREADS, undertowConfig.getWorkerThreads())
                     .set(Options.WORKER_TASK_MAX_THREADS, undertowConfig.getWorkerThreads())
-                    .set(Options.TCP_NODELAY, true)
+                    .set(Options.TCP_NODELAY, undertowConfig.isTcpNoDelay())
+                    .set(Options.READ_TIMEOUT, undertowConfig.getReadTimeout())
+                    .set(Options.WRITE_TIMEOUT, undertowConfig.getWriteTimeout())
+
                     .getMap());
         } catch (RuntimeException e) {
             unwrapUndertowException(e);
