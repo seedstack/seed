@@ -21,6 +21,9 @@ classes:
             key3: value3
 logging:
   level: INFO
+  file:
+    enabled: ${sys.testfileLogging:'false'}
+    path: test.log
 application:
   id: seed-it
   basePackages: some.other.pkg
