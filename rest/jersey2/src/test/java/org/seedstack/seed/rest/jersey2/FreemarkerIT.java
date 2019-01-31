@@ -29,13 +29,13 @@ public class FreemarkerIT {
     @Deployment
     public static WebArchive createDeployment() {
         return ShrinkWrap.create(WebArchive.class)
-                .addAsWebInfResource("test.ftl", "fmk/test.ftl");
+                .addAsWebInfResource("application.yaml", "META-INF/application.yaml");
     }
 
     @Test
     @RunAsClient
     public void freemarker() {
-        String body = expect().statusCode(200).when().get(baseUrl + "freemarker?key=value1").asString();
-        assertThat(body.trim()).isEqualTo("value1");
+        String body = expect().statusCode(200).when().get(baseUrl + "freemarker").asString();
+        assertThat(body.trim()).isEqualTo("hervé");
     }
 }

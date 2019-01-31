@@ -7,9 +7,8 @@
 #
 
 logging:
-  level: DEBUG
-  loggers:
-    org.seedstack.seed.rest.internal.RestPlugin: DEBUG
+  level: INFO
+
 web:
   cors:
     enabled: true
