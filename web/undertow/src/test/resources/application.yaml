@@ -1,5 +1,5 @@
 #
-# Copyright © 2013-2018, The SeedStack authors <http://seedstack.org>
+# Copyright © 2013-2019, The SeedStack authors <http://seedstack.org>
 #
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -11,10 +11,12 @@ logging:
 
 web:
   server:
-    port: ${sys.customUndertowPort:'9001'}
-    https: true
     sessions: 30
     contextPath: context/ # keep this strange form to test for context path normalization
+    https<https>: true
+    welcomeFiles<welcome>: [ 'welcome1.html', 'welcome2.html' ]
+  server<refresh>:
+    port: ${sys.customUndertowPort:'9001'}
 
 crypto:
   keystores:

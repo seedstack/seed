@@ -1,13 +1,13 @@
 /*
- * Copyright © 2013-2018, The SeedStack authors <http://seedstack.org>
+ * Copyright © 2013-2019, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-
 package org.seedstack.seed.core.internal.crypto;
 
+import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
@@ -53,7 +53,7 @@ class PBKDF2HashingService implements HashingService {
         // Compute the hash of the provided password, using the same salt
         byte[] testHash = pbkdf2(password, correctHash.getSalt());
         // Compare the hashes in constant time. The password is correct if both hashes match.
-        return ByteArrays.slowEquals(correctHash.getHash(), testHash);
+        return MessageDigest.isEqual(correctHash.getHash(), testHash);
     }
 
     /**

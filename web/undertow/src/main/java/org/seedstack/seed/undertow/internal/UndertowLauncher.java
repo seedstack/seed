@@ -1,5 +1,5 @@
 /*
- * Copyright © 2013-2018, The SeedStack authors <http://seedstack.org>
+ * Copyright © 2013-2019, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -35,6 +35,7 @@ import org.xnio.XnioWorker;
 
 public class UndertowLauncher implements SeedLauncher {
     private static final Logger LOGGER = LoggerFactory.getLogger(UndertowLauncher.class);
+    private static final AtomicBoolean firstRun = new AtomicBoolean(true);
     private final AtomicBoolean launched = new AtomicBoolean(false);
     private XnioWorker xnioWorker;
     private DeploymentManager deploymentManager;
@@ -70,7 +71,6 @@ public class UndertowLauncher implements SeedLauncher {
         if (launched.get()) {
             LOGGER.info("Refreshing Web application");
             stopAll();
-            Seed.refresh();
             startAll();
         } else {
             throw SeedException.createNew(UndertowErrorCode.UNDERTOW_NOT_LAUNCHED);
@@ -85,6 +85,9 @@ public class UndertowLauncher implements SeedLauncher {
     }
 
     private void startAll() throws Exception {
+        if (!firstRun.compareAndSet(true, false)) {
+            Seed.refresh();
+        }
         Coffig baseConfiguration = Seed.baseConfiguration();
         createWorker(baseConfiguration);
         deploy(baseConfiguration);
@@ -104,7 +107,10 @@ public class UndertowLauncher implements SeedLauncher {
                     .set(Options.WORKER_IO_THREADS, undertowConfig.getIoThreads())
                     .set(Options.WORKER_TASK_CORE_THREADS, undertowConfig.getWorkerThreads())
                     .set(Options.WORKER_TASK_MAX_THREADS, undertowConfig.getWorkerThreads())
-                    .set(Options.TCP_NODELAY, true)
+                    .set(Options.TCP_NODELAY, undertowConfig.isTcpNoDelay())
+                    .set(Options.READ_TIMEOUT, undertowConfig.getReadTimeout())
+                    .set(Options.WRITE_TIMEOUT, undertowConfig.getWriteTimeout())
+
                     .getMap());
         } catch (RuntimeException e) {
             unwrapUndertowException(e);

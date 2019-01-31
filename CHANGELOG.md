@@ -1,8 +1,9 @@
-# Version 3.8.1 (xxxx-xx-xx)
-* [chg] Filter priorities updated: resource filter has -2000 priority, and Jersey filter has -1000 priority.
-* [new] Automatic detection and activation of Freemarker Feature from project dependencies.
+# Version 3.8.1 (2019-02-??)
 
-
+* [new] Support for the `web.server.welcomeFiles` with Undertow. Default value is `index.html`.
+* [new] Support for file logging configuration when using LogBack. Enable by setting `logging.file.enabled` to `true`.  
+* [new] Automatic detection and activation of Jersey Freemarker feature from project dependencies.
+* [chg] Filter priorities updated: Jersey 2 and static resources filters now have -1000 and -2000 priority, respectively.
 
 # Version 3.8.0 (2018-11-27)
 
