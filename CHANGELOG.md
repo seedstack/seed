@@ -3,6 +3,8 @@
 * [new] Support for the `web.server.welcomeFiles` with Undertow. Default value is `index.html`.
 * [new] Support for file logging configuration when using LogBack. Enable by setting `logging.file.enabled` to `true`.  
 * [chg] Filter priorities updated: resource filter has -2000 priority, and Jersey filter has -1000 priority.
+* [new] Automatic detection and activation of Freemarker Feature from project dependencies.
+
 
 # Version 3.8.0 (2018-11-27)
 

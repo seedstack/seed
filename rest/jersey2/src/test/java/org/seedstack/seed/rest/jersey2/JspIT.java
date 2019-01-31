@@ -21,7 +21,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 @RunWith(Arquillian.class)
-public class ViewableIT {
+public class JspIT {
     @ArquillianResource
     private URL baseUrl;
 
