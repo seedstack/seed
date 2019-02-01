@@ -5,6 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.core.internal.init;
 
 import static java.util.stream.Collectors.toList;
@@ -19,6 +20,7 @@ import java.net.ProxySelector;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.regex.Pattern;
 import org.seedstack.seed.ProxyConfig;
@@ -56,19 +58,43 @@ public class ProxyManager {
                     exclusions
             ));
 
+            PasswordAuthentication httpAuth = buildPasswordAuthentication(httpProxyValue);
+            PasswordAuthentication httpsAuth = buildPasswordAuthentication(httpsProxyValue);
             Authenticator.setDefault(seedProxyAuthenticator = new SeedProxyAuthenticator(
-                    buildPasswordAuthentication(httpProxyValue),
-                    buildPasswordAuthentication(httpsProxyValue)
+                    httpAuth,
+                    httpsAuth
             ));
 
-            if (httpProxy != Proxy.NO_PROXY) {
-                if (Strings.isNullOrEmpty(noProxyValue)) {
-                    LOGGER.info("Proxy configured to {} with no exclusion", httpProxy.address().toString());
-                } else {
-                    LOGGER.info("Proxy configured to {} with exclusion(s) on {}", httpProxy.address().toString(),
-                            noProxyValue);
-                }
+            if (httpProxy == Proxy.NO_PROXY && httpsProxy == Proxy.NO_PROXY) {
+                LOGGER.info("No proxy configured");
+            } else if (Objects.equals(httpProxy, httpsProxy) && seedProxyAuthenticator.isHomogenous()) {
+                logProxy("HTTP/HTTPS", httpProxy, httpAuth, noProxyValue);
+            } else {
+                logProxy("HTTP", httpProxy, httpAuth, noProxyValue);
+                logProxy("HTTPS", httpsProxy, httpsAuth, noProxyValue);
             }
+        }
+    }
+
+    private void logProxy(String protocol, Proxy proxy, PasswordAuthentication auth, String noProxyValue) {
+        if (proxy != Proxy.NO_PROXY) {
+            String authMessage = auth == null ?
+                    "" :
+                    " [" + auth.getUserName() + (auth.getPassword().length == 0 ? "" : ":***") + "]";
+            if (Strings.isNullOrEmpty(noProxyValue)) {
+                LOGGER.info("{} proxy configured to {}{} without exclusion",
+                        protocol,
+                        proxy.address().toString(),
+                        authMessage);
+            } else {
+                LOGGER.info("{} proxy configured to {}{} excluding {}",
+                        protocol,
+                        proxy.address().toString(),
+                        authMessage,
+                        noProxyValue);
+            }
+        } else {
+            LOGGER.info("No {} proxy configured", protocol);
         }
     }
 
@@ -144,6 +170,7 @@ public class ProxyManager {
                     result[1] = credentials.substring(p + 1);
                 } else {
                     result[0] = credentials;
+                    result[1] = "";
                 }
                 return Optional.of(result);
             }
