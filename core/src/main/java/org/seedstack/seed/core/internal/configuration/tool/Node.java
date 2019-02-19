@@ -273,4 +273,8 @@ class Node implements Comparable<Node> {
         }
         return bundle;
     }
+
+    public Class<?> getConfigClass() {
+        return configClass;
+    }
 }
