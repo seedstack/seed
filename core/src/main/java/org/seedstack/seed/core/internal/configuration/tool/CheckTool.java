@@ -1,14 +1,12 @@
 /*
- * Copyright © 2013-2019, The SeedStack authors <http://seedstack.org>
+ * Copyright © 2013-2021, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-
 package org.seedstack.seed.core.internal.configuration.tool;
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.nuun.kernel.api.plugin.InitState;
 import io.nuun.kernel.api.plugin.context.InitContext;
 import io.nuun.kernel.api.plugin.request.ClasspathScanRequest;
@@ -68,13 +66,13 @@ public class CheckTool extends AbstractConfigTool {
     public Collection<ClasspathScanRequest> classpathScanRequests() {
         return classpathScanRequestBuilder()
                 .annotationType(Config.class)
-                .specification(SeedConfigurationAnnotationSpecification.INSTANCE)
+                .predicate(SeedConfigurationAnnotationSpecification.INSTANCE)
                 .build();
     }
 
     @Override
     protected InitState initialize(InitContext initContext) {
-        initContext.scannedTypesBySpecification()
+        initContext.scannedTypesByPredicate()
                 .get(SeedConfigurationAnnotationSpecification.INSTANCE)
                 .forEach(myClass -> {
                             // Find list of Configuration-annotated fields
@@ -163,9 +161,9 @@ public class CheckTool extends AbstractConfigTool {
                             return;
                         }
 
-                        // There is no entry in root (but we are in a class referenced by a @Config class)
+                        // There is no entry in root
                         if (parentClass == null) {
-                            // There is no associated class in root, we look into @Configuration fields
+                            // There is no associated class in root, we look into @Configuration fields for fullPath
                             if (annotationValues.containsKey(fullPath)) {
                                 // There is an @Configuration-field in parent class. We consider first entry as the new parentClass
                                 Optional<Field> optionalField = getField(annotationValues.get(fullPath).get(0), nn.name(), Configuration.class);
@@ -177,7 +175,11 @@ public class CheckTool extends AbstractConfigTool {
                                     // Non-primitive class: keep walking
                                     walk(nn.node(), path + nn.name() + ".", associatedClass);
                                 }
-                            } else {
+                            // we look for an Configuration-annotated field whose value starts with fullPath
+                            } else if (annotationValues.keySet().stream().anyMatch(n -> n.startsWith(fullPath+ "."))) {
+                                walk(nn.node(), path + nn.name() + ".", null);
+                            }
+                            else {
                                 results.add(new EntrySearchResult(SeverityEnum.WARNING, fullPath, StatusEnum.NOT_FOUND));
                             }
                         } else {

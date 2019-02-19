@@ -1,5 +1,5 @@
 /*
- * Copyright © 2013-2019, The SeedStack authors <http://seedstack.org>
+ * Copyright © 2013-2021, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -7,18 +7,19 @@
  */
 package org.seedstack.seed.core.internal.configuration.tool;
 
-import org.kametic.specifications.AbstractSpecification;
 import org.seedstack.seed.Configuration;
 import org.seedstack.shed.reflect.AnnotationPredicates;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.function.Predicate;
 
 /**
  * Matches all classes containing fields annotated by {@link org.seedstack.seed.Configuration}.
  * It also matches classes extending or implementing a class/interface with a Configuration-annotated field.
  * <p>
  */
-class SeedConfigurationAnnotationSpecification extends AbstractSpecification<Class<?>> {
+class SeedConfigurationAnnotationSpecification implements Predicate<Class<?>> {
     private static final Logger LOGGER = LoggerFactory.getLogger(SeedConfigurationAnnotationSpecification.class);
 
     static final SeedConfigurationAnnotationSpecification INSTANCE = new SeedConfigurationAnnotationSpecification();
@@ -28,7 +29,7 @@ class SeedConfigurationAnnotationSpecification extends AbstractSpecification<Cla
     }
 
     @Override
-    public boolean isSatisfiedBy(Class<?> candidate) {
+    public boolean test(Class<?> candidate) {
         try {
             return AnnotationPredicates.atLeastOneFieldAnnotatedWith(Configuration.class, true)
                     .test(candidate);

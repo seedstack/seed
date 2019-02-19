@@ -1,3 +1,6 @@
+# Version 3.12.1 (2021-04-30)
+* [new] CheckTool to analyze class mapping between configuration files and source code.
+
 # Version 3.12.0 (2021-01-31)
 
 * [new] Java 15 support

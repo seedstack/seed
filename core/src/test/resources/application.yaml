@@ -98,3 +98,7 @@ arrayOfMapContainer:
     -
       username: user2
       password: pass2
+entry:
+  for:
+    configurationAnnotation: someValue
+firstLevelEntry: ["some", "other", "value"]
