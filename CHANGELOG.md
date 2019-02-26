@@ -1,3 +1,7 @@
+# Version 3.8.2 (2019-03-??)
+
+* [chg] Adaptively supports older Bean Validation and corresponding Hibernate Validator versions. 
+
 # Version 3.8.1 (2019-02-20)
 
 * [new] Support for the `web.server.welcomeFiles` with Undertow. Default value is `index.html`.
