@@ -151,6 +151,12 @@
             <version>${glassfish-javax.el.version}</version>
             <optional>true</optional>
         </dependency>
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-validator</artifactId>
+            <version>${hibernate-validator.version}</version>
+            <optional>true</optional>
+        </dependency>
 
         <!-- Test dependencies -->
         <dependency>
