@@ -11,10 +11,10 @@ package org.seedstack.seed;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import org.seedstack.coffig.Config;
 import org.seedstack.coffig.SingleValue;
+import org.seedstack.seed.validation.NotBlank;
 
 @Config("logging")
 public class LoggingConfig {

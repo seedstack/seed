@@ -5,6 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.rest.internal;
 
 import com.fasterxml.jackson.jaxrs.base.JsonMappingExceptionMapper;
@@ -27,6 +28,7 @@ import javax.ws.rs.core.Variant;
 import org.kametic.specifications.Specification;
 import org.seedstack.seed.core.SeedRuntime;
 import org.seedstack.seed.core.internal.AbstractSeedPlugin;
+import org.seedstack.seed.core.internal.init.ValidationManager;
 import org.seedstack.seed.rest.RelRegistry;
 import org.seedstack.seed.rest.RestConfig;
 import org.seedstack.seed.rest.internal.exceptionmapper.AuthenticationExceptionMapper;
@@ -128,12 +130,16 @@ public class RestPlugin extends AbstractSeedPlugin implements RestProvider {
             LOGGER.debug("Default exception mapping is enabled");
         }
 
-        if (!restConfig.exceptionMapping().isValidation()) {
+        if (!isDynamicValidationSupported() || !restConfig.exceptionMapping().isValidation()) {
             providers.remove(ValidationExceptionMapper.class);
             LOGGER.debug("Validation exception mapping is disabled");
         } else {
             LOGGER.debug("Validation exception mapping is enabled");
         }
+    }
+
+    private boolean isDynamicValidationSupported() {
+        return ValidationManager.get().getValidationLevel().compareTo(ValidationManager.ValidationLevel.LEVEL_1_1) >= 0;
     }
 
     private void configureStreamSupport() {

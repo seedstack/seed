@@ -5,14 +5,14 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.core.internal.validation;
 
 import com.google.inject.Injector;
 import javax.inject.Inject;
 import javax.inject.Provider;
-import javax.validation.Validation;
 import javax.validation.ValidatorFactory;
-import org.hibernate.validator.parameternameprovider.ReflectionParameterNameProvider;
+import org.seedstack.seed.core.internal.init.ValidationManager;
 
 class ValidatorFactoryProvider implements Provider<ValidatorFactory> {
     private final Injector injector;
@@ -24,11 +24,8 @@ class ValidatorFactoryProvider implements Provider<ValidatorFactory> {
 
     @Override
     public ValidatorFactory get() {
-        return Validation.byDefaultProvider()
-                .configure()
-                .parameterNameProvider(new ReflectionParameterNameProvider())
-                .messageInterpolator(new SeedMessageInterpolator())
-                .constraintValidatorFactory(new SeedConstraintValidatorFactory(injector))
-                .buildValidatorFactory();
+        return ValidationManager.get().createValidatorFactory(c ->
+                c.constraintValidatorFactory(new SeedConstraintValidatorFactory(injector))
+        );
     }
 }

@@ -5,6 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.core.internal.init;
 
 import java.io.IOException;
@@ -14,6 +15,7 @@ import java.util.Enumeration;
 import java.util.List;
 import javax.validation.ValidatorFactory;
 import org.seedstack.coffig.Coffig;
+import org.seedstack.coffig.CoffigBuilder;
 import org.seedstack.coffig.provider.EnvironmentProvider;
 import org.seedstack.coffig.provider.JacksonProvider;
 import org.seedstack.coffig.provider.PrefixProvider;
@@ -26,14 +28,23 @@ import org.seedstack.shed.ClassLoaders;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class BaseConfiguration {
-    private static final Logger LOGGER = LoggerFactory.getLogger(BaseConfiguration.class);
+public class BaseConfigurationFactory {
+    private static final Logger LOGGER = LoggerFactory.getLogger(BaseConfigurationFactory.class);
     private static final String ENVIRONMENT_VARIABLES_PREFIX = "env";
     private static final String SYSTEM_PROPERTIES_PREFIX = "sys";
-    private final Coffig baseConfiguration;
+    private final ValidatorFactory validatorFactory;
 
-    private BaseConfiguration(ValidatorFactory validatorFactory) {
-        baseConfiguration = Coffig.builder()
+    private BaseConfigurationFactory() {
+        ValidationManager validationManager = ValidationManager.get();
+        if (validationManager.getValidationLevel().compareTo(ValidationManager.ValidationLevel.NONE) > 0) {
+            this.validatorFactory = validationManager.createValidatorFactory(null);
+        } else {
+            this.validatorFactory = null;
+        }
+    }
+
+    public Coffig create() {
+        CoffigBuilder builder = Coffig.builder()
                 .withProviders(new PrioritizedProvider()
                         .registerProvider(
                                 buildJacksonProvider("application.yaml", "application.yml", "application.json"),
@@ -59,13 +70,24 @@ public class BaseConfiguration {
                         .registerProvider(
                                 new PrefixProvider<>(SYSTEM_PROPERTIES_PREFIX, new SystemPropertiesProvider()),
                                 ConfigurationPriority.SYSTEM_PROPERTIES
-                        ))
-                .enableValidation(validatorFactory)
-                .build();
+                        ));
+
+        // Enable configuration validation if available
+        if (validatorFactory != null) {
+            builder.enableValidation(this.validatorFactory);
+        }
+
+        return builder.build();
     }
 
-    public static Coffig get() {
-        return Holder.INSTANCE.baseConfiguration;
+    public void close() {
+        if (validatorFactory != null && isValidation11Supported()) {
+            validatorFactory.close();
+        }
+    }
+
+    private boolean isValidation11Supported() {
+        return ValidationManager.get().getValidationLevel().compareTo(ValidationManager.ValidationLevel.LEVEL_1_1) >= 0;
     }
 
     private JacksonProvider buildJacksonProvider(String... resourceNames) {
@@ -99,6 +121,10 @@ public class BaseConfiguration {
     }
 
     private static class Holder {
-        private static final BaseConfiguration INSTANCE = new BaseConfiguration(GlobalValidatorFactory.get());
+        private static final BaseConfigurationFactory INSTANCE = new BaseConfigurationFactory();
+    }
+
+    public static BaseConfigurationFactory get() {
+        return Holder.INSTANCE;
     }
 }

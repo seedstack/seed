@@ -5,6 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.core.internal;
 
 import org.seedstack.shed.exception.ErrorCode;
@@ -29,6 +30,7 @@ public enum CoreErrorCode implements ErrorCode {
     UNABLE_TO_CREATE_STORAGE_DIRECTORY,
     UNABLE_TO_FIND_CLASSLOADER,
     UNABLE_TO_INITIALIZE_SEEDSTACK,
+    UNABLE_TO_CREATE_VALIDATOR_FACTORY,
     UNABLE_TO_INJECT_CONFIGURATION_VALUE,
     UNABLE_TO_INJECT_LOGGER,
     UNABLE_TO_INSTANTIATE_CLASS,

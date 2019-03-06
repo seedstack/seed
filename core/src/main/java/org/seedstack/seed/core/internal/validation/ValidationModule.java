@@ -5,6 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.core.internal.validation;
 
 import com.google.inject.AbstractModule;
@@ -23,20 +24,17 @@ import javax.validation.ConstraintValidator;
 import javax.validation.Valid;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
-import javax.validation.executable.ExecutableValidator;
+import org.seedstack.seed.core.internal.init.ValidationManager;
 import org.seedstack.shed.reflect.Annotations;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 @ValidationConcern
 class ValidationModule extends AbstractModule {
-    private static final Logger LOGGER = LoggerFactory.getLogger(ValidationModule.class);
-    private final ValidatorFactory globalValidatorFactory;
+    private final ValidationManager.ValidationLevel level;
     private final Set<Class<? extends ConstraintValidator>> constraintValidators;
 
-    ValidationModule(ValidatorFactory globalValidatorFactory,
+    ValidationModule(ValidationManager.ValidationLevel level,
             Set<Class<? extends ConstraintValidator>> constraintValidators) {
-        this.globalValidatorFactory = globalValidatorFactory;
+        this.level = level;
         this.constraintValidators = constraintValidators;
     }
 
@@ -78,13 +76,7 @@ class ValidationModule extends AbstractModule {
     }
 
     private boolean isDynamicValidationSupported() {
-        ExecutableValidator executableValidator = null;
-        try {
-            executableValidator = globalValidatorFactory.getValidator().forExecutables();
-        } catch (Throwable t) {
-            LOGGER.warn("Unable to create the dynamic validator, support for dynamic validation disabled", t);
-        }
-        return executableValidator != null;
+        return level.compareTo(ValidationManager.ValidationLevel.LEVEL_1_1) >= 0;
     }
 
     private Matcher<? super Binding<?>> staticValidationMatcher() {

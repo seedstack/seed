@@ -5,6 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.core;
 
 import static com.google.common.base.Preconditions.checkState;
@@ -23,7 +24,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Scanner;
 import java.util.ServiceLoader;
-import javax.validation.ValidatorFactory;
 import org.fusesource.jansi.Ansi;
 import org.fusesource.jansi.AnsiRenderer;
 import org.seedstack.coffig.Coffig;
@@ -35,9 +35,8 @@ import org.seedstack.seed.core.internal.CoreErrorCode;
 import org.seedstack.seed.core.internal.ToolLauncher;
 import org.seedstack.seed.core.internal.diagnostic.DiagnosticManagerImpl;
 import org.seedstack.seed.core.internal.init.AutodetectLogManager;
-import org.seedstack.seed.core.internal.init.BaseConfiguration;
+import org.seedstack.seed.core.internal.init.BaseConfigurationFactory;
 import org.seedstack.seed.core.internal.init.ConsoleManager;
-import org.seedstack.seed.core.internal.init.GlobalValidatorFactory;
 import org.seedstack.seed.core.internal.init.KernelManager;
 import org.seedstack.seed.core.internal.init.LogManager;
 import org.seedstack.seed.core.internal.init.ProxyManager;
@@ -91,10 +90,10 @@ public class Seed {
                 .orElse(null);
     }
 
+    private final BaseConfigurationFactory baseConfigurationFactory;
     private final Coffig configuration;
     private final ConsoleManager consoleManager;
     private final LogManager logManager;
-    private final ValidatorFactory validatorFactory;
     private final ProxyManager proxyManager;
     private final KernelManager kernelManager;
 
@@ -124,11 +123,9 @@ public class Seed {
         // Initialize logging subsystem (should silence logs until logging activation later in the initialization)
         logManager = AutodetectLogManager.get();
 
-        // Create global validator factory
-        validatorFactory = GlobalValidatorFactory.get();
-
         // Create base configuration
-        configuration = BaseConfiguration.get();
+        baseConfigurationFactory = BaseConfigurationFactory.get();
+        configuration = baseConfigurationFactory.create();
 
         // Trigger onInitialization() in custom initializers
         for (SeedInitializer seedInitializer : seedInitializers) {
@@ -297,7 +294,6 @@ public class Seed {
                         .context(runtimeContext)
                         .diagnosticManager(diagnosticManager)
                         .configuration(instance.configuration.fork())
-                        .validatorFactory(instance.validatorFactory)
                         .version(seedVersion)
                         .businessVersion(businessVersion)
                         .build(),
@@ -318,10 +314,8 @@ public class Seed {
 
     /**
      * Explicitly cleanup SeedStack global state. After calling this method, SeedStack is no longer usable in the
-     * current
-     * classloader and cannot be reinitialized. Only call this method in standalone JVM environments, just before
-     * exiting,
-     * typically in a shutdown hook.
+     * current classloader and cannot be reinitialized. Only call this method in standalone JVM environments, just
+     * before exiting, typically in a shutdown hook.
      * <p>
      * <p>Has no effect if called from {@link SeedInitializer} methods or after the first call.</p>
      */
@@ -433,11 +427,11 @@ public class Seed {
         // Uninstall global proxy handling
         proxyManager.uninstall();
 
-        // Close validator factory
-        validatorFactory.close();
-
         // Uninstall console enhancements
         consoleManager.uninstall();
+
+        // Close base configuration factory
+        baseConfigurationFactory.close();
 
         // Close logging subsystem
         logManager.close();

@@ -14,9 +14,9 @@ import java.util.List;
 import java.util.Map;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
-import javax.validation.constraints.NotBlank;
 import org.seedstack.coffig.Config;
 import org.seedstack.coffig.SingleValue;
+import org.seedstack.seed.validation.NotBlank;
 
 @Config("web")
 public class WebConfig {

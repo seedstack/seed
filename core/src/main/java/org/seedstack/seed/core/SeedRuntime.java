@@ -5,6 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.core;
 
 import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
@@ -16,7 +17,6 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.ServiceLoader;
 import java.util.Set;
-import javax.validation.ValidatorFactory;
 import org.seedstack.coffig.Coffig;
 import org.seedstack.coffig.provider.CompositeProvider;
 import org.seedstack.coffig.provider.InMemoryProvider;
@@ -34,17 +34,15 @@ public class SeedRuntime {
     private final Coffig configuration;
     private final InMemoryProvider inMemoryProvider;
     private final PrioritizedProvider prioritizedProvider;
-    private final ValidatorFactory validatorFactory;
     private final String seedVersion;
     private final String businessVersion;
     private final Set<String> inconsistentPlugins = new HashSet<>();
 
     private SeedRuntime(Object context, DiagnosticManager diagnosticManager, Coffig configuration,
-            ValidatorFactory validatorFactory, String seedVersion, String businessVersion) {
+            String seedVersion, String businessVersion) {
         this.context = context;
         this.diagnosticManager = diagnosticManager;
         this.configuration = configuration;
-        this.validatorFactory = validatorFactory;
         this.seedVersion = seedVersion;
         this.businessVersion = businessVersion;
         this.diagnosticManager.registerDiagnosticInfoCollector("seed", new RuntimeDiagnosticCollector());
@@ -91,10 +89,6 @@ public class SeedRuntime {
         inMemoryProvider.put(key, values);
     }
 
-    public ValidatorFactory getValidatorFactory() {
-        return validatorFactory;
-    }
-
     public String getVersion() {
         return seedVersion;
     }
@@ -123,7 +117,6 @@ public class SeedRuntime {
         private Object _context;
         private Coffig _configuration;
         private DiagnosticManager _diagnosticManager;
-        private ValidatorFactory _validatorFactory;
         private String _seedVersion;
         private String _businessVersion;
 
@@ -145,11 +138,6 @@ public class SeedRuntime {
             return this;
         }
 
-        public Builder validatorFactory(ValidatorFactory validatorFactory) {
-            this._validatorFactory = validatorFactory;
-            return this;
-        }
-
         public Builder version(String seedVersion) {
             this._seedVersion = seedVersion;
             return this;
@@ -165,7 +153,6 @@ public class SeedRuntime {
                     _context,
                     _diagnosticManager,
                     _configuration,
-                    _validatorFactory,
                     _seedVersion,
                     _businessVersion
             );

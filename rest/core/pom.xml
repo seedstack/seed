@@ -58,6 +58,12 @@
             <version>${javax.servlet.version}</version>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>javax.validation</groupId>
+            <artifactId>validation-api</artifactId>
+            <version>${javax.validation.version}</version>
+            <scope>provided</scope>
+        </dependency>
 
         <!-- TESTS -->
         <dependency>

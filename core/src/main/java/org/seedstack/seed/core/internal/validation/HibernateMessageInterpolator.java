@@ -5,6 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.core.internal.validation;
 
 import java.util.Locale;
@@ -15,8 +16,8 @@ import org.hibernate.validator.messageinterpolation.AbstractMessageInterpolator;
 import org.seedstack.seed.core.internal.el.ELPlugin;
 import org.slf4j.Logger;
 
-public class SeedMessageInterpolator extends AbstractMessageInterpolator {
-    private static final Logger LOGGER = org.slf4j.LoggerFactory.getLogger(SeedMessageInterpolator.class);
+public class HibernateMessageInterpolator extends AbstractMessageInterpolator {
+    private static final Logger LOGGER = org.slf4j.LoggerFactory.getLogger(HibernateMessageInterpolator.class);
 
     @Override
     public String interpolate(Context context, Locale locale, String term) {

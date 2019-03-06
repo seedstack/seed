@@ -5,9 +5,10 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.rest.jersey2.fixtures;
 
-import javax.validation.constraints.NotBlank;
+import org.seedstack.seed.validation.NotBlank;
 
 public class Other {
     @NotBlank

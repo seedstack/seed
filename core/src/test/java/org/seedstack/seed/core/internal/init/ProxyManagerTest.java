@@ -164,6 +164,7 @@ public class ProxyManagerTest {
     }
 
     private static class SystemNoProxyMockUp extends MockUp<System> {
+        @Mock
         String getenv(String name) {
             return null;
         }

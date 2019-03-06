@@ -14,7 +14,7 @@
     <parent>
         <groupId>org.seedstack.poms</groupId>
         <artifactId>parent-internal</artifactId>
-        <version>3.4.4</version>
+        <version>3.4.5-SNAPSHOT</version>
     </parent>
 
     <groupId>org.seedstack.seed</groupId>
@@ -34,7 +34,7 @@
         <shiro.version>1.4.0</shiro.version>
         <undertow.version>2.0.17.Final</undertow.version>
         <jersey2.version>2.27</jersey2.version>
-        <hibernate-validator.version>6.0.13.Final</hibernate-validator.version>
+        <hibernate-validator.version>5.4.3.Final</hibernate-validator.version>
         <aopalliance.version>1.0</aopalliance.version>
         <glassfish-javax.el.version>3.0.0</glassfish-javax.el.version>
         <arquillian.version>1.4.0.Final</arquillian.version>
@@ -187,6 +187,7 @@
                         <parameter>
                             <excludes>
                                 <exclude>*.internal.*</exclude>
+                                <exclude>org.seedstack.seed.core.SeedRuntime</exclude>
                                 <exclude>org.seedstack.seed.core.SeedMain</exclude>
                                 <exclude>org.seedstack.seed.DataConfig</exclude>
                                 <exclude>org.seedstack.seed.LoggingConfig</exclude>

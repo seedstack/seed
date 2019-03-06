@@ -40,7 +40,7 @@ class LogbackLogManager implements LogManager {
     private final LoggerContext context = (LoggerContext) LoggerFactory.getILoggerFactory();
 
     LogbackLogManager() {
-        context.getLogger(Logger.ROOT_LOGGER_NAME).setLevel(Level.OFF);
+        context.getLogger(Logger.ROOT_LOGGER_NAME).setLevel(Level.INFO);
     }
 
     @Override

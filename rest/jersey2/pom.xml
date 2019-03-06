@@ -44,10 +44,6 @@
                     <groupId>org.glassfish.jersey.media</groupId>
                     <artifactId>jersey-media-jaxb</artifactId>
                 </exclusion>
-                <exclusion>
-                    <groupId>javax.validation</groupId>
-                    <artifactId>validation-api</artifactId>
-                </exclusion>
             </exclusions>
         </dependency>
         <dependency>
@@ -65,10 +61,6 @@
                     <groupId>javax.servlet</groupId>
                     <artifactId>servlet-api</artifactId>
                 </exclusion>
-                <exclusion>
-                    <groupId>javax.validation</groupId>
-                    <artifactId>validation-api</artifactId>
-                </exclusion>
             </exclusions>
         </dependency>
         <dependency>
@@ -81,10 +73,6 @@
                     <groupId>javax.servlet</groupId>
                     <artifactId>servlet-api</artifactId>
                 </exclusion>
-                <exclusion>
-                    <groupId>javax.validation</groupId>
-                    <artifactId>validation-api</artifactId>
-                </exclusion>
             </exclusions>
         </dependency>
 
@@ -94,6 +82,7 @@
             <version>${jersey2.version}</version>
             <exclusions>
                 <exclusion>
+                    <!-- Javassist already comes from seed-core -->
                     <groupId>org.javassist</groupId>
                     <artifactId>javassist</artifactId>
                 </exclusion>
@@ -105,6 +94,7 @@
             <version>2.5.0-b42</version>
             <exclusions>
                 <exclusion>
+                    <!-- Guice already comes from seed-core -->
                     <groupId>com.google.inject</groupId>
                     <artifactId>guice</artifactId>
                 </exclusion>
@@ -209,6 +199,18 @@
             <artifactId>logback-classic</artifactId>
             <version>${logback.version}</version>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-validator</artifactId>
+            <version>${hibernate-validator.version}</version>
+            <scope>test</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.jboss.logging</groupId>
+                    <artifactId>jboss-logging</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
     </dependencies>
 </project>

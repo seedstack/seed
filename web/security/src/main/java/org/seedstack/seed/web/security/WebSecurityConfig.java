@@ -12,8 +12,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import javax.validation.constraints.NotBlank;
 import org.seedstack.coffig.Config;
+import org.seedstack.seed.validation.NotBlank;
 
 @Config("security.web")
 public class WebSecurityConfig {

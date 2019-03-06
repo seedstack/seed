@@ -1,6 +1,6 @@
 # Version 3.8.2 (2019-03-??)
 
-* [chg] Adaptively supports older Bean Validation and corresponding Hibernate Validator versions. 
+* [chg] Adaptively supports all Bean Validation specification levels. 
 
 # Version 3.8.1 (2019-02-20)
 

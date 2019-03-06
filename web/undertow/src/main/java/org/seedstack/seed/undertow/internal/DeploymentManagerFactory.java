@@ -74,7 +74,7 @@ class DeploymentManagerFactory {
         }
 
         for (ServletContainerInitializer servletContainerInitializer : loadServletContainerInitializers()) {
-            deploymentInfo.addServletContainerInitalizer(
+            deploymentInfo.addServletContainerInitializer(
                     createServletContainerInitializerInfo(servletContainerInitializer));
         }
 
