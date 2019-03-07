@@ -18,6 +18,7 @@ import io.restassured.specification.RequestSpecification;
 import java.security.KeyStore;
 import javax.inject.Inject;
 import javax.inject.Named;
+import org.apache.http.params.CoreConnectionPNames;
 import org.junit.After;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -117,7 +118,7 @@ public class WebSecurityIT {
                 .config(RestAssured.config()
                         .sslConfig(SSLConfig.sslConfig().relaxedHTTPSValidation("SSL"))
                         .httpClient(HttpClientConfig.httpClientConfig()
-                                .setParam("CoreConnectionPNames.SO_TIMEOUT", 1000))
+                                .setParam(CoreConnectionPNames.SO_TIMEOUT, 1000))
                 );
     }
 }

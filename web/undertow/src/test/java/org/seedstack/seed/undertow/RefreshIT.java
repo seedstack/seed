@@ -14,6 +14,7 @@ import io.restassured.config.HttpClientConfig;
 import io.restassured.config.SSLConfig;
 import io.restassured.response.Response;
 import io.restassured.specification.ResponseSpecification;
+import org.apache.http.params.CoreConnectionPNames;
 import org.assertj.core.api.Assertions;
 import org.junit.After;
 import org.junit.Before;
@@ -64,7 +65,7 @@ public class RefreshIT {
                 .config(RestAssured.config().sslConfig(SSLConfig
                         .sslConfig().relaxedHTTPSValidation("SSL"))
                         .httpClient(HttpClientConfig.httpClientConfig()
-                                .setParam("CoreConnectionPNames.SO_TIMEOUT", 1000))
+                                .setParam(CoreConnectionPNames.SO_TIMEOUT, 1000))
                 )
                 .expect();
     }

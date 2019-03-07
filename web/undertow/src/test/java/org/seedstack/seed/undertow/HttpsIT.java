@@ -12,6 +12,7 @@ import io.restassured.RestAssured;
 import io.restassured.config.HttpClientConfig;
 import io.restassured.config.SSLConfig;
 import io.restassured.specification.ResponseSpecification;
+import org.apache.http.params.CoreConnectionPNames;
 import org.seedstack.seed.testing.ConfigurationProfiles;
 
 @ConfigurationProfiles("https")
@@ -21,7 +22,7 @@ public class HttpsIT extends AbstractUndertowIT {
                 .config(RestAssured.config()
                         .sslConfig(SSLConfig.sslConfig().relaxedHTTPSValidation("SSL"))
                         .httpClient(HttpClientConfig.httpClientConfig()
-                                .setParam("CoreConnectionPNames.SO_TIMEOUT", 1000))
+                                .setParam(CoreConnectionPNames.SO_TIMEOUT, 1000))
                 )
                 .expect();
     }

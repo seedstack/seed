@@ -13,6 +13,7 @@ import io.restassured.config.HttpClientConfig;
 import io.restassured.config.SSLConfig;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
+import org.apache.http.params.CoreConnectionPNames;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.seedstack.seed.Configuration;
@@ -108,7 +109,7 @@ public class XsrfIT {
                 .config(RestAssured.config()
                         .sslConfig(SSLConfig.sslConfig().relaxedHTTPSValidation("SSL"))
                         .httpClient(HttpClientConfig.httpClientConfig()
-                                .setParam("CoreConnectionPNames.SO_TIMEOUT", 1000))
+                                .setParam(CoreConnectionPNames.SO_TIMEOUT, 1000))
                 );
     }
 }
