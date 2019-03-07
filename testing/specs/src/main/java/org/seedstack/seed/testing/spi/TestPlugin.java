@@ -5,6 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.testing.spi;
 
 import java.util.ArrayList;
@@ -105,6 +106,16 @@ public interface TestPlugin {
      */
     default Optional<? extends SeedLauncher> launcher(TestContext testContext) {
         return Optional.empty();
+    }
+
+    /**
+     * Allow the plugin to specify if the launch should occur in a separate thread or the main thread.
+     *
+     * @param testContext the test context.
+     * @return true if the launch should be done in a new thread, false if it should be done in the main thread.
+     */
+    default boolean separateThread(TestContext testContext) {
+        return false;
     }
 
     /**

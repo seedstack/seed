@@ -5,16 +5,14 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.core.internal.init;
 
-import java.io.FilterOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
 import java.io.PrintStream;
-import java.io.UnsupportedEncodingException;
-import java.nio.charset.Charset;
 import org.fusesource.jansi.AnsiConsole;
-import org.fusesource.jansi.AnsiOutputStream;
+import org.fusesource.jansi.AnsiPrintStream;
+import org.fusesource.jansi.FilterPrintStream;
+import org.fusesource.jansi.internal.CLibrary;
 import org.seedstack.seed.ApplicationConfig;
 
 public class ConsoleManager {
@@ -30,8 +28,8 @@ public class ConsoleManager {
     }
 
     public synchronized void install(ApplicationConfig.ColorOutput colorOutput) {
-        System.setOut(wrapPrintStream(System.out, colorOutput));
-        System.setErr(wrapPrintStream(System.err, colorOutput));
+        System.setOut(wrapPrintStream(System.out, CLibrary.STDOUT_FILENO, colorOutput));
+        System.setErr(wrapPrintStream(System.err, CLibrary.STDERR_FILENO, colorOutput));
     }
 
     public synchronized void uninstall() {
@@ -39,49 +37,42 @@ public class ConsoleManager {
         System.setErr(savedErr);
     }
 
-    private PrintStream wrapPrintStream(final PrintStream printStream, ApplicationConfig.ColorOutput colorOutput) {
-        OutputStream outputStream;
+    private PrintStream wrapPrintStream(final PrintStream inputStream, int fileno,
+            ApplicationConfig.ColorOutput colorOutput) {
         try {
             if (colorOutput == ApplicationConfig.ColorOutput.PASSTHROUGH || Boolean.getBoolean("jansi.passthrough")) {
-                outputStream = printStream;
+                return inputStream;
             } else if (colorOutput == ApplicationConfig.ColorOutput.DISABLE || Boolean.getBoolean("jansi.strip")) {
-                outputStream = basicOutput(printStream);
+                return strippedOutput(inputStream);
             } else if (colorOutput == ApplicationConfig.ColorOutput.ENABLE) {
-                outputStream = ansiOutput(printStream);
+                return ansiOutput(inputStream);
             } else if (colorOutput == ApplicationConfig.ColorOutput.AUTODETECT) {
                 if (isXtermColor()) {
                     // enable color in recognized XTERM color modes
-                    outputStream = ansiOutput(printStream);
+                    return ansiOutput(inputStream);
                 } else if (isIntelliJ()) {
                     // enable color under Intellij
-                    outputStream = ansiOutput(printStream);
+                    return ansiOutput(inputStream);
                 } else {
                     // let Jansi handle other detection
-                    outputStream = AnsiConsole.wrapOutputStream(printStream);
+                    return AnsiConsole.wrapPrintStream(inputStream, fileno);
                 }
             } else {
                 // Fallback to stripping ANSI codes
-                outputStream = basicOutput(printStream);
+                return strippedOutput(inputStream);
             }
         } catch (Throwable e) {
             // If any error occurs, strip ANSI codes
-            outputStream = basicOutput(printStream);
-        }
-
-        try {
-            return new PrintStream(outputStream, false, Charset.defaultCharset().name());
-        } catch (UnsupportedEncodingException e) {
-            // if for some reason the default encoding is unsupported, fallback to passthrough
-            return printStream;
+            return strippedOutput(inputStream);
         }
     }
 
-    private FilterOutputStream basicOutput(PrintStream stream) {
-        return new AnsiOutputStream(stream);
+    private AnsiPrintStream strippedOutput(PrintStream stream) {
+        return new AnsiPrintStream(stream);
     }
 
-    private FilterOutputStream ansiOutput(PrintStream stream) {
-        return new ColorOutputStream(stream);
+    private ColorPrintStream ansiOutput(PrintStream stream) {
+        return new ColorPrintStream(stream);
     }
 
     private boolean isXtermColor() {
@@ -108,15 +99,15 @@ public class ConsoleManager {
         private static final ConsoleManager INSTANCE = new ConsoleManager();
     }
 
-    private static class ColorOutputStream extends FilterOutputStream {
-        private ColorOutputStream(OutputStream stream) {
+    private static class ColorPrintStream extends FilterPrintStream {
+        private ColorPrintStream(PrintStream stream) {
             super(stream);
         }
 
         @Override
-        public void close() throws IOException {
-            write(AnsiOutputStream.RESET_CODE);
-            flush();
+        public void close() {
+            ps.print(AnsiPrintStream.RESET_CODE);
+            ps.flush();
             super.close();
         }
     }

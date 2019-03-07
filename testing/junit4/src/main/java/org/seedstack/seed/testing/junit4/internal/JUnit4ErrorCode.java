@@ -5,6 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.testing.junit4.internal;
 
 import org.seedstack.shed.exception.ErrorCode;
@@ -18,5 +19,6 @@ enum JUnit4ErrorCode implements ErrorCode {
     EXPECTED_EXCEPTION_DID_NOT_OCCURRED,
     FAILED_TO_LAUNCH_APPLICATION,
     FAILED_TO_SHUTDOWN_APPLICATION,
+    FAILURE_WAITING_TEST_LAUNCH,
     MISSING_LAUNCHER_FOR_TEST
 }

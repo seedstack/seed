@@ -5,6 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.testing.internal;
 
 import java.util.Optional;
@@ -39,5 +40,14 @@ public class LaunchTestPlugin implements TestPlugin {
                 .filter(launchWith -> !SeedLauncher.class.equals(launchWith.value()))
                 .map(LaunchWith::value)
                 .map(Classes::instantiateDefault);
+    }
+
+    @Override
+    public boolean separateThread(TestContext testContext) {
+        return Annotations.on(testContext.testClass())
+                .includingMetaAnnotations()
+                .find(LaunchWith.class)
+                .map(LaunchWith::separateThread)
+                .orElse(false);
     }
 }

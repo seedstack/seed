@@ -1,6 +1,7 @@
-# Version 3.8.2 (2019-03-??)
+# Version 3.8.2 (2019-03-07)
 
 * [chg] Adaptively supports all Bean Validation specification levels. 
+* [chg] During integration tests with Undertow, launch the application in a separate thread. 
 
 # Version 3.8.1 (2019-02-20)
 

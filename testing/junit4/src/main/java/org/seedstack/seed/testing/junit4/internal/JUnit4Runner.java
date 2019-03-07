@@ -5,6 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.testing.junit4.internal;
 
 import static org.seedstack.shed.misc.PriorityUtils.sortByPriority;
@@ -186,6 +187,15 @@ public class JUnit4Runner extends BlockJUnit4ClassRunner {
         return launchMode;
     }
 
+    private boolean gatherSeparateThreadLaunch() {
+        for (TestPlugin plugin : plugins) {
+            if (plugin.separateThread(testContext)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     private SeedLauncher gatherLauncher() {
         SeedLauncher launcher = null;
 
@@ -233,48 +243,62 @@ public class JUnit4Runner extends BlockJUnit4ClassRunner {
     }
 
     private void doStart() {
-        try {
-            // Invoke plugin beforeLaunch()
-            plugins.forEach(plugin -> plugin.beforeLaunch(testContext));
-
-            Exception occurredException = null;
+        Runnable launch = () -> {
             try {
-                seedLauncher = gatherLauncher();
-                seedLauncher.launch(gatherCliArguments(), gatherKernelParameters());
-            } catch (Exception e) {
-                occurredException = e;
-            }
+                // Invoke plugin beforeLaunch()
+                plugins.forEach(plugin -> plugin.beforeLaunch(testContext));
 
-            Class<? extends Exception> expectedException = gatherExpectedException();
-            if (expectedException == null) {
-                if (occurredException != null) {
-                    throw SeedException.wrap(occurredException, JUnit4ErrorCode.FAILED_TO_LAUNCH_APPLICATION)
-                            .put("test", testContext.testName());
+                Exception occurredException = null;
+                try {
+                    seedLauncher = gatherLauncher();
+                    seedLauncher.launch(gatherCliArguments(), gatherKernelParameters());
+                } catch (Exception e) {
+                    occurredException = e;
                 }
-            } else {
-                if (occurredException == null) {
-                    throw SeedException.createNew(JUnit4ErrorCode.EXPECTED_EXCEPTION_DID_NOT_OCCURRED)
-                            .put("expectedClass", expectedException)
-                            .put("test", testContext.testName());
-                } else if (!expectedException.isAssignableFrom(occurredException.getClass())) {
-                    throw SeedException.wrap(occurredException,
-                            JUnit4ErrorCode.ANOTHER_EXCEPTION_THAN_EXPECTED_OCCURRED)
-                            .put("expectedClass", expectedException)
-                            .put("test", testContext.testName());
-                }
-            }
 
-            if (seedLauncher != null) {
-                seedLauncher.getKernel().ifPresent(testContext::setKernel);
+                Class<? extends Exception> expectedException = gatherExpectedException();
+                if (expectedException == null) {
+                    if (occurredException != null) {
+                        throw SeedException.wrap(occurredException, JUnit4ErrorCode.FAILED_TO_LAUNCH_APPLICATION)
+                                .put("test", testContext.testName());
+                    }
+                } else {
+                    if (occurredException == null) {
+                        throw SeedException.createNew(JUnit4ErrorCode.EXPECTED_EXCEPTION_DID_NOT_OCCURRED)
+                                .put("expectedClass", expectedException)
+                                .put("test", testContext.testName());
+                    } else if (!expectedException.isAssignableFrom(occurredException.getClass())) {
+                        throw SeedException.wrap(occurredException,
+                                JUnit4ErrorCode.ANOTHER_EXCEPTION_THAN_EXPECTED_OCCURRED)
+                                .put("expectedClass", expectedException)
+                                .put("test", testContext.testName());
+                    }
+                }
+
+                if (seedLauncher != null) {
+                    seedLauncher.getKernel().ifPresent(testContext::setKernel);
+                }
+            } catch (Exception e1) {
+                // Attempt to stop anything that could have already started
+                try {
+                    doStop();
+                } catch (Exception e2) {
+                    // do nothing
+                }
+                throw e1;
             }
-        } catch (Exception e1) {
-            // Attempt to stop anything that could have already started
+        };
+
+        if (gatherSeparateThreadLaunch()) {
+            Thread thread = new Thread(launch, "test");
+            thread.start();
             try {
-                doStop();
-            } catch (Exception e2) {
-                // do nothing
+                thread.join();
+            } catch (InterruptedException e) {
+                throw SeedException.wrap(e, JUnit4ErrorCode.FAILURE_WAITING_TEST_LAUNCH);
             }
-            throw e1;
+        } else {
+            launch.run();
         }
     }
 

@@ -5,6 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.testing;
 
 import java.lang.annotation.Documented;
@@ -38,4 +39,10 @@ public @interface LaunchWith {
      */
     LaunchMode mode() default LaunchMode.ANY;
 
+    /**
+     * If the launch should occur in a separate thread.
+     *
+     * @return if true, the launch will be done in a new thread, otherwise in the main thread.
+     */
+    boolean separateThread() default false;
 }

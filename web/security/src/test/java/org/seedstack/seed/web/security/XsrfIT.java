@@ -5,9 +5,11 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.web.security;
 
 import io.restassured.RestAssured;
+import io.restassured.config.HttpClientConfig;
 import io.restassured.config.SSLConfig;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
@@ -103,6 +105,10 @@ public class XsrfIT {
 
     private RequestSpecification givenRelaxedSSL() {
         return RestAssured.given()
-                .config(RestAssured.config().sslConfig(SSLConfig.sslConfig().relaxedHTTPSValidation("SSL")));
+                .config(RestAssured.config()
+                        .sslConfig(SSLConfig.sslConfig().relaxedHTTPSValidation("SSL"))
+                        .httpClient(HttpClientConfig.httpClientConfig()
+                                .setParam("CoreConnectionPNames.SO_TIMEOUT", 1000))
+                );
     }
 }
