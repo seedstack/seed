@@ -10,11 +10,9 @@ package org.seedstack.seed.undertow;
 
 import com.google.inject.Injector;
 import io.restassured.RestAssured;
-import io.restassured.config.HttpClientConfig;
 import io.restassured.config.SSLConfig;
 import io.restassured.response.Response;
 import io.restassured.specification.ResponseSpecification;
-import org.apache.http.params.CoreConnectionPNames;
 import org.assertj.core.api.Assertions;
 import org.junit.After;
 import org.junit.Before;
@@ -62,11 +60,7 @@ public class RefreshIT {
 
     private ResponseSpecification expect() {
         return RestAssured.given()
-                .config(RestAssured.config().sslConfig(SSLConfig
-                        .sslConfig().relaxedHTTPSValidation("SSL"))
-                        .httpClient(HttpClientConfig.httpClientConfig()
-                                .setParam(CoreConnectionPNames.SO_TIMEOUT, 5000))
-                )
+                .config(RestAssured.config().sslConfig(SSLConfig.sslConfig().relaxedHTTPSValidation()))
                 .expect();
     }
 }

@@ -9,11 +9,9 @@
 package org.seedstack.seed.web.security;
 
 import io.restassured.RestAssured;
-import io.restassured.config.HttpClientConfig;
 import io.restassured.config.SSLConfig;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
-import org.apache.http.params.CoreConnectionPNames;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.seedstack.seed.Configuration;
@@ -106,10 +104,6 @@ public class XsrfIT {
 
     private RequestSpecification givenRelaxedSSL() {
         return RestAssured.given()
-                .config(RestAssured.config()
-                        .sslConfig(SSLConfig.sslConfig().relaxedHTTPSValidation("SSL"))
-                        .httpClient(HttpClientConfig.httpClientConfig()
-                                .setParam(CoreConnectionPNames.SO_TIMEOUT, 5000))
-                );
+                .config(RestAssured.config().sslConfig(SSLConfig.sslConfig().relaxedHTTPSValidation()));
     }
 }

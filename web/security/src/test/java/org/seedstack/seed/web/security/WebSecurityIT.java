@@ -11,14 +11,12 @@ package org.seedstack.seed.web.security;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import io.restassured.RestAssured;
-import io.restassured.config.HttpClientConfig;
 import io.restassured.config.SSLConfig;
 import io.restassured.http.ContentType;
 import io.restassured.specification.RequestSpecification;
 import java.security.KeyStore;
 import javax.inject.Inject;
 import javax.inject.Named;
-import org.apache.http.params.CoreConnectionPNames;
 import org.junit.After;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -115,10 +113,6 @@ public class WebSecurityIT {
 
     private RequestSpecification givenRelaxedSSL() {
         return RestAssured.given()
-                .config(RestAssured.config()
-                        .sslConfig(SSLConfig.sslConfig().relaxedHTTPSValidation("SSL"))
-                        .httpClient(HttpClientConfig.httpClientConfig()
-                                .setParam(CoreConnectionPNames.SO_TIMEOUT, 5000))
-                );
+                .config(RestAssured.config().sslConfig(SSLConfig.sslConfig().relaxedHTTPSValidation()));
     }
 }

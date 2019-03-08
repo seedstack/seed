@@ -14,7 +14,7 @@
     <parent>
         <groupId>org.seedstack.poms</groupId>
         <artifactId>parent-internal</artifactId>
-        <version>3.4.5</version>
+        <version>3.4.6</version>
     </parent>
 
     <groupId>org.seedstack.seed</groupId>
@@ -43,6 +43,8 @@
         <compatibility.version>3.1.0</compatibility.version>
 
         <bintray.package>seed</bintray.package>
+        <!-- TODO remove the limitation to TLSv1.2 below once built on JDK 12 -->
+        <itArgLine>-Djdk.tls.client.protocols="TLSv1,TLSv1.1,TLSv1.2"</itArgLine>
     </properties>
 
     <modules>
