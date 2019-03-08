@@ -19,6 +19,7 @@ web:
 rest:
   baseRel: http://example.org/rel
   path<withPrefix>: /rest
+  jsonHome: true
   jsonHome<withoutRootResource>: false
 
 textHome<withoutRootResource>: false

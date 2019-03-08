@@ -5,6 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.rest;
 
 import java.util.Collections;
@@ -22,7 +23,7 @@ public class RestConfig {
     private String jspPath = "/WEB-INF/jsp";
     private String baseRel = "";
     private String baseParam = "";
-    private boolean jsonHome = true;
+    private boolean jsonHome = false;
     private Map<String, String> jerseyProperties = new HashMap<>();
     private Set<Class<?>> features = new HashSet<>();
     private ExceptionMappingConfig exceptionMapping = new ExceptionMappingConfig();

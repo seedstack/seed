@@ -22,7 +22,7 @@ public class HttpsIT extends AbstractUndertowIT {
                 .config(RestAssured.config()
                         .sslConfig(SSLConfig.sslConfig().relaxedHTTPSValidation("SSL"))
                         .httpClient(HttpClientConfig.httpClientConfig()
-                                .setParam(CoreConnectionPNames.SO_TIMEOUT, 1000))
+                                .setParam(CoreConnectionPNames.SO_TIMEOUT, 5000))
                 )
                 .expect();
     }

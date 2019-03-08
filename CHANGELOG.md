@@ -1,3 +1,7 @@
+# Version 3.8.3 (2019-03-08)
+
+* [chg] JSON home resource is now disabled by default. 
+
 # Version 3.8.2 (2019-03-07)
 
 * [chg] Adaptively supports all Bean Validation specification levels. 
