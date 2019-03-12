@@ -36,11 +36,13 @@ class LogbackLogManager implements LogManager {
             "%highlight(%-5level) %d{ISO8601} %magenta(%-15thread) %cyan(%-40logger{40}) %msg%n%red(%throwable)";
     private static final String DEFAULT_FILE_PATTERN =
             "%-5level %d{ISO8601} %-15thread %-40logger{40} %msg%n%throwable";
+    private static final String LOGGING_INITIAL_LEVEL_PROPERTY = "seedstack.logging.initialLevel";
     private final boolean underTomcat = Classes.optional("org.apache.catalina.startup.Catalina").isPresent();
     private final LoggerContext context = (LoggerContext) LoggerFactory.getILoggerFactory();
 
     LogbackLogManager() {
-        context.getLogger(Logger.ROOT_LOGGER_NAME).setLevel(Level.INFO);
+        context.getLogger(Logger.ROOT_LOGGER_NAME)
+                .setLevel(Level.valueOf(System.getProperty(LOGGING_INITIAL_LEVEL_PROPERTY, "INFO")));
     }
 
     @Override

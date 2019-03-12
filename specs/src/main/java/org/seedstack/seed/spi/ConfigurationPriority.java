@@ -5,6 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.spi;
 
 public class ConfigurationPriority {
@@ -24,12 +25,12 @@ public class ConfigurationPriority {
     public static final int ENVIRONMENT_VARIABLES = Integer.MAX_VALUE;
 
     /**
-     * Configuration done through kernel parameters prefixed with "seedstack.config".
+     * Configuration done through system properties prefixed with "seedstack.config".
      */
     public static final int SYSTEM_PROPERTIES_CONFIG = 3000;
 
     /**
-     * Configuration done through system properties prefixed with "seedstack.config".
+     * Configuration done through kernel parameters prefixed with "seedstack.config".
      */
     public static final int KERNEL_PARAMETERS_CONFIG = 2000;
 

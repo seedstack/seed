@@ -5,6 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.core.internal.configuration;
 
 import com.google.common.collect.Sets;
@@ -21,7 +22,6 @@ import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.seedstack.coffig.Coffig;
@@ -47,7 +47,7 @@ import org.slf4j.LoggerFactory;
  */
 public class ConfigurationPlugin extends AbstractPlugin implements ApplicationProvider {
     public static final String NAME = "config";
-    private static final String EXTERNAL_CONFIG_PREFIX = "seedstack.config.";
+    private static final String KERNEL_PARAM_CONFIG_PREFIX = "seedstack.config.";
     private static final Logger LOGGER = LoggerFactory.getLogger(ConfigurationPlugin.class);
     private static final String CONFIGURATION_PACKAGE = "META-INF.configuration";
     private static final String CONFIGURATION_LOCATION = "META-INF/configuration/";
@@ -76,8 +76,14 @@ public class ConfigurationPlugin extends AbstractPlugin implements ApplicationPr
     @Override
     public String pluginPackageRoot() {
         ApplicationConfig applicationConfig = coffig.get(ApplicationConfig.class);
-        if (applicationConfig.getBasePackages().isEmpty() && applicationConfig.isPackageScanWarning()) {
-            LOGGER.warn("No base package configured, only classes in 'org.seedstack.*' packages will be scanned");
+        if (applicationConfig.getBasePackages().isEmpty()) {
+            if (applicationConfig.isPackageScanWarning()) {
+                LOGGER.warn("No application base package configured, only classes in 'org.seedstack.*' packages will " +
+                        "be scanned");
+            }
+        } else {
+            LOGGER.info("Application base package(s) to be scanned: " + String.join(", ",
+                    applicationConfig.getBasePackages()));
         }
         Set<String> basePackages = new HashSet<>(applicationConfig.getBasePackages());
         basePackages.add(CONFIGURATION_PACKAGE);
@@ -97,7 +103,6 @@ public class ConfigurationPlugin extends AbstractPlugin implements ApplicationPr
     @SuppressWarnings("unchecked")
     @Override
     public InitState init(InitContext initContext) {
-        detectSystemPropertiesConfig();
         detectKernelParamConfig(initContext);
         detectConfigurationFiles(initContext);
 
@@ -128,10 +133,17 @@ public class ConfigurationPlugin extends AbstractPlugin implements ApplicationPr
     private void detectKernelParamConfig(InitContext initContext) {
         InMemoryProvider kernelParamConfigProvider = new InMemoryProvider();
 
+        int count = 0;
         for (Map.Entry<String, String> kernelParam : initContext.kernelParams().entrySet()) {
-            if (kernelParam.getKey().startsWith(EXTERNAL_CONFIG_PREFIX)) {
+            if (kernelParam.getKey().startsWith(KERNEL_PARAM_CONFIG_PREFIX)) {
                 addValue(kernelParamConfigProvider, kernelParam.getKey(), kernelParam.getValue());
+                count++;
             }
+        }
+
+        if (count > 0) {
+            LOGGER.info("Detected {} configuration value(s) through kernel parameters, enable debug-level logging to " +
+                    "see them", count);
         }
 
         seedRuntime.registerConfigurationProvider(
@@ -141,31 +153,15 @@ public class ConfigurationPlugin extends AbstractPlugin implements ApplicationPr
     }
 
     private void addValue(InMemoryProvider inMemoryProvider, String key, String value) {
-        String choppedKey = key.substring(EXTERNAL_CONFIG_PREFIX.length());
+        String choppedKey = key.substring(KERNEL_PARAM_CONFIG_PREFIX.length());
         if (value.contains(",")) {
             String[] values = Arrays.stream(value.split(",")).map(String::trim).toArray(String[]::new);
-            LOGGER.debug("External array configuration property: {}={}", choppedKey, Arrays.toString(values));
+            LOGGER.debug("Kernel parameter array config: {}={}", choppedKey, Arrays.toString(values));
             inMemoryProvider.put(choppedKey, values);
         } else {
-            LOGGER.debug("External configuration property: {}={}", choppedKey, value);
+            LOGGER.debug("Kernel parameter config: {}={}", choppedKey, value);
             inMemoryProvider.put(choppedKey, value);
         }
-    }
-
-    private void detectSystemPropertiesConfig() {
-        InMemoryProvider systemPropertiesProvider = new InMemoryProvider();
-
-        Properties systemProperties = System.getProperties();
-        for (String systemProperty : systemProperties.stringPropertyNames()) {
-            if (systemProperty.startsWith(EXTERNAL_CONFIG_PREFIX)) {
-                addValue(systemPropertiesProvider, systemProperty, systemProperties.getProperty(systemProperty));
-            }
-        }
-
-        seedRuntime.registerConfigurationProvider(
-                systemPropertiesProvider,
-                ConfigurationPriority.SYSTEM_PROPERTIES_CONFIG
-        );
     }
 
     private void detectConfigurationFiles(InitContext initContext) {
@@ -182,7 +178,7 @@ public class ConfigurationPlugin extends AbstractPlugin implements ApplicationPr
                     URL url = urlEnumeration.nextElement();
 
                     if (isOverrideResource(configurationResource)) {
-                        LOGGER.debug("Detected override configuration resource: {}", url.toExternalForm());
+                        LOGGER.info("Detected override configuration resource: {}", url.toExternalForm());
 
                         if (isJacksonResource(configurationResource)) {
                             jacksonOverrideProvider.addSource(url);
@@ -192,7 +188,7 @@ public class ConfigurationPlugin extends AbstractPlugin implements ApplicationPr
                             LOGGER.warn("Unrecognized override configuration resource: {}", url.toExternalForm());
                         }
                     } else {
-                        LOGGER.debug("Detected configuration resource: {}", url.toExternalForm());
+                        LOGGER.info("Detected configuration resource: {}", url.toExternalForm());
 
                         if (isJacksonResource(configurationResource)) {
                             jacksonProvider.addSource(url);

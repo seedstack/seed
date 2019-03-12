@@ -1,3 +1,9 @@
+# Version 3.8.4 (2019-03-12)
+
+* [fix] Fix Jansi loading on unsupported platforms.
+* [chg] Better logging of detected configuration resources.
+* [chg] Allow configuration through `seedstack.config.*` system properties to override any other configuration source.
+
 # Version 3.8.3 (2019-03-08)
 
 * [chg] JSON home resource is now disabled by default. 
