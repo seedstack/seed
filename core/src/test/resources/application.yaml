@@ -26,7 +26,7 @@ logging:
     path: test.log
 application:
   id: seed-it
-  basePackages: some.other.pkg
+  basePackages: ["some.other.pkg", "${sys.additionalPackage:'dummy'}"]
 jndi:
   additionalContexts:
     test1: jndi-test1.properties

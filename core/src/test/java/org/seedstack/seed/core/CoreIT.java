@@ -5,6 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.core;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -31,6 +32,7 @@ import org.seedstack.seed.core.fixtures.Dummy;
 import org.seedstack.seed.core.fixtures.DummyService1;
 import org.seedstack.seed.core.fixtures.DummyService2;
 import org.seedstack.seed.core.fixtures.DummyService3;
+import org.seedstack.seed.core.fixtures.ProvidedInterface;
 import org.seedstack.seed.core.fixtures.Service;
 import org.seedstack.seed.core.fixtures.Service1;
 import org.seedstack.seed.core.fixtures.Service2;
@@ -43,7 +45,7 @@ import org.slf4j.LoggerFactory;
 import some.other.pkg.ForeignClass;
 
 @RunWith(SeedITRunner.class)
-public class CorePluginIT {
+public class CoreIT {
     @Inject
     private Injector injector;
 
@@ -118,6 +120,14 @@ public class CorePluginIT {
                 BoundOverrideFromInterfaceWithAnnotation.class);
     }
 
+    @Test
+    public void explicitProvidedBindingsAreWorking() {
+        HolderNominal holder = injector.getInstance(HolderNominal.class);
+        assertThat(holder.providedFromInterface).isInstanceOf(ProvidedInterface.class);
+        assertThat(holder.providedFromInterfaceWithName).isInstanceOf(ProvidedInterface.class);
+        assertThat(holder.providedFromInterfaceWithAnnotation).isInstanceOf(ProvidedInterface.class);
+    }
+
     @Bind
     private static class LoggerHolder {
         private static final Logger logger = LoggerFactory.getLogger(LoggerHolder.class);
@@ -170,6 +180,14 @@ public class CorePluginIT {
         @Inject
         @Dummy
         BoundInterface boundFromInterfaceWithAnnotation;
+        @Inject
+        ProvidedInterface<Integer> providedFromInterface;
+        @Inject
+        @Named("toto")
+        ProvidedInterface<Integer> providedFromInterfaceWithName;
+        @Inject
+        @Dummy
+        ProvidedInterface<Integer> providedFromInterfaceWithAnnotation;
     }
 
     private static class HolderException {

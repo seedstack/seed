@@ -1,3 +1,7 @@
+# Version 3.8.5 (2019-03-22)
+
+* [new] The `@Provide` annotation allows to register JSR-330 providers for producing injectable instances of a specific type.
+
 # Version 3.8.4 (2019-03-12)
 
 * [fix] Fix Jansi loading on unsupported platforms.
