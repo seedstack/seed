@@ -5,69 +5,47 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-package org.seedstack.seed.core.internal;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+package org.seedstack.seed.core.internal;
 
 import com.google.inject.Binder;
 import com.google.inject.binder.AnnotatedBindingBuilder;
-import java.lang.annotation.Annotation;
-import java.util.Optional;
-import javax.inject.Qualifier;
 import org.seedstack.seed.SeedException;
-import org.seedstack.shed.reflect.AnnotationPredicates;
-import org.seedstack.shed.reflect.Annotations;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class BindingDefinition<E> {
+class BindingDefinition<T> extends Bindable<T> {
     private static final Logger LOGGER = LoggerFactory.getLogger(BindingDefinition.class);
-    private final Class<E> key;
-    private final Class<? extends E> target;
-    private final Annotation qualifier;
+    private final Class<T> from;
 
-    public BindingDefinition(Class<? extends E> target) {
-        this(target, null);
-    }
-
-    public BindingDefinition(Class<? extends E> target, Class<E> fromKey) {
-        this.target = checkNotNull(target, "Binding target should not be null");
-        this.key = fromKey;
-        this.qualifier = findQualifier(this.target).orElse(null);
+    BindingDefinition(Class<? extends T> target, Class<T> from) {
+        super(target);
+        this.from = from;
     }
 
     public void apply(Binder binder) {
-        if (key != null) {
-            AnnotatedBindingBuilder<?> bind = binder.bind(key);
-            if (!key.isAssignableFrom(target)) {
+        if (from != null) {
+            AnnotatedBindingBuilder<T> bind = binder.bind(from);
+            if (!from.isAssignableFrom(target)) {
                 throw SeedException.createNew(CoreErrorCode.INVALID_BINDING)
-                        .put("key", key)
+                        .put("key", from)
                         .put("target", target);
             }
             if (qualifier != null) {
-                LOGGER.trace("Binding {} annotated with {} to {}", key.getName(), qualifier, target.getName());
-                bind.annotatedWith(qualifier).to(getExtendingClass(target));
+                LOGGER.debug("Binding {} annotated with {} to {}", from.getName(), qualifier, target.getName());
+                bind.annotatedWith(qualifier).to(target);
             } else {
-                LOGGER.trace("Binding {} to {}", key.getName(), target.getName());
-                bind.to(getExtendingClass(target));
+                LOGGER.debug("Binding {} to {}", from.getName(), target.getName());
+                bind.to(target);
             }
         } else {
-            LOGGER.trace("Binding {} to itself", target.getName());
-            binder.bind(target);
+            if (qualifier != null) {
+                LOGGER.debug("Binding {} annotated with {} to itself", target.getName(), qualifier);
+                binder.bind(target).annotatedWith(qualifier);
+            } else {
+                LOGGER.debug("Binding {} to itself", target.getName());
+                binder.bind(target);
+            }
         }
-    }
-
-    private Optional<Annotation> findQualifier(Class<? extends E> target) {
-        return Annotations.on(target)
-                .traversingSuperclasses()
-                .traversingInterfaces()
-                .findAll()
-                .filter(AnnotationPredicates.annotationAnnotatedWith(Qualifier.class, false))
-                .findFirst();
-    }
-
-    @SuppressWarnings("unchecked")
-    private <C extends Class<?>> C getExtendingClass(Class<?> aClass) {
-        return (C) aClass;
     }
 }
