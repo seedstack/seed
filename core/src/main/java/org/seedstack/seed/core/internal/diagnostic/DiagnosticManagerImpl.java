@@ -5,9 +5,11 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.core.internal.diagnostic;
 
 import com.google.common.collect.Maps;
+import java.io.Writer;
 import java.lang.management.ManagementFactory;
 import java.lang.management.RuntimeMXBean;
 import java.lang.management.ThreadInfo;
@@ -67,6 +69,16 @@ public class DiagnosticManagerImpl implements DiagnosticManager {
     public void dumpDiagnosticReport(Throwable t) {
         try {
             diagnosticReporter.writeDiagnosticReport(collectAllDiagnostics(t));
+        } catch (Exception e) {
+            LOGGER.error("Unable to write diagnostic information", e);
+            throw SeedException.wrap(t, CoreErrorCode.RETHROW_EXCEPTION_AFTER_DIAGNOSTIC_FAILURE);
+        }
+    }
+
+    @Override
+    public void writeDiagnosticReport(Throwable t, Writer writer) {
+        try {
+            diagnosticReporter.writeDiagnosticReport(collectAllDiagnostics(t), writer);
         } catch (Exception e) {
             LOGGER.error("Unable to write diagnostic information", e);
             throw SeedException.wrap(t, CoreErrorCode.RETHROW_EXCEPTION_AFTER_DIAGNOSTIC_FAILURE);

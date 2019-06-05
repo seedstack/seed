@@ -1,3 +1,7 @@
+# Version 3.8.6 (2019-07-??)
+
+* [new] Introduce the `diag` tool to manually write a diagnostic report to standard output or in a file.
+
 # Version 3.8.5 (2019-03-22)
 
 * [new] The `@Provide` annotation allows to register JSR-330 providers for producing injectable instances of a specific type.

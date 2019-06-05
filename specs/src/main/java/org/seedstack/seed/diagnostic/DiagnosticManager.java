@@ -5,8 +5,10 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.diagnostic;
 
+import java.io.Writer;
 import java.util.Map;
 import org.seedstack.seed.diagnostic.spi.DiagnosticInfoCollector;
 import org.seedstack.seed.diagnostic.spi.DiagnosticReporter;
@@ -29,6 +31,14 @@ public interface DiagnosticManager {
      * @param t the exception which may be the origin of this diagnostic generation. May be null.
      */
     void dumpDiagnosticReport(Throwable t);
+
+    /**
+     * Writer the diagnostic information to the specified writer through the {@link DiagnosticReporter}.
+     *
+     * @param t      the exception which may be the origin of this diagnostic generation. May be null.
+     * @param writer the writer to output the report to.
+     */
+    void writeDiagnosticReport(Throwable t, Writer writer);
 
     /**
      * Register a diagnostic collector.

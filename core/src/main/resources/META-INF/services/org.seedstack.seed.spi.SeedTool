@@ -2,3 +2,4 @@ org.seedstack.seed.core.internal.configuration.tool.ConfigTool
 org.seedstack.seed.core.internal.diagnostic.tool.ErrorsTool
 org.seedstack.seed.core.internal.crypto.CryptTool
 org.seedstack.seed.core.internal.configuration.tool.EffectiveConfigTool
+org.seedstack.seed.core.internal.diagnostic.tool.DiagTool

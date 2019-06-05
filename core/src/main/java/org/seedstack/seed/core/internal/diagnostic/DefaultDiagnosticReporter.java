@@ -73,7 +73,8 @@ class DefaultDiagnosticReporter implements DiagnosticReporter {
         }
     }
 
-    void writeDiagnosticReport(Map<String, Object> diagnosticInfo, Writer writer) throws IOException {
+    @Override
+    public void writeDiagnosticReport(Map<String, Object> diagnosticInfo, Writer writer) throws IOException {
         try (JsonGenerator jsonGenerator = YAML_FACTORY.createGenerator(writer)) {
             jsonGenerator.setPrettyPrinter(DEFAULT_PRETTY_PRINTER);
             jsonGenerator.writeObject(diagnosticInfo);
