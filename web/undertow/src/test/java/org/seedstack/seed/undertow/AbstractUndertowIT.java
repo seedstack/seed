@@ -5,6 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.undertow;
 
 import io.restassured.response.Response;
@@ -89,6 +90,31 @@ public abstract class AbstractUndertowIT {
                 .body(Matchers.containsString("<h1>Welcome2</h1>"))
                 .when()
                 .get(baseUrl + "/welcome");
+    }
+
+    @Test
+    @ConfigurationProfiles("errorPages")
+    public void errorPages() {
+        expect()
+                .statusCode(404)
+                .body(Matchers.containsString("<h1>Not found!</h1>"))
+                .when()
+                .get(baseUrl + "/error?code=404");
+        expect()
+                .statusCode(415)
+                .body(Matchers.containsString("<h1>Unsupported media type!</h1>"))
+                .when()
+                .get(baseUrl + "/error?code=415");
+        expect()
+                .statusCode(403)
+                .body(Matchers.containsString("<h1>An error occurred!</h1>"))
+                .when()
+                .get(baseUrl + "/error?code=403");
+        expect()
+                .statusCode(500)
+                .body(Matchers.containsString("<h1>An error occurred!</h1>"))
+                .when()
+                .get(baseUrl + "/exceptionError");
     }
 
     abstract ResponseSpecification expect();

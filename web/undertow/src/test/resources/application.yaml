@@ -15,6 +15,12 @@ web:
     contextPath: context/ # keep this strange form to test for context path normalization
     https<https>: true
     welcomeFiles<welcome>: [ 'welcome1.html', 'welcome2.html' ]
+    errorPages<errorPages>:
+      - location: /errors/404.html
+        errorCode: 404
+      - location: /errors/415.html
+        errorCode: 415
+      - location: /errors/default.html
   server<refresh>:
     port: ${sys.customUndertowPort:'9001'}
 
