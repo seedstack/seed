@@ -5,6 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.undertow.internal;
 
 import static org.seedstack.shed.ClassLoaders.findMostCompleteClassLoader;
@@ -14,10 +15,14 @@ import io.undertow.server.handlers.resource.ClassPathResourceManager;
 import io.undertow.servlet.Servlets;
 import io.undertow.servlet.api.DeploymentInfo;
 import io.undertow.servlet.api.DeploymentManager;
+import io.undertow.servlet.api.ErrorPage;
 import io.undertow.servlet.api.ServletContainerInitializerInfo;
 import io.undertow.servlet.util.ImmediateInstanceHandle;
 import io.undertow.websockets.jsr.WebSocketDeploymentInfo;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.ServiceLoader;
 import java.util.Set;
@@ -59,6 +64,7 @@ class DeploymentManagerFactory {
                 .setDefaultSessionTimeout(serverConfig.sessions().getTimeout())
                 .setResourceManager(new ClassPathResourceManager(mostCompleteClassLoader, META_INF_RESOURCES))
                 .addWelcomePages(serverConfig.getWelcomeFiles())
+                .addErrorPages(buildUndertowErrorPages(serverConfig.getErrorPages()))
                 .addServletContextAttribute(
                         WebSocketDeploymentInfo.ATTRIBUTE_NAME,
                         new WebSocketDeploymentInfo()
@@ -79,6 +85,20 @@ class DeploymentManagerFactory {
         }
 
         return deploymentInfo;
+    }
+
+    private Collection<ErrorPage> buildUndertowErrorPages(List<WebConfig.ServerConfig.ErrorPage> errorPages) {
+        List<ErrorPage> undertowErrorPages = new ArrayList<>();
+        for (WebConfig.ServerConfig.ErrorPage errorPage : errorPages) {
+            if (errorPage.getExceptionType() != null) {
+                undertowErrorPages.add(new ErrorPage(errorPage.getLocation(), errorPage.getExceptionType()));
+            } else if (errorPage.getErrorCode() != null) {
+                undertowErrorPages.add(new ErrorPage(errorPage.getLocation(), errorPage.getErrorCode()));
+            } else {
+                undertowErrorPages.add(new ErrorPage(errorPage.getLocation()));
+            }
+        }
+        return undertowErrorPages;
     }
 
     private <T extends ServletContainerInitializer> ServletContainerInitializerInfo

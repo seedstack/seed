@@ -5,6 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.web;
 
 import java.util.ArrayList;
@@ -161,6 +162,7 @@ public class WebConfig {
         private boolean http2 = DEFAULT_HTTP2_ACTIVATION;
         private boolean https = DEFAULT_HTTPS_ACTIVATION;
         private List<String> welcomeFiles = new ArrayList<>();
+        private List<ErrorPage> errorPages = new ArrayList<>();
 
         public ServerConfig() {
             addWelcomeFile(DEFAULT_WELCOME_FILE);
@@ -236,6 +238,20 @@ public class WebConfig {
             return this;
         }
 
+        public List<ErrorPage> getErrorPages() {
+            return Collections.unmodifiableList(errorPages);
+        }
+
+        public ServerConfig setErrorPages(List<ErrorPage> errorPages) {
+            this.errorPages = errorPages;
+            return this;
+        }
+
+        public ServerConfig addErrorPage(ErrorPage errorPage) {
+            this.errorPages.add(errorPage);
+            return this;
+        }
+
         @Config("sessions")
         public static class SessionsConfig {
             private static final int DEFAULT_SESSION_TIMEOUT = 1000 * 60 * 15;
@@ -249,6 +265,43 @@ public class WebConfig {
             public SessionsConfig setTimeout(int timeout) {
                 this.timeout = timeout;
                 return this;
+            }
+        }
+
+        public static class ErrorPage {
+            private String location;
+            private Integer errorCode;
+            private Class<? extends Exception> exceptionType;
+
+            public String getLocation() {
+                return location;
+            }
+
+            public ErrorPage setLocation(String location) {
+                this.location = location;
+                return this;
+            }
+
+            public Integer getErrorCode() {
+                return errorCode;
+            }
+
+            public ErrorPage setErrorCode(Integer errorCode) {
+                this.errorCode = errorCode;
+                return this;
+            }
+
+            public Class<? extends Throwable> getExceptionType() {
+                return exceptionType;
+            }
+
+            public ErrorPage setExceptionType(Class<? extends Exception> exceptionType) {
+                this.exceptionType = exceptionType;
+                return this;
+            }
+
+            public boolean isDefault() {
+                return exceptionType == null && errorCode == null;
             }
         }
     }
