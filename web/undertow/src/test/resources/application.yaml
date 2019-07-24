@@ -16,7 +16,7 @@ web:
     https<https>: true
     welcomeFiles<welcome>: [ 'welcome1.html', 'welcome2.html' ]
     errorPages<errorPages>:
-      - location: /errors/404.html
+      - location: errors/404.html
         errorCode: 404
       - location: /errors/415.html
         errorCode: 415

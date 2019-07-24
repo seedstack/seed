@@ -1,6 +1,7 @@
-# Version 3.8.6 (2019-07-??)
+# Version 3.8.6 (2019-07-30)
 
 * [new] Introduce the `diag` tool to manually write a diagnostic report to standard output or in a file.
+* [new] Enable configuration of Undertow error pages for specific HTTP codes or exceptions as well as a default error page (`web.server.errorPages` config).
 
 # Version 3.8.5 (2019-03-22)
 

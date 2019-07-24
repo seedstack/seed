@@ -90,12 +90,16 @@ class DeploymentManagerFactory {
     private Collection<ErrorPage> buildUndertowErrorPages(List<WebConfig.ServerConfig.ErrorPage> errorPages) {
         List<ErrorPage> undertowErrorPages = new ArrayList<>();
         for (WebConfig.ServerConfig.ErrorPage errorPage : errorPages) {
+            String location = errorPage.getLocation();
+            if (!location.startsWith("/")) {
+                location = "/" + location;
+            }
             if (errorPage.getExceptionType() != null) {
-                undertowErrorPages.add(new ErrorPage(errorPage.getLocation(), errorPage.getExceptionType()));
+                undertowErrorPages.add(new ErrorPage(location, errorPage.getExceptionType()));
             } else if (errorPage.getErrorCode() != null) {
-                undertowErrorPages.add(new ErrorPage(errorPage.getLocation(), errorPage.getErrorCode()));
+                undertowErrorPages.add(new ErrorPage(location, errorPage.getErrorCode()));
             } else {
-                undertowErrorPages.add(new ErrorPage(errorPage.getLocation()));
+                undertowErrorPages.add(new ErrorPage(location));
             }
         }
         return undertowErrorPages;
