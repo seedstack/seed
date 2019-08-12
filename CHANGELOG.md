@@ -5,6 +5,7 @@
 * [new] SSL truststore can be configured separately from the master keystore (if no configuration it will default to the Java default truststore).
 * [new] A custom X509KeyManager can now be configured to allow control of the chosen key material during SSL handshake.
 * [brk] Plain file X509 certificates (outside a keystore) can no longer be configured as it is less secure and not so useful.
+* [fix] Remove NullPointerException a Undertow shutdown if the it had not started properly before.
 
 # Version 3.8.5 (2019-03-22)
 

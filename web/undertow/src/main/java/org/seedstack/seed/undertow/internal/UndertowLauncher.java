@@ -113,7 +113,7 @@ public class UndertowLauncher implements SeedLauncher {
 
                     .getMap());
         } catch (RuntimeException e) {
-            unwrapUndertowException(e);
+            throw unwrapUndertowException(e);
         }
     }
 
@@ -124,7 +124,7 @@ public class UndertowLauncher implements SeedLauncher {
                 xnioWorker.awaitTermination(2, TimeUnit.SECONDS);
             }
         } catch (RuntimeException e) {
-            unwrapUndertowException(e);
+            throw unwrapUndertowException(e);
         } finally {
             xnioWorker = null;
         }
@@ -141,17 +141,21 @@ public class UndertowLauncher implements SeedLauncher {
             deploymentManager.deploy();
             httpHandler = deploymentManager.start();
         } catch (RuntimeException e) {
-            unwrapUndertowException(e);
+            throw unwrapUndertowException(e);
         }
     }
 
     private void undeploy() throws Exception {
         if (deploymentManager != null) {
             try {
-                deploymentManager.stop();
-                deploymentManager.undeploy();
+                if (deploymentManager.getState() == DeploymentManager.State.STARTED) {
+                    deploymentManager.stop();
+                }
+                if (deploymentManager.getState() == DeploymentManager.State.DEPLOYED) {
+                    deploymentManager.undeploy();
+                }
             } catch (ServletException | RuntimeException e) {
-                unwrapUndertowException(e);
+                throw unwrapUndertowException(e);
             } finally {
                 httpHandler = null;
                 deploymentManager = null;
@@ -170,7 +174,7 @@ public class UndertowLauncher implements SeedLauncher {
             undertow.start();
             LOGGER.info("Undertow Web server started");
         } catch (RuntimeException e) {
-            unwrapUndertowException(e);
+            throw unwrapUndertowException(e);
         }
     }
 
@@ -180,7 +184,7 @@ public class UndertowLauncher implements SeedLauncher {
                 undertow.stop();
                 LOGGER.info("Undertow Web server stopped");
             } catch (RuntimeException e) {
-                unwrapUndertowException(e);
+                throw unwrapUndertowException(e);
             } finally {
                 undertow = null;
             }
@@ -195,13 +199,13 @@ public class UndertowLauncher implements SeedLauncher {
                 .orElseThrow(() -> SeedException.createNew(UndertowErrorCode.MISSING_UNDERTOW_PLUGIN));
     }
 
-    private void unwrapUndertowException(Exception e) throws Exception {
+    private Exception unwrapUndertowException(Exception e) {
         if (e instanceof RuntimeException) {
             Throwable cause = e.getCause();
             if (cause instanceof Exception) {
-                throw Seed.translateException((Exception) cause);
+                return Seed.translateException((Exception) cause);
             }
         }
-        throw e;
+        return e;
     }
 }
