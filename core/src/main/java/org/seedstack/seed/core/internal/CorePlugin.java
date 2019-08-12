@@ -21,12 +21,15 @@ import javax.inject.Provider;
 import org.kametic.specifications.Specification;
 import org.seedstack.seed.core.internal.utils.SpecificationBuilder;
 import org.seedstack.shed.reflect.Classes;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Core plugin that configures base package roots and detects diagnostic collectors, dependency providers, Guice modules
  * and configuration files.
  */
 public class CorePlugin extends AbstractSeedPlugin {
+    private static final Logger LOGGER = LoggerFactory.getLogger(CorePlugin.class);
     static final String AUTODETECT_MODULES_KERNEL_PARAM = "seedstack.autodetectModules";
     static final String AUTODETECT_BINDINGS_KERNEL_PARAM = "seedstack.autodetectBindings";
     private static final String SEEDSTACK_PACKAGE = "org.seedstack";
@@ -82,8 +85,10 @@ public class CorePlugin extends AbstractSeedPlugin {
                 .forEach(candidate -> InstallResolver.INSTANCE.apply(candidate).ifPresent(annotation -> {
                     if (annotation.override()) {
                         overridingModules.add((Class<? extends Module>) candidate);
+                        LOGGER.debug("Overriding module {} detected", candidate.getName());
                     } else {
                         modules.add((Class<? extends Module>) candidate);
+                        LOGGER.debug("Module {} detected", candidate.getName());
                     }
                 }));
     }
@@ -97,11 +102,13 @@ public class CorePlugin extends AbstractSeedPlugin {
                                 candidate,
                                 (Class<Object>) (annotation.from() == Object.class ? null : annotation.from())
                         ));
+                        LOGGER.debug("Overriding explicit binding for {} detected", candidate.getName());
                     } else {
                         bindings.add(new BindingDefinition<>(
                                 candidate,
                                 (Class<Object>) (annotation.from() == Object.class ? null : annotation.from())
                         ));
+                        LOGGER.debug("Explicit binding for {} detected", candidate.getName());
                     }
                 }));
     }
@@ -122,8 +129,7 @@ public class CorePlugin extends AbstractSeedPlugin {
     public Object nativeUnitModule() {
         return new CoreModule(
                 modules.stream().map(Classes::instantiateDefault).collect(Collectors.toSet()),
-                bindings,
-                false
+                bindings
         );
     }
 
@@ -131,8 +137,7 @@ public class CorePlugin extends AbstractSeedPlugin {
     public Object nativeOverridingUnitModule() {
         return new CoreModule(
                 overridingModules.stream().map(Classes::instantiateDefault).collect(Collectors.toSet()),
-                overridingBindings,
-                true
+                overridingBindings
         );
     }
 }

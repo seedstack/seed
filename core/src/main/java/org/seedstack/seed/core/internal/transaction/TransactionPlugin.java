@@ -5,6 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.core.internal.transaction;
 
 import io.nuun.kernel.api.plugin.InitState;
@@ -61,9 +62,8 @@ public class TransactionPlugin extends AbstractSeedPlugin {
                 .filter(TransactionMetadataResolver.class::isAssignableFrom)
                 .forEach(candidate -> {
                     transactionMetadataResolvers.add(candidate.asSubclass(TransactionMetadataResolver.class));
-                    LOGGER.trace("Detected transaction metadata resolver {}", candidate.getCanonicalName());
+                    LOGGER.debug("Transaction metadata resolver {} detected", candidate.getCanonicalName());
                 });
-        LOGGER.debug("Detected {} transaction metadata resolver(s)", transactionMetadataResolvers.size());
 
         return InitState.INITIALIZED;
     }

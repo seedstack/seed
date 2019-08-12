@@ -5,6 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.web.internal.websocket;
 
 import java.util.Set;
@@ -33,14 +34,13 @@ class WebSocketListener implements ServletContextListener {
         if (container != null) {
             for (Class<?> endpointClass : serverEndpointClasses) {
                 try {
-                    LOGGER.trace("Publishing WebSocket server endpoint {}", endpointClass.getCanonicalName());
+                    LOGGER.debug("Publishing WebSocket server endpoint {}", endpointClass.getCanonicalName());
                     container.addEndpoint(endpointClass);
                 } catch (DeploymentException e) {
                     throw SeedException.wrap(e, WebErrorCode.CANNOT_PUBLISH_WEBSOCKET_ENDPOINT)
                             .put("class", endpointClass);
                 }
             }
-            LOGGER.trace("Published {} WebSocket server endpoint(s)", serverEndpointClasses.size());
         } else {
             LOGGER.info("No WebSocket implementation found, WebSocket support disabled");
         }

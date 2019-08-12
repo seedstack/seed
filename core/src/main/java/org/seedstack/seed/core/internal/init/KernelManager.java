@@ -5,6 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.core.internal.init;
 
 import io.nuun.kernel.api.Kernel;
@@ -46,10 +47,10 @@ public class KernelManager {
         // Find all classpath scan handlers and add their Vfs url types
         List<Vfs.UrlType> urlTypes = new ArrayList<>();
         for (ClasspathScanHandler classpathScanHandler : ServiceLoader.load(ClasspathScanHandler.class)) {
-            LOGGER.trace("Detected classpath handler {}", classpathScanHandler.getClass().getCanonicalName());
+            LOGGER.debug("Classpath handler {} detected", classpathScanHandler.getClass().getCanonicalName());
             urlTypes.addAll(classpathScanHandler.urlTypes());
         }
-        LOGGER.debug("URL types for scanning: {}", urlTypes);
+        LOGGER.debug("Supported URL types for scanning: {}", urlTypes);
         detectedUrlTypes = urlTypes;
     }
 
@@ -89,8 +90,6 @@ public class KernelManager {
         List<Vfs.UrlType> urlTypes = new ArrayList<>(detectedUrlTypes);
         urlTypes.add(fallbackUrlType);
 
-        LOGGER.debug("Registered URL types for classpath scan: " + urlTypes);
-
         // Kernel initialization (it is assumed that only this class alter Vfs default url types)
         Vfs.setDefaultURLTypes(urlTypes);
         kernel.init();
@@ -100,7 +99,7 @@ public class KernelManager {
         int failedUrlCount = fallbackUrlType.getFailedUrls().size();
         if (failedUrlCount > 0) {
             for (String failedUrl : fallbackUrlType.getFailedUrls()) {
-                LOGGER.warn("URL not scanned: {}", failedUrl);
+                LOGGER.warn("Could not scan URL: {}", failedUrl);
             }
         }
 
@@ -119,7 +118,7 @@ public class KernelManager {
         if (plugin instanceof ConfigurationPlugin) {
             return ((ConfigurationPlugin) plugin).getApplication().getName();
         } else {
-            return "Seed";
+            return "SeedStack";
         }
     }
 

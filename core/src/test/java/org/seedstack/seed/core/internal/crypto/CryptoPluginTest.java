@@ -5,12 +5,15 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.core.internal.crypto;
 
+import com.google.common.collect.Lists;
 import com.google.inject.Key;
 import java.security.KeyStore;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import javax.net.ssl.SSLContext;
 import mockit.Deencapsulation;
@@ -32,18 +35,22 @@ public class CryptoPluginTest {
     }
 
     @Test
-    public void testNativeUnitModule(@Mocked final CryptoModule module, @Mocked final SSLContext sslContext) {
+    public void testNativeUnitModule(@Mocked final CryptoModule module, @Mocked final SSLContext sslContext,
+            @Mocked final KeyStore trustStore, @Mocked final KeyManagerAdapter keyManagerAdapter) {
         final Map<Key<EncryptionService>, EncryptionService> encryptionServices = new HashMap<>();
         final Map<String, KeyStore> keyStores = new HashMap<>();
         final CryptoPlugin underTest = new CryptoPlugin();
         Deencapsulation.setField(underTest, "encryptionServices", encryptionServices);
         Deencapsulation.setField(underTest, "keyStores", keyStores);
         Deencapsulation.setField(underTest, "sslContext", sslContext);
+        Deencapsulation.setField(underTest, "trustStore", trustStore);
+        List<KeyManagerAdapter> keyManagerAdapters = Lists.newArrayList(keyManagerAdapter);
+        Deencapsulation.setField(underTest, "keyManagerAdapters", keyManagerAdapters);
 
         underTest.nativeUnitModule();
 
         new Verifications() {{
-            new CryptoModule(encryptionServices, keyStores, sslContext);
+            new CryptoModule(encryptionServices, keyStores, trustStore, sslContext, keyManagerAdapters, null);
             times = 1;
         }};
     }

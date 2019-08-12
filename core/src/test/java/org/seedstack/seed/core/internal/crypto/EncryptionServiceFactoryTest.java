@@ -5,19 +5,16 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.core.internal.crypto;
 
-import java.net.URL;
 import java.security.Key;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.PublicKey;
 import java.security.UnrecoverableKeyException;
 import java.security.cert.Certificate;
-import java.util.HashMap;
 import mockit.Expectations;
-import mockit.Mock;
-import mockit.MockUp;
 import mockit.Mocked;
 import mockit.Verifications;
 import org.assertj.core.api.Assertions;
@@ -25,7 +22,6 @@ import org.junit.Test;
 import org.seedstack.seed.SeedException;
 import org.seedstack.seed.crypto.CryptoConfig;
 import org.seedstack.seed.crypto.EncryptionService;
-import org.seedstack.shed.ClassLoaders;
 
 /**
  * Unit test for {@link EncryptionServiceFactory}.
@@ -58,7 +54,7 @@ public class EncryptionServiceFactoryTest {
             }
         };
 
-        EncryptionServiceFactory factory = new EncryptionServiceFactory(configuration, keyStore);
+        EncryptionServiceFactory factory = new EncryptionServiceFactory(keyStore);
         EncryptionService encryptionService = factory.create(ALIAS, PASSWORD);
 
         Assertions.assertThat(encryptionService).isNotNull();
@@ -79,7 +75,7 @@ public class EncryptionServiceFactoryTest {
             }
         };
 
-        EncryptionServiceFactory factory = new EncryptionServiceFactory(configuration, keyStore);
+        EncryptionServiceFactory factory = new EncryptionServiceFactory(keyStore);
         EncryptionService encryptionService = factory.create(ALIAS);
 
         Assertions.assertThat(encryptionService).isNotNull();
@@ -99,7 +95,7 @@ public class EncryptionServiceFactoryTest {
                 result = new UnrecoverableKeyException();
             }
         };
-        new EncryptionServiceFactory(configuration, keyStore).create(ALIAS, null);
+        new EncryptionServiceFactory(keyStore).create(ALIAS, null);
     }
 
     @Test
@@ -113,7 +109,7 @@ public class EncryptionServiceFactoryTest {
             }
         };
 
-        EncryptionServiceFactory factory = new EncryptionServiceFactory(configuration, keyStore);
+        EncryptionServiceFactory factory = new EncryptionServiceFactory(keyStore);
         EncryptionService encryptionService = factory.create(ALIAS, PASSWORD);
 
         Assertions.assertThat(encryptionService).isNotNull();
@@ -124,78 +120,4 @@ public class EncryptionServiceFactoryTest {
             }
         };
     }
-
-    @Test
-    public void testCreateWithExternalCertificateFromResource(
-            @Mocked CryptoConfig.CertificateConfig certificateConfig) throws Exception {
-        final URL url = new URL("http://nowhere");
-
-        new Expectations(url) {
-            {
-                url.getFile();
-                result = null;
-            }
-        };
-
-        new MockUp<ClassLoaders>() {
-            @Mock
-            public ClassLoader findMostCompleteClassLoader(Class<?> target) {
-                return new ClassLoader() {
-                    @Override
-                    public URL getResource(String name) {
-                        return url;
-                    }
-                };
-            }
-        };
-
-        new Expectations() {
-            {
-                keyStore.getKey(ALIAS, PASSWORD);
-                result = key;
-
-                certificate.getPublicKey();
-                result = publicKey;
-
-                configuration.certificates();
-                result = new HashMap<String, CryptoConfig.CertificateConfig>() {{
-                    put(ALIAS, certificateConfig);
-                }};
-
-                certificateConfig.getResource();
-                result = "path/to/cert";
-            }
-        };
-
-        EncryptionServiceFactory factory = new EncryptionServiceFactory(configuration, keyStore);
-        EncryptionService encryptionService = factory.create(ALIAS, PASSWORD);
-
-        Assertions.assertThat(encryptionService).isNotNull();
-
-        new Verifications() {
-            {
-                new EncryptionServiceImpl(ALIAS, publicKey, key);
-            }
-        };
-    }
-
-    @Test(expected = SeedException.class)
-    public void testMissingCertificateFromResource(
-            @Mocked CryptoConfig.CertificateConfig certificateConfig) {
-
-        new Expectations() {
-            {
-                configuration.certificates();
-                result = new HashMap<String, CryptoConfig.CertificateConfig>() {{
-                    put(ALIAS, certificateConfig);
-                }};
-
-                certificateConfig.getResource();
-                result = "path/to/cert";
-            }
-        };
-
-        new EncryptionServiceFactory(configuration, keyStore).create(ALIAS, PASSWORD);
-    }
-
 }

@@ -11,8 +11,7 @@ crypto:
     master:
       path: src/test/resources/ssl.keystore
       password: kspasswd
-      aliases:
-        ssl: clientpasswd
+  ssl: clientpasswd
 
 web:
   server:

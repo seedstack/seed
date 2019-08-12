@@ -5,6 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.security.internal;
 
 import static org.seedstack.shed.misc.PriorityUtils.sortByPriority;
@@ -96,13 +97,14 @@ public class SecurityPlugin extends AbstractSeedPlugin {
         if (candidates != null) {
             candidates.stream()
                     .map(x -> (Class<? extends CrudActionResolver>) x)
-                    .forEach(resolver -> {
-                        crudActionResolvers.add(resolver);
-                        LOGGER.trace("Detected CRUD action resolver {}", resolver.getName());
-                    });
+                    .forEach(crudActionResolvers::add);
             sortByPriority(crudActionResolvers, PriorityUtils::priorityOfClassOf);
+            if (LOGGER.isDebugEnabled()) {
+                for (Class<? extends CrudActionResolver> crudActionResolver : crudActionResolvers) {
+                    LOGGER.debug("CRUD action resolver {} detected", crudActionResolver.getName());
+                }
+            }
         }
-        LOGGER.debug("Detected {} CRUD action resolver(s)", crudActionResolvers.size());
     }
 
     @SuppressWarnings("unchecked")
@@ -134,12 +136,13 @@ public class SecurityPlugin extends AbstractSeedPlugin {
                                 .put("class2", candidate.getName());
                     }
 
-                    LOGGER.trace("Detected security scope '{}' implemented by {}", scopeName, candidate.getName());
+                    LOGGER.debug("Security scope {} implemented by {} has been detected",
+                            scopeName,
+                            candidate.getName());
                     scopeClasses.put(scopeName, (Class<? extends Scope>) candidate);
                 }
             }
         }
-        LOGGER.debug("Detected {} security scope(s)", scopeClasses.size());
     }
 
     @Override

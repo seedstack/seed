@@ -5,6 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.core.internal.crypto;
 
 import com.google.inject.Key;
@@ -17,7 +18,6 @@ import java.util.Map;
 import java.util.Optional;
 import javax.inject.Qualifier;
 import org.seedstack.seed.SeedException;
-import org.seedstack.seed.crypto.CryptoConfig;
 import org.seedstack.seed.crypto.EncryptionService;
 import org.seedstack.shed.reflect.Classes;
 
@@ -34,8 +34,8 @@ class EncryptionServiceBindingFactory {
      * @param keyStores             the key stores instances
      * @return the map of Guice Key and EncryptionService instances.
      */
-    Map<Key<EncryptionService>, EncryptionService> createBindings(CryptoConfig cryptoConfig,
-            List<KeyPairConfig> keyPairConfigurations, Map<String, KeyStore> keyStores) {
+    Map<Key<EncryptionService>, EncryptionService> createBindings(List<KeyPairConfig> keyPairConfigurations,
+            Map<String, KeyStore> keyStores) {
         Map<Key<EncryptionService>, EncryptionService> encryptionServices = new HashMap<>();
         Map<String, EncryptionServiceFactory> encryptionServiceFactories = new HashMap<>();
 
@@ -44,8 +44,7 @@ class EncryptionServiceBindingFactory {
                 String keyStoreName = keyPairConfig.getKeyStoreName();
 
                 if (!encryptionServiceFactories.containsKey(keyStoreName)) {
-                    EncryptionServiceFactory factory = new EncryptionServiceFactory(cryptoConfig,
-                            keyStores.get(keyStoreName));
+                    EncryptionServiceFactory factory = new EncryptionServiceFactory(keyStores.get(keyStoreName));
                     encryptionServiceFactories.put(keyStoreName, factory);
                 }
                 EncryptionServiceFactory serviceFactory = encryptionServiceFactories.get(keyStoreName);

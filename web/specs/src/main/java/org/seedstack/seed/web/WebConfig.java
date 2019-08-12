@@ -74,12 +74,27 @@ public class WebConfig {
             return enabled;
         }
 
+        public WebConfig.CORSConfig setEnabled(boolean enabled) {
+            this.enabled = enabled;
+            return this;
+        }
+
         public String getPath() {
             return path;
         }
 
+        public WebConfig.CORSConfig setPath(String path) {
+            this.path = path;
+            return this;
+        }
+
         public Map<String, String> getProperties() {
-            return properties;
+            return Collections.unmodifiableMap(properties);
+        }
+
+        public WebConfig.CORSConfig setProperties(Map<String, String> properties) {
+            this.properties = new HashMap<>(properties);
+            return this;
         }
     }
 
@@ -146,21 +161,31 @@ public class WebConfig {
     public static class ServerConfig {
         private static final String DEFAULT_HOST = "0.0.0.0";
         private static final int DEFAULT_PORT = 8080;
+        private static final int DEFAULT_SECURE_PORT = 8443;
         private static final String DEFAULT_CONTEXT_PATH = "/";
-        private static final boolean DEFAULT_HTTP2_ACTIVATION = true;
+        private static final boolean DEFAULT_HTTP_ACTIVATION = true;
         private static final boolean DEFAULT_HTTPS_ACTIVATION = false;
+        private static final boolean DEFAULT_HTTP2_ACTIVATION = true;
         private static final String DEFAULT_WELCOME_FILE = "index.html";
+        private static final boolean DEFAULT_PREFER_HTTPS = true;
 
         private SessionsConfig sessions = new SessionsConfig();
+        private WebSocketConfig websocket = new WebSocketConfig();
         private String host = DEFAULT_HOST;
         @SingleValue
         @Min(0)
         @Max(65535)
         private int port = DEFAULT_PORT;
+        @SingleValue
+        @Min(0)
+        @Max(65535)
+        private int securePort = DEFAULT_SECURE_PORT;
         @NotBlank
         private String contextPath = DEFAULT_CONTEXT_PATH;
-        private boolean http2 = DEFAULT_HTTP2_ACTIVATION;
+        private boolean http = DEFAULT_HTTP_ACTIVATION;
         private boolean https = DEFAULT_HTTPS_ACTIVATION;
+        private boolean http2 = DEFAULT_HTTP2_ACTIVATION;
+        private boolean preferHttps = DEFAULT_PREFER_HTTPS;
         private List<String> welcomeFiles = new ArrayList<>();
         private List<ErrorPage> errorPages = new ArrayList<>();
 
@@ -170,6 +195,10 @@ public class WebConfig {
 
         public SessionsConfig sessions() {
             return sessions;
+        }
+
+        public WebSocketConfig webSocket() {
+            return websocket;
         }
 
         public String getHost() {
@@ -190,6 +219,15 @@ public class WebConfig {
             return this;
         }
 
+        public int getSecurePort() {
+            return securePort;
+        }
+
+        public ServerConfig setSecurePort(int securePort) {
+            this.securePort = securePort;
+            return this;
+        }
+
         public String getContextPath() {
             return contextPath;
         }
@@ -203,6 +241,15 @@ public class WebConfig {
                 normalized = normalized.substring(0, normalized.length() - 1);
             }
             this.contextPath = normalized;
+            return this;
+        }
+
+        public boolean isHttp() {
+            return http;
+        }
+
+        public ServerConfig setHttp(boolean http) {
+            this.http = http;
             return this;
         }
 
@@ -221,6 +268,15 @@ public class WebConfig {
 
         public ServerConfig setHttp2(boolean http2) {
             this.http2 = http2;
+            return this;
+        }
+
+        public boolean isPreferHttps() {
+            return preferHttps;
+        }
+
+        public ServerConfig setPreferHttps(boolean preferHttps) {
+            this.preferHttps = preferHttps;
             return this;
         }
 
@@ -264,6 +320,21 @@ public class WebConfig {
 
             public SessionsConfig setTimeout(int timeout) {
                 this.timeout = timeout;
+                return this;
+            }
+        }
+
+        @Config("websocket")
+        public static class WebSocketConfig {
+            @SingleValue
+            private boolean enabled = true;
+
+            public boolean isEnabled() {
+                return enabled;
+            }
+
+            public WebSocketConfig setEnabled(boolean enabled) {
+                this.enabled = enabled;
                 return this;
             }
         }

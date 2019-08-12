@@ -5,6 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.core.internal.configuration;
 
 import com.google.common.base.Strings;
@@ -29,7 +30,7 @@ public class ProfileProcessor implements ConfigurationProcessor {
 
     @Override
     public void process(MapNode configuration) {
-        Set<String> activeProfiles = parseProfiles(System.getProperty(SEEDSTACK_PROFILES_PROPERTY, ""));
+        Set<String> activeProfiles = activeProfiles();
         Map<MapNode, List<String>> toRemove = new HashMap<>();
         Map<TreeNode, Map<String, String>> moves = new HashMap<>();
 
@@ -59,10 +60,14 @@ public class ProfileProcessor implements ConfigurationProcessor {
         }
     }
 
-    private Set<String> parseProfiles(String value) {
+    private static Set<String> parseProfiles(String value) {
         return Arrays.stream(value.split(","))
                 .map(String::trim)
                 .filter(notNullOrEmpty)
                 .collect(Collectors.toSet());
+    }
+
+    static Set<String> activeProfiles() {
+        return parseProfiles(System.getProperty(SEEDSTACK_PROFILES_PROPERTY, ""));
     }
 }

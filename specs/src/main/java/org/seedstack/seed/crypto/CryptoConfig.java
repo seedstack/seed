@@ -5,6 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.crypto;
 
 import java.util.Collections;
@@ -12,6 +13,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import javax.net.ssl.X509KeyManager;
 import org.seedstack.coffig.Config;
 import org.seedstack.coffig.SingleValue;
 import org.seedstack.seed.crypto.spi.SSLAuthenticationMode;
@@ -19,9 +21,18 @@ import org.seedstack.seed.crypto.spi.SSLAuthenticationMode;
 @Config("crypto")
 public class CryptoConfig {
     public static final String MASTER_KEY_STORE_NAME = "master";
+    private StoreConfig truststore;
     private Map<String, KeyStoreConfig> keystores = new HashMap<>();
-    private Map<String, CertificateConfig> certificates = new HashMap<>();
     private SSLConfig ssl = new SSLConfig();
+
+    public StoreConfig getTrustStore() {
+        return truststore;
+    }
+
+    public CryptoConfig setTrustStore(StoreConfig truststore) {
+        this.truststore = truststore;
+        return this;
+    }
 
     public Map<String, KeyStoreConfig> keyStores() {
         return Collections.unmodifiableMap(keystores);
@@ -32,35 +43,21 @@ public class CryptoConfig {
         return this;
     }
 
-    public Map<String, CertificateConfig> certificates() {
-        return Collections.unmodifiableMap(certificates);
-    }
-
-    public CryptoConfig addCertificate(String name, CertificateConfig certificateConfig) {
-        certificates.put(name, certificateConfig);
-        return this;
-    }
-
-    public KeyStoreConfig masterKeyStore() {
-        return keystores.get(MASTER_KEY_STORE_NAME);
-    }
-
     public SSLConfig ssl() {
         return ssl;
     }
 
-    public static class KeyStoreConfig {
+    public static class StoreConfig {
         private String path;
         private String password;
         private String type;
         private String provider;
-        private Map<String, AliasConfig> aliases = new HashMap<>();
 
         public String getPath() {
             return path;
         }
 
-        public KeyStoreConfig setPath(String path) {
+        public StoreConfig setPath(String path) {
             this.path = path;
             return this;
         }
@@ -69,7 +66,7 @@ public class CryptoConfig {
             return password;
         }
 
-        public KeyStoreConfig setPassword(String password) {
+        public StoreConfig setPassword(String password) {
             this.password = password;
             return this;
         }
@@ -78,7 +75,7 @@ public class CryptoConfig {
             return type;
         }
 
-        public KeyStoreConfig setType(String type) {
+        public StoreConfig setType(String type) {
             this.type = type;
             return this;
         }
@@ -87,10 +84,14 @@ public class CryptoConfig {
             return provider;
         }
 
-        public KeyStoreConfig setProvider(String provider) {
+        public StoreConfig setProvider(String provider) {
             this.provider = provider;
             return this;
         }
+    }
+
+    public static class KeyStoreConfig extends StoreConfig {
+        private Map<String, AliasConfig> aliases = new HashMap<>();
 
         public KeyStoreConfig addAlias(String alias, AliasConfig aliasConfig) {
             aliases.put(alias, aliasConfig);
@@ -135,12 +136,6 @@ public class CryptoConfig {
             return resource;
         }
 
-        /**
-         * Sets the resource to load the certificate from the classpath. Exclusive with file.
-         *
-         * @param resource the resource path.
-         * @return the config object itself.
-         */
         public CertificateConfig setResource(String resource) {
             if (file != null) {
                 throw new IllegalStateException(
@@ -154,12 +149,6 @@ public class CryptoConfig {
             return file;
         }
 
-        /**
-         * Sets the file to load the certificate from the filesystem. Exclusive with resource.
-         *
-         * @param file the file path.
-         * @return the config object itself.
-         */
         public CertificateConfig setFile(String file) {
             if (resource != null) {
                 throw new IllegalStateException(
@@ -170,58 +159,98 @@ public class CryptoConfig {
         }
     }
 
-    /**
-     * SSL configuration.
-     */
     @Config("ssl")
     public static class SSLConfig {
-        private String protocol = "TLS";
+        private static final String DEFAULT_PROTOCOL = "TLS";
+        private String protocol = DEFAULT_PROTOCOL;
         private String keystore = MASTER_KEY_STORE_NAME;
-        private String truststore = MASTER_KEY_STORE_NAME;
-        private String alias = "ssl";
+        @SingleValue
+        private String keyPassword;
         private SSLAuthenticationMode clientAuthMode = SSLAuthenticationMode.NOT_REQUESTED;
         private Set<String> ciphers = new HashSet<>();
+        private Class<? extends X509KeyManager> x509KeyManager;
+        private String keyManagerAlgorithm;
+        private String trustManagerAlgorithm;
+        private String randomAlgorithm;
 
-        /**
-         * @return the requested protocol.
-         */
         public String getProtocol() {
             return protocol;
         }
 
-        /**
-         * @return the key store name used for SSL (defaults to "master" if not specified).
-         */
-        public String getKeyStore() {
+        public SSLConfig setProtocol(String protocol) {
+            this.protocol = protocol;
+            return this;
+        }
+
+        public String getKeystore() {
             return keystore;
         }
 
-        /**
-         * @return the trust store name used for SSL (defaults to "master" if not specified).
-         */
-        public String getTrustStore() {
-            return truststore;
+        public SSLConfig setKeystore(String keystore) {
+            this.keystore = keystore;
+            return this;
         }
 
-        /**
-         * @return the alias name used for SSL (defaults to "ssl" if not specified).
-         */
-        public String getAlias() {
-            return alias;
+        public String getKeyPassword() {
+            return keyPassword;
         }
 
-        /**
-         * @return the client authentication mode (defaults to NOT_REQUESTED if not specified).
-         */
+        public void setKeyPassword(String keyPassword) {
+            this.keyPassword = keyPassword;
+        }
+
         public SSLAuthenticationMode getClientAuthMode() {
             return clientAuthMode;
         }
 
-        /**
-         * @return the ciphers used.
-         */
+        public SSLConfig setClientAuthMode(SSLAuthenticationMode clientAuthMode) {
+            this.clientAuthMode = clientAuthMode;
+            return this;
+        }
+
         public Set<String> getCiphers() {
-            return ciphers;
+            return Collections.unmodifiableSet(ciphers);
+        }
+
+        public SSLConfig addCipher(String cipher) {
+            this.ciphers.add(cipher);
+            return this;
+        }
+
+        public Class<? extends X509KeyManager> getX509KeyManager() {
+            return x509KeyManager;
+        }
+
+        public SSLConfig setX509KeyManager(Class<? extends X509KeyManager> x509KeyManager) {
+            this.x509KeyManager = x509KeyManager;
+            return this;
+        }
+
+        public String getKeyManagerAlgorithm() {
+            return keyManagerAlgorithm;
+        }
+
+        public SSLConfig setKeyManagerAlgorithm(String keyManagerAlgorithm) {
+            this.keyManagerAlgorithm = keyManagerAlgorithm;
+            return this;
+        }
+
+        public String getTrustManagerAlgorithm() {
+            return trustManagerAlgorithm;
+        }
+
+        public SSLConfig setTrustManagerAlgorithm(String trustManagerAlgorithm) {
+            this.trustManagerAlgorithm = trustManagerAlgorithm;
+            return this;
+        }
+
+        public String getRandomAlgorithm() {
+            return randomAlgorithm;
+        }
+
+        public SSLConfig setRandomAlgorithm(String randomAlgorithm) {
+            this.randomAlgorithm = randomAlgorithm;
+            return this;
         }
     }
 }

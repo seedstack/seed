@@ -5,6 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.web.internal;
 
 import static org.seedstack.shed.misc.PriorityUtils.sortByPriority;
@@ -72,23 +73,21 @@ public class WebPlugin extends AbstractSeedPlugin {
         if (servletContext != null) {
             Set<URL> webLibraries = resolveWebLibraries();
             if (webLibraries.isEmpty()) {
-                LOGGER.debug("No Web library found for scanning");
+                LOGGER.debug("No web library detected");
             } else {
                 for (URL webLibrary : webLibraries) {
-                    LOGGER.trace("Resolved Web library {}", webLibrary);
+                    LOGGER.debug("Web library {} detected", webLibrary);
                 }
-                LOGGER.debug("Found {} Web libraries for scanning", webLibraries.size());
             }
             additionalUrls.addAll(webLibraries);
 
             Set<URL> webClassesLocations = resolveWebClassesLocations();
             if (webClassesLocations.isEmpty()) {
-                LOGGER.debug("No {} location found for scanning", WEB_INF_CLASSES);
+                LOGGER.debug("No web classes location detected");
             } else {
                 for (URL webClassesLocation : webClassesLocations) {
-                    LOGGER.trace("Resolved '{}' location: {}", WEB_INF_CLASSES, webClassesLocation);
+                    LOGGER.debug("Web classes location {} detected", webClassesLocation);
                 }
-                LOGGER.debug("Found {} '{}' locations for scanning", webClassesLocations.size(), WEB_INF_CLASSES);
             }
             additionalUrls.addAll(webClassesLocations);
         }

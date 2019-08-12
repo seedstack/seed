@@ -23,7 +23,7 @@ class BindingDefinition<T> extends Bindable<T> {
         this.from = from;
     }
 
-    public void apply(Binder binder) {
+    void apply(Binder binder) {
         if (from != null) {
             AnnotatedBindingBuilder<T> bind = binder.bind(from);
             if (!from.isAssignableFrom(target)) {

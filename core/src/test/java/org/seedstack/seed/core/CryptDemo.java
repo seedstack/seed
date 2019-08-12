@@ -5,15 +5,10 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+package org.seedstack.seed.core;
 
-package org.seedstack.seed.undertow.internal;
-
-import org.seedstack.shed.exception.ErrorCode;
-
-enum UndertowErrorCode implements ErrorCode {
-    MISSING_SSL_CONTEXT,
-    MISSING_UNDERTOW_PLUGIN,
-    NO_LISTENER_CONFIGURED,
-    UNDERTOW_ALREADY_LAUNCHED,
-    UNDERTOW_NOT_LAUNCHED
+public class CryptDemo {
+    public static void main(String[] args) throws Exception {
+        Seed.getToolLauncher("crypt").launch(new String[]{"changeMe"});
+    }
 }

@@ -22,13 +22,13 @@ public class CryptoIT {
     @Inject
     private HashingService hashingService;
     @Inject
-    @Named("client")
+    @Named("sslClient")
     private EncryptionService key1EncryptionService;
     @Inject
-    @Named("ssl")
+    @Named("sslServer")
     private EncryptionService sslEncryptionService;
     @Inject
-    @Named("seed")
+    @Named("master")
     private EncryptionService masterEncryptionService;
 
     @Test
