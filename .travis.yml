@@ -16,4 +16,4 @@ install:
 
 script: mvn -U -Pbuild-number,compatibility,bintray,javadoc,$ADDITIONAL_PROFILES $GOAL
 
-after_success: mvn -q coveralls:report -DrepoToken=$COVERALLS_TOKEN
+after_success: mvn coveralls:report -DrepoToken=$COVERALLS_TOKEN
