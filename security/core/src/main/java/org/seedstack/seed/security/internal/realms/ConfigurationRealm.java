@@ -57,7 +57,7 @@ public class ConfigurationRealm implements Realm {
     @Override
     public Set<String> getRealmRoles(PrincipalProvider<?> identityPrincipal,
             Collection<PrincipalProvider<?>> otherPrincipals) {
-        ConfigurationUser user = findUser(identityPrincipal.getPrincipal().toString());
+        ConfigurationUser user = findUser(identityPrincipal.get().toString());
         if (user != null) {
             return user.roles;
         }

@@ -30,7 +30,7 @@ public class X509CertificatePrincipalProvider implements PrincipalProvider<X509C
     }
 
     @Override
-    public X509Certificate[] getPrincipal() {
+    public X509Certificate[] get() {
         return certificates.clone();
     }
 }

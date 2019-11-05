@@ -5,9 +5,9 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.security.principals;
 
-import java.io.Serializable;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -82,41 +82,16 @@ public final class Principals {
     }
 
     /**
-     * Gets all the PrincipalProviders corresponding to a type of PrincipalProvider in a collection.<br>
-     * <br>
-     * For example, you can use this method to get the LDAPUser by calling :<br>
-     * <code>getPrincipalsByType(principals, LDAPUserPrincipalProvider.class)</code> .<br>
-     * <br>
-     * Then on the first element of the collection : <br>
-     * <code>LDAPUser user =
-     * ldapUserPrincipalProvider.getPrincipal()</code>.
+     * Gets all the {@link PrincipalProvider}s that provide a principal assignable to the specified type.
      *
      * @param <T>                type of the PrincipalProvider
      * @param principalProviders the principals to find the type.
      * @param principalClass     the PrincipalProvider type, not null
      * @return A collection of the user's PrincipalProviders of type principalProviderClass. Not null.
      */
-    @SuppressWarnings("unchecked")
-    public static <T extends Serializable> Collection<PrincipalProvider<T>> getPrincipalsByType(
+    public static <T> Collection<PrincipalProvider<T>> getPrincipalsByType(
             Collection<PrincipalProvider<?>> principalProviders, Class<T> principalClass) {
-        Collection<PrincipalProvider<T>> principals = new ArrayList<>();
-        for (PrincipalProvider<?> principal : principalProviders) {
-            for (Type principalInterface : principal.getClass().getGenericInterfaces()) {
-                if (principalInterface instanceof ParameterizedType) {
-                    ParameterizedType currentPrincipalClass = (ParameterizedType) principalInterface;
-                    Type currentType = currentPrincipalClass.getActualTypeArguments()[0];
-                    if (!principalClass.isArray()) {
-                        if (principalClass.equals(currentType)) {
-                            principals.add((PrincipalProvider<T>) principal);
-                        }
-                    } else if (currentType instanceof Class && principalClass.getComponentType().equals(
-                            ((Class<?>) currentType).getComponentType())) {
-                        principals.add((PrincipalProvider<T>) principal);
-                    }
-                }
-            }
-        }
-        return principals;
+        return getPrincipalsByType(principalProviders, principalClass, -1);
     }
 
     /**
@@ -134,14 +109,44 @@ public final class Principals {
      * @param principalClass     the PrincipalProvider type, not null
      * @return The user's PrincipalProvider of type principalProviderClass. Null if none.
      */
-    public static <T extends Serializable> PrincipalProvider<T> getOnePrincipalByType(
+    public static <T> PrincipalProvider<T> getOnePrincipalByType(
             Collection<PrincipalProvider<?>> principalProviders, Class<T> principalClass) {
-        Collection<PrincipalProvider<T>> pps = getPrincipalsByType(principalProviders, principalClass);
+        Collection<PrincipalProvider<T>> pps = getPrincipalsByType(principalProviders, principalClass, 1);
         if (!pps.isEmpty()) {
             return pps.iterator().next();
         } else {
             return null;
         }
+    }
+
+    @SuppressWarnings("unchecked")
+    private static <T> Collection<PrincipalProvider<T>> getPrincipalsByType(
+            Collection<PrincipalProvider<?>> principalProviders, Class<T> principalClass, int limit) {
+        Collection<PrincipalProvider<T>> principals = new ArrayList<>();
+        for (PrincipalProvider<?> principal : principalProviders) {
+            for (Type principalInterface : principal.getClass().getGenericInterfaces()) {
+                if (limit >= 0 && principals.size() >= limit) {
+                    return principals;
+                }
+
+                if (principalInterface instanceof ParameterizedType && ((ParameterizedType) principalInterface).getRawType()
+                        .equals(PrincipalProvider.class)) {
+                    Type currentType = ((ParameterizedType) principalInterface).getActualTypeArguments()[0];
+                    if (!principalClass.isArray()) {
+                        if (principalClass.isAssignableFrom((Class<?>) currentType)) {
+                            principals.add((PrincipalProvider<T>) principal);
+                        }
+                    } else if (currentType instanceof Class) {
+                        Class<?> componentType = ((Class<?>) currentType).getComponentType();
+                        if (componentType != null && principalClass.getComponentType()
+                                .isAssignableFrom(componentType)) {
+                            principals.add((PrincipalProvider<T>) principal);
+                        }
+                    }
+                }
+            }
+        }
+        return principals;
     }
 
     /**
