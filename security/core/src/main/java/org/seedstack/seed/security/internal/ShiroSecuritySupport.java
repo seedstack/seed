@@ -5,9 +5,9 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.security.internal;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -18,10 +18,14 @@ import javax.inject.Inject;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.AuthorizationInfo;
+import org.apache.shiro.mgt.SecurityManager;
 import org.apache.shiro.realm.Realm;
 import org.apache.shiro.session.Session;
 import org.apache.shiro.subject.PrincipalCollection;
 import org.apache.shiro.subject.Subject;
+import org.apache.shiro.util.ThreadContext;
+import org.seedstack.seed.security.AuthenticationException;
+import org.seedstack.seed.security.AuthenticationToken;
 import org.seedstack.seed.security.AuthorizationException;
 import org.seedstack.seed.security.Role;
 import org.seedstack.seed.security.Scope;
@@ -29,14 +33,16 @@ import org.seedstack.seed.security.SecuritySupport;
 import org.seedstack.seed.security.SimpleScope;
 import org.seedstack.seed.security.internal.authorization.ScopePermission;
 import org.seedstack.seed.security.internal.authorization.SeedAuthorizationInfo;
+import org.seedstack.seed.security.internal.realms.AuthenticationTokenWrapper;
 import org.seedstack.seed.security.principals.PrincipalProvider;
 import org.seedstack.seed.security.principals.Principals;
 import org.seedstack.seed.security.principals.SimplePrincipalProvider;
 
 class ShiroSecuritySupport implements SecuritySupport {
-
     @Inject
     private Set<Realm> realms;
+    @Inject
+    private SecurityManager securityManager;
 
     @Override
     public PrincipalProvider<?> getIdentityPrincipal() {
@@ -63,7 +69,12 @@ class ShiroSecuritySupport implements SecuritySupport {
     }
 
     @Override
-    public <T extends Serializable> Collection<PrincipalProvider<T>> getPrincipalsByType(Class<T> principalClass) {
+    public <T> PrincipalProvider<T> getPrincipalByType(Class<T> principalClass) {
+        return Principals.getOnePrincipalByType(getOtherPrincipals(), principalClass);
+    }
+
+    @Override
+    public <T> Collection<PrincipalProvider<T>> getPrincipalsByType(Class<T> principalClass) {
         return Principals.getPrincipalsByType(getOtherPrincipals(), principalClass);
     }
 
@@ -203,6 +214,25 @@ class ShiroSecuritySupport implements SecuritySupport {
             SecurityUtils.getSubject().checkRoles(roleIdentifiers);
         } catch (org.apache.shiro.authz.AuthorizationException e) {
             throw new AuthorizationException("Subject doesn't have roles " + Arrays.toString(roleIdentifiers), e);
+        }
+    }
+
+    @Override
+    public void login(AuthenticationToken authenticationToken) {
+        SecurityManager alreadyBoundSecurityManager = ThreadContext.getSecurityManager();
+        try {
+            if (alreadyBoundSecurityManager == null) {
+                ThreadContext.bind(securityManager);
+            }
+            Subject currentSubject = SecurityUtils.getSubject();
+            currentSubject.login(new AuthenticationTokenWrapper(authenticationToken));
+        } catch (org.apache.shiro.authc.AuthenticationException e) {
+            throw new AuthenticationException("Unable to login subject with provided credentials " + authenticationToken
+                    .getPrincipal(), e);
+        } finally {
+            if (alreadyBoundSecurityManager == null) {
+                ThreadContext.unbindSecurityManager();
+            }
         }
     }
 

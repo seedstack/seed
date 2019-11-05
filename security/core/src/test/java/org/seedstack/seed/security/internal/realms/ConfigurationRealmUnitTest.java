@@ -5,6 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.security.internal.realms;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -61,7 +62,7 @@ public class ConfigurationRealmUnitTest {
     public void getAuthenticationInfo_nominal() {
         UsernamePasswordToken token = new UsernamePasswordToken(USERNAME, PASSWORD);
         AuthenticationInfo authInfo = underTest.getAuthenticationInfo(token);
-        assertThat(authInfo.getIdentityPrincipal().getPrincipal()).isEqualTo(USERNAME);
+        assertThat(authInfo.getIdentityPrincipal().get()).isEqualTo(USERNAME);
     }
 
     @Test(expected = IncorrectCredentialsException.class)

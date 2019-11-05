@@ -43,7 +43,7 @@ public class SimplePrincipalProvider implements PrincipalProvider<String>, Seria
     }
 
     @Override
-    public String getPrincipal() {
+    public String get() {
         return value;
     }
 

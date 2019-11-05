@@ -1,3 +1,9 @@
+# Version 3.9.1 (2019-11-30)
+
+* [new] Support for programmatic login through `SecuritySupport` interface (no need for Shiro-specific code anymore).
+* [chg] Obtaining principals by type now honors inheritance (instead of returning principals of the exact specified type).
+* [chg] Principals are no longer required to be serializable.
+
 # Version 3.9.0 (2019-08-12)
 
 * [new] Introduce the `diag` tool to manually write a diagnostic report to standard output or in a file.

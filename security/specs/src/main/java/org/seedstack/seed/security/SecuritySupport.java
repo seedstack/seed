@@ -5,9 +5,9 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.security;
 
-import java.io.Serializable;
 import java.util.Collection;
 import java.util.Set;
 import org.seedstack.seed.security.principals.PrincipalProvider;
@@ -34,21 +34,25 @@ public interface SecuritySupport {
     Collection<PrincipalProvider<?>> getOtherPrincipals();
 
     /**
-     * Gets all the PrincipalProviders corresponding to a type of PrincipalProvider.<br>
-     * <br>
-     * For example, you can use this method to get the LDAPUser by calling :<br>
-     * {@code getPrincipalsByType(LDAPUser.class)}.<br>
-     * <br>
-     * Then on the first element of the collection : <br>
-     * {@code LDAPUser user =
-     * ldapUserPrincipalProvider.getPrincipal()}.
+     * Gets the first {@link PrincipalProvider} that provide a principal assignable to the specified type.
+     *
+     * @param <T>            type of the principal
+     * @param principalClass the Principal type, not null
+     * @return The first first {@link PrincipalProvider} that provide a principal assignable to the specified type.
+     * Null if none found.
+     * @see org.seedstack.seed.security.principals.Principals#getOnePrincipalByType(Collection, Class)
+     */
+    <T> PrincipalProvider<T> getPrincipalByType(Class<T> principalClass);
+
+    /**
+     * Gets all {@link PrincipalProvider}s that provide a principal assignable to the specified type.
      *
      * @param <T>            type of the principal
      * @param principalClass the Principal type, not null
      * @return A collection of the user's PrincipalProviders of type principalProviderClass. Not null.
      * @see org.seedstack.seed.security.principals.Principals#getPrincipalsByType(Collection, Class)
      */
-    <T extends Serializable> Collection<PrincipalProvider<T>> getPrincipalsByType(Class<T> principalClass);
+    <T> Collection<PrincipalProvider<T>> getPrincipalsByType(Class<T> principalClass);
 
     /**
      * Gets the user's SimplePrincipalProviders.<br>
@@ -232,25 +236,28 @@ public interface SecuritySupport {
     Set<SimpleScope> getSimpleScopes();
 
     /**
+     * Explicitly authenticates a subject with its authentication token.
+     * <h3>Web Environment Warning</h3> In a Web application, this is typically handled by a security Web filter, so
+     * calling this method should be avoided in such environments.
+     */
+    void login(AuthenticationToken authenticationToken);
+
+    /**
      * Logs out the connected user and invalidates and/or removes any associated entities, such as a Session and
-     * authorization data. After this method
-     * is called, the user is considered 'anonymous' and may continue to be used for another log-in if desired.
-     * <h3>Web Environment Warning</h3>
-     * Calling this method in web environments will usually remove any associated session cookie as part of session
-     * invalidation. Because cookies are
-     * part of the HTTP header, and headers can only be set before the response body (html, image, etc) is sent, this
-     * method in web environments must
-     * be called before <em>any</em> content has been rendered.
-     * <p>
-     * The typical approach most applications use in this scenario is to redirect the user to a different location (e
-     * .g. home page) immediately after
-     * calling this method. This is an effect of the HTTP protocol itself and not a reflection of the implementation.
+     * authorization data. After this method is called, the user is considered 'anonymous' and may continue to be
+     * used for another log-in if desired. <h3>Web Environment Warning</h3> Calling this method in web environments
+     * will usually remove any associated session cookie as part of session invalidation. Because cookies are part of
+     * the HTTP header, and headers can only be set before the response body (html, image, etc) is sent, this method
+     * in web environments must be called before <em>any</em> content has been rendered. <p> The typical approach
+     * most applications use in this scenario is to redirect the user to a different location (e .g. home page)
+     * immediately after calling this method. This is an effect of the HTTP protocol itself and not a reflection of
+     * the implementation.
      */
     void logout();
 
     /**
      * Check if the current user is authenticated.
-     *
+     * <p>
      * Authenticated on Shiro means that subject has successfully logged in on the current session
      *
      * @return true if authenticated, false otherwise.

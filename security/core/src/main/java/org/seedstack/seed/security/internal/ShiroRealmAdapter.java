@@ -113,7 +113,7 @@ class ShiroRealmAdapter extends AuthorizingRealm {
     protected Object getAuthenticationCacheKey(AuthenticationToken token) {
         Object authenticationCacheKey = super.getAuthenticationCacheKey(token);
         if (authenticationCacheKey instanceof PrincipalProvider) {
-            return ((PrincipalProvider) authenticationCacheKey).getPrincipal();
+            return ((PrincipalProvider) authenticationCacheKey).get();
         } else {
             return authenticationCacheKey;
         }
@@ -123,7 +123,7 @@ class ShiroRealmAdapter extends AuthorizingRealm {
     protected Object getAuthenticationCacheKey(PrincipalCollection principals) {
         Object authenticationCacheKey = super.getAuthenticationCacheKey(principals);
         if (authenticationCacheKey instanceof PrincipalProvider) {
-            return ((PrincipalProvider) authenticationCacheKey).getPrincipal();
+            return ((PrincipalProvider) authenticationCacheKey).get();
         } else {
             return authenticationCacheKey;
         }
@@ -133,7 +133,7 @@ class ShiroRealmAdapter extends AuthorizingRealm {
     protected Object getAuthorizationCacheKey(PrincipalCollection principals) {
         Object primaryPrincipal = principals.getPrimaryPrincipal();
         if (primaryPrincipal instanceof PrincipalProvider) {
-            return ((PrincipalProvider) primaryPrincipal).getPrincipal();
+            return ((PrincipalProvider) primaryPrincipal).get();
         } else {
             return primaryPrincipal;
         }

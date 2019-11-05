@@ -56,10 +56,10 @@ public class X509CertificateRealmTest {
         when(x509Certificate.getSubjectX500Principal()).thenReturn(x500Principal);
         AuthenticationInfo authInfo = underTest.getAuthenticationInfo(token);
 
-        assertThat(authInfo.getIdentityPrincipal().getPrincipal()).isEqualTo(id);
+        assertThat(authInfo.getIdentityPrincipal().get()).isEqualTo(id);
         PrincipalProvider<X509Certificate[]> x509pp = Principals.getOnePrincipalByType(authInfo.getOtherPrincipals(),
                 X509Certificate[].class);
-        assertThat(x509pp.getPrincipal()[0]).isEqualTo(x509Certificate);
+        assertThat(x509pp.get()[0]).isEqualTo(x509Certificate);
     }
 
     @Test(expected = UnsupportedTokenException.class)
@@ -78,7 +78,7 @@ public class X509CertificateRealmTest {
         X500Principal x500Principal = new X500Principal("CN=John Doe, OU=SI, O=PSA");
         when(x509Certificate.getSubjectX500Principal()).thenReturn(x500Principal);
         AuthenticationInfo authInfo = underTest.getAuthenticationInfo(token);
-        assertThat(authInfo.getIdentityPrincipal().getPrincipal()).isEqualTo(x500Principal);
+        assertThat(authInfo.getIdentityPrincipal().get()).isEqualTo(x500Principal);
     }
 
     @Test

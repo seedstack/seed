@@ -122,7 +122,7 @@ public class X509CertificateRealm implements Realm {
         if (certificatePrincipals.isEmpty()) {
             return Collections.emptySet();
         }
-        X509Certificate[] certificates = certificatePrincipals.iterator().next().getPrincipal();
+        X509Certificate[] certificates = certificatePrincipals.iterator().next().get();
         for (X509Certificate certificate : certificates) {
             String dn = certificate.getIssuerX500Principal().getName(X500Principal.RFC2253);
             LdapName ln;

@@ -5,6 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.security.principals;
 
 import java.io.Serializable;
@@ -14,12 +15,24 @@ import java.io.Serializable;
  *
  * @param <T> the type of the object provided by the principal
  */
-public interface PrincipalProvider<T extends Serializable> {
+public interface PrincipalProvider<T> {
+    /**
+     * For compatibility purposes.
+     *
+     * @param <X> a serializable type
+     * @return the object cast as X.
+     * @deprecated
+     */
+    @Deprecated
+    @SuppressWarnings("unchecked")
+    default <X extends Serializable> X getPrincipal() {
+        return (X) get();
+    }
 
     /**
      * Gives the enclosed principal.
      *
      * @return the object enclosed in the principal
      */
-    T getPrincipal();
+    T get();
 }
