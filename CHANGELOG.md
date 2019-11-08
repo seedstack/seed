@@ -1,3 +1,7 @@
+# Version 3.9.2 (????)
+ 
+ * [chg] `AbstractTransactionManager` is now scoped as package.
+
 # Version 3.9.1 (2019-11-30)
 
 * [new] Support for programmatic login through `SecuritySupport` interface (no need for Shiro-specific code anymore).

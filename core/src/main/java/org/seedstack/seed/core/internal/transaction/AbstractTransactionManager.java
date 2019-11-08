@@ -32,7 +32,7 @@ import org.seedstack.seed.transaction.spi.TransactionMetadataResolver;
 /**
  * Base class for common transaction manager behavior.
  */
-public abstract class AbstractTransactionManager implements TransactionManager {
+abstract class AbstractTransactionManager implements TransactionManager {
     private final MethodInterceptorImplementation methodInterceptorImplementation = new
             MethodInterceptorImplementation();
     @Inject
