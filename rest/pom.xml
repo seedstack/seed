@@ -13,7 +13,7 @@
     <parent>
         <groupId>org.seedstack.seed</groupId>
         <artifactId>seed</artifactId>
-        <version>3.9.2-SNAPSHOT</version>
+        <version>3.9.1-SNAPSHOT</version>
     </parent>
 
     <artifactId>seed-rest</artifactId>
