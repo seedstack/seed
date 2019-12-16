@@ -5,6 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.security.internal;
 
 import java.util.ArrayList;
@@ -149,7 +150,7 @@ class ShiroRealmAdapter extends AuthorizingRealm {
         return realm.getClass().getName() + ".authorizationCache";
     }
 
-    Realm getRealm() {
+    public Realm getRealm() {
         return realm;
     }
 

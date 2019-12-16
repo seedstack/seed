@@ -5,17 +5,20 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.security;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.seedstack.seed.security.principals.Principals.getSimplePrincipalByName;
 
+import java.util.Set;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.UsernamePasswordToken;
 import org.apache.shiro.mgt.SecurityManager;
+import org.apache.shiro.realm.Realm;
 import org.apache.shiro.subject.Subject;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -33,6 +36,8 @@ public class SecurityIT {
     @Inject
     @Named("test")
     private SecurityManager testSecurityManager;
+    @Inject
+    private Set<Realm> realms;
 
     @Test
     @WithUser(id = "Obiwan", password = "yodarulez")
@@ -109,5 +114,10 @@ public class SecurityIT {
     @WithUser(id = "Anakin", password = "imsodark")
     public void sessionsShouldBeEnabledByDefault() {
         assertThat(SecurityUtils.getSubject().getSession(false)).isNotNull();
+    }
+
+    @Test
+    public void realmsCanBeInjected() {
+        assertThat(realms).hasSize(2);
     }
 }
