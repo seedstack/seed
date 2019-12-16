@@ -5,6 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.core.internal.transaction;
 
 import java.lang.reflect.InvocationHandler;
@@ -38,8 +39,13 @@ public final class TransactionalProxy<T> implements InvocationHandler {
      */
     @SuppressWarnings("unchecked")
     public static <T> T create(Class<T> clazz, TransactionalLink<T> transactionalLink) {
-        return (T) Proxy.newProxyInstance(TransactionalProxy.class.getClassLoader(),
-                new Class<?>[]{IgnoreAutoCloseable.class, clazz}, new TransactionalProxy<>(transactionalLink));
+        if (AutoCloseable.class.isAssignableFrom(clazz)) {
+            return (T) Proxy.newProxyInstance(TransactionalProxy.class.getClassLoader(),
+                    new Class<?>[]{IgnoreAutoCloseable.class, clazz}, new TransactionalProxy<>(transactionalLink));
+        } else {
+            return (T) Proxy.newProxyInstance(TransactionalProxy.class.getClassLoader(),
+                    new Class<?>[]{clazz}, new TransactionalProxy<>(transactionalLink));
+        }
     }
 
     @Override

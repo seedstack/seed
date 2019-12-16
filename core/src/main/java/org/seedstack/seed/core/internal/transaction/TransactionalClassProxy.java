@@ -5,6 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.core.internal.transaction;
 
 import java.lang.reflect.InvocationTargetException;
@@ -42,7 +43,9 @@ public class TransactionalClassProxy<T> implements MethodHandler {
         try {
             ProxyFactory factory = new ProxyFactory();
             factory.setSuperclass(clazz);
-            factory.setInterfaces(new Class<?>[]{IgnoreAutoCloseable.class});
+            if (AutoCloseable.class.isAssignableFrom(clazz)) {
+                factory.setInterfaces(new Class<?>[]{IgnoreAutoCloseable.class});
+            }
             factory.setFilter(method -> !method.getDeclaringClass().equals(Object.class));
             return (T) factory.create(new Class<?>[0], new Object[0], new TransactionalClassProxy<>(transactionalLink));
         } catch (NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException e) {
