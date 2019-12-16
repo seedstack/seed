@@ -286,7 +286,7 @@ public class SecurityConfig {
     @Config("cache")
     public static class CacheConfig {
         @SingleValue
-        private boolean enabled = true;
+        private boolean enabled = false;
         private ItemCacheConfig authentication = new ItemCacheConfig();
         private ItemCacheConfig authorization = new ItemCacheConfig();
         private Class<? extends CacheManager> manager = MemoryConstrainedCacheManager.class;

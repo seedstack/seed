@@ -1,9 +1,10 @@
 # Version 3.9.1 (2019-12-12)
 
-* [chg] `AbstractTransactionManager` is now scoped as package.
 * [new] Support for programmatic login through `SecuritySupport` interface (no need for Shiro-specific code anymore).
 * [chg] Obtaining principals by type now honors inheritance (instead of returning principals of the exact specified type).
 * [chg] Principals are no longer required to be serializable.
+* [chg] `AbstractTransactionManager` is now scoped as package.
+* [fix] Security authentication and authorization caches are now disabled by default (avoiding to keep credentials indefinitely in memory).
 
 # Version 3.9.0 (2019-08-12)
 

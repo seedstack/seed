@@ -10,6 +10,7 @@ logging: INFO
 security:
   realms: [ConfigurationRealm, X509CertificateRealm]
   cache:
+    enabled: true
     manager: org.seedstack.seed.security.fixtures.TestCacheManager
   users:
     Obiwan:
