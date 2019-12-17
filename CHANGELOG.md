@@ -1,4 +1,4 @@
-# Version 3.9.1 (2019-12-12)
+# Version 3.9.1 (2019-12-17)
 
 * [new] Support for programmatic login through `SecuritySupport` interface (no need for Shiro-specific code anymore).
 * [chg] Obtaining principals by type now honors inheritance (instead of returning principals of the exact specified type).
