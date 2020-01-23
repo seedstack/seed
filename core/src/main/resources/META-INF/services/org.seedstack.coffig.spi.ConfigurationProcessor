@@ -1,3 +1,4 @@
+org.seedstack.seed.core.internal.configuration.SystemPropertiesProcessor
 org.seedstack.seed.core.internal.configuration.RemovalProcessor
 org.seedstack.seed.core.internal.configuration.ProfileProcessor
 org.seedstack.seed.core.internal.configuration.SecureConfigurationProcessor

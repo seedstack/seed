@@ -11,15 +11,12 @@ package org.seedstack.seed.core.internal.init;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.List;
-import java.util.Properties;
 import javax.validation.ValidatorFactory;
 import org.seedstack.coffig.Coffig;
 import org.seedstack.coffig.CoffigBuilder;
 import org.seedstack.coffig.provider.EnvironmentProvider;
-import org.seedstack.coffig.provider.InMemoryProvider;
 import org.seedstack.coffig.provider.JacksonProvider;
 import org.seedstack.coffig.provider.PrefixProvider;
 import org.seedstack.coffig.provider.PropertiesProvider;
@@ -35,7 +32,6 @@ public class BaseConfigurationFactory {
     private static final Logger LOGGER = LoggerFactory.getLogger(BaseConfigurationFactory.class);
     private static final String ENVIRONMENT_VARIABLES_PREFIX = "env";
     private static final String SYSTEM_PROPERTIES_PREFIX = "sys";
-    private static final String SYSTEM_PROPERTIES_CONFIG_PREFIX = "seedstack.config.";
     private final ValidatorFactory validatorFactory;
 
     private BaseConfigurationFactory() {
@@ -66,10 +62,6 @@ public class BaseConfigurationFactory {
                         .registerProvider(
                                 buildPropertiesProvider("application.override.properties"),
                                 ConfigurationPriority.BASE_OVERRIDE
-                        )
-                        .registerProvider(
-                                detectSystemPropertiesConfig(),
-                                ConfigurationPriority.SYSTEM_PROPERTIES_CONFIG
                         )
                         .registerProvider(
                                 new PrefixProvider<>(ENVIRONMENT_VARIABLES_PREFIX, new EnvironmentProvider()),
@@ -126,38 +118,6 @@ public class BaseConfigurationFactory {
             }
         }
         return result;
-    }
-
-    private InMemoryProvider detectSystemPropertiesConfig() {
-        InMemoryProvider systemPropertiesProvider = new InMemoryProvider();
-
-        Properties systemProperties = System.getProperties();
-        int count = 0;
-        for (String systemProperty : systemProperties.stringPropertyNames()) {
-            if (systemProperty.startsWith(SYSTEM_PROPERTIES_CONFIG_PREFIX)) {
-                addValue(systemPropertiesProvider, systemProperty, systemProperties.getProperty(systemProperty));
-                count++;
-            }
-        }
-
-        if (count > 0) {
-            LOGGER.info("Detected {} configuration value(s) through system properties, enable debug-level logging to " +
-                    "see them", count);
-        }
-
-        return systemPropertiesProvider;
-    }
-
-    private void addValue(InMemoryProvider inMemoryProvider, String key, String value) {
-        String choppedKey = key.substring(SYSTEM_PROPERTIES_CONFIG_PREFIX.length());
-        if (value.contains(",")) {
-            String[] values = Arrays.stream(value.split(",")).map(String::trim).toArray(String[]::new);
-            LOGGER.debug("System property array config: {}={}", choppedKey, Arrays.toString(values));
-            inMemoryProvider.put(choppedKey, values);
-        } else {
-            LOGGER.debug("System property config: {}={}", choppedKey, value);
-            inMemoryProvider.put(choppedKey, value);
-        }
     }
 
     private static class Holder {

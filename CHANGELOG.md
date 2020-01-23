@@ -1,3 +1,7 @@
+# Version 3.9.2 (2019-01-24)
+
+* [fix] Ensure that JVM-wide base configuration is refreshed between tests.
+
 # Version 3.9.1 (2019-12-17)
 
 * [new] Support for programmatic login through `SecuritySupport` interface (no need for Shiro-specific code anymore).
