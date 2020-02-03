@@ -9,9 +9,6 @@ package org.seedstack.seed.rest.internal;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.fasterxml.jackson.jaxrs.base.JsonMappingExceptionMapper;
-import com.fasterxml.jackson.jaxrs.base.JsonParseExceptionMapper;
-import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 import com.google.common.collect.Lists;
 import io.nuun.kernel.api.plugin.InitState;
 import io.nuun.kernel.api.plugin.context.InitContext;
@@ -106,12 +103,7 @@ public class RestPluginTest {
         Collection<Class<?>> actualResources = Deencapsulation.getField(underTest, "resources");
         assertThat(actualResources).containsOnly(MyResource.class);
         Collection<Class<?>> actualProviders = Deencapsulation.getField(underTest, "providers");
-        assertThat(actualProviders).containsOnly(
-                MyProvider.class,
-                JsonMappingExceptionMapper.class,
-                JsonParseExceptionMapper.class,
-                JacksonJsonProvider.class
-        );
+        assertThat(actualProviders).contains(MyProvider.class);
     }
 
     @SafeVarargs
