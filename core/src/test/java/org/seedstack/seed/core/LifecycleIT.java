@@ -5,6 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.core;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -13,6 +14,8 @@ import com.google.inject.Injector;
 import com.google.inject.Module;
 import com.google.inject.name.Names;
 import io.nuun.kernel.api.Kernel;
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.annotation.Priority;
 import javax.inject.Singleton;
 import org.junit.After;
@@ -33,6 +36,8 @@ public class LifecycleIT implements LifecycleListener {
     private static boolean ignoredClosedWasCalled;
     private static boolean proxyClosedWasCalled;
     private static boolean classProxyClosedWasCalled;
+    private static boolean preDestroyCalled;
+    private static boolean postConstructCalled;
     private Kernel kernel;
 
     @BeforeClass
@@ -48,12 +53,15 @@ public class LifecycleIT implements LifecycleListener {
         assertThat(stoppingWasCalled).isTrue();
         assertThat(closedWasCalled).isTrue();
         assertThat(ignoredClosedWasCalled).isFalse();
+        assertThat(preDestroyCalled).isTrue();
     }
 
     @Before
     public void setUp() {
         kernel = Seed.createKernel();
         kernel.objectGraph().as(Injector.class).createChildInjector((Module) binder -> {
+            binder.bind(PreDestroyFixture.class);
+            binder.bind(PostConstructFixture.class);
             binder.bind(AutoCloseableFixture.class);
             binder.bind(IgnoredAutoCloseableFixture.class);
             binder.bind(AutoCloseable.class)
@@ -68,6 +76,8 @@ public class LifecycleIT implements LifecycleListener {
         assertThat(stoppingWasCalled).isFalse();
         assertThat(closedWasCalled).isFalse();
         assertThat(ignoredClosedWasCalled).isFalse();
+        assertThat(postConstructCalled).isTrue();
+        assertThat(preDestroyCalled).isFalse();
     }
 
     @After
@@ -76,6 +86,7 @@ public class LifecycleIT implements LifecycleListener {
         assertThat(stoppingWasCalled).isFalse();
         assertThat(closedWasCalled).isFalse();
         assertThat(ignoredClosedWasCalled).isFalse();
+        assertThat(preDestroyCalled).isFalse();
         Seed.disposeKernel(kernel);
     }
 
@@ -87,6 +98,8 @@ public class LifecycleIT implements LifecycleListener {
         assertThat(ignoredClosedWasCalled).isFalse();
         assertThat(proxyClosedWasCalled).isFalse();
         assertThat(classProxyClosedWasCalled).isFalse();
+        assertThat(postConstructCalled).isTrue();
+        assertThat(preDestroyCalled).isFalse();
     }
 
     @Override
@@ -132,6 +145,22 @@ public class LifecycleIT implements LifecycleListener {
         @Override
         public void close() {
             classProxyClosedWasCalled = true;
+        }
+    }
+
+    @Singleton
+    private static class PreDestroyFixture {
+        @PreDestroy
+        public void preDestroy() {
+            preDestroyCalled = true;
+        }
+    }
+
+    @Singleton
+    private static class PostConstructFixture {
+        @PostConstruct
+        public void postConstruct() {
+            postConstructCalled = true;
         }
     }
 }

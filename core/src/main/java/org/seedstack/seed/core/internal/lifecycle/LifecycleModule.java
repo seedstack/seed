@@ -5,6 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.core.internal.lifecycle;
 
 import com.google.inject.AbstractModule;
@@ -31,7 +32,7 @@ class LifecycleModule extends AbstractModule {
             lifecycleListenerMultibinder.addBinding().to(lifecycleListenerClass);
         }
 
-        // Listen for singletons implementing Closeable
-        bindListener(new AutoCloseableMatcher(), new AutoCloseableProvisionListener(lifecycleManager));
+        // Listen for singletons having lifecycle annotations or interfaces
+        bindListener(new LifecycleMatcher(), new LifecycleProvisionListener(lifecycleManager));
     }
 }

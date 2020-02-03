@@ -5,8 +5,11 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.core.internal.lifecycle;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.base.Preconditions.checkState;
 import static org.seedstack.shed.misc.PriorityUtils.sortByPriority;
 
 import com.google.common.collect.Sets;
@@ -18,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import javax.inject.Inject;
 import org.seedstack.seed.Ignore;
@@ -27,13 +31,15 @@ import org.seedstack.seed.core.internal.AbstractSeedPlugin;
 import org.seedstack.seed.core.internal.CoreErrorCode;
 import org.seedstack.shed.misc.PriorityUtils;
 import org.seedstack.shed.reflect.Annotations;
+import org.seedstack.shed.reflect.ReflectUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class LifecyclePlugin extends AbstractSeedPlugin implements LifecycleManager {
     private static final Logger LOGGER = LoggerFactory.getLogger(LifecyclePlugin.class);
     private final Set<Class<? extends LifecycleListener>> lifecycleListenerClasses = new HashSet<>();
-    private final Set<AutoCloseable> autoCloseableObjects = Sets.newConcurrentHashSet();
+    private final Set<DelayedCall> autoCloseableMethods = Sets.newConcurrentHashSet();
+    private final Set<DelayedCall> preDestroyMethods = Sets.newConcurrentHashSet();
     @Inject
     private Set<LifecycleListener> lifecycleListeners;
 
@@ -71,8 +77,7 @@ public class LifecyclePlugin extends AbstractSeedPlugin implements LifecycleMana
 
         for (LifecycleListener lifecycleListener : sortedLifecycleListeners) {
             try {
-                LOGGER.info("Executing started() method of lifecycle listener {}",
-                        lifecycleListener.getClass().getName());
+                LOGGER.info("Invoking lifecycle method: {}.started()", lifecycleListener.getClass().getName());
                 lifecycleListener.started();
             } catch (Exception e) {
                 throw SeedException
@@ -85,27 +90,34 @@ public class LifecyclePlugin extends AbstractSeedPlugin implements LifecycleMana
 
     @Override
     public void stopping() {
-        autoCloseableObjects.forEach(closeable -> {
-            try {
-                LOGGER.info("Closing {}", closeable.getClass().getName());
-                closeable.close();
-            } catch (Exception e) {
-                LOGGER.error("An exception occurred in the close() method of auto-closeable {}",
-                        closeable.getClass().getName(), e);
-            }
-        });
+        // Auto-closeable
+        autoCloseableMethods.forEach(DelayedCall::proceed);
 
+        // @PreDestroy
+        preDestroyMethods.forEach(DelayedCall::proceed);
+
+        // Lifecycle listeners stopping()
         List<? extends LifecycleListener> sortedLifecycleListeners = new ArrayList<>(this.lifecycleListeners);
         sortByPriority(sortedLifecycleListeners, PriorityUtils::priorityOfClassOf);
-
         for (LifecycleListener lifecycleListener : sortedLifecycleListeners) {
             try {
-                LOGGER.info("Executing stopping() method of lifecycle listener {}",
-                        lifecycleListener.getClass().getName());
+                LOGGER.info("Invoking lifecycle method: {}.stopping()", lifecycleListener.getClass().getName());
                 lifecycleListener.stopping();
             } catch (Exception e) {
-                LOGGER.error("An exception occurred in the stopping() method of lifecycle listener {}",
+                LOGGER.error("An exception occurred in lifecycle method: {}.stopping()",
                         lifecycleListener.getClass().getName(), e);
+            }
+        }
+    }
+
+    @Override
+    public void registerPreDestroy(Object o, Method m) {
+        DelayedCall delayedCall = new DelayedCall(o, m);
+        if (delayedCall.shouldBeIgnored()) {
+            LOGGER.debug("Ignored registration of @PreDestroy method: {}", delayedCall);
+        } else {
+            if (preDestroyMethods.add(delayedCall)) {
+                LOGGER.debug("@PreDestroy method registered for closing at shutdown: {}", delayedCall);
             }
         }
     }
@@ -113,17 +125,62 @@ public class LifecyclePlugin extends AbstractSeedPlugin implements LifecycleMana
     @Override
     public void registerAutoCloseable(AutoCloseable autoCloseable) {
         try {
-            Method closeMethod = autoCloseable.getClass().getMethod("close");
-            if (!Annotations.on(closeMethod).traversingOverriddenMembers().find(Ignore.class).isPresent()) {
-                if (autoCloseableObjects.add(autoCloseable)) {
-                    LOGGER.info("Auto-closeable {} registered for closing at shutdown",
-                            autoCloseable.getClass().getName());
-                }
+            DelayedCall delayedCall = new DelayedCall(autoCloseable, autoCloseable.getClass().getMethod("close"));
+            if (delayedCall.shouldBeIgnored()) {
+                LOGGER.debug("Ignored registration of auto-closeable {}", delayedCall);
             } else {
-                LOGGER.debug("Ignored registration of auto-closeable {}", autoCloseable.getClass().getName());
+                if (autoCloseableMethods.add(delayedCall)) {
+                    LOGGER.debug("Close method registered for closing at shutdown: {}", delayedCall);
+                }
             }
         } catch (NoSuchMethodException e) {
             throw SeedException.wrap(e, CoreErrorCode.UNEXPECTED_EXCEPTION);
+        }
+    }
+
+    private static class DelayedCall {
+        private final Object o;
+        private final Method m;
+
+        private DelayedCall(Object o, Method m) {
+            checkState(m.getDeclaringClass().isAssignableFrom(o.getClass()));
+            this.o = checkNotNull(o);
+            this.m = checkNotNull(m);
+        }
+
+        private boolean shouldBeIgnored() {
+            return Annotations.on(m)
+                    .traversingOverriddenMembers()
+                    .find(Ignore.class)
+                    .isPresent();
+        }
+
+        private void proceed() {
+            try {
+                LOGGER.info("Invoking lifecycle method: {}", this);
+                ReflectUtils.invoke(ReflectUtils.makeAccessible(m), o);
+            } catch (Exception e) {
+                LOGGER.error("An exception occurred calling lifecycle method: {}", this, e);
+            }
+        }
+
+        @Override
+        public boolean equals(Object o1) {
+            if (this == o1) return true;
+            if (o1 == null || getClass() != o1.getClass()) return false;
+            DelayedCall that = (DelayedCall) o1;
+            return o.equals(that.o) &&
+                    m.equals(that.m);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(o, m);
+        }
+
+        @Override
+        public String toString() {
+            return String.format("%s.%s()", m.getDeclaringClass().getName(), m.getName());
         }
     }
 }

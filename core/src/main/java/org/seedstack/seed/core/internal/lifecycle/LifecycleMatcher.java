@@ -5,7 +5,10 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.core.internal.lifecycle;
+
+import static org.seedstack.shed.reflect.AnnotationPredicates.elementAnnotatedWith;
 
 import com.google.inject.Binding;
 import com.google.inject.Scope;
@@ -13,19 +16,35 @@ import com.google.inject.Scopes;
 import com.google.inject.matcher.AbstractMatcher;
 import com.google.inject.spi.BindingScopingVisitor;
 import java.lang.annotation.Annotation;
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.inject.Singleton;
+import org.seedstack.shed.reflect.Classes;
 
-class AutoCloseableMatcher extends AbstractMatcher<Binding<?>> {
-    private final AutoCloseableScopingVisitor autoCloseableScopingVisitor = new AutoCloseableScopingVisitor();
+class LifecycleMatcher extends AbstractMatcher<Binding<?>> {
+    private final PreDestroyScopingVisitor preDestroyScopingVisitor = new PreDestroyScopingVisitor();
 
     @Override
     public boolean matches(Binding<?> binding) {
-        Class<?> keyRawType = binding.getKey().getTypeLiteral().getRawType();
-        return AutoCloseable.class.isAssignableFrom(keyRawType) && binding.acceptScopingVisitor(
-                autoCloseableScopingVisitor);
+        Class<?> rawType = binding.getKey().getTypeLiteral().getRawType();
+        return binding.acceptScopingVisitor(preDestroyScopingVisitor) &&
+                (isAutoCloseable(rawType) || hasJsr250Methods(rawType));
     }
 
-    private static class AutoCloseableScopingVisitor implements BindingScopingVisitor<Boolean> {
+    private boolean hasJsr250Methods(Class<?> rawType) {
+        return Classes.from(rawType)
+                .traversingInterfaces()
+                .traversingSuperclasses()
+                .methods()
+                .anyMatch(elementAnnotatedWith(PreDestroy.class, true)
+                        .or(elementAnnotatedWith(PostConstruct.class, true)));
+    }
+
+    private boolean isAutoCloseable(Class<?> rawType) {
+        return AutoCloseable.class.isAssignableFrom(rawType);
+    }
+
+    private static class PreDestroyScopingVisitor implements BindingScopingVisitor<Boolean> {
         @Override
         public Boolean visitEagerSingleton() {
             return true;

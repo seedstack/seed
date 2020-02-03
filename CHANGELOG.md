@@ -1,5 +1,6 @@
 # Version 3.9.2 (2019-01-24)
 
+* [new] Support JSR-250 `@PostConstruct` and `@PreDestroy` annotations on singletons (in addition to AutoCloseable `close()` method).
 * [fix] Ensure that JVM-wide base configuration is refreshed between tests.
 * [fix] With Jersey 2, allow JAX-RS components to be instantiated without Guice as a fallback.
 
