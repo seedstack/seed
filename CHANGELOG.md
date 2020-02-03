@@ -1,6 +1,7 @@
 # Version 3.9.2 (2019-01-24)
 
 * [fix] Ensure that JVM-wide base configuration is refreshed between tests.
+* [fix] With Jersey 2, allow JAX-RS components to be instantiated without Guice as a fallback.
 
 # Version 3.9.1 (2019-12-17)
 

@@ -1,6 +1,6 @@
 <!--
 
-    Copyright © 2013-2019, The SeedStack authors <http://seedstack.org>
+    Copyright © 2013-2020, The SeedStack authors <http://seedstack.org>
 
     This Source Code Form is subject to the terms of the Mozilla Public
     License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -14,7 +14,7 @@
     <parent>
         <groupId>org.seedstack.poms</groupId>
         <artifactId>parent-internal</artifactId>
-        <version>3.4.8</version>
+        <version>3.4.9-SNAPSHOT</version>
     </parent>
 
     <groupId>org.seedstack.seed</groupId>
@@ -33,7 +33,7 @@
         <typetools.version>0.5.0</typetools.version>
         <shiro.version>1.4.0</shiro.version>
         <undertow.version>2.0.17.Final</undertow.version>
-        <jersey2.version>2.27</jersey2.version>
+        <jersey2.version>2.30</jersey2.version>
         <hibernate-validator.version>5.4.3.Final</hibernate-validator.version>
         <aopalliance.version>1.0</aopalliance.version>
         <glassfish-javax.el.version>3.0.0</glassfish-javax.el.version>
@@ -164,13 +164,14 @@
                             <licenseMerge>CDDL 1.1|Common Development And Distribution License 1.1</licenseMerge>
                             <licenseMerge>EPL 1.0|Eclipse Public License 1.0</licenseMerge>
                             <licenseMerge>EPL 1.0|Eclipse Public License v1.0</licenseMerge>
+                            <licenseMerge>EPL 1.0|Eclipse Public License - v 1.0</licenseMerge>
                             <licenseMerge>GPL2 CPE|GNU General Public License, version 2 (GPL2), with the classpath exception</licenseMerge>
+                            <licenseMerge>GPL2 CPE|GPL2 w/ CPE</licenseMerge>
                             <licenseMerge>LGPL 3.0|GNU Lesser Public License</licenseMerge>
                             <licenseMerge>LGPL 3.0|GNU Lesser General Public License</licenseMerge>
                             <licenseMerge>MIT|The MIT License</licenseMerge>
                             <licenseMerge>MIT|MIT License</licenseMerge>
                             <licenseMerge>MIT|MIT license</licenseMerge>
-                            <licenseMerge>IGNORED_LICENSE|GPL2 w/ CPE</licenseMerge>
                             <licenseMerge>IGNORED_LICENSE|MPL 1.1</licenseMerge>
                             <licenseMerge>IGNORED_LICENSE|GNU General Public License, Version 2 with the Classpath Exception</licenseMerge>
                             <licenseMerge>IGNORED_LICENSE|GNU General Public License v2.0 only, with Classpath exception</licenseMerge>
@@ -178,7 +179,12 @@
                             <licenseMerge>IGNORED_LICENSE|The GNU General Public License (GPL), Version 2, With Classpath Exception</licenseMerge>
                             <licenseMerge>IGNORED_LICENSE|Modified BSD</licenseMerge>
                             <licenseMerge>IGNORED_LICENSE|CDDL/GPLv2+CE</licenseMerge>
-                            <licenseMerge>IGNORED_LICENSE|Eclipse Public License - v 1.0</licenseMerge>
+                            <licenseMerge>IGNORED_LICENSE|EPL 2.0</licenseMerge>
+                            <licenseMerge>IGNORED_LICENSE|EDL 1.0</licenseMerge>
+                            <licenseMerge>IGNORED_LICENSE|BSD 2-Clause</licenseMerge>
+                            <licenseMerge>IGNORED_LICENSE|jQuery license</licenseMerge>
+                            <licenseMerge>IGNORED_LICENSE|W3C license</licenseMerge>
+                            <licenseMerge>IGNORED_LICENSE|Eclipse Distribution License - v 1.0</licenseMerge>
                         </licenseMerges>
                     </configuration>
                 </plugin>

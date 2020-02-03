@@ -1,11 +1,10 @@
 /*
- * Copyright © 2013-2019, The SeedStack authors <http://seedstack.org>
+ * Copyright © 2013-2020, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-
 package org.seedstack.seed.rest.jersey2.internal;
 
 import com.google.common.collect.Lists;
@@ -67,23 +66,32 @@ public class Jersey2Plugin extends AbstractPlugin implements WebProvider {
                 resources.addAll(restProvider.resources());
                 providers.addAll(filterClasses(restProvider.providers()));
             }
-            LOGGER.debug("{} JAX-RS resource(s) detected", resources.size());
-            LOGGER.debug("{} JAX-RS provider(s) detected", providers.size());
+
+            if (LOGGER.isDebugEnabled()) {
+                LOGGER.debug("{} JAX-RS resource(s) detected: {}", resources.size(), resources);
+            } else {
+                LOGGER.info("{} JAX-RS resource(s) detected (set logger to DEBUG to see them)", resources.size());
+            }
+            if (LOGGER.isDebugEnabled()) {
+                LOGGER.debug("{} JAX-RS provider(s) detected: {}", providers.size(), providers);
+            } else {
+                LOGGER.info("{} JAX-RS provider(s) detected (set logger to DEBUG to see them)", providers.size());
+            }
 
             Set<Class<?>> enabledFeatures = new HashSet<>();
             if (isMultipartFeaturePresent()) {
                 enabledFeatures.add(MultiPartFeature.class);
-                LOGGER.debug("Multipart feature is detected and enabled");
+                LOGGER.debug("Multipart feature is enabled");
             }
 
             if (isFreemarkerFeaturePresent()) {
                 enabledFeatures.add(FreemarkerMvcFeature.class);
-                LOGGER.debug("FreeMarker feature is detected and enabled");
+                LOGGER.debug("FreeMarker feature is enabled");
             }
 
             if (isJspFeaturePresent()) {
                 enabledFeatures.add(JspMvcFeature.class);
-                LOGGER.debug("JSP feature is detected and enabled");
+                LOGGER.debug("JSP feature is enabled");
             }
             for (Class<?> featureClass : filterClasses(restConfig.getFeatures())) {
                 enabledFeatures.add(featureClass);
@@ -93,7 +101,7 @@ public class Jersey2Plugin extends AbstractPlugin implements WebProvider {
             Map<String, Object> jersey2Properties = buildJerseyProperties(restConfig);
             if (LOGGER.isTraceEnabled()) {
                 for (Map.Entry<String, Object> entry : jersey2Properties.entrySet()) {
-                    LOGGER.trace("Jersey property {} = {}", entry.getKey(), String.valueOf(entry.getValue()));
+                    LOGGER.debug("Jersey property {} = {}", entry.getKey(), entry.getValue());
                 }
             }
 

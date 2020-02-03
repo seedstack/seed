@@ -1,6 +1,6 @@
 <!--
 
-    Copyright © 2013-2019, The SeedStack authors <http://seedstack.org>
+    Copyright © 2013-2020, The SeedStack authors <http://seedstack.org>
 
     This Source Code Form is subject to the terms of the Mozilla Public
     License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -21,7 +21,9 @@
 
     <properties>
         <compatibility.skip>true</compatibility.skip>
-        <testArgLine>-javaagent:${settings.localRepository}/org/jmockit/jmockit/${jmockit.version}/jmockit-${jmockit.version}.jar</testArgLine>
+        <testArgLine>
+            -javaagent:${settings.localRepository}/org/jmockit/jmockit/${jmockit.version}/jmockit-${jmockit.version}.jar
+        </testArgLine>
     </properties>
 
     <dependencies>
@@ -39,12 +41,6 @@
             <groupId>org.glassfish.jersey.containers</groupId>
             <artifactId>jersey-container-servlet</artifactId>
             <version>${jersey2.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.glassfish.jersey.media</groupId>
-                    <artifactId>jersey-media-jaxb</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.glassfish.jersey.media</groupId>
@@ -91,7 +87,7 @@
         <dependency>
             <groupId>org.glassfish.hk2</groupId>
             <artifactId>guice-bridge</artifactId>
-            <version>2.5.0-b42</version>
+            <version>2.6.1</version>
             <exclusions>
                 <exclusion>
                     <!-- Guice already comes from seed-core -->
