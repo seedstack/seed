@@ -14,11 +14,17 @@ import com.google.inject.ConfigurationException;
 import com.google.inject.CreationException;
 import com.google.inject.Injector;
 import com.google.inject.Module;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.reflect.Method;
+import java.util.function.Predicate;
 import javax.inject.Inject;
 import javax.inject.Named;
+import org.aopalliance.intercept.MethodInvocation;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.seedstack.seed.Bind;
+import org.seedstack.seed.SeedInterceptor;
 import org.seedstack.seed.Logging;
 import org.seedstack.seed.Nullable;
 import org.seedstack.seed.SeedException;
@@ -127,6 +133,16 @@ public class CoreIT {
         assertThat(holder.providedFromInterfaceWithAnnotation).isInstanceOf(ProvidedInterface.class);
     }
 
+    @Test
+    public void methodInterceptorsAreWorking() {
+        InterceptionTarget instance = injector.getInstance(InterceptionTarget.class);
+        assertThat(SomeSeedInterceptor.invokedTimes).isEqualTo(0);
+        instance.someMethod();
+        assertThat(SomeSeedInterceptor.invokedTimes).isEqualTo(1);
+        instance.otherMethod();
+        assertThat(SomeSeedInterceptor.invokedTimes).isEqualTo(1);
+    }
+
     @Bind
     private static class LoggerHolder {
         private static final Logger logger = LoggerFactory.getLogger(LoggerHolder.class);
@@ -192,5 +208,42 @@ public class CoreIT {
     private static class HolderException {
         @Inject
         Service2 s2;
+    }
+
+    @Retention(RetentionPolicy.RUNTIME)
+    private @interface ShouldBeIntercepted {
+
+    }
+
+    @Bind
+    static class InterceptionTarget {
+        @ShouldBeIntercepted
+        public void someMethod() {
+
+        }
+
+        public void otherMethod() {
+
+        }
+    }
+
+    private static class SomeSeedInterceptor implements SeedInterceptor {
+        static int invokedTimes = 0;
+
+        @Override
+        public Predicate<Class<?>> classPredicate() {
+            return InterceptionTarget.class::isAssignableFrom;
+        }
+
+        @Override
+        public Predicate<Method> methodPredicate() {
+            return m -> m.isAnnotationPresent(ShouldBeIntercepted.class);
+        }
+
+        @Override
+        public Object invoke(MethodInvocation invocation) throws Throwable {
+            invokedTimes++;
+            return invocation.proceed();
+        }
     }
 }

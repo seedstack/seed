@@ -1,6 +1,7 @@
-# Version 3.9.2 (2019-01-24)
+# Version 3.10.0 (2019-04-30)
 
 * [new] Support JSR-250 `@PostConstruct` and `@PreDestroy` annotations on singletons (in addition to AutoCloseable `close()` method).
+* [new] New `SeedInterceptor` API to declare method interceptors without coupling to Guice implementation.
 * [fix] Ensure that JVM-wide base configuration is refreshed between tests.
 * [fix] With Jersey 2, allow JAX-RS components to be instantiated without Guice as a fallback.
 

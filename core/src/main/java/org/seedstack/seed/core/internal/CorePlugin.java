@@ -7,18 +7,24 @@
  */
 package org.seedstack.seed.core.internal;
 
+import static org.seedstack.shed.misc.PriorityUtils.sortByPriority;
+
 import com.google.common.base.Strings;
 import com.google.inject.Module;
 import io.nuun.kernel.api.plugin.InitState;
 import io.nuun.kernel.api.plugin.context.InitContext;
 import io.nuun.kernel.api.plugin.request.ClasspathScanRequest;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import javax.inject.Provider;
 import org.kametic.specifications.Specification;
+import org.seedstack.seed.SeedInterceptor;
 import org.seedstack.seed.core.internal.utils.SpecificationBuilder;
+import org.seedstack.shed.misc.PriorityUtils;
 import org.seedstack.shed.reflect.Classes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,6 +37,7 @@ public class CorePlugin extends AbstractSeedPlugin {
     private static final Logger LOGGER = LoggerFactory.getLogger(CorePlugin.class);
     static final String AUTODETECT_MODULES_KERNEL_PARAM = "seedstack.autodetectModules";
     static final String AUTODETECT_BINDINGS_KERNEL_PARAM = "seedstack.autodetectBindings";
+    static final String AUTODETECT_INTERCEPTORS_KERNEL_PARAM = "seedstack.autodetectInterceptors";
     private static final String SEEDSTACK_PACKAGE = "org.seedstack";
     private static final Specification<Class<?>> installSpecification = new SpecificationBuilder<>(
             InstallResolver.INSTANCE).build();
@@ -40,8 +47,9 @@ public class CorePlugin extends AbstractSeedPlugin {
             ProvideResolver.INSTANCE).build();
     private final Set<Class<? extends Module>> modules = new HashSet<>();
     private final Set<Class<? extends Module>> overridingModules = new HashSet<>();
-    private final Set<Bindable> bindings = new HashSet<>();
-    private final Set<Bindable> overridingBindings = new HashSet<>();
+    private final List<SeedInterceptor> methodInterceptors = new ArrayList<>();
+    private final Set<Bindable<?>> bindings = new HashSet<>();
+    private final Set<Bindable<?>> overridingBindings = new HashSet<>();
 
     @Override
     public String name() {
@@ -59,6 +67,7 @@ public class CorePlugin extends AbstractSeedPlugin {
                 .specification(installSpecification)
                 .specification(bindSpecification)
                 .specification(providerSpecification)
+                .subtypeOf(SeedInterceptor.class)
                 .build();
     }
 
@@ -72,6 +81,10 @@ public class CorePlugin extends AbstractSeedPlugin {
         if (Strings.isNullOrEmpty(autodetectBindings) || Boolean.parseBoolean(autodetectBindings)) {
             detectBindings(initContext);
             detectProviders(initContext);
+        }
+        String autodetectInterceptors = initContext.kernelParam(AUTODETECT_INTERCEPTORS_KERNEL_PARAM);
+        if (Strings.isNullOrEmpty(autodetectInterceptors) || Boolean.parseBoolean(autodetectInterceptors)) {
+            detectInterceptors(initContext);
         }
         return InitState.INITIALIZED;
     }
@@ -124,11 +137,24 @@ public class CorePlugin extends AbstractSeedPlugin {
                 }));
     }
 
+    private void detectInterceptors(InitContext initContext) {
+        initContext.scannedSubTypesByParentClass()
+                .get(SeedInterceptor.class)
+                .stream()
+                .filter(SeedInterceptor.class::isAssignableFrom)
+                .forEach(candidate -> {
+                    methodInterceptors.add(Classes.instantiateDefault(candidate.asSubclass(SeedInterceptor.class)));
+                    LOGGER.debug("Interceptor {} detected", candidate.getCanonicalName());
+                });
+        sortByPriority(methodInterceptors, PriorityUtils::priorityOfClassOf);
+    }
+
     @Override
     public Object nativeUnitModule() {
         return new CoreModule(
                 modules.stream().map(Classes::instantiateDefault).collect(Collectors.toSet()),
-                bindings
+                bindings,
+                methodInterceptors
         );
     }
 
@@ -136,7 +162,7 @@ public class CorePlugin extends AbstractSeedPlugin {
     public Object nativeOverridingUnitModule() {
         return new CoreModule(
                 overridingModules.stream().map(Classes::instantiateDefault).collect(Collectors.toSet()),
-                overridingBindings
-        );
+                overridingBindings,
+                new ArrayList<>());
     }
 }
