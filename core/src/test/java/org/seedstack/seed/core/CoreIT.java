@@ -5,6 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.core;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -24,10 +25,10 @@ import org.aopalliance.intercept.MethodInvocation;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.seedstack.seed.Bind;
-import org.seedstack.seed.SeedInterceptor;
 import org.seedstack.seed.Logging;
 import org.seedstack.seed.Nullable;
 import org.seedstack.seed.SeedException;
+import org.seedstack.seed.SeedInterceptor;
 import org.seedstack.seed.core.fixtures.BoundFromInterface;
 import org.seedstack.seed.core.fixtures.BoundFromInterfaceWithName;
 import org.seedstack.seed.core.fixtures.BoundFromItself;
@@ -229,6 +230,8 @@ public class CoreIT {
 
     private static class SomeSeedInterceptor implements SeedInterceptor {
         static int invokedTimes = 0;
+        @Logging
+        private Logger logger;
 
         @Override
         public Predicate<Class<?>> classPredicate() {
@@ -242,6 +245,7 @@ public class CoreIT {
 
         @Override
         public Object invoke(MethodInvocation invocation) throws Throwable {
+            assertThat(logger).isNotNull();
             invokedTimes++;
             return invocation.proceed();
         }

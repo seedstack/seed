@@ -5,6 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.core.internal;
 
 import com.google.inject.AbstractModule;
@@ -33,11 +34,12 @@ class CoreModule extends AbstractModule {
     protected void configure() {
         modules.forEach(this::install);
         bindings.forEach(binding -> binding.apply(binder()));
-        interceptors.forEach(interceptor -> bindInterceptor(
-                createMatcherFromPredicate(interceptor.classPredicate()),
-                createMatcherFromPredicate(interceptor.methodPredicate()),
-                interceptor
-        ));
+        interceptors.forEach(interceptor -> {
+            bindInterceptor(createMatcherFromPredicate(interceptor.classPredicate()),
+                    createMatcherFromPredicate(interceptor.methodPredicate()),
+                    interceptor);
+            requestInjection(interceptor);
+        });
     }
 
     private <T> Matcher<T> createMatcherFromPredicate(Predicate<T> predicate) {
