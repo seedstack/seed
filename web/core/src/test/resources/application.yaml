@@ -7,6 +7,12 @@
 #
 
 web:
+  sessions:
+    cookie:
+      comment: Custom
+      name: CUSTOM_SESSION_ID
+      httpOnly: true
+      maxAge: 15
   cors:
     enabled: true
     properties:

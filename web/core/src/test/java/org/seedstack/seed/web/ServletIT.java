@@ -5,9 +5,11 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.web;
 
 import io.restassured.RestAssured;
+import io.restassured.matcher.RestAssuredMatchers;
 import java.net.URL;
 import org.assertj.core.api.Assertions;
 import org.hamcrest.Matchers;
@@ -17,7 +19,6 @@ import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.arquillian.test.api.ArquillianResource;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.seedstack.seed.web.fixtures.servlet.TestFilter;
@@ -98,5 +99,19 @@ public class ServletIT {
                 .body(Matchers.endsWith(TestFilter.PARAM1_VALUE))
                 .when()
                 .get(baseUrl + "testFilter1");
+    }
+
+    @Test
+    @RunAsClient
+    public void sessionCookieConfigIsHonored() {
+        RestAssured.expect()
+                .statusCode(200)
+                .cookie("CUSTOM_SESSION_ID", RestAssuredMatchers.detailedCookie()
+                        .maxAge(15)
+                        .comment("Custom")
+                        .httpOnly(true)
+                )
+                .when()
+                .get(baseUrl + "sessionTest");
     }
 }

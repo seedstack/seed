@@ -10,8 +10,14 @@ logging:
   level: INFO
 
 web:
+  sessions:
+    cookie:
+      comment: Custom
+      name: CUSTOM_SESSION_ID
+      httpOnly: true
+      maxAge: 15
   server:
-    sessions: 30
+    defaultSessionTimeout: 30
     contextPath: context/ # keep this strange form to test for context path normalization
     https<https>: true
     welcomeFiles<welcome>: [ 'welcome1.html', 'welcome2.html' ]

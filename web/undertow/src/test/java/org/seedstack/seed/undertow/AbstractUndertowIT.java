@@ -5,8 +5,10 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.undertow;
 
+import io.restassured.matcher.RestAssuredMatchers;
 import io.restassured.specification.ResponseSpecification;
 import org.hamcrest.Matchers;
 import org.junit.Test;
@@ -103,6 +105,19 @@ public abstract class AbstractUndertowIT {
                 .body(Matchers.containsString("<h1>An error occurred!</h1>"))
                 .when()
                 .get(baseUrl + "/exceptionError");
+    }
+
+    @Test
+    public void sessionCookieConfigIsHonored() {
+        expect()
+                .statusCode(200)
+                .cookie("CUSTOM_SESSION_ID", RestAssuredMatchers.detailedCookie()
+                        .maxAge(15)
+                        .comment("Custom")
+                        .httpOnly(true)
+                )
+                .when()
+                .get(baseUrl + "/sessionTest");
     }
 
     abstract ResponseSpecification expect();

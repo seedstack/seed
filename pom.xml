@@ -215,6 +215,7 @@
                                 <exclude>org.seedstack.seed.spi.DependencyProvider</exclude>
                                 <exclude>org.seedstack.seed.web.spi.AntiXsrfService</exclude>
                                 <exclude>org.seedstack.seed.crypto.CryptoConfig</exclude>
+                                <exclude>org.seedstack.seed.web.WebConfig</exclude>
                             </excludes>
                         </parameter>
                     </configuration>

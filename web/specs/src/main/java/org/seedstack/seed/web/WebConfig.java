@@ -5,13 +5,17 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.web;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import javax.servlet.SessionTrackingMode;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import org.seedstack.coffig.Config;
@@ -20,28 +24,15 @@ import org.seedstack.seed.validation.NotBlank;
 
 @Config("web")
 public class WebConfig {
-    private boolean requestDiagnostic;
-    private SessionTrackingMode sessionTrackingMode = SessionTrackingMode.COOKIE;
+    private SessionsConfig sessions = new SessionsConfig();
+    @Config("static")
     private StaticResourcesConfig staticResources = new StaticResourcesConfig();
     private CORSConfig cors = new CORSConfig();
-    private ServerConfig serverConfig = new ServerConfig();
+    private ServerConfig server = new ServerConfig();
+    private boolean requestDiagnostic;
 
-    public boolean isRequestDiagnosticEnabled() {
-        return requestDiagnostic;
-    }
-
-    public WebConfig setRequestDiagnostic(boolean requestDiagnostic) {
-        this.requestDiagnostic = requestDiagnostic;
-        return this;
-    }
-
-    public SessionTrackingMode getSessionTrackingMode() {
-        return sessionTrackingMode;
-    }
-
-    public WebConfig setSessionTrackingMode(SessionTrackingMode sessionTrackingMode) {
-        this.sessionTrackingMode = sessionTrackingMode;
-        return this;
+    public SessionsConfig sessions() {
+        return sessions;
     }
 
     public StaticResourcesConfig staticResources() {
@@ -52,14 +43,115 @@ public class WebConfig {
         return cors;
     }
 
-    public ServerConfig serverConfig() {
-        return serverConfig;
+    public ServerConfig server() {
+        return server;
     }
 
-    public enum SessionTrackingMode {
-        COOKIE,
-        SSL,
-        URL
+    public boolean isRequestDiagnosticEnabled() {
+        return requestDiagnostic;
+    }
+
+    public WebConfig setRequestDiagnostic(boolean requestDiagnostic) {
+        this.requestDiagnostic = requestDiagnostic;
+        return this;
+    }
+
+    @Config("sessions")
+    public static class SessionsConfig {
+        private Set<SessionTrackingMode> trackingModes;
+        private CookieConfig cookie = new CookieConfig();
+
+        public SessionsConfig() {
+            trackingModes = new HashSet<>();
+            trackingModes.add(SessionTrackingMode.COOKIE);
+        }
+
+        public Set<javax.servlet.SessionTrackingMode> getTrackingModes() {
+            return trackingModes;
+        }
+
+        public SessionsConfig setTrackingModes(Set<javax.servlet.SessionTrackingMode> trackingModes) {
+            this.trackingModes = trackingModes;
+            return this;
+        }
+
+        public CookieConfig cookie() {
+            return cookie;
+        }
+
+        @Config("cookie")
+        public static class CookieConfig {
+            private boolean httpOnly = false;
+            private boolean secure = false;
+            private int maxAge = -1;
+            private String comment;
+            private String domain;
+            private String name;
+            private String path;
+
+            public boolean isHttpOnly() {
+                return httpOnly;
+            }
+
+            public CookieConfig setHttpOnly(boolean httpOnly) {
+                this.httpOnly = httpOnly;
+                return this;
+            }
+
+            public boolean isSecure() {
+                return secure;
+            }
+
+            public CookieConfig setSecure(boolean secure) {
+                this.secure = secure;
+                return this;
+            }
+
+            public int getMaxAge() {
+                return maxAge;
+            }
+
+            public CookieConfig setMaxAge(int maxAge) {
+                this.maxAge = maxAge;
+                return this;
+            }
+
+            public String getComment() {
+                return comment;
+            }
+
+            public CookieConfig setComment(String comment) {
+                this.comment = comment;
+                return this;
+            }
+
+            public String getDomain() {
+                return domain;
+            }
+
+            public CookieConfig setDomain(String domain) {
+                this.domain = domain;
+                return this;
+            }
+
+            public String getName() {
+                return name;
+            }
+
+            public CookieConfig setName(String name) {
+                this.name = name;
+                return this;
+            }
+
+            public String getPath() {
+                return path;
+            }
+
+            public CookieConfig setPath(String path) {
+                this.path = path;
+                return this;
+            }
+        }
     }
 
     @Config("cors")
@@ -168,7 +260,6 @@ public class WebConfig {
         private static final String DEFAULT_WELCOME_FILE = "index.html";
         private static final boolean DEFAULT_PREFER_HTTPS = true;
 
-        private SessionsConfig sessions = new SessionsConfig();
         private WebSocketConfig websocket = new WebSocketConfig();
         private String host = DEFAULT_HOST;
         @SingleValue
@@ -187,13 +278,10 @@ public class WebConfig {
         private boolean preferHttps = DEFAULT_PREFER_HTTPS;
         private List<String> welcomeFiles = new ArrayList<>();
         private List<ErrorPage> errorPages = new ArrayList<>();
+        private int defaultSessionTimeout = 60 * 20;
 
         public ServerConfig() {
             addWelcomeFile(DEFAULT_WELCOME_FILE);
-        }
-
-        public SessionsConfig sessions() {
-            return sessions;
         }
 
         public WebSocketConfig webSocket() {
@@ -307,20 +395,13 @@ public class WebConfig {
             return this;
         }
 
-        @Config("sessions")
-        public static class SessionsConfig {
-            private static final int DEFAULT_SESSION_TIMEOUT = 1000 * 60 * 15;
-            @SingleValue
-            private int timeout = DEFAULT_SESSION_TIMEOUT;
+        public int getDefaultSessionTimeout() {
+            return defaultSessionTimeout;
+        }
 
-            public int getTimeout() {
-                return timeout;
-            }
-
-            public SessionsConfig setTimeout(int timeout) {
-                this.timeout = timeout;
-                return this;
-            }
+        public ServerConfig setDefaultSessionTimeout(int defaultSessionTimeout) {
+            this.defaultSessionTimeout = defaultSessionTimeout;
+            return this;
         }
 
         @Config("websocket")

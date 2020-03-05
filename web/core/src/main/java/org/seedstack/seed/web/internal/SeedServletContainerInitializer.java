@@ -5,10 +5,9 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.web.internal;
 
-import static java.util.EnumSet.of;
-import static javax.servlet.SessionTrackingMode.valueOf;
 import static org.seedstack.seed.web.internal.ServletContextUtils.INJECTOR_ATTRIBUTE_NAME;
 import static org.seedstack.seed.web.internal.ServletContextUtils.KERNEL_ATTRIBUTE_NAME;
 
@@ -17,12 +16,13 @@ import io.nuun.kernel.api.Kernel;
 import io.nuun.kernel.api.config.KernelConfiguration;
 import io.nuun.kernel.core.NuunCore;
 import java.util.Enumeration;
+import java.util.Optional;
 import java.util.Set;
 import javax.servlet.ServletContainerInitializer;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
-import javax.servlet.ServletException;
+import javax.servlet.SessionCookieConfig;
 import org.seedstack.seed.core.Seed;
 import org.seedstack.seed.web.WebConfig;
 import org.seedstack.shed.exception.BaseException;
@@ -31,9 +31,10 @@ public class SeedServletContainerInitializer implements ServletContainerInitiali
     private Kernel kernel;
 
     @Override
-    public void onStartup(Set<Class<?>> classes, ServletContext servletContext) throws ServletException {
+    public void onStartup(Set<Class<?>> classes, ServletContext servletContext) {
         WebConfig webConfig = Seed.baseConfiguration().get(WebConfig.class);
-        servletContext.setSessionTrackingModes(of(valueOf(webConfig.getSessionTrackingMode().name())));
+        servletContext.setSessionTrackingModes(webConfig.sessions().getTrackingModes());
+        copyConfig(webConfig.sessions().cookie(), servletContext.getSessionCookieConfig());
 
         try {
             kernel = Seed.createKernel(servletContext, buildKernelConfiguration(servletContext), true);
@@ -89,5 +90,15 @@ public class SeedServletContainerInitializer implements ServletContainerInitiali
             Seed.diagnostic().dumpDiagnosticReport(translated);
         }
         throw translated;
+    }
+
+    private void copyConfig(WebConfig.SessionsConfig.CookieConfig src, SessionCookieConfig dest) {
+        Optional.ofNullable(src.getComment()).ifPresent(dest::setComment);
+        Optional.ofNullable(src.getDomain()).ifPresent(dest::setDomain);
+        Optional.ofNullable(src.getName()).ifPresent(dest::setName);
+        Optional.ofNullable(src.getPath()).ifPresent(dest::setPath);
+        dest.setHttpOnly(src.isHttpOnly());
+        dest.setSecure(src.isSecure());
+        dest.setMaxAge(src.getMaxAge());
     }
 }

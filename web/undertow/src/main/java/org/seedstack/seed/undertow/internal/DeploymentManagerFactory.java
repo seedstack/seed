@@ -5,6 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.undertow.internal;
 
 import static org.seedstack.shed.ClassLoaders.findMostCompleteClassLoader;
@@ -70,7 +71,7 @@ class DeploymentManagerFactory {
                 .setClassLoader(mostCompleteClassLoader)
                 .setDeploymentName(applicationConfig.getId())
                 .setDisplayName(applicationConfig.getName())
-                .setDefaultSessionTimeout(serverConfig.sessions().getTimeout())
+                .setDefaultSessionTimeout(serverConfig.getDefaultSessionTimeout())
                 .setResourceManager(new ClassPathResourceManager(mostCompleteClassLoader, META_INF_RESOURCES))
                 .addWelcomePages(serverConfig.getWelcomeFiles())
                 .addErrorPages(buildUndertowErrorPages(serverConfig.getErrorPages()))

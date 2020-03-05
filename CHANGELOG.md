@@ -1,9 +1,14 @@
 # Version 3.10.0 (2019-04-30)
 
 * [new] Support JSR-250 `@PostConstruct` and `@PreDestroy` annotations on singletons (in addition to AutoCloseable `close()` method).
-* [new] New `SeedInterceptor` API to declare method interceptors without coupling to Guice implementation.
+* [new] Add `SeedInterceptor` API to declare method interceptors without coupling to Guice implementation.
+* [new] Add `web.sessions.cookie` configuration options to set Web session cookie details.
+* [chg] Moved `web.server.sessions` configuration options to `web.sessions`. 
+* [chg] Default session timeout with embedded servers is now defined by the `web.server.` configuration options to `web.sessions`. 
+* [chg] Renamed `web.staticResources` configuration options to `web.static`.
 * [fix] Ensure that JVM-wide base configuration is refreshed between tests.
 * [fix] With Jersey 2, allow JAX-RS components to be instantiated without Guice as a fallback.
+* [fix] Default session timeout for Undertow was incorrect. It is now 20 minutes.
 
 # Version 3.9.1 (2019-12-17)
 
