@@ -26,7 +26,7 @@
         <nuun-kernel.version>1.0.M9</nuun-kernel.version>
         <javassist.version>3.24.1-GA</javassist.version>
         <shed.version>1.1.6</shed.version>
-        <coffig.version>3.1.4</coffig.version>
+        <coffig.version>3.1.5</coffig.version>
         <commons-cli.version>1.4</commons-cli.version>
         <guice.version>4.2.2</guice.version>
         <guava.version>27.0.1-jre</guava.version>
