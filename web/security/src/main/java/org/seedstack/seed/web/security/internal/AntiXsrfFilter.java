@@ -5,6 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.web.security.internal;
 
 import java.security.SecureRandom;
@@ -18,8 +19,11 @@ import javax.servlet.http.HttpSession;
 import org.apache.shiro.web.filter.PathMatchingFilter;
 import org.seedstack.seed.Configuration;
 import org.seedstack.seed.web.security.WebSecurityConfig;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class AntiXsrfFilter extends PathMatchingFilter {
+    private static final Logger LOGGER = LoggerFactory.getLogger(AntiXsrfFilter.class);
     private final static char[] CHARSET = new char[]{'a', 'b', 'c', 'd', 'e',
             'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r',
             's', 't', 'u', 'v', 'w', 'x', 'y', 'z', '0', '1', '2', '3', '4',
@@ -31,7 +35,7 @@ public class AntiXsrfFilter extends PathMatchingFilter {
 
     @Override
     protected boolean onPreHandle(ServletRequest request, ServletResponse response,
-            Object mappedValue) throws Exception {
+            Object mappedValue) {
         HttpServletRequest httpServletRequest = (HttpServletRequest) request;
         HttpServletResponse httpServletResponse = (HttpServletResponse) response;
         final HttpSession session = httpServletRequest.getSession(false);
@@ -56,8 +60,11 @@ public class AntiXsrfFilter extends PathMatchingFilter {
 
                     // If no cookie is available, send an error
                     if (cookieToken == null) {
-                        ((HttpServletResponse) response).sendError(HttpServletResponse.SC_FORBIDDEN,
-                                "Missing CSRF protection token cookie");
+                        WebSecurityPlugin.sendErrorToClient((HttpServletResponse) response,
+                                LOGGER,
+                                HttpServletResponse.SC_FORBIDDEN,
+                                "Missing CSRF protection token cookie",
+                                null);
                         return false;
                     }
 
@@ -71,15 +78,21 @@ public class AntiXsrfFilter extends PathMatchingFilter {
 
                     // If no request token available, send an error
                     if (requestToken == null) {
-                        ((HttpServletResponse) response).sendError(HttpServletResponse.SC_FORBIDDEN,
-                                "Missing CSRF protection token in the request headers");
+                        WebSecurityPlugin.sendErrorToClient((HttpServletResponse) response,
+                                LOGGER,
+                                HttpServletResponse.SC_FORBIDDEN,
+                                "Missing CSRF protection token in the request headers",
+                                null);
                         return false;
                     }
 
                     // If tokens don't match, send an error
                     if (!cookieToken.equals(requestToken)) {
-                        ((HttpServletResponse) response).sendError(HttpServletResponse.SC_FORBIDDEN,
-                                "Request token does not match session token");
+                        WebSecurityPlugin.sendErrorToClient((HttpServletResponse) response,
+                                LOGGER,
+                                HttpServletResponse.SC_FORBIDDEN,
+                                "Request token does not match session token",
+                                null);
                         return false;
                     }
 

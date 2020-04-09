@@ -5,6 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.security;
 
 import java.util.Collection;
@@ -15,6 +16,12 @@ import org.seedstack.seed.security.principals.PrincipalProvider;
  * A realm is used to authenticate and retrieve authorization for a user.
  */
 public interface Realm {
+    /**
+     * @return the name of the realm
+     */
+    default String name() {
+        return getClass().getSimpleName();
+    }
 
     /**
      * Get the roles

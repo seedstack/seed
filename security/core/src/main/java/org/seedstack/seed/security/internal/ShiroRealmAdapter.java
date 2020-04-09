@@ -5,6 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.security.internal;
 
 import java.util.ArrayList;
@@ -113,7 +114,7 @@ class ShiroRealmAdapter extends AuthorizingRealm {
     protected Object getAuthenticationCacheKey(AuthenticationToken token) {
         Object authenticationCacheKey = super.getAuthenticationCacheKey(token);
         if (authenticationCacheKey instanceof PrincipalProvider) {
-            return ((PrincipalProvider) authenticationCacheKey).get();
+            return ((PrincipalProvider<?>) authenticationCacheKey).get();
         } else {
             return authenticationCacheKey;
         }
@@ -123,7 +124,7 @@ class ShiroRealmAdapter extends AuthorizingRealm {
     protected Object getAuthenticationCacheKey(PrincipalCollection principals) {
         Object authenticationCacheKey = super.getAuthenticationCacheKey(principals);
         if (authenticationCacheKey instanceof PrincipalProvider) {
-            return ((PrincipalProvider) authenticationCacheKey).get();
+            return ((PrincipalProvider<?>) authenticationCacheKey).get();
         } else {
             return authenticationCacheKey;
         }
@@ -133,7 +134,7 @@ class ShiroRealmAdapter extends AuthorizingRealm {
     protected Object getAuthorizationCacheKey(PrincipalCollection principals) {
         Object primaryPrincipal = principals.getPrimaryPrincipal();
         if (primaryPrincipal instanceof PrincipalProvider) {
-            return ((PrincipalProvider) primaryPrincipal).get();
+            return ((PrincipalProvider<?>) primaryPrincipal).get();
         } else {
             return primaryPrincipal;
         }
@@ -155,6 +156,11 @@ class ShiroRealmAdapter extends AuthorizingRealm {
 
     void setRealm(Realm realm) {
         this.realm = realm;
+    }
+
+    @Override
+    public String toString() {
+        return realm.name();
     }
 
     private org.seedstack.seed.security.AuthenticationToken convertToken(AuthenticationToken token) {

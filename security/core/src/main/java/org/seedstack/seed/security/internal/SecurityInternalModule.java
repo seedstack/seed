@@ -52,7 +52,7 @@ class SecurityInternalModule extends PrivateModule {
     private void bindPrincipalCustomizers() {
         Multibinder<PrincipalCustomizer> principalCustomizers = Multibinder.newSetBinder(binder(),
                 PrincipalCustomizer.class);
-        for (Class<? extends PrincipalCustomizer> customizerClass : securityConfigurer.getPrincipalCustomizers()) {
+        for (Class<? extends PrincipalCustomizer<?>> customizerClass : securityConfigurer.getPrincipalCustomizers()) {
             principalCustomizers.addBinding().to(customizerClass);
         }
         expose(new PrincipalCustomizersTypeLiteral());

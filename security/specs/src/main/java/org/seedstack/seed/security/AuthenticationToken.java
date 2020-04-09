@@ -5,6 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.security;
 
 import java.io.Serializable;
@@ -26,6 +27,12 @@ import java.io.Serializable;
  * sufficient for your needs.
  */
 public interface AuthenticationToken extends Serializable {
+    /**
+     * @return the name of the token type
+     */
+    default String name() {
+        return getClass().getSimpleName();
+    }
 
     /**
      * Returns the account identity submitted during the authentication process.

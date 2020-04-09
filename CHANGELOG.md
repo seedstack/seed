@@ -6,6 +6,7 @@
 * [chg] Moved `web.server.sessions` configuration options to `web.sessions`. 
 * [chg] Default session timeout with embedded servers is now defined by the `web.server.` configuration options to `web.sessions`. 
 * [chg] Renamed `web.staticResources` configuration options to `web.static`.
+* [chg] Better error messages for security realm exceptions.
 * [fix] Ensure that JVM-wide base configuration is refreshed between tests.
 * [fix] With Jersey 2, allow JAX-RS components to be instantiated without Guice as a fallback.
 * [fix] Default session timeout for Undertow was incorrect. It is now 20 minutes.

@@ -5,9 +5,9 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.web.security.internal;
 
-import java.io.IOException;
 import java.security.cert.X509Certificate;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
@@ -18,11 +18,14 @@ import org.apache.shiro.subject.Subject;
 import org.apache.shiro.web.filter.authc.AuthenticatingFilter;
 import org.seedstack.seed.security.X509CertificateToken;
 import org.seedstack.seed.security.internal.realms.AuthenticationTokenWrapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A security filter that extracts the certificate from the request for later use
  */
 public class X509CertificateFilter extends AuthenticatingFilter {
+    private static final Logger LOGGER = LoggerFactory.getLogger(X509CertificateFilter.class);
     private static final String OPTIONAL = "optional";
     private boolean optional;
 
@@ -45,14 +48,14 @@ public class X509CertificateFilter extends AuthenticatingFilter {
             ServletResponse response) {
         if (optional) {
             return true;
+        } else {
+            WebSecurityPlugin.sendErrorToClient((HttpServletResponse) response,
+                    LOGGER,
+                    HttpServletResponse.SC_UNAUTHORIZED,
+                    "A valid certificate is required to gain access",
+                    e);
+            return false;
         }
-        try {
-            ((HttpServletResponse) response).sendError(HttpServletResponse.SC_UNAUTHORIZED,
-                    "A valid certificate is required to gain access");
-        } catch (IOException e1) {
-            throw new IllegalStateException(e1);
-        }
-        return false;
     }
 
     @Override

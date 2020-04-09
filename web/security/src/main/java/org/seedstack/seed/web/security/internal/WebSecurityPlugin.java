@@ -5,6 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.web.security.internal;
 
 import com.google.common.collect.Lists;
@@ -13,11 +14,14 @@ import io.nuun.kernel.api.plugin.InitState;
 import io.nuun.kernel.api.plugin.PluginException;
 import io.nuun.kernel.api.plugin.context.InitContext;
 import io.nuun.kernel.api.plugin.request.ClasspathScanRequest;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.UUID;
 import javax.servlet.Filter;
 import javax.servlet.ServletContext;
+import javax.servlet.http.HttpServletResponse;
 import org.apache.shiro.guice.web.GuiceShiroFilter;
 import org.seedstack.seed.core.SeedRuntime;
 import org.seedstack.seed.core.internal.AbstractSeedPlugin;
@@ -31,6 +35,7 @@ import org.seedstack.seed.web.spi.ListenerDefinition;
 import org.seedstack.seed.web.spi.SeedFilterPriority;
 import org.seedstack.seed.web.spi.ServletDefinition;
 import org.seedstack.seed.web.spi.WebProvider;
+import org.slf4j.Logger;
 
 /**
  * This plugins adds web security.
@@ -115,5 +120,26 @@ public class WebSecurityPlugin extends AbstractSeedPlugin implements SecurityPro
     @Override
     public List<ListenerDefinition> listeners() {
         return null;
+    }
+
+    static void sendErrorToClient(HttpServletResponse resp, Logger logger, int code, String message, Exception e) {
+        String uuid = UUID.randomUUID().toString();
+        try {
+            resp.sendError(code, message + " [" + uuid + "]");
+            if (e != null) {
+                logger.warn("Sent {} HTTP error to client [{}]: {}. Server-side exception message: {}",
+                        code,
+                        uuid,
+                        message,
+                        e.getMessage());
+            } else {
+                logger.warn("Sent {} HTTP error to client [{}]: {}. No server-side exception occurred.",
+                        code,
+                        uuid,
+                        message);
+            }
+        } catch (IOException e1) {
+            logger.warn("Unable to send {} error to client [{}]: {}", code, uuid, message, e1);
+        }
     }
 }

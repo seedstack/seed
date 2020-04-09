@@ -5,6 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.security.internal;
 
 import java.util.ArrayList;
@@ -22,8 +23,11 @@ import org.seedstack.seed.security.internal.authorization.ConfigurationRolePermi
 import org.seedstack.seed.security.internal.authorization.EmptyRolePermissionResolver;
 import org.seedstack.seed.security.internal.authorization.SameRoleMapping;
 import org.seedstack.seed.security.internal.realms.ConfigurationRealm;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 class SecurityConfigurer {
+    private static final Logger LOGGER = LoggerFactory.getLogger(SecurityConfigurer.class);
     private static final Class<? extends Realm> DEFAULT_REALM = ConfigurationRealm.class;
     private static final Class<? extends RoleMapping> DEFAULT_ROLE_MAPPING = SameRoleMapping.class;
     private static final Class<? extends RoleMapping> CONFIGURATION_ROLE_MAPPING = ConfigurationRoleMapping.class;
@@ -69,6 +73,7 @@ class SecurityConfigurer {
             confRealm.setRolePermissionResolverClass(findRolePermissionResolver(null, confRealm));
             confRealm.setRoleMappingClass(findRoleMapping(null, confRealm));
             configurationRealms.add(confRealm);
+            LOGGER.info("No security realm configured, using ConfigurationRealm by default");
         } else {
             for (SecurityConfig.RealmConfig realmConfig : securityConfig.getRealms()) {
                 Class<? extends Realm> realmClass = (Class<? extends Realm>) findClass(realmConfig.getName(),
@@ -81,6 +86,7 @@ class SecurityConfigurer {
                 confRealm.setRoleMappingClass(findRoleMapping(realmConfig, confRealm));
                 configurationRealms.add(confRealm);
             }
+            LOGGER.info("Configured security realms: {}", configurationRealms);
         }
     }
 
