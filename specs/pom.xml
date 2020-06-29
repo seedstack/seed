@@ -21,8 +21,13 @@
 
     <dependencies>
         <dependency>
-            <groupId>io.nuun</groupId>
+            <groupId>io.nuun.kernel</groupId>
             <artifactId>kernel-specs</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>javax.inject</groupId>
+            <artifactId>javax.inject</artifactId>
+            <version>${javax.inject.version}</version>
         </dependency>
         <dependency>
             <groupId>org.seedstack.shed</groupId>

@@ -5,6 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.security.internal;
 
 import static org.junit.Assert.assertTrue;
@@ -56,7 +57,7 @@ public class SecurityProviderTest {
         Collection<Class<?>> realms = new ArrayList<>();
         realms.add(ConfigurationRealm.class);
         types.put(Realm.class, realms);
-        when(initContext.scannedSubTypesByAncestorClass()).thenReturn(types);
+        when(initContext.scannedSubTypesByParentClass()).thenReturn(types);
 
         ApplicationProvider applicationProvider = mock(ApplicationProvider.class);
         SecurityConfig securityConfig = mock(SecurityConfig.class);

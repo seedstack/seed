@@ -23,7 +23,7 @@
     <packaging>pom</packaging>
 
     <properties>
-        <nuun-kernel.version>1.0.M9</nuun-kernel.version>
+        <nuun-kernel.version>1.0.M10-SNAPSHOT</nuun-kernel.version>
         <javassist.version>3.24.1-GA</javassist.version>
         <shed.version>1.1.6</shed.version>
         <coffig.version>3.1.5</coffig.version>
@@ -60,7 +60,7 @@
     <dependencyManagement>
         <dependencies>
             <dependency>
-                <groupId>io.nuun</groupId>
+                <groupId>io.nuun.kernel</groupId>
                 <artifactId>kernel-specs</artifactId>
                 <version>${nuun-kernel.version}</version>
                 <exclusions>
@@ -75,7 +75,7 @@
                 </exclusions>
             </dependency>
             <dependency>
-                <groupId>io.nuun</groupId>
+                <groupId>io.nuun.kernel</groupId>
                 <artifactId>kernel-core</artifactId>
                 <version>${nuun-kernel.version}</version>
                 <exclusions>

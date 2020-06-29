@@ -5,6 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.rest.internal;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -16,6 +17,7 @@ import io.nuun.kernel.api.plugin.request.ClasspathScanRequest;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Predicate;
 import javax.servlet.ServletContext;
 import javax.ws.rs.Path;
 import javax.ws.rs.ext.Provider;
@@ -25,7 +27,6 @@ import mockit.Injectable;
 import mockit.Mocked;
 import mockit.Tested;
 import org.junit.Test;
-import org.kametic.specifications.Specification;
 import org.seedstack.coffig.Coffig;
 import org.seedstack.coffig.provider.CompositeProvider;
 import org.seedstack.seed.Application;
@@ -58,39 +59,38 @@ public class RestPluginTest {
 
     @Test
     public void testRequestScanForJaxRsClasses() {
-        assertScanSpecification(JaxRsProviderSpecification.INSTANCE);
-        assertScanSpecification(JaxRsResourceSpecification.INSTANCE);
+        assertScanPredicate(JaxRsProviderPredicate.INSTANCE);
+        assertScanPredicate(JaxRsResourcePredicate.INSTANCE);
     }
 
-    private void assertScanSpecification(Specification<Class<?>> specification) {
-        boolean scanSpecification = false;
+    private void assertScanPredicate(Predicate<Class<?>> predicate) {
+        boolean scanPredicate = false;
         for (ClasspathScanRequest classpathScanRequest : underTest.classpathScanRequests()) {
-            if (classpathScanRequest.specification == specification) {
-                scanSpecification = true;
+            if (classpathScanRequest.classPredicate == predicate) {
+                scanPredicate = true;
                 break;
             }
         }
-        assertThat(scanSpecification).isTrue();
+        assertThat(scanPredicate).isTrue();
     }
 
     @Test
     public void testWithoutServletContext() {
         givenConfiguration();
         givenSpecifications(
-                new Pair<>(JaxRsResourceSpecification.INSTANCE, MyResource.class),
-                new Pair<>(JaxRsProviderSpecification.INSTANCE, MyProvider.class)
+                new Pair<>(JaxRsResourcePredicate.INSTANCE, MyResource.class),
+                new Pair<>(JaxRsProviderPredicate.INSTANCE, MyProvider.class)
         );
         InitState init = underTest.init(initContext);
         assertThat(init).isEqualTo(InitState.INITIALIZED);
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void testInitGetJaxRsClasses() {
         givenConfiguration();
         givenSpecifications(
-                new Pair(JaxRsResourceSpecification.INSTANCE, MyResource.class),
-                new Pair(JaxRsProviderSpecification.INSTANCE, MyProvider.class)
+                new Pair<>(JaxRsResourcePredicate.INSTANCE, MyResource.class),
+                new Pair<>(JaxRsProviderPredicate.INSTANCE, MyProvider.class)
         );
 
         underTest.provideContainerContext(SeedRuntime.builder()
@@ -107,13 +107,13 @@ public class RestPluginTest {
     }
 
     @SafeVarargs
-    private final void givenSpecifications(Pair<Specification<Class<?>>, Class<?>>... specEntries) {
-        final Map<Specification, Collection<Class<?>>> specsMap = new HashMap<>();
-        for (Pair<Specification<Class<?>>, Class<?>> specEntry : specEntries) {
+    private final void givenSpecifications(Pair<Predicate<Class<?>>, Class<?>>... specEntries) {
+        final Map<Predicate<Class<?>>, Collection<Class<?>>> specsMap = new HashMap<>();
+        for (Pair<Predicate<Class<?>>, Class<?>> specEntry : specEntries) {
             specsMap.put(specEntry.getValue0(), Lists.newArrayList(specEntry.getValue1()));
         }
         new Expectations() {{
-            initContext.scannedTypesBySpecification();
+            initContext.scannedTypesByPredicate();
             result = specsMap;
         }};
     }
@@ -146,7 +146,7 @@ public class RestPluginTest {
     private static class MyProvider {
     }
 
-    class Pair<T1, T2> {
+    static class Pair<T1, T2> {
         private final T1 t1;
         private final T2 t2;
 

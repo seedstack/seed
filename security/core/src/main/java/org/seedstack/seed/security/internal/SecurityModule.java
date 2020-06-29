@@ -5,6 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.security.internal;
 
 import com.google.inject.AbstractModule;
@@ -17,7 +18,6 @@ import com.google.inject.spi.Elements;
 import com.google.inject.spi.PrivateElements;
 import java.util.Collection;
 import java.util.Map;
-import org.apache.commons.lang.ArrayUtils;
 import org.apache.shiro.event.EventBus;
 import org.apache.shiro.mgt.SecurityManager;
 import org.seedstack.seed.SeedException;
@@ -93,18 +93,27 @@ class SecurityModule extends AbstractModule {
         @Override
         protected void configure() {
             for (Element element : privateElements.getElements()) {
-                if (element instanceof Binding && ArrayUtils.contains(excludedKeys, ((Binding) element).getKey())) {
+                if (element instanceof Binding && isExcluded(((Binding<?>) element).getKey())) {
                     continue;
                 }
                 element.applyTo(binder());
             }
 
             for (Key<?> exposedKey : privateElements.getExposedKeys()) {
-                if (ArrayUtils.contains(excludedKeys, exposedKey)) {
+                if (isExcluded(exposedKey)) {
                     continue;
                 }
                 expose(exposedKey);
             }
+        }
+
+        private static boolean isExcluded(Key<?> valueToFind) {
+            for (Key<?> key : excludedKeys) {
+                if (valueToFind != null && valueToFind.equals(key)) {
+                    return true;
+                }
+            }
+            return false;
         }
     }
 }

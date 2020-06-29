@@ -5,11 +5,12 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.rest.internal;
 
 import java.lang.reflect.Modifier;
+import java.util.function.Predicate;
 import javax.ws.rs.Path;
-import org.kametic.specifications.AbstractSpecification;
 import org.seedstack.shed.reflect.AnnotationPredicates;
 import org.seedstack.shed.reflect.ClassPredicates;
 
@@ -28,15 +29,15 @@ import org.seedstack.shed.reflect.ClassPredicates;
  * class or interface annotations is not supported.</b>
  * </blockquote>
  */
-class JaxRsResourceSpecification extends AbstractSpecification<Class<?>> {
-    static final JaxRsResourceSpecification INSTANCE = new JaxRsResourceSpecification();
+class JaxRsResourcePredicate implements Predicate<Class<?>> {
+    static final JaxRsResourcePredicate INSTANCE = new JaxRsResourcePredicate();
 
-    private JaxRsResourceSpecification() {
+    private JaxRsResourcePredicate() {
         // not instantiation allowed
     }
 
     @Override
-    public boolean isSatisfiedBy(Class<?> candidate) {
+    public boolean test(Class<?> candidate) {
         return ClassPredicates
                 .classModifierIs(Modifier.ABSTRACT).negate()
                 .and(AnnotationPredicates.elementAnnotatedWith(Path.class, false))

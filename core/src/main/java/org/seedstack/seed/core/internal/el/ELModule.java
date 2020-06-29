@@ -5,6 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.core.internal.el;
 
 import com.google.common.collect.ImmutableMap;
@@ -19,9 +20,9 @@ import org.seedstack.seed.el.spi.ELHandler;
 
 class ELModule extends AbstractModule {
     private final ExpressionFactory expressionFactory;
-    private final Map<Class<? extends Annotation>, Class<ELHandler>> elMap;
+    private final Map<Class<? extends Annotation>, Class<ELHandler<?>>> elMap;
 
-    ELModule(ExpressionFactory expressionFactory, Map<Class<? extends Annotation>, Class<ELHandler>> elMap) {
+    ELModule(ExpressionFactory expressionFactory, Map<Class<? extends Annotation>, Class<ELHandler<?>>> elMap) {
         this.expressionFactory = expressionFactory;
         this.elMap = elMap;
     }
@@ -32,7 +33,7 @@ class ELModule extends AbstractModule {
         bind(ELService.class).to(ELServiceInternal.class);
         bind(ELContextBuilder.class).to(ELContextBuilderImpl.class);
 
-        for (Class<ELHandler> elHandlerClass : elMap.values()) {
+        for (Class<ELHandler<?>> elHandlerClass : elMap.values()) {
             bind(elHandlerClass);
         }
 
@@ -41,6 +42,6 @@ class ELModule extends AbstractModule {
     }
 
     private static class AnnotationHandlersTypeLiteral
-            extends TypeLiteral<Map<Class<? extends Annotation>, Class<ELHandler>>> {
+            extends TypeLiteral<Map<Class<? extends Annotation>, Class<ELHandler<?>>>> {
     }
 }

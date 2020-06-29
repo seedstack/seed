@@ -14,21 +14,21 @@ import org.assertj.core.api.Assertions;
 import org.junit.Test;
 
 @Ignore // Tells nuun to not scan the test class
-public class JaxRsResourceSpecificationTest {
-    private JaxRsResourceSpecification underTest = JaxRsResourceSpecification.INSTANCE;
+public class JaxRsResourcePredicateTest {
+    private JaxRsResourcePredicate underTest = JaxRsResourcePredicate.INSTANCE;
 
     @Test
     public void valid_resource_specification() {
-        Assertions.assertThat(underTest.isSatisfiedBy(AbstractResource.class)).isFalse();
+        Assertions.assertThat(underTest.test(AbstractResource.class)).isFalse();
 
-        Assertions.assertThat(underTest.isSatisfiedBy(ValidResource1.class)).isTrue();
-        Assertions.assertThat(underTest.isSatisfiedBy(ValidResource2.class)).isTrue();
-        Assertions.assertThat(underTest.isSatisfiedBy(ValidResource3.class)).isTrue();
+        Assertions.assertThat(underTest.test(ValidResource1.class)).isTrue();
+        Assertions.assertThat(underTest.test(ValidResource2.class)).isTrue();
+        Assertions.assertThat(underTest.test(ValidResource3.class)).isTrue();
 
-        Assertions.assertThat(underTest.isSatisfiedBy(InvalidResource1.class)).isFalse();
-        Assertions.assertThat(underTest.isSatisfiedBy(InvalidResource2.class)).isFalse();
-        Assertions.assertThat(underTest.isSatisfiedBy(InvalidResource3.class)).isFalse();
-        Assertions.assertThat(underTest.isSatisfiedBy(InvalidResource4.class)).isFalse();
+        Assertions.assertThat(underTest.test(InvalidResource1.class)).isFalse();
+        Assertions.assertThat(underTest.test(InvalidResource2.class)).isFalse();
+        Assertions.assertThat(underTest.test(InvalidResource3.class)).isFalse();
+        Assertions.assertThat(underTest.test(InvalidResource4.class)).isFalse();
     }
 
     interface InterfaceResource {

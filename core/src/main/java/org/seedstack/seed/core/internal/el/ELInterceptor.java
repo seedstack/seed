@@ -5,6 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.core.internal.el;
 
 import com.google.inject.Injector;
@@ -21,21 +22,14 @@ import org.seedstack.seed.el.ELService;
 import org.seedstack.seed.el.spi.ELHandler;
 
 class ELInterceptor implements MethodInterceptor {
-
-    private Class<? extends Annotation> annotationClass;
-
-    private ELBinder.ExecutionPolicy policy;
-
-    // Get a map of annotation handler
+    private final Class<? extends Annotation> annotationClass;
+    private final ELBinder.ExecutionPolicy policy;
     @Inject
-    private Map<Class<? extends Annotation>, Class<ELHandler>> elMap;
-
+    private Map<Class<? extends Annotation>, Class<ELHandler<?>>> elMap;
     @Inject
     private ELService elService;
-
     @Inject
     private ELContextBuilder elContextBuilder;
-
     @Inject
     private Injector injector;
 
@@ -46,8 +40,8 @@ class ELInterceptor implements MethodInterceptor {
 
     @Override
     public Object invoke(MethodInvocation invocation) throws Throwable {
-        Class<ELHandler> handlerClass = elMap.get(this.annotationClass);
-        ELHandler ELHandler = injector.getInstance(handlerClass);
+        Class<ELHandler<?>> handlerClass = elMap.get(this.annotationClass);
+        ELHandler<?> ELHandler = injector.getInstance(handlerClass);
 
         // The policy defines if the EL is evaluated before the method, after or both.
 

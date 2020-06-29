@@ -5,6 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.core.internal;
 
 import static org.seedstack.shed.misc.PriorityUtils.sortByPriority;
@@ -21,9 +22,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import javax.inject.Provider;
-import org.kametic.specifications.Specification;
 import org.seedstack.seed.SeedInterceptor;
-import org.seedstack.seed.core.internal.utils.SpecificationBuilder;
 import org.seedstack.shed.misc.PriorityUtils;
 import org.seedstack.shed.reflect.Classes;
 import org.slf4j.Logger;
@@ -39,12 +38,6 @@ public class CorePlugin extends AbstractSeedPlugin {
     static final String AUTODETECT_BINDINGS_KERNEL_PARAM = "seedstack.autodetectBindings";
     static final String AUTODETECT_INTERCEPTORS_KERNEL_PARAM = "seedstack.autodetectInterceptors";
     private static final String SEEDSTACK_PACKAGE = "org.seedstack";
-    private static final Specification<Class<?>> installSpecification = new SpecificationBuilder<>(
-            InstallResolver.INSTANCE).build();
-    private static final Specification<Class<?>> bindSpecification = new SpecificationBuilder<>(
-            BindResolver.INSTANCE).build();
-    private static final Specification<Class<?>> providerSpecification = new SpecificationBuilder<>(
-            ProvideResolver.INSTANCE).build();
     private final Set<Class<? extends Module>> modules = new HashSet<>();
     private final Set<Class<? extends Module>> overridingModules = new HashSet<>();
     private final List<SeedInterceptor> methodInterceptors = new ArrayList<>();
@@ -64,9 +57,9 @@ public class CorePlugin extends AbstractSeedPlugin {
     @Override
     public Collection<ClasspathScanRequest> classpathScanRequests() {
         return classpathScanRequestBuilder()
-                .specification(installSpecification)
-                .specification(bindSpecification)
-                .specification(providerSpecification)
+                .predicate(InstallResolver.INSTANCE)
+                .predicate(BindResolver.INSTANCE)
+                .predicate(ProvideResolver.INSTANCE)
                 .subtypeOf(SeedInterceptor.class)
                 .build();
     }
@@ -91,7 +84,7 @@ public class CorePlugin extends AbstractSeedPlugin {
 
     @SuppressWarnings("unchecked")
     private void detectModules(InitContext initContext) {
-        initContext.scannedTypesBySpecification().get(installSpecification)
+        initContext.scannedTypesByPredicate().get(InstallResolver.INSTANCE)
                 .stream()
                 .filter(Module.class::isAssignableFrom)
                 .forEach(candidate -> InstallResolver.INSTANCE.apply(candidate).ifPresent(annotation -> {
@@ -107,7 +100,7 @@ public class CorePlugin extends AbstractSeedPlugin {
 
     @SuppressWarnings("unchecked")
     private void detectBindings(InitContext initContext) {
-        initContext.scannedTypesBySpecification().get(bindSpecification)
+        initContext.scannedTypesByPredicate().get(BindResolver.INSTANCE)
                 .forEach(candidate -> BindResolver.INSTANCE.apply(candidate).ifPresent(annotation -> {
                     if (annotation.override()) {
                         overridingBindings.add(new BindingDefinition<>(
@@ -127,7 +120,7 @@ public class CorePlugin extends AbstractSeedPlugin {
 
     @SuppressWarnings("unchecked")
     private void detectProviders(InitContext initContext) {
-        initContext.scannedTypesBySpecification().get(providerSpecification)
+        initContext.scannedTypesByPredicate().get(ProvideResolver.INSTANCE)
                 .forEach(candidate -> ProvideResolver.INSTANCE.apply(candidate).ifPresent(annotation -> {
                     if (annotation.override()) {
                         overridingBindings.add(new ProviderDefinition<>((Class<Provider<Object>>) candidate));
