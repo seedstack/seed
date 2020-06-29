@@ -5,10 +5,11 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.rest.internal;
 
 import java.lang.reflect.Method;
-import org.kametic.specifications.AbstractSpecification;
+import java.util.function.Predicate;
 import org.seedstack.seed.rest.Rel;
 
 /**
@@ -22,16 +23,16 @@ import org.seedstack.seed.rest.Rel;
  * <li>If the annotated is not found on the method, the declaring class is checked.</li>
  * </ol>
  */
-class JsonHomeSpecification extends AbstractSpecification<Method> {
-    static JsonHomeSpecification INSTANCE = new JsonHomeSpecification();
+class JsonHomePredicate implements Predicate<Method> {
+    static JsonHomePredicate INSTANCE = new JsonHomePredicate();
 
-    private JsonHomeSpecification() {
+    private JsonHomePredicate() {
         // no instantiation allowed
     }
 
     @Override
-    public boolean isSatisfiedBy(Method method) {
-        if (!HttpMethodSpecification.INSTANCE.isSatisfiedBy(method)) {
+    public boolean test(Method method) {
+        if (!HttpMethodPredicate.INSTANCE.test(method)) {
             return false;
         }
         Rel rootRel = method.getDeclaringClass().getAnnotation(Rel.class);

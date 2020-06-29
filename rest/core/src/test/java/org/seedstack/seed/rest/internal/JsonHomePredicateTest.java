@@ -14,22 +14,22 @@ import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.seedstack.seed.rest.Rel;
 
-public class JsonHomeSpecificationTest {
-    private JsonHomeSpecification underTest = JsonHomeSpecification.INSTANCE;
+public class JsonHomePredicateTest {
+    private JsonHomePredicate underTest = JsonHomePredicate.INSTANCE;
 
     @Test
     public void valid_json_entry_point_specification() throws NoSuchMethodException {
-        Assertions.assertThat(underTest.isSatisfiedBy(ValidResource1.class.getMethod("post"))).isTrue();
-        Assertions.assertThat(underTest.isSatisfiedBy(ValidResource2.class.getMethod("post"))).isTrue();
+        Assertions.assertThat(underTest.test(ValidResource1.class.getMethod("post"))).isTrue();
+        Assertions.assertThat(underTest.test(ValidResource2.class.getMethod("post"))).isTrue();
 
-        Assertions.assertThat(underTest.isSatisfiedBy(InvalidResource1.class.getMethod("post"))).isFalse();
-        Assertions.assertThat(underTest.isSatisfiedBy(InvalidResource2.class.getMethod("post"))).isFalse();
+        Assertions.assertThat(underTest.test(InvalidResource1.class.getMethod("post"))).isFalse();
+        Assertions.assertThat(underTest.test(InvalidResource2.class.getMethod("post"))).isFalse();
     }
 
     @Test
     @org.junit.Ignore
     public void valid_json_home_on_interface() throws NoSuchMethodException {
-        Assertions.assertThat(underTest.isSatisfiedBy(ValidResource3.class.getMethod("post"))).isTrue();
+        Assertions.assertThat(underTest.test(ValidResource3.class.getMethod("post"))).isTrue();
     }
 
     static interface InterfaceResource1 {

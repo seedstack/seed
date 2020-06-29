@@ -23,6 +23,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import java.util.function.Consumer;
 import javax.inject.Inject;
 import org.seedstack.seed.Ignore;
 import org.seedstack.seed.LifecycleListener;
@@ -71,21 +72,15 @@ public class LifecyclePlugin extends AbstractSeedPlugin implements LifecycleMana
     }
 
     @Override
-    public void started() {
-        List<? extends LifecycleListener> sortedLifecycleListeners = new ArrayList<>(this.lifecycleListeners);
-        sortByPriority(sortedLifecycleListeners, PriorityUtils::priorityOfClassOf);
+    public void starting() {
+        // Lifecycle listeners starting()
+        invokeLifecycleListeners("starting", LifecycleListener::starting);
+    }
 
-        for (LifecycleListener lifecycleListener : sortedLifecycleListeners) {
-            try {
-                LOGGER.info("Invoking lifecycle method: {}.started()", lifecycleListener.getClass().getName());
-                lifecycleListener.started();
-            } catch (Exception e) {
-                throw SeedException
-                        .wrap(e, CoreErrorCode.ERROR_IN_LIFECYCLE_LISTENER)
-                        .put("lifecycleListenerClass", lifecycleListener.getClass().getCanonicalName())
-                        .put("phase", "start");
-            }
-        }
+    @Override
+    public void started() {
+        // Lifecycle listeners started()
+        invokeLifecycleListeners("started", LifecycleListener::started);
     }
 
     @Override
@@ -97,15 +92,28 @@ public class LifecyclePlugin extends AbstractSeedPlugin implements LifecycleMana
         preDestroyMethods.forEach(DelayedCall::proceed);
 
         // Lifecycle listeners stopping()
+        invokeLifecycleListeners("stopping", LifecycleListener::stopping);
+    }
+
+    @Override
+    public void stopped() {
+        // Lifecycle listeners stopping()
+        invokeLifecycleListeners("stopped", LifecycleListener::stopped);
+    }
+
+    private void invokeLifecycleListeners(String phase, Consumer<LifecycleListener> consumer) {
         List<? extends LifecycleListener> sortedLifecycleListeners = new ArrayList<>(this.lifecycleListeners);
         sortByPriority(sortedLifecycleListeners, PriorityUtils::priorityOfClassOf);
+
         for (LifecycleListener lifecycleListener : sortedLifecycleListeners) {
             try {
-                LOGGER.info("Invoking lifecycle method: {}.stopping()", lifecycleListener.getClass().getName());
-                lifecycleListener.stopping();
+                LOGGER.info("Invoking lifecycle method: {}.{}()", lifecycleListener.getClass().getName(), phase);
+                consumer.accept(lifecycleListener);
             } catch (Exception e) {
-                LOGGER.error("An exception occurred in lifecycle method: {}.stopping()",
-                        lifecycleListener.getClass().getName(), e);
+                throw SeedException
+                        .wrap(e, CoreErrorCode.ERROR_IN_LIFECYCLE_LISTENER)
+                        .put("lifecycleListenerClass", lifecycleListener.getClass().getCanonicalName())
+                        .put("phase", phase);
             }
         }
     }

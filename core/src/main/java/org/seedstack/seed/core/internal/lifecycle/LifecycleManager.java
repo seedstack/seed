@@ -11,9 +11,13 @@ package org.seedstack.seed.core.internal.lifecycle;
 import java.lang.reflect.Method;
 
 interface LifecycleManager {
+    void starting();
+
     void started();
 
     void stopping();
+
+    void stopped();
 
     void registerPreDestroy(Object o, Method m);
 

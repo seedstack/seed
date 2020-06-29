@@ -5,6 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.security.internal;
 
 import static org.seedstack.shed.misc.PriorityUtils.sortByPriority;
@@ -45,7 +46,6 @@ public class SecurityPlugin extends AbstractSeedPlugin {
     private final Set<SecurityProvider> securityProviders = new HashSet<>();
     private final List<Class<? extends CrudActionResolver>> crudActionResolvers = new ArrayList<>();
     private SecurityConfigurer securityConfigurer;
-    private boolean elAvailable;
 
     @Override
     public String name() {
@@ -54,18 +54,18 @@ public class SecurityPlugin extends AbstractSeedPlugin {
 
     @Override
     public Collection<Class<?>> dependencies() {
-        return Lists.newArrayList(ELPlugin.class, SecurityProvider.class);
+        return Lists.newArrayList(SecurityProvider.class);
     }
 
     @Override
     public Collection<ClasspathScanRequest> classpathScanRequests() {
         return classpathScanRequestBuilder()
-                .descendentTypeOf(Realm.class)
-                .descendentTypeOf(RoleMapping.class)
-                .descendentTypeOf(RolePermissionResolver.class)
-                .descendentTypeOf(Scope.class)
-                .descendentTypeOf(PrincipalCustomizer.class)
-                .descendentTypeOf(CrudActionResolver.class)
+                .subtypeOf(Realm.class)
+                .subtypeOf(RoleMapping.class)
+                .subtypeOf(RolePermissionResolver.class)
+                .subtypeOf(Scope.class)
+                .subtypeOf(PrincipalCustomizer.class)
+                .subtypeOf(CrudActionResolver.class)
                 .build();
     }
 
@@ -73,15 +73,12 @@ public class SecurityPlugin extends AbstractSeedPlugin {
     @SuppressWarnings({"unchecked"})
     public InitState initialize(InitContext initContext) {
         SecurityConfig securityConfig = getConfiguration(SecurityConfig.class);
-        Map<Class<?>, Collection<Class<?>>> scannedClasses = initContext.scannedSubTypesByAncestorClass();
+        Map<Class<?>, Collection<Class<?>>> scannedClasses = initContext.scannedSubTypesByParentClass();
 
         configureScopes(scannedClasses.get(Scope.class));
         configureCrudActionResolvers(scannedClasses.get(CrudActionResolver.class));
 
         securityProviders.addAll(initContext.dependencies(SecurityProvider.class));
-
-        elAvailable = initContext.dependency(ELPlugin.class).isFunctionMappingAvailable();
-
         securityConfigurer = new SecurityConfigurer(
                 securityConfig,
                 scannedClasses,
@@ -149,7 +146,7 @@ public class SecurityPlugin extends AbstractSeedPlugin {
         return new SecurityModule(
                 securityConfigurer,
                 scopeClasses,
-                elAvailable,
+                ELPlugin.isFunctionMappingAvailable(),
                 securityProviders,
                 crudActionResolvers);
     }

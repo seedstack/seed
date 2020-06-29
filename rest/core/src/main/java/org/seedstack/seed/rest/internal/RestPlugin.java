@@ -5,6 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.rest.internal;
 
 import com.fasterxml.jackson.jaxrs.base.JsonMappingExceptionMapper;
@@ -21,10 +22,10 @@ import java.util.HashSet;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Predicate;
 import javax.servlet.ServletContext;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Variant;
-import org.kametic.specifications.Specification;
 import org.seedstack.seed.core.SeedRuntime;
 import org.seedstack.seed.core.internal.AbstractSeedPlugin;
 import org.seedstack.seed.core.internal.init.ValidationManager;
@@ -70,19 +71,19 @@ public class RestPlugin extends AbstractSeedPlugin implements RestProvider {
     @Override
     public Collection<ClasspathScanRequest> classpathScanRequests() {
         return classpathScanRequestBuilder()
-                .specification(JaxRsResourceSpecification.INSTANCE)
-                .specification(JaxRsProviderSpecification.INSTANCE)
+                .predicate(JaxRsResourcePredicate.INSTANCE)
+                .predicate(JaxRsProviderPredicate.INSTANCE)
                 .build();
     }
 
     @Override
     public InitState initialize(InitContext initContext) {
         ServletContext servletContext = seedRuntime.contextAs(ServletContext.class);
-        Map<Specification, Collection<Class<?>>> scannedClasses = initContext.scannedTypesBySpecification();
+        Map<Predicate<Class<?>>, Collection<Class<?>>> scannedClasses = initContext.scannedTypesByPredicate();
 
         restConfig = getConfiguration(RestConfig.class);
-        resources = scannedClasses.get(JaxRsResourceSpecification.INSTANCE);
-        providers = scannedClasses.get(JaxRsProviderSpecification.INSTANCE);
+        resources = scannedClasses.get(JaxRsResourcePredicate.INSTANCE);
+        providers = scannedClasses.get(JaxRsProviderPredicate.INSTANCE);
 
         if (servletContext != null) {
             addJacksonProviders(providers);

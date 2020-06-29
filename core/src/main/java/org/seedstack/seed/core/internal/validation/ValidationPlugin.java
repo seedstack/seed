@@ -5,6 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.core.internal.validation;
 
 import com.google.inject.Injector;
@@ -42,7 +43,7 @@ public class ValidationPlugin extends AbstractSeedPlugin {
     public Collection<ClasspathScanRequest> classpathScanRequests() {
         if (isValidationEnabled()) {
             return classpathScanRequestBuilder()
-                    .specification(ConstraintValidatorSpecification.INSTANCE)
+                    .predicate(ConstraintValidatorPredicate.INSTANCE)
                     .build();
         } else {
             return new ArrayList<>();
@@ -52,9 +53,8 @@ public class ValidationPlugin extends AbstractSeedPlugin {
     @Override
     protected InitState initialize(InitContext initContext) {
         if (isValidationEnabled()) {
-            Collection<Class<?>> constraintValidatorCandidates = initContext.scannedTypesBySpecification()
-                    .get(ConstraintValidatorSpecification.INSTANCE);
-            for (Class<?> candidate : constraintValidatorCandidates) {
+            for (Class<?> candidate : initContext.scannedTypesByPredicate()
+                    .get(ConstraintValidatorPredicate.INSTANCE)) {
                 if (ConstraintValidator.class.isAssignableFrom(candidate)) {
                     LOGGER.debug("Detected constraint validator {}", candidate.getCanonicalName());
                     constraintValidators.add(candidate.asSubclass(ConstraintValidator.class));

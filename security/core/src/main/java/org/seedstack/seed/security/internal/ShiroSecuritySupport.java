@@ -5,6 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.security.internal;
 
 import java.util.ArrayList;
@@ -14,7 +15,6 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import javax.inject.Inject;
-import org.apache.commons.lang.ArrayUtils;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.AuthorizationInfo;
 import org.apache.shiro.mgt.SecurityManager;
@@ -104,7 +104,7 @@ class ShiroSecuritySupport implements SecuritySupport {
 
     @Override
     public boolean isPermitted(String permission, Scope... scopes) {
-        if (ArrayUtils.isEmpty(scopes)) {
+        if (scopes == null || scopes.length == 0) {
             return isPermitted(permission);
         }
         boolean isPermitted = true;
@@ -121,8 +121,12 @@ class ShiroSecuritySupport implements SecuritySupport {
 
     @Override
     public boolean isPermittedAny(String... permissions) {
-        boolean[] bools = SecurityUtils.getSubject().isPermitted(permissions);
-        return ArrayUtils.contains(bools, true);
+        for (boolean bool : SecurityUtils.getSubject().isPermitted(permissions)) {
+            if (bool) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override
@@ -137,7 +141,7 @@ class ShiroSecuritySupport implements SecuritySupport {
     @Override
     public void checkPermission(String permission, Scope... scopes) {
         try {
-            if (ArrayUtils.isEmpty(scopes)) {
+            if (scopes == null || scopes.length == 0) {
                 checkPermission(permission);
             } else {
                 for (Scope scope : scopes) {
@@ -170,7 +174,7 @@ class ShiroSecuritySupport implements SecuritySupport {
 
     @Override
     public boolean hasRole(String roleIdentifier, Scope... scopes) {
-        if (ArrayUtils.isEmpty(scopes)) {
+        if (scopes == null || scopes.length == 0) {
             return hasRole(roleIdentifier);
         }
         Role role = null;
@@ -194,8 +198,12 @@ class ShiroSecuritySupport implements SecuritySupport {
 
     @Override
     public boolean hasAnyRole(String... roleIdentifiers) {
-        boolean[] hasRoles = SecurityUtils.getSubject().hasRoles(Arrays.asList(roleIdentifiers));
-        return ArrayUtils.contains(hasRoles, true);
+        for (boolean hasRole : SecurityUtils.getSubject().hasRoles(Arrays.asList(roleIdentifiers))) {
+            if (hasRole) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override

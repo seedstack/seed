@@ -5,6 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.rest.internal;
 
 import com.damnhandy.uri.template.UriTemplate;
@@ -62,7 +63,7 @@ class ResourceScanner {
 
     private void collectHttpMethodsWithRel(Class<?> aClass) {
         for (Method method : aClass.getDeclaredMethods()) {
-            if (RelSpecification.INSTANCE.isSatisfiedBy(method)) {
+            if (RelPredicate.INSTANCE.test(method)) {
                 Rel relAnnotation = RESTReflect.findRel(method);
                 if (relAnnotation == null || "".equals(relAnnotation.value())) {
                     throw new IllegalStateException("Missing rel value on " + method.toGenericString());
@@ -124,7 +125,7 @@ class ResourceScanner {
     private Resource buildJsonHomeResource(String baseParam, String rel, Method method) {
         Resource currentResource = null;
 
-        if (JsonHomeSpecification.INSTANCE.isSatisfiedBy(method)) {
+        if (JsonHomePredicate.INSTANCE.test(method)) {
 
             String path = RESTReflect.findPath(method);
             if (path == null) {

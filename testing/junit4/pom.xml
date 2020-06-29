@@ -37,7 +37,7 @@
         </dependency>
 
         <dependency>
-            <groupId>io.nuun</groupId>
+            <groupId>io.nuun.kernel</groupId>
             <artifactId>kernel-core</artifactId>
             <scope>test</scope>
         </dependency>

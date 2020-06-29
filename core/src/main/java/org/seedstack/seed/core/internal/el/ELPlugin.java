@@ -5,6 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.core.internal.el;
 
 import io.nuun.kernel.api.plugin.InitState;
@@ -19,7 +20,6 @@ import java.util.Map;
 import javax.el.ELContext;
 import javax.el.ExpressionFactory;
 import net.jodah.typetools.TypeResolver;
-import org.kametic.specifications.Specification;
 import org.seedstack.seed.SeedException;
 import org.seedstack.seed.core.internal.AbstractSeedPlugin;
 import org.seedstack.seed.el.spi.ELHandler;
@@ -32,7 +32,6 @@ public class ELPlugin extends AbstractSeedPlugin {
     static final Class<? extends ELContext> JUEL_CONTEXT_CLASS;
     private static final Object EXPRESSION_FACTORY;
     private static final Logger LOGGER = LoggerFactory.getLogger(ELPlugin.class);
-    private final Specification<Class<?>> specificationELHandlers = classImplements(ELHandler.class);
     private ELModule elModule;
 
     static {
@@ -106,36 +105,31 @@ public class ELPlugin extends AbstractSeedPlugin {
 
     @Override
     public Collection<ClasspathScanRequest> classpathScanRequests() {
-        return classpathScanRequestBuilder().specification(specificationELHandlers).build();
+        return classpathScanRequestBuilder().predicate(ELHandlerPredicate.INSTANCE).build();
     }
 
     @SuppressWarnings("unchecked")
     @Override
     public InitState initialize(InitContext initContext) {
         if (isEnabled()) {
-            Map<Class<? extends Annotation>, Class<ELHandler>> elMap = new HashMap<>();
+            Map<Class<? extends Annotation>, Class<ELHandler<?>>> elMap = new HashMap<>();
 
-            // Scan all the ExpressionLanguageHandler
-            Map<Specification, Collection<Class<?>>> scannedTypesBySpecification = initContext
-                    .scannedTypesBySpecification();
-            Collection<Class<?>> elHandlerClasses = scannedTypesBySpecification.get(specificationELHandlers);
-
-            // Look for their type parameters
-            for (Class<?> elHandlerClass : elHandlerClasses) {
+            // Scan all the ExpressionLanguageHandler and look for their type parameters
+            for (Class<?> elHandlerClass : initContext.scannedTypesByPredicate().get(ELHandlerPredicate.INSTANCE)) {
                 Class<Annotation> typeParameterClass = (Class<Annotation>) TypeResolver.resolveRawArguments(
-                        ELHandler.class, (Class<ELHandler>) elHandlerClass)[0];
+                        ELHandler.class, (Class<ELHandler<?>>) elHandlerClass)[0];
                 // transform this type parameters in a map of annotation, ExpressionHandler
                 if (elMap.get(typeParameterClass) != null) {
                     throw SeedException.createNew(ExpressionLanguageErrorCode.EL_ANNOTATION_IS_ALREADY_BIND)
                             .put("annotation", typeParameterClass.getSimpleName())
                             .put("handler", elHandlerClass);
                 }
-                elMap.put(typeParameterClass, (Class<ELHandler>) elHandlerClass);
+                elMap.put(typeParameterClass, (Class<ELHandler<?>>) elHandlerClass);
             }
 
             elModule = new ELModule((ExpressionFactory) EXPRESSION_FACTORY, elMap);
         } else {
-            LOGGER.debug("Java EL is not present in the classpath, EL support disabled");
+            LOGGER.info("Java EL is not present in the classpath, EL support disabled");
         }
 
         return InitState.INITIALIZED;

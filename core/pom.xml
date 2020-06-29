@@ -31,7 +31,7 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>io.nuun</groupId>
+            <groupId>io.nuun.kernel</groupId>
             <artifactId>kernel-core</artifactId>
         </dependency>
         <dependency>

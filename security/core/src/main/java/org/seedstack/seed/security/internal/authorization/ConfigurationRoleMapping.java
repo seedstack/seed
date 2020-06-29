@@ -5,6 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.security.internal.authorization;
 
 import static org.seedstack.shed.reflect.ReflectUtils.makeAccessible;
@@ -17,7 +18,6 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import javax.inject.Inject;
-import org.apache.commons.lang.StringUtils;
 import org.seedstack.seed.SeedException;
 import org.seedstack.seed.security.Role;
 import org.seedstack.seed.security.RoleMapping;
@@ -34,7 +34,7 @@ import org.slf4j.LoggerFactory;
  * <pre>
  *     admin = ADMIN, DEV
  * </pre>
- *
+ * <p>
  * Means that the admin local role will be given to any identified subject to which the realm(s) have given the ADMIN
  * <strong>or</strong> DEV role.
  * <p>
@@ -44,7 +44,7 @@ import org.slf4j.LoggerFactory;
  * <pre>
  *     reader = *
  * </pre>
- *
+ * <p>
  * Means that every identified subject will have the reader role.
  * <p>
  * This implementation handles simple scopes:
@@ -52,7 +52,7 @@ import org.slf4j.LoggerFactory;
  * <pre>
  *     admin = ADMIN.{SCOPE}, DEV
  * </pre>
- *
+ * <p>
  * Means that subjects having the ADMIN.FR role from the realm(s) (like an LDAP directory) will be given the titi
  * local role within the FR scope only.
  */
@@ -161,19 +161,50 @@ public class ConfigurationRoleMapping implements RoleMapping {
      */
     private String findScope(String wildcard, String wildcardAuth, String auth) {
         String scope;
-        String before = StringUtils.substringBefore(wildcardAuth, wildcard);
-        String after = StringUtils.substringAfter(wildcardAuth, wildcard);
-        if (StringUtils.startsWith(wildcardAuth, wildcard)) {
-            scope = StringUtils.substringBefore(auth, after);
-        } else if (StringUtils.endsWith(wildcardAuth, wildcard)) {
-            scope = StringUtils.substringAfter(auth, before);
+        String before = substringBefore(wildcardAuth, wildcard);
+        String after = substringAfter(wildcardAuth, wildcard);
+        if (wildcardAuth.startsWith(wildcard)) {
+            scope = substringBefore(auth, after);
+        } else if (wildcardAuth.endsWith(wildcard)) {
+            scope = substringAfter(auth, before);
         } else {
-            scope = StringUtils.substringBetween(auth, before, after);
+            scope = substringBetween(auth, before, after);
         }
         return scope;
     }
 
     private String convertToRegex(String value, String wildcard) {
         return String.format("\\Q%s\\E", value.replace(wildcard, "\\E.*\\Q"));
+    }
+
+    private String substringBefore(String str, String sep) {
+        int idx = str.indexOf(sep);
+        if (idx == -1) {
+            return str;
+        } else {
+            return str.substring(0, idx);
+        }
+    }
+
+    private String substringAfter(String str, String sep) {
+        int idx = str.indexOf(sep);
+        if (idx == -1) {
+            return str;
+        } else {
+            return str.substring(idx + sep.length());
+        }
+    }
+
+    private String substringBetween(String str, String start, String end) {
+        String result = str;
+        int idx = str.indexOf(start);
+        if (idx != -1) {
+            result = result.substring(idx + start.length());
+        }
+        idx = result.indexOf(end);
+        if (idx != -1) {
+            result = result.substring(0, idx);
+        }
+        return result;
     }
 }
