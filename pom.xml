@@ -23,7 +23,7 @@
     <packaging>pom</packaging>
 
     <properties>
-        <nuun-kernel.version>1.0.M10-SNAPSHOT</nuun-kernel.version>
+        <nuun-kernel.version>1.0.M10</nuun-kernel.version>
         <javassist.version>3.24.1-GA</javassist.version>
         <shed.version>1.1.6</shed.version>
         <coffig.version>3.1.5</coffig.version>
