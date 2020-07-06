@@ -34,7 +34,7 @@
         <shiro.version>1.4.0</shiro.version>
         <undertow.version>2.0.17.Final</undertow.version>
         <jersey2.version>2.30</jersey2.version>
-        <hibernate-validator.version>5.4.3.Final</hibernate-validator.version>
+        <hibernate-validator.version>6.1.5.Final</hibernate-validator.version>
         <aopalliance.version>1.0</aopalliance.version>
         <glassfish-javax.el.version>3.0.0</glassfish-javax.el.version>
         <arquillian.version>1.4.0.Final</arquillian.version>

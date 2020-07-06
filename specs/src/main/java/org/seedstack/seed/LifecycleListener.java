@@ -11,11 +11,12 @@ package org.seedstack.seed;
 /**
  * Any class implementing this interface will be registered as an application lifecycle listener. As the application
  * starts and stops, these callbacks will be invoked to allow for executing startup and/or shutdown code.
- * LifecycleListeners are singletons and injected.
+ * <p>LifecycleListeners are singletons, meaning that the same instance will be used for all method invocations. You can
+ * use injection and interception at all phases.</p>
  */
 public interface LifecycleListener {
     /**
-     * This method is called by SeedStack just after the application has initialized but is not started yet.
+     * This method is called by SeedStack just before the application is starting.
      */
     default void starting() {
         // no-op
@@ -29,7 +30,7 @@ public interface LifecycleListener {
     }
 
     /**
-     * This method is called by SeedStack just before the application is shut down.
+     * This method is called by SeedStack just before the application is shutting down.
      */
     default void stopping() {
         // no-op
