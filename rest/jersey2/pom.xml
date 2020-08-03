@@ -103,14 +103,6 @@
             <scope>provided</scope>
         </dependency>
 
-        <!-- The dependency below is no longer part of Java 9 but is required for now -->
-        <!-- Remove it when Jersey no longer relies on it -->
-        <dependency>
-            <groupId>javax.activation</groupId>
-            <artifactId>javax.activation-api</artifactId>
-            <version>${javax.activation.version}</version>
-        </dependency>
-
         <!-- TESTS -->
         <dependency>
             <groupId>org.jmockit</groupId>
