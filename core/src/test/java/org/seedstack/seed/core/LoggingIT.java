@@ -37,6 +37,7 @@ public class LoggingIT {
     @AfterClass
     public static void tearDown() throws Exception {
         System.clearProperty("testfileLogging");
+        Seed.refresh();
         if (LOGFILE.exists() && !LOGFILE.delete()) {
             throw new IllegalStateException("Unable to delete test file");
         }
