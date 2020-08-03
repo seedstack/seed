@@ -32,8 +32,8 @@
         <guava.version>29.0-jre</guava.version>
         <typetools.version>0.5.0</typetools.version>
         <shiro.version>1.4.0</shiro.version>
-        <undertow.version>2.0.17.Final</undertow.version>
-        <jersey2.version>2.30</jersey2.version>
+        <undertow.version>2.1.3.Final</undertow.version>
+        <jersey2.version>2.31</jersey2.version>
         <hibernate-validator.version>6.1.5.Final</hibernate-validator.version>
         <aopalliance.version>1.0</aopalliance.version>
         <glassfish-javax.el.version>3.0.0</glassfish-javax.el.version>
@@ -167,6 +167,7 @@
                             <licenseMerge>EPL 1.0|Eclipse Public License - v 1.0</licenseMerge>
                             <licenseMerge>GPL2 CPE|GNU General Public License, version 2 (GPL2), with the classpath exception</licenseMerge>
                             <licenseMerge>GPL2 CPE|GPL2 w/ CPE</licenseMerge>
+                            <licenseMerge>GPL2 CPE|GNU General Public License, version 2, with the Classpath Exception</licenseMerge>
                             <licenseMerge>LGPL 3.0|GNU Lesser Public License</licenseMerge>
                             <licenseMerge>LGPL 3.0|GNU Lesser General Public License</licenseMerge>
                             <licenseMerge>MIT|The MIT License</licenseMerge>
@@ -185,6 +186,9 @@
                             <licenseMerge>IGNORED_LICENSE|jQuery license</licenseMerge>
                             <licenseMerge>IGNORED_LICENSE|W3C license</licenseMerge>
                             <licenseMerge>IGNORED_LICENSE|Eclipse Distribution License - v 1.0</licenseMerge>
+                            <licenseMerge>IGNORED_LICENSE|GNU General Public License, version 2 with the GNU Classpath Exception</licenseMerge>
+                            <licenseMerge>IGNORED_LICENSE|Eclipse Public License 2.0</licenseMerge>
+                            <licenseMerge>IGNORED_LICENSE|Universal Permissive License, Version 1.0</licenseMerge>
                         </licenseMerges>
                     </configuration>
                 </plugin>
