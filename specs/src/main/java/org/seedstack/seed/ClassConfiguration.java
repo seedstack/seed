@@ -7,12 +7,7 @@
  */
 package org.seedstack.seed;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.function.BiConsumer;
 
 /**
@@ -39,7 +34,8 @@ public abstract class ClassConfiguration<T> {
      * @return the class configuration object.
      */
     public static <T> ClassConfiguration<T> of(Class<T> targetClass, Map<String, String> source) {
-        return new ClassConfiguration<T>(targetClass, source) {};
+        return new ClassConfiguration<T>(targetClass, source) {
+        };
     }
 
     /**
@@ -55,7 +51,8 @@ public abstract class ClassConfiguration<T> {
         for (int i = 0; i < keyValuePairs.length - 1; i += 2) {
             map.put(keyValuePairs[i], keyValuePairs[i + 1]);
         }
-        return new ClassConfiguration<T>(targetClass, map) {};
+        return new ClassConfiguration<T>(targetClass, map) {
+        };
     }
 
     /**
@@ -66,7 +63,8 @@ public abstract class ClassConfiguration<T> {
      * @return the class configuration object.
      */
     public static <T> ClassConfiguration<T> empty(Class<T> targetClass) {
-        return new ClassConfiguration<T>(targetClass, new HashMap<>()) {};
+        return new ClassConfiguration<T>(targetClass, new HashMap<>()) {
+        };
     }
 
     /**
@@ -105,6 +103,22 @@ public abstract class ClassConfiguration<T> {
      */
     public String get(String key) {
         return map.get(key);
+    }
+
+    /**
+     * Returns the value of a particular key (or null of the key doesn't exist). Should the value contain comma (,)
+     * separators, it is split into an array of values. Each array item is trimmed using {@link String#trim()}.
+     *
+     * @param key the key to retrieve the value of.
+     * @return the split value or null.
+     */
+    public String[] getArray(String key) {
+        String s = map.get(key);
+        if (s == null) {
+            return null;
+        } else {
+            return Arrays.stream(s.split(",")).map(String::trim).toArray(String[]::new);
+        }
     }
 
     /**
