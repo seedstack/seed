@@ -14,6 +14,6 @@ install:
   - echo $ADDITIONAL_PROFILES
   - echo $GOAL
 
-script: mvn -U -Pbuild-number,compatibility,bintray,javadoc,$ADDITIONAL_PROFILES $GOAL jacoco:report
+script: mvn -U -Pbuild-number,compatibility,bintray,javadoc,$ADDITIONAL_PROFILES $GOAL
 
 after_success: mvn coveralls:report -DrepoToken=$COVERALLS_TOKEN
