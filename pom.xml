@@ -14,7 +14,7 @@
     <parent>
         <groupId>org.seedstack.poms</groupId>
         <artifactId>parent-internal</artifactId>
-        <version>3.4.9-SNAPSHOT</version>
+        <version>3.4.9</version>
     </parent>
 
     <groupId>org.seedstack.seed</groupId>
@@ -23,10 +23,10 @@
     <packaging>pom</packaging>
 
     <properties>
-        <nuun-kernel.version>1.0.M11-SNAPSHOT</nuun-kernel.version>
+        <nuun-kernel.version>1.0.M11</nuun-kernel.version>
         <javassist.version>3.24.1-GA</javassist.version>
         <shed.version>1.1.6</shed.version>
-        <coffig.version>3.1.6-SNAPSHOT</coffig.version>
+        <coffig.version>3.1.6</coffig.version>
         <commons-cli.version>1.4</commons-cli.version>
         <guice.version>4.2.3</guice.version>
         <guava.version>29.0-jre</guava.version>
