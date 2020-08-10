@@ -8,6 +8,7 @@
 
 package org.seedstack.seed.core.internal.configuration.tool;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.nuun.kernel.api.plugin.InitState;
 import io.nuun.kernel.api.plugin.context.InitContext;
 import io.nuun.kernel.api.plugin.request.ClasspathScanRequest;
@@ -22,6 +23,7 @@ import org.seedstack.seed.core.internal.AbstractSeedTool;
 
 public abstract class AbstractConfigTool extends AbstractSeedTool {
     final Node root = new Node();
+    @SuppressFBWarnings(value = "UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR", justification = "Field is initialized by a call to 'setup' method")
     Coffig configuration;
 
     @Override

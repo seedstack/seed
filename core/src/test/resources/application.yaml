@@ -25,6 +25,9 @@ logging:
   file:
     enabled: ${sys.testfileLogging:'false'}
     path: test.log
+  loggers:
+    org.seedstack.seed.core.internal.configuration.tool:
+      level: DEBUG
 application:
   id: seed-it
   basePackages: ["some.other.pkg", "${sys.additionalPackage:'dummy'}"]
@@ -79,3 +82,19 @@ functions:
   availableTcpPort: $availableTcpPort('port1')
   availableUdpPort: $availableUdpPort('port2')
   randomUuid: $randomUuid()
+arrayOfMapContainer:
+  basicProperty: customId
+  arrayOfMaps:
+    - entry0:
+        username: user1
+        password: pass1
+    - entry1:
+        username: user2
+        password: pass2
+  credentials:
+    -
+      username: user1
+      password: pass1
+    -
+      username: user2
+      password: pass2
