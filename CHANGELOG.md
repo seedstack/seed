@@ -1,4 +1,8 @@
-# Version 3.10.0 (2019-08-06)
+# Version 3.11.0 (2020-08-06)
+
+* [brk] Config functions that find available ports now take a port name as argument so they can return the same port for each evaluation (example: `$availableTcpPort()` becomes `$availableTcpPort('web')`).
+
+# Version 3.10.0 (2020-08-06)
 
 * [brk] Generic session options moved from `web.server.sessions` to `web.sessions`.
 * [brk] Static resources options moved from `web.staticResources` to `web.static`.

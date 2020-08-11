@@ -75,6 +75,6 @@ crypto:
     keystore: ssl
     keyPassword: changeMe
 functions:
-  availableTcpPort: $availableTcpPort()
-  availableUdpPort: $availableUdpPort()
+  availableTcpPort: $availableTcpPort('port1')
+  availableUdpPort: $availableUdpPort('port2')
   randomUuid: $randomUuid()

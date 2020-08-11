@@ -7,44 +7,49 @@
  */
 package org.seedstack.seed.core.internal.configuration;
 
+import org.seedstack.coffig.spi.ConfigFunction;
+import org.seedstack.coffig.spi.ConfigFunctionHolder;
+
+import javax.net.ServerSocketFactory;
 import java.io.IOException;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.ServerSocket;
-import javax.net.ServerSocketFactory;
-import org.seedstack.coffig.spi.ConfigFunction;
-import org.seedstack.coffig.spi.ConfigFunctionHolder;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 public class AvailablePortFunctionHolder implements ConfigFunctionHolder {
+    private static final ConcurrentMap<String, Integer> TCP_PORTS = new ConcurrentHashMap<>();
+    private static final ConcurrentMap<String, Integer> UDP_PORTS = new ConcurrentHashMap<>();
     private static final int PORT_RANGE_MIN = 49152;
     private static final int PORT_RANGE_MAX = 65535;
-    private static final Object TCP_SYNC = new Object();
-    private static final Object UDP_SYNC = new Object();
 
     @ConfigFunction
-    int availableTcpPort() {
-        synchronized (TCP_SYNC) {
-            for (int i = PORT_RANGE_MIN; i <= PORT_RANGE_MAX; i++) {
-                if (isTcpPortAvailable(i)) {
-                    return i;
+    int availableTcpPort(String name) {
+        return TCP_PORTS.computeIfAbsent(name, n -> {
+            synchronized (TCP_PORTS) {
+                for (int i = PORT_RANGE_MIN; i <= PORT_RANGE_MAX; i++) {
+                    if (isTcpPortAvailable(i)) {
+                        return i;
+                    }
                 }
+                throw new IllegalStateException("Unable to find an available TCP port in range " + PORT_RANGE_MIN + "-" + PORT_RANGE_MAX);
             }
-        }
-        throw new IllegalStateException("Unable to find an available TCP port in range " + PORT_RANGE_MIN + "-" +
-                PORT_RANGE_MAX);
+        });
     }
 
     @ConfigFunction
-    int availableUdpPort() {
-        synchronized (UDP_SYNC) {
-            for (int i = PORT_RANGE_MIN; i <= PORT_RANGE_MAX; i++) {
-                if (isUdpPortAvailable(i)) {
-                    return i;
+    int availableUdpPort(String name) {
+        return UDP_PORTS.computeIfAbsent(name, n -> {
+            synchronized (UDP_PORTS) {
+                for (int i = PORT_RANGE_MIN; i <= PORT_RANGE_MAX; i++) {
+                    if (isUdpPortAvailable(i)) {
+                        return i;
+                    }
                 }
             }
-        }
-        throw new IllegalStateException("Unable to find an available UDP port in range " + PORT_RANGE_MIN + "-" +
-                PORT_RANGE_MAX);
+            throw new IllegalStateException("Unable to find an available UDP port in range " + PORT_RANGE_MIN + "-" + PORT_RANGE_MAX);
+        });
     }
 
     private boolean isTcpPortAvailable(int port) {
