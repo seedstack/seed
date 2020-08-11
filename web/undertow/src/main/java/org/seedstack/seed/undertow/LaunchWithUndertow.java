@@ -26,6 +26,6 @@ import org.seedstack.seed.undertow.internal.UndertowLauncher;
 @Documented
 @Inherited
 @LaunchWith(value = UndertowLauncher.class, separateThread = true)
-@ConfigurationProperty(name = "web.server.port", value = "$availableTcpPort()")
+@ConfigurationProperty(name = "web.server.port", value = "$availableTcpPort('undertow')")
 public @interface LaunchWithUndertow {
 }
