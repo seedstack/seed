@@ -7,19 +7,20 @@
  */
 package org.seedstack.seed.rest.internal.exceptionmapper;
 
-import java.util.UUID;
-import javax.inject.Inject;
-import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.ext.ExceptionMapper;
-import javax.ws.rs.ext.Provider;
 import org.seedstack.seed.Application;
 import org.seedstack.seed.core.Seed;
 import org.seedstack.seed.rest.RestConfig;
 import org.seedstack.shed.exception.BaseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.inject.Inject;
+import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.ext.ExceptionMapper;
+import javax.ws.rs.ext.Provider;
+import java.util.UUID;
 
 /**
  * Default exception mapper for an caught exception with no exception mapper associated.

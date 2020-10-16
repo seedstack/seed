@@ -7,12 +7,14 @@
  */
 package org.seedstack.seed.testing.internal;
 
-import java.util.HashMap;
-import java.util.Map;
+import org.seedstack.seed.testing.ConfigurationProperties;
 import org.seedstack.seed.testing.ConfigurationProperty;
 import org.seedstack.seed.testing.spi.TestContext;
 import org.seedstack.seed.testing.spi.TestPlugin;
 import org.seedstack.shed.reflect.Annotations;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class ConfigurationPropertiesTestPlugin implements TestPlugin {
     @Override
@@ -27,11 +29,27 @@ public class ConfigurationPropertiesTestPlugin implements TestPlugin {
         // Configuration properties on the class
         Annotations.on(testContext.testClass())
                 .includingMetaAnnotations()
+                .findAll(ConfigurationProperties.class)
+                .forEach(configProperties -> {
+                    for (ConfigurationProperty configProperty : configProperties.value()) {
+                        configuration.put(buildPropertyName(configProperty), configProperty.value());
+                    }
+                });
+        Annotations.on(testContext.testClass())
+                .includingMetaAnnotations()
                 .findAll(ConfigurationProperty.class)
                 .forEach(configProperty -> configuration.put(buildPropertyName(configProperty),
                         configProperty.value()));
 
         // Configuration properties on the method (completing/overriding class configuration properties)
+        testContext.testMethod().ifPresent(testMethod -> Annotations.on(testMethod)
+                .includingMetaAnnotations()
+                .findAll(ConfigurationProperties.class)
+                .forEach(configProperties -> {
+                    for (ConfigurationProperty configProperty : configProperties.value()) {
+                        configuration.put(buildPropertyName(configProperty), configProperty.value());
+                    }
+                }));
         testContext.testMethod().ifPresent(testMethod -> Annotations.on(testMethod)
                 .includingMetaAnnotations()
                 .findAll(ConfigurationProperty.class)

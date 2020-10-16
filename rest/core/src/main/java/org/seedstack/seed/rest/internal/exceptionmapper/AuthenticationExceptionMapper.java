@@ -7,12 +7,16 @@
  */
 package org.seedstack.seed.rest.internal.exceptionmapper;
 
-import javax.ws.rs.core.Response;
-import javax.ws.rs.ext.ExceptionMapper;
-import javax.ws.rs.ext.Provider;
+import org.seedstack.seed.Application;
+import org.seedstack.seed.rest.RestConfig;
 import org.seedstack.seed.security.AuthenticationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.inject.Inject;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.ext.ExceptionMapper;
+import javax.ws.rs.ext.Provider;
 
 /**
  * Default {@link AuthenticationException} exception mapper which returns an HTTP status 401 (unauthorized).
@@ -20,10 +24,24 @@ import org.slf4j.LoggerFactory;
 @Provider
 public class AuthenticationExceptionMapper implements ExceptionMapper<AuthenticationException> {
     private static final Logger LOGGER = LoggerFactory.getLogger(AuthenticationExceptionMapper.class);
+    private final RestConfig.ExceptionMappingConfig exceptionMappingConfig;
+
+    @Inject
+    public AuthenticationExceptionMapper(Application application) {
+        this.exceptionMappingConfig = application.getConfiguration().get(RestConfig.ExceptionMappingConfig.class);
+    }
 
     @Override
     public Response toResponse(AuthenticationException exception) {
-        LOGGER.debug(exception.toString(), exception);
-        return Response.status(Response.Status.UNAUTHORIZED).entity("Unauthorized").build();
+        if (exceptionMappingConfig.isDetailedLog()) {
+            LOGGER.debug(exception.toString());
+        } else {
+            LOGGER.debug(exception.getMessage());
+        }
+        String message = "Unauthorized";
+        if (exceptionMappingConfig.isDetailedUserMessage()) {
+            message += ": " + exception.getMessage();
+        }
+        return Response.status(Response.Status.UNAUTHORIZED).entity(message).build();
     }
 }

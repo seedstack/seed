@@ -7,13 +7,14 @@
  */
 package org.seedstack.seed.rest;
 
+import org.seedstack.coffig.Config;
+import org.seedstack.coffig.SingleValue;
+
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import org.seedstack.coffig.Config;
-import org.seedstack.coffig.SingleValue;
 
 @Config("rest")
 public class RestConfig {
@@ -117,7 +118,7 @@ public class RestConfig {
         private boolean all = true;
         private boolean validation = true;
         private boolean detailedLog = true;
-        private boolean detailedUserMessage = false;
+        private boolean detailedUserMessage = true;
 
         public boolean isSecurity() {
             return security;

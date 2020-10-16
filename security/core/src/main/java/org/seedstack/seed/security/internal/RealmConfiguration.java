@@ -12,13 +12,9 @@ import org.seedstack.seed.security.RoleMapping;
 import org.seedstack.seed.security.RolePermissionResolver;
 
 class RealmConfiguration {
-
     private final String name;
-
     private final Class<? extends Realm> realmClass;
-
     private Class<? extends RoleMapping> roleMappingClass;
-
     private Class<? extends RolePermissionResolver> rolePermissionResolverClass;
 
     RealmConfiguration(String name, Class<? extends Realm> realmClass) {
@@ -50,4 +46,8 @@ class RealmConfiguration {
         return realmClass;
     }
 
+    @Override
+    public String toString() {
+        return name;
+    }
 }

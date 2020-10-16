@@ -14,6 +14,7 @@ import org.seedstack.coffig.Config;
  */
 @Config("web.server.undertow")
 public class UndertowConfig {
+    private static final String DEFAULT_HANDLERS_FILE = "undertow-handlers.conf";
     private static final int coreCount = Math.max(1, Runtime.getRuntime().availableProcessors());
     private static final boolean tinyMemory = Runtime.getRuntime().maxMemory() < 256 * 1024 * 1024;
     private int ioThreads = coreCount * 2;
@@ -23,6 +24,7 @@ public class UndertowConfig {
     private boolean tcpNoDelay = true;
     private int readTimeout = 0;
     private int writeTimeout = 0;
+    private String handlersFile = DEFAULT_HANDLERS_FILE;
 
     public int getBufferSize() {
         return bufferSize;
@@ -84,6 +86,16 @@ public class UndertowConfig {
 
     public UndertowConfig setWriteTimeout(int writeTimeout) {
         this.writeTimeout = writeTimeout;
+        return this;
+    }
+
+
+    public String getHandlersFile() {
+        return handlersFile;
+    }
+
+    public UndertowConfig setHandlersFile(String handlersFile) {
+        this.handlersFile = handlersFile;
         return this;
     }
 }

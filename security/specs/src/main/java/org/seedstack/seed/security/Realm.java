@@ -8,9 +8,11 @@
 
 package org.seedstack.seed.security;
 
-import java.util.Collection;
-import java.util.Set;
 import org.seedstack.seed.security.principals.PrincipalProvider;
+
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * A realm is used to authenticate and retrieve authorization for a user.
@@ -24,6 +26,18 @@ public interface Realm {
     }
 
     /**
+     * Get the permissions
+     *
+     * @param identityPrincipal principal representing the identity of the user
+     * @param otherPrincipals   other principals
+     * @return the permissions of the user. Should not return null but empty
+     * collection.
+     */
+    default Set<String> getRealmPermissions(PrincipalProvider<?> identityPrincipal, Collection<PrincipalProvider<?>> otherPrincipals) {
+        return new HashSet<>();
+    }
+
+    /**
      * Get the roles
      *
      * @param identityPrincipal principal representing the identity of the user
@@ -31,7 +45,9 @@ public interface Realm {
      * @return the roles of the user. Should not return null but empty
      * collection.
      */
-    Set<String> getRealmRoles(PrincipalProvider<?> identityPrincipal, Collection<PrincipalProvider<?>> otherPrincipals);
+    default Set<String> getRealmRoles(PrincipalProvider<?> identityPrincipal, Collection<PrincipalProvider<?>> otherPrincipals) {
+        return new HashSet<>();
+    }
 
     /**
      * Authenticates the user and retrieves its properties in an

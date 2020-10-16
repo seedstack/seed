@@ -7,12 +7,14 @@
  */
 package org.seedstack.seed.testing.internal;
 
-import java.util.HashMap;
-import java.util.Map;
 import org.seedstack.seed.testing.KernelParameter;
+import org.seedstack.seed.testing.KernelParameters;
 import org.seedstack.seed.testing.spi.TestContext;
 import org.seedstack.seed.testing.spi.TestPlugin;
 import org.seedstack.shed.reflect.Annotations;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class KernelParametersTestPlugin implements TestPlugin {
     private static final String TEST_CLASS_KERNEL_PARAMETER = "seedstack.it.testClassName";
@@ -29,11 +31,27 @@ public class KernelParametersTestPlugin implements TestPlugin {
         // Kernel parameters on the class
         Annotations.on(testContext.testClass())
                 .includingMetaAnnotations()
+                .findAll(KernelParameters.class)
+                .forEach(kernelParams -> {
+                    for (KernelParameter kernelParam : kernelParams.value()) {
+                        kernelParameters.put(kernelParam.name(), kernelParam.value());
+                    }
+                });
+        Annotations.on(testContext.testClass())
+                .includingMetaAnnotations()
                 .findAll(KernelParameter.class)
                 .forEach(kernelParameter -> kernelParameters.put(kernelParameter.name(),
                         kernelParameter.value()));
 
         // Kernel parameters on the method (completing/overriding class kernel parameters)
+        testContext.testMethod().ifPresent(testMethod -> Annotations.on(testMethod)
+                .includingMetaAnnotations()
+                .findAll(KernelParameters.class)
+                .forEach(kernelParams -> {
+                    for (KernelParameter kernelParam : kernelParams.value()) {
+                        kernelParameters.put(kernelParam.name(), kernelParam.value());
+                    }
+                }));
         testContext.testMethod().ifPresent(testMethod -> Annotations.on(testMethod)
                 .includingMetaAnnotations()
                 .findAll(KernelParameter.class)

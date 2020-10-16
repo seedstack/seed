@@ -11,34 +11,50 @@ import io.undertow.Handlers;
 import io.undertow.Undertow;
 import io.undertow.UndertowOptions;
 import io.undertow.server.HttpHandler;
-import io.undertow.server.handlers.PathHandler;
+import io.undertow.server.handlers.builder.PredicatedHandler;
+import io.undertow.server.handlers.builder.PredicatedHandlersParser;
 import org.seedstack.seed.SeedException;
 import org.seedstack.seed.crypto.CryptoConfig;
 import org.seedstack.seed.crypto.spi.SSLProvider;
+import org.seedstack.seed.undertow.UndertowConfig;
 import org.seedstack.seed.web.WebConfig;
+import org.seedstack.shed.ClassLoaders;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xnio.Options;
 import org.xnio.SslClientAuthMode;
 import org.xnio.XnioWorker;
 
+import java.io.InputStream;
+import java.util.List;
+
 class ServerFactory {
     private static final Logger LOGGER = LoggerFactory.getLogger(ServerFactory.class);
     private final XnioWorker xnioWorker;
     private final WebConfig.ServerConfig serverConfig;
+    private final UndertowConfig undertowConfig;
+    private final ClassLoader classLoader = ClassLoaders.findMostCompleteClassLoader(ServerFactory.class);
 
-    ServerFactory(XnioWorker xnioWorker, WebConfig.ServerConfig serverConfig) {
+    ServerFactory(XnioWorker xnioWorker, WebConfig.ServerConfig serverConfig, UndertowConfig undertowConfig) {
         this.xnioWorker = xnioWorker;
         this.serverConfig = serverConfig;
+        this.undertowConfig = undertowConfig;
     }
 
     Undertow createServer(HttpHandler httpHandler, SSLProvider sslProvider) {
-        PathHandler path = Handlers
-                .path(Handlers.redirect(serverConfig.getContextPath()))
-                .addPrefixPath(serverConfig.getContextPath(), httpHandler);
+        InputStream handlersFile = classLoader.getResourceAsStream(undertowConfig.getHandlersFile());
+        // Configure handlers if any
+        if (handlersFile != null) {
+            List<PredicatedHandler> handlers = PredicatedHandlersParser.parse(
+                    handlersFile,
+                    classLoader
+            );
+            // TODO
+        }
 
         Undertow.Builder builder = Undertow.builder().setWorker(xnioWorker);
 
+        // Configure HTTP(s) listeners
         if (!serverConfig.isHttp() && !serverConfig.isHttps()) {
             throw SeedException.createNew(UndertowErrorCode.NO_LISTENER_CONFIGURED);
         } else {
@@ -54,7 +70,11 @@ class ServerFactory {
             }
         }
 
-        return builder.setHandler(path).build();
+        // Configure context path
+        return builder.setHandler(Handlers
+                .path(Handlers.redirect(serverConfig.getContextPath()))
+                .addPrefixPath(serverConfig.getContextPath(), httpHandler))
+                .build();
     }
 
     private Undertow.Builder configureHttp(Undertow.Builder builder) {

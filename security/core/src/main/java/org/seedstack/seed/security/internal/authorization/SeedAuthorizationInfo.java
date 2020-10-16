@@ -7,14 +7,15 @@
  */
 package org.seedstack.seed.security.internal.authorization;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
 import org.apache.shiro.authz.AuthorizationInfo;
 import org.apache.shiro.authz.Permission;
 import org.seedstack.seed.security.Role;
 import org.seedstack.seed.security.Scope;
+
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * AuthorizationInfo that keeps the Roles and Permissions for SeedStack API.
@@ -66,5 +67,14 @@ public class SeedAuthorizationInfo implements AuthorizationInfo {
                 stringPermissions.add(permission.getPermission());
             }
         }
+    }
+
+    /**
+     * Adds a direct permission to the authorization info.
+     *
+     * @param permission the permission to add.
+     */
+    public void addPermission(String permission) {
+        stringPermissions.add(permission);
     }
 }

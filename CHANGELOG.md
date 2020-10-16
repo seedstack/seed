@@ -1,6 +1,10 @@
 # Version 3.11.0 (2020-08-06)
 
 * [brk] Config functions that find available ports now take a port name as argument so they can return the same port for each evaluation (example: `$availableTcpPort()` becomes `$availableTcpPort('web')`).
+* [new] Support for configuration of Undertow handlers using `undertow-handlers.conf` file (at the root of the classpath by default).
+* [new] Security realms can now return direct user permissions, not attached to any role.
+* [chg] Enable a detailed user message by default for internal and security exceptions during REST requests. 
+* [fix] Fixed test annotations that were not fully detected when repeated: `@ConfigurationProperty`, `@KernelParameter` and `@SystemProperty`.   
 
 # Version 3.10.0 (2020-08-06)
 

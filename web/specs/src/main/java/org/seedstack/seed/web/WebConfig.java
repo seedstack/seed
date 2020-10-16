@@ -8,6 +8,13 @@
 
 package org.seedstack.seed.web;
 
+import org.seedstack.coffig.Config;
+import org.seedstack.coffig.SingleValue;
+import org.seedstack.seed.validation.NotBlank;
+
+import javax.servlet.SessionTrackingMode;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -15,12 +22,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import javax.servlet.SessionTrackingMode;
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
-import org.seedstack.coffig.Config;
-import org.seedstack.coffig.SingleValue;
-import org.seedstack.seed.validation.NotBlank;
 
 @Config("web")
 public class WebConfig {

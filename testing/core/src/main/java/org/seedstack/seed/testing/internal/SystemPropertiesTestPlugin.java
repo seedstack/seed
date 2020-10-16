@@ -7,13 +7,15 @@
  */
 package org.seedstack.seed.testing.internal;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
+import org.seedstack.seed.testing.SystemProperties;
 import org.seedstack.seed.testing.SystemProperty;
 import org.seedstack.seed.testing.spi.TestContext;
 import org.seedstack.seed.testing.spi.TestPlugin;
 import org.seedstack.shed.reflect.Annotations;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
 
 public class SystemPropertiesTestPlugin implements TestPlugin {
     private static Map<String, String> previousProperties;
@@ -71,11 +73,27 @@ public class SystemPropertiesTestPlugin implements TestPlugin {
         // System properties on the class
         Annotations.on(testContext.testClass())
                 .includingMetaAnnotations()
+                .findAll(SystemProperties.class)
+                .forEach(sysProps -> {
+                    for (SystemProperty sysProp : sysProps.value()) {
+                        systemProperties.put(sysProp.name(), sysProp.value());
+                    }
+                });
+        Annotations.on(testContext.testClass())
+                .includingMetaAnnotations()
                 .findAll(SystemProperty.class)
                 .forEach(systemProperty -> systemProperties.put(systemProperty.name(),
                         systemProperty.value()));
 
         // System properties on the method (completing/overriding class system properties)
+        testContext.testMethod().ifPresent(testMethod -> Annotations.on(testMethod)
+                .includingMetaAnnotations()
+                .findAll(SystemProperties.class)
+                .forEach(sysProps -> {
+                    for (SystemProperty sysProp : sysProps.value()) {
+                        systemProperties.put(sysProp.name(), sysProp.value());
+                    }
+                }));
         testContext.testMethod().ifPresent(testMethod -> Annotations.on(testMethod)
                 .includingMetaAnnotations()
                 .findAll(SystemProperty.class)

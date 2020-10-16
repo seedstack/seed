@@ -7,9 +7,6 @@
  */
 package org.seedstack.seed.testing.junit4;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-import javax.inject.Inject;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -23,6 +20,10 @@ import org.seedstack.seed.testing.LaunchMode;
 import org.seedstack.seed.testing.LaunchWith;
 import org.seedstack.seed.testing.SystemProperty;
 import org.seedstack.seed.testing.junit4.fixtures.TestITLauncher;
+
+import javax.inject.Inject;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(SeedITRunner.class)
 @LaunchWith(value = TestITLauncher.class, mode = LaunchMode.PER_TEST)
@@ -58,11 +59,14 @@ public class PerTestIT {
 
     @Test
     @ConfigurationProperty(name = "someOtherTestKey", value = "testValue2")
+    @ConfigurationProperty(name = "someOtherTestKey2", value = "testValue3")
     public void appendConfiguration() {
         assertThat(application.getConfiguration().getMandatory(String.class, "someTestKey"))
                 .isEqualTo("testValue");
         assertThat(application.getConfiguration().getMandatory(String.class, "someOtherTestKey"))
                 .isEqualTo("testValue2");
+        assertThat(application.getConfiguration().getMandatory(String.class, "someOtherTestKey2"))
+                .isEqualTo("testValue3");
     }
 
     @Test
@@ -80,11 +84,14 @@ public class PerTestIT {
 
     @Test
     @KernelParameter(name = "seedstack.config.someOtherKernelParam", value = "testValue2")
+    @KernelParameter(name = "seedstack.config.someOtherKernelParam2", value = "testValue3")
     public void appendKernelParameter() {
         assertThat(application.getConfiguration().getMandatory(String.class, "someKernelParam"))
                 .isEqualTo("testValue");
         assertThat(application.getConfiguration().getMandatory(String.class, "someOtherKernelParam"))
                 .isEqualTo("testValue2");
+        assertThat(application.getConfiguration().getMandatory(String.class, "someOtherKernelParam2"))
+                .isEqualTo("testValue3");
     }
 
     @Test
@@ -117,10 +124,12 @@ public class PerTestIT {
     }
 
     @Test
-    @SystemProperty(name = "seedstack.someOtherTestProperty", value = "testValue")
+    @SystemProperty(name = "seedstack.someOtherTestProperty", value = "testValue2")
+    @SystemProperty(name = "seedstack.someOtherTestProperty2", value = "testValue3")
     public void appendSystemProperty() {
         assertThat(System.getProperty("seedstack.someTestProperty")).isEqualTo("testValue");
-        assertThat(System.getProperty("seedstack.someOtherTestProperty")).isEqualTo("testValue");
+        assertThat(System.getProperty("seedstack.someOtherTestProperty")).isEqualTo("testValue2");
+        assertThat(System.getProperty("seedstack.someOtherTestProperty2")).isEqualTo("testValue3");
     }
 
     @Test

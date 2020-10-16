@@ -12,12 +12,6 @@ import io.undertow.Undertow;
 import io.undertow.server.HttpHandler;
 import io.undertow.servlet.api.Deployment;
 import io.undertow.servlet.api.DeploymentManager;
-import java.util.Collections;
-import java.util.Map;
-import java.util.Optional;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
-import javax.servlet.ServletException;
 import org.seedstack.coffig.Coffig;
 import org.seedstack.seed.SeedException;
 import org.seedstack.seed.core.Seed;
@@ -31,6 +25,13 @@ import org.xnio.OptionMap;
 import org.xnio.Options;
 import org.xnio.Xnio;
 import org.xnio.XnioWorker;
+
+import javax.servlet.ServletException;
+import java.util.Collections;
+import java.util.Map;
+import java.util.Optional;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class UndertowLauncher implements SeedLauncher {
     private static final Logger LOGGER = LoggerFactory.getLogger(UndertowLauncher.class);
@@ -109,7 +110,6 @@ public class UndertowLauncher implements SeedLauncher {
                     .set(Options.TCP_NODELAY, undertowConfig.isTcpNoDelay())
                     .set(Options.READ_TIMEOUT, undertowConfig.getReadTimeout())
                     .set(Options.WRITE_TIMEOUT, undertowConfig.getWriteTimeout())
-
                     .getMap());
         } catch (RuntimeException e) {
             throw unwrapUndertowException(e);
@@ -166,7 +166,8 @@ public class UndertowLauncher implements SeedLauncher {
         try {
             UndertowPlugin undertowPlugin = getUndertowPlugin();
             WebConfig.ServerConfig serverConfig = undertowPlugin.getServerConfig();
-            undertow = new ServerFactory(xnioWorker, serverConfig).createServer(
+            UndertowConfig undertowConfig = undertowPlugin.getUndertowConfig();
+            undertow = new ServerFactory(xnioWorker, serverConfig, undertowConfig).createServer(
                     httpHandler,
                     undertowPlugin.getSslProvider()
             );

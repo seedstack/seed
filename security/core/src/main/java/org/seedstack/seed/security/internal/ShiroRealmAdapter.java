@@ -8,11 +8,6 @@
 
 package org.seedstack.seed.security.internal;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Set;
-import javax.inject.Inject;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.AuthenticationInfo;
 import org.apache.shiro.authc.AuthenticationToken;
@@ -31,6 +26,12 @@ import org.seedstack.seed.security.Role;
 import org.seedstack.seed.security.internal.authorization.SeedAuthorizationInfo;
 import org.seedstack.seed.security.internal.realms.AuthenticationTokenWrapper;
 import org.seedstack.seed.security.principals.PrincipalProvider;
+
+import javax.inject.Inject;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Set;
 
 class ShiroRealmAdapter extends AuthorizingRealm {
     private Realm realm;
@@ -54,12 +55,21 @@ class ShiroRealmAdapter extends AuthorizingRealm {
                 principalProviders.add((PrincipalProvider<?>) principal);
             }
         }
-        List<PrincipalProvider<?>> asList = principals.asList();
-        for (Role role : realm.getRoleMapping().resolveRoles(realm.getRealmRoles(idPrincipal, asList),
+
+        List<PrincipalProvider<?>> principalList = principals.asList();
+
+        // Retrieve user roles through
+        for (Role role : realm.getRoleMapping().resolveRoles(realm.getRealmRoles(idPrincipal, principalList),
                 principalProviders)) {
             role.getPermissions().addAll(realm.getRolePermissionResolver().resolvePermissionsInRole(role));
             authzInfo.addRole(role);
         }
+
+        // Retrieve direct user permissions
+        for (String permission : realm.getRealmPermissions(idPrincipal, principalList)) {
+            authzInfo.addPermission(permission);
+        }
+
         return authzInfo;
     }
 
