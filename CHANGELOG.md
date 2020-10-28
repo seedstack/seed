@@ -1,4 +1,4 @@
-# Version 3.11.0 (2020-08-06)
+# Version 3.11.0 (2020-10-28)
 
 * [brk] Config functions that find available ports now take a port name as argument so they can return the same port for each evaluation (example: `$availableTcpPort()` becomes `$availableTcpPort('web')`).
 * [new] Support for configuration of Undertow handlers using `undertow-handlers.conf` file (at the root of the classpath by default).

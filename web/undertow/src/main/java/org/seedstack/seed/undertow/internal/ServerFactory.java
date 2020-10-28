@@ -42,19 +42,30 @@ class ServerFactory {
     }
 
     Undertow createServer(HttpHandler httpHandler, SSLProvider sslProvider) {
-        InputStream handlersFile = classLoader.getResourceAsStream(undertowConfig.getHandlersFile());
+        HttpHandler effectiveHttpHandler;
+
+        // Configure context path if any
+        if (!serverConfig.isRootContextPath()) {
+            effectiveHttpHandler = Handlers
+                    .path(Handlers.redirect(serverConfig.getContextPath()))
+                    .addPrefixPath(serverConfig.getContextPath(), httpHandler);
+        } else {
+            effectiveHttpHandler = httpHandler;
+        }
+
         // Configure handlers if any
+        InputStream handlersFile = classLoader.getResourceAsStream(undertowConfig.getHandlersFile());
         if (handlersFile != null) {
             List<PredicatedHandler> handlers = PredicatedHandlersParser.parse(
                     handlersFile,
                     classLoader
             );
-            // TODO
+            effectiveHttpHandler = Handlers.predicates(handlers, effectiveHttpHandler);
         }
 
-        Undertow.Builder builder = Undertow.builder().setWorker(xnioWorker);
 
         // Configure HTTP(s) listeners
+        Undertow.Builder builder = Undertow.builder().setWorker(xnioWorker);
         if (!serverConfig.isHttp() && !serverConfig.isHttps()) {
             throw SeedException.createNew(UndertowErrorCode.NO_LISTENER_CONFIGURED);
         } else {
@@ -70,10 +81,9 @@ class ServerFactory {
             }
         }
 
-        // Configure context path
-        return builder.setHandler(Handlers
-                .path(Handlers.redirect(serverConfig.getContextPath()))
-                .addPrefixPath(serverConfig.getContextPath(), httpHandler))
+        // Build the server
+        return builder
+                .setHandler(effectiveHttpHandler)
                 .build();
     }
 

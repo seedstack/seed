@@ -254,7 +254,7 @@ public class WebConfig {
         private static final String DEFAULT_HOST = "0.0.0.0";
         private static final int DEFAULT_PORT = 8080;
         private static final int DEFAULT_SECURE_PORT = 8443;
-        private static final String DEFAULT_CONTEXT_PATH = "/";
+        private static final String ROOT_CONTEXT_PATH = "/";
         private static final boolean DEFAULT_HTTP_ACTIVATION = true;
         private static final boolean DEFAULT_HTTPS_ACTIVATION = false;
         private static final boolean DEFAULT_HTTP2_ACTIVATION = true;
@@ -272,7 +272,7 @@ public class WebConfig {
         @Max(65535)
         private int securePort = DEFAULT_SECURE_PORT;
         @NotBlank
-        private String contextPath = DEFAULT_CONTEXT_PATH;
+        private String contextPath = ROOT_CONTEXT_PATH;
         private boolean http = DEFAULT_HTTP_ACTIVATION;
         private boolean https = DEFAULT_HTTPS_ACTIVATION;
         private boolean http2 = DEFAULT_HTTP2_ACTIVATION;
@@ -330,6 +330,10 @@ public class WebConfig {
             }
             this.contextPath = normalized;
             return this;
+        }
+
+        public boolean isRootContextPath() {
+            return ROOT_CONTEXT_PATH.equals(this.contextPath);
         }
 
         public boolean isHttp() {

@@ -120,5 +120,14 @@ public abstract class AbstractUndertowIT {
                 .get(baseUrl + "/sessionTest");
     }
 
+    @Test
+    public void handlersFileIsHonored() {
+        expect()
+                .statusCode(200)
+                .header("handlersFileHeader", "testValue")
+                .when()
+                .get(baseUrl + "/index.html");
+    }
+
     abstract ResponseSpecification expect();
 }
