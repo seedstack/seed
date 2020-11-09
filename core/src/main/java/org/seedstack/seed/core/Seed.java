@@ -109,14 +109,18 @@ public class Seed {
 
         // Setup a default exception handler that translates exceptions
         Thread.setDefaultUncaughtExceptionHandler((thread, throwable) -> {
-            Throwable translated;
-            if (throwable instanceof Exception) {
-                translated = Seed.translateException((Exception) throwable);
-            } else {
-                translated = throwable;
+            try {
+                Throwable translated;
+                if (throwable instanceof Exception) {
+                    translated = Seed.translateException((Exception) throwable);
+                } else {
+                    translated = throwable;
+                }
+                diagnosticManager.dumpDiagnosticReport(throwable);
+                translated.printStackTrace(System.err);
+            } catch(Throwable t) {
+                throwable.printStackTrace();
             }
-            diagnosticManager.dumpDiagnosticReport(throwable);
-            translated.printStackTrace(System.err);
         });
 
         // Initialize logging subsystem (should silence logs until logging activation later in the initialization)
