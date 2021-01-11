@@ -1,3 +1,7 @@
+# Version 3.11.1 (2021-01-31)
+
+* [fix] Detection of color output under recent versions of IntelliJ.
+
 # Version 3.11.0 (2020-10-28)
 
 * [brk] Config functions that find available ports now take a port name as argument so they can return the same port for each evaluation (example: `$availableTcpPort()` becomes `$availableTcpPort('web')`).

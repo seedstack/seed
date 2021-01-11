@@ -7,27 +7,16 @@
  */
 package org.seedstack.seed.security.internal.realms;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-import javax.inject.Inject;
-import javax.inject.Named;
-import org.seedstack.seed.security.AuthenticationException;
-import org.seedstack.seed.security.AuthenticationInfo;
-import org.seedstack.seed.security.AuthenticationToken;
-import org.seedstack.seed.security.IncorrectCredentialsException;
-import org.seedstack.seed.security.Realm;
-import org.seedstack.seed.security.RoleMapping;
-import org.seedstack.seed.security.RolePermissionResolver;
-import org.seedstack.seed.security.SecurityConfig;
-import org.seedstack.seed.security.UnknownAccountException;
-import org.seedstack.seed.security.UnsupportedTokenException;
-import org.seedstack.seed.security.UsernamePasswordToken;
+import org.apache.shiro.authc.UsernamePasswordToken;
+import org.seedstack.seed.security.*;
+import org.seedstack.seed.security.internal.SeedUsernamePasswordToken;
 import org.seedstack.seed.security.principals.PrincipalProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.inject.Inject;
+import javax.inject.Named;
+import java.util.*;
 
 /**
  * A realm that authenticate users and gives authorities using SeedStack configuration.
@@ -40,8 +29,8 @@ public class ConfigurationRealm implements Realm {
 
     @Inject
     protected ConfigurationRealm(@Named("ConfigurationRealm-role-mapping") RoleMapping roleMapping,
-            @Named("ConfigurationRealm-role-permission-resolver") RolePermissionResolver rolePermissionResolver,
-            SecurityConfig securityConfig) {
+                                 @Named("ConfigurationRealm-role-permission-resolver") RolePermissionResolver rolePermissionResolver,
+                                 SecurityConfig securityConfig) {
         this.roleMapping = roleMapping;
         this.rolePermissionResolver = rolePermissionResolver;
         if (securityConfig.getUsers().isEmpty()) {
@@ -56,7 +45,7 @@ public class ConfigurationRealm implements Realm {
 
     @Override
     public Set<String> getRealmRoles(PrincipalProvider<?> identityPrincipal,
-            Collection<PrincipalProvider<?>> otherPrincipals) {
+                                     Collection<PrincipalProvider<?>> otherPrincipals) {
         ConfigurationUser user = findUser(identityPrincipal.get().toString());
         if (user != null) {
             return user.roles;
@@ -66,18 +55,19 @@ public class ConfigurationRealm implements Realm {
 
     @Override
     public AuthenticationInfo getAuthenticationInfo(AuthenticationToken token) throws AuthenticationException {
-        if (!(token instanceof UsernamePasswordToken)) {
+        if (token instanceof SeedUsernamePasswordToken) {
+            UsernamePasswordToken userNamePasswordToken = (SeedUsernamePasswordToken) token;
+            ConfigurationUser user = findUser(userNamePasswordToken.getUsername());
+            if (user == null) {
+                throw new UnknownAccountException("Unknown user " + userNamePasswordToken.getUsername());
+            }
+            if (!user.password.equals(new String(userNamePasswordToken.getPassword()))) {
+                throw new IncorrectCredentialsException();
+            }
+            return new AuthenticationInfo(userNamePasswordToken.getUsername(), userNamePasswordToken.getPassword());
+        } else {
             throw new UnsupportedTokenException("ConfigurationRealm only supports UsernamePasswordToken");
         }
-        UsernamePasswordToken userNamePasswordToken = (UsernamePasswordToken) token;
-        ConfigurationUser user = findUser(userNamePasswordToken.getUsername());
-        if (user == null) {
-            throw new UnknownAccountException("Unknown user " + userNamePasswordToken.getUsername());
-        }
-        if (!user.password.equals(new String(userNamePasswordToken.getPassword()))) {
-            throw new IncorrectCredentialsException();
-        }
-        return new AuthenticationInfo(userNamePasswordToken.getUsername(), userNamePasswordToken.getPassword());
     }
 
     @Override
@@ -92,7 +82,7 @@ public class ConfigurationRealm implements Realm {
 
     @Override
     public Class<? extends AuthenticationToken> supportedToken() {
-        return UsernamePasswordToken.class;
+        return SeedUsernamePasswordToken.class;
     }
 
     private ConfigurationUser findUser(String username) {

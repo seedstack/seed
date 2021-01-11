@@ -7,11 +7,6 @@
  */
 package org.seedstack.seed.security.internal;
 
-import static org.junit.Assert.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
 import com.google.inject.Injector;
 import com.google.inject.PrivateBinder;
 import com.google.inject.Provider;
@@ -19,16 +14,22 @@ import com.google.inject.TypeLiteral;
 import com.google.inject.binder.AnnotatedBindingBuilder;
 import com.google.inject.binder.AnnotatedElementBuilder;
 import com.google.inject.binder.ScopedBindingBuilder;
-import java.lang.annotation.Annotation;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Set;
 import org.apache.shiro.realm.Realm;
 import org.junit.Before;
 import org.junit.Test;
 import org.powermock.reflect.Whitebox;
 import org.seedstack.seed.security.SecurityConfig;
 import org.seedstack.seed.security.internal.realms.ConfigurationRealm;
+
+import java.lang.annotation.Annotation;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
+
+import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class SecurityInternalModuleUnitTest {
     private SecurityInternalModule underTest;
@@ -69,6 +70,7 @@ public class SecurityInternalModuleUnitTest {
         Injector i = mock(Injector.class);
         ShiroRealmAdapter adapter = new ShiroRealmAdapter();
         when(i.getInstance(ShiroRealmAdapter.class)).thenReturn(adapter);
+        when(i.getInstance(ConfigurationRealm.class)).thenReturn(mock(ConfigurationRealm.class));
         Set<Class<? extends org.seedstack.seed.security.Realm>> realmClasses = new HashSet<>();
         realmClasses.add(ConfigurationRealm.class);
 

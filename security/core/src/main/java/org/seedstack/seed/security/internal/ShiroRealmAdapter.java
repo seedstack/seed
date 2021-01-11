@@ -8,13 +8,7 @@
 
 package org.seedstack.seed.security.internal;
 
-import org.apache.shiro.authc.AuthenticationException;
-import org.apache.shiro.authc.AuthenticationInfo;
-import org.apache.shiro.authc.AuthenticationToken;
-import org.apache.shiro.authc.IncorrectCredentialsException;
-import org.apache.shiro.authc.SimpleAuthenticationInfo;
-import org.apache.shiro.authc.UnknownAccountException;
-import org.apache.shiro.authc.UsernamePasswordToken;
+import org.apache.shiro.authc.*;
 import org.apache.shiro.authc.pam.UnsupportedTokenException;
 import org.apache.shiro.authz.AuthorizationInfo;
 import org.apache.shiro.realm.AuthorizingRealm;
@@ -26,6 +20,8 @@ import org.seedstack.seed.security.Role;
 import org.seedstack.seed.security.internal.authorization.SeedAuthorizationInfo;
 import org.seedstack.seed.security.internal.realms.AuthenticationTokenWrapper;
 import org.seedstack.seed.security.principals.PrincipalProvider;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import java.util.ArrayList;
@@ -34,6 +30,7 @@ import java.util.List;
 import java.util.Set;
 
 class ShiroRealmAdapter extends AuthorizingRealm {
+    private static final Logger LOGGER = LoggerFactory.getLogger(ShiroRealmAdapter.class);
     private Realm realm;
     @Inject
     private Set<PrincipalCustomizer> principalCustomizers;
@@ -74,8 +71,7 @@ class ShiroRealmAdapter extends AuthorizingRealm {
     }
 
     @Override
-    protected AuthenticationInfo doGetAuthenticationInfo(
-            final AuthenticationToken token) throws AuthenticationException {
+    protected AuthenticationInfo doGetAuthenticationInfo(final AuthenticationToken token) throws AuthenticationException {
         org.seedstack.seed.security.AuthenticationToken seedToken = convertToken(token);
         if (seedToken == null) {
             throw new UnsupportedTokenException("The token " + token.getClass() + " is not supported");
@@ -123,6 +119,7 @@ class ShiroRealmAdapter extends AuthorizingRealm {
     @Override
     protected Object getAuthenticationCacheKey(AuthenticationToken token) {
         Object authenticationCacheKey = super.getAuthenticationCacheKey(token);
+        // Unwrap principal provider
         if (authenticationCacheKey instanceof PrincipalProvider) {
             return ((PrincipalProvider<?>) authenticationCacheKey).get();
         } else {
@@ -133,6 +130,7 @@ class ShiroRealmAdapter extends AuthorizingRealm {
     @Override
     protected Object getAuthenticationCacheKey(PrincipalCollection principals) {
         Object authenticationCacheKey = super.getAuthenticationCacheKey(principals);
+        // Unwrap principal provider
         if (authenticationCacheKey instanceof PrincipalProvider) {
             return ((PrincipalProvider<?>) authenticationCacheKey).get();
         } else {
@@ -141,23 +139,25 @@ class ShiroRealmAdapter extends AuthorizingRealm {
     }
 
     @Override
-    protected Object getAuthorizationCacheKey(PrincipalCollection principals) {
-        Object primaryPrincipal = principals.getPrimaryPrincipal();
-        if (primaryPrincipal instanceof PrincipalProvider) {
-            return ((PrincipalProvider<?>) primaryPrincipal).get();
+    protected boolean isAuthenticationCachingEnabled(AuthenticationToken token, AuthenticationInfo info) {
+        if (isAuthenticationCachingEnabled()) {
+            Object tokenCacheKey = getAuthenticationCacheKey(token);
+            Object infoCacheKey = getAuthenticationCacheKey(info.getPrincipals());
+            if (tokenCacheKey != null && tokenCacheKey.equals(infoCacheKey)) {
+                return true;
+            } else {
+                LOGGER.warn("AuthenticationInfo[{}] will not be cached as it's primary principal doesn't match " +
+                        "submitted identity ({}), preventing cache invalidation on logout.", infoCacheKey, tokenCacheKey);
+                return false;
+            }
         } else {
-            return primaryPrincipal;
+            return false;
         }
     }
 
     @Override
-    public String getAuthenticationCacheName() {
-        return realm.getClass().getName() + ".authenticationCache";
-    }
-
-    @Override
-    public String getAuthorizationCacheName() {
-        return realm.getClass().getName() + ".authorizationCache";
+    public String toString() {
+        return getName();
     }
 
     public Realm getRealm() {
@@ -166,11 +166,7 @@ class ShiroRealmAdapter extends AuthorizingRealm {
 
     void setRealm(Realm realm) {
         this.realm = realm;
-    }
-
-    @Override
-    public String toString() {
-        return realm.name();
+        this.setName(realm.name());
     }
 
     private org.seedstack.seed.security.AuthenticationToken convertToken(AuthenticationToken token) {
@@ -178,8 +174,12 @@ class ShiroRealmAdapter extends AuthorizingRealm {
             return (org.seedstack.seed.security.AuthenticationToken) token;
         } else if (token instanceof UsernamePasswordToken) {
             UsernamePasswordToken shiroToken = (UsernamePasswordToken) token;
-            return new org.seedstack.seed.security.UsernamePasswordToken(shiroToken.getUsername(),
-                    shiroToken.getPassword());
+            return new SeedUsernamePasswordToken(
+                    shiroToken.getUsername(),
+                    shiroToken.getPassword(),
+                    shiroToken.isRememberMe(),
+                    shiroToken.getHost()
+            );
         } else if (token instanceof AuthenticationTokenWrapper) {
             AuthenticationTokenWrapper shiroToken = (AuthenticationTokenWrapper) token;
             return shiroToken.getSeedToken();

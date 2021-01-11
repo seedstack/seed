@@ -7,21 +7,17 @@
  */
 package org.seedstack.seed.security.internal.realms;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import org.junit.Before;
+import org.junit.Test;
+import org.seedstack.seed.security.*;
+import org.seedstack.seed.security.internal.SeedUsernamePasswordToken;
+import org.seedstack.seed.security.principals.PrincipalProvider;
+import org.seedstack.seed.security.principals.Principals;
 
 import java.util.Collections;
 import java.util.Set;
-import org.junit.Before;
-import org.junit.Test;
-import org.seedstack.seed.security.AuthenticationInfo;
-import org.seedstack.seed.security.AuthenticationToken;
-import org.seedstack.seed.security.IncorrectCredentialsException;
-import org.seedstack.seed.security.SecurityConfig;
-import org.seedstack.seed.security.UnknownAccountException;
-import org.seedstack.seed.security.UnsupportedTokenException;
-import org.seedstack.seed.security.UsernamePasswordToken;
-import org.seedstack.seed.security.principals.PrincipalProvider;
-import org.seedstack.seed.security.principals.Principals;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class ConfigurationRealmUnitTest {
     private static final String USERNAME = "username";
@@ -59,31 +55,26 @@ public class ConfigurationRealmUnitTest {
 
     @Test
     public void getAuthenticationInfo_nominal() {
-        UsernamePasswordToken token = new UsernamePasswordToken(USERNAME, PASSWORD);
+        SeedUsernamePasswordToken token = new SeedUsernamePasswordToken(USERNAME, PASSWORD.toCharArray(), false, null);
         AuthenticationInfo authInfo = underTest.getAuthenticationInfo(token);
         assertThat(authInfo.getIdentityPrincipal().get()).isEqualTo(USERNAME);
     }
 
     @Test(expected = IncorrectCredentialsException.class)
     public void getAuthenticationInfo_throws_exception_if_incorrect_password() {
-        UsernamePasswordToken token = new UsernamePasswordToken(USERNAME, "");
+        SeedUsernamePasswordToken token = new SeedUsernamePasswordToken(USERNAME, "".toCharArray(), false, null);
         underTest.getAuthenticationInfo(token);
     }
 
     @Test(expected = UnknownAccountException.class)
     public void getAuthenticationInfo_throws_exception_if_unknown_user() {
-        UsernamePasswordToken token = new UsernamePasswordToken("", PASSWORD);
+        SeedUsernamePasswordToken token = new SeedUsernamePasswordToken("", PASSWORD.toCharArray(), false, null);
         underTest.getAuthenticationInfo(token);
     }
 
     @Test(expected = NullPointerException.class)
-    public void null_user_is_invalid() {
-        new UsernamePasswordToken(null, PASSWORD);
-    }
-
-    @Test(expected = NullPointerException.class)
     public void null_password_is_invalid() {
-        UsernamePasswordToken token = new UsernamePasswordToken(USERNAME, (String) null);
+        SeedUsernamePasswordToken token = new SeedUsernamePasswordToken(USERNAME, null, false, null);
         underTest.getAuthenticationInfo(token);
     }
 

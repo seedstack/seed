@@ -7,7 +7,6 @@
  */
 package org.seedstack.seed.core.internal.init;
 
-import java.io.PrintStream;
 import org.fusesource.jansi.AnsiConsole;
 import org.fusesource.jansi.AnsiPrintStream;
 import org.fusesource.jansi.FilterPrintStream;
@@ -17,8 +16,14 @@ import org.seedstack.seed.ApplicationConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.PrintStream;
+import java.lang.management.ManagementFactory;
+import java.lang.management.RuntimeMXBean;
+import java.util.List;
+
 public class ConsoleManager {
     private static final Logger LOGGER = LoggerFactory.getLogger(ConsoleManager.class);
+    private static final String IDEA_RT_JAR = "idea_rt.jar";
     private final PrintStream savedOut = System.out;
     private final PrintStream savedErr = System.err;
 
@@ -41,7 +46,7 @@ public class ConsoleManager {
     }
 
     private PrintStream wrapPrintStream(final PrintStream inputStream, FileNo fileno,
-            ApplicationConfig.ColorOutput colorOutput, boolean log) {
+                                        ApplicationConfig.ColorOutput colorOutput, boolean log) {
         try {
             if (colorOutput == ApplicationConfig.ColorOutput.PASSTHROUGH) {
                 if (log) {
@@ -128,13 +133,20 @@ public class ConsoleManager {
     }
 
     private boolean isIntelliJ() {
-        if (System.getProperty("java.class.path").contains("idea_rt.jar")) {
+        if (System.getProperty("java.class.path").contains(IDEA_RT_JAR)) {
             return true;
         } else {
             try {
                 Class.forName("com.intellij.rt.execution.application.AppMain");
                 return true;
             } catch (ClassNotFoundException e) {
+                RuntimeMXBean runtimeMXBean = ManagementFactory.getRuntimeMXBean();
+                List<String> jvmArgs = runtimeMXBean.getInputArguments();
+                for (String arg : jvmArgs) {
+                    if (arg.startsWith("-agentpath") || arg.startsWith("-agentlib") || arg.startsWith("-javaagent")) {
+                        return arg.contains(IDEA_RT_JAR);
+                    }
+                }
                 return false;
             }
         }
