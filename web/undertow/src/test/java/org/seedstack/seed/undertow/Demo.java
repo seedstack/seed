@@ -10,7 +10,7 @@ package org.seedstack.seed.undertow;
 import org.seedstack.seed.core.Seed;
 
 public class Demo {
-    public static void main(String[] args) throws Exception {
-        Seed.getLauncher().launch(args);
+    public static void main(String[] args) {
+        Seed.launch(args);
     }
 }

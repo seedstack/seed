@@ -20,11 +20,6 @@ import java.io.Serializable;
  * acquire a user's principals and credentials however you wish (e.g. web form,
  * Swing form, fingerprint identification, etc) and then submit them to the
  * framework in the form of an implementation of this interface.
- * <p>
- * If your application's authentication process is username/password based (like
- * most), instead of implementing this interface yourself, take a look at the
- * {@link UsernamePasswordToken UsernamePasswordToken} class, as it is probably
- * sufficient for your needs.
  */
 public interface AuthenticationToken extends Serializable {
     /**
@@ -38,15 +33,12 @@ public interface AuthenticationToken extends Serializable {
      * Returns the account identity submitted during the authentication process.
      * <p>
      * Most application authentications are username/password based and have
-     * this object represent a username. If this is the case for your
-     * application, take a look at the {@link UsernamePasswordToken
-     * UsernamePasswordToken}, as it is probably sufficient for your use.
+     * this object represent a username.
      * <p>
      * Ultimately, the object returned is application specific and can represent
      * any account identity.
      *
      * @return the account identity submitted during the authentication process.
-     * @see UsernamePasswordToken
      */
     Object getPrincipal();
 
@@ -56,9 +48,7 @@ public interface AuthenticationToken extends Serializable {
      * identity}.
      * <p>
      * Most application authentications are username/password based and have
-     * this object represent a submitted password. If this is the case for your
-     * application, take a look at the {@link UsernamePasswordToken
-     * UsernamePasswordToken}, as it is probably sufficient for your use.
+     * this object represent a submitted password.
      * <p>
      * Ultimately, the credentials Object returned is application specific and
      * can represent any credential mechanism.

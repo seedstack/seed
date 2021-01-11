@@ -1,5 +1,6 @@
-# Version 3.11.1 (2021-01-31)
+# Version 3.12.0 (2021-01-31)
 
+* [chg] Move main entrypoint logic from `SeedMain.main()` to `Seed.launch()`, allowing custom main methods in addition to the built-in `SeedMain`. 
 * [fix] Detection of color output under recent versions of IntelliJ.
 
 # Version 3.11.0 (2020-10-28)

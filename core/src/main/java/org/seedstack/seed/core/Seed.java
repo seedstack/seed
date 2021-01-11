@@ -7,22 +7,10 @@
  */
 package org.seedstack.seed.core;
 
-import static com.google.common.base.Preconditions.checkState;
-import static org.seedstack.shed.misc.PriorityUtils.sortByPriority;
-
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import io.nuun.kernel.api.Kernel;
 import io.nuun.kernel.api.config.KernelConfiguration;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Scanner;
-import java.util.ServiceLoader;
 import org.fusesource.jansi.Ansi;
 import org.fusesource.jansi.AnsiRenderer;
 import org.seedstack.coffig.Coffig;
@@ -33,12 +21,7 @@ import org.seedstack.seed.SeedException;
 import org.seedstack.seed.core.internal.CoreErrorCode;
 import org.seedstack.seed.core.internal.ToolLauncher;
 import org.seedstack.seed.core.internal.diagnostic.DiagnosticManagerImpl;
-import org.seedstack.seed.core.internal.init.AutodetectLogManager;
-import org.seedstack.seed.core.internal.init.BaseConfigurationFactory;
-import org.seedstack.seed.core.internal.init.ConsoleManager;
-import org.seedstack.seed.core.internal.init.KernelManager;
-import org.seedstack.seed.core.internal.init.LogManager;
-import org.seedstack.seed.core.internal.init.ProxyManager;
+import org.seedstack.seed.core.internal.init.*;
 import org.seedstack.seed.diagnostic.DiagnosticManager;
 import org.seedstack.seed.spi.SeedExceptionTranslator;
 import org.seedstack.seed.spi.SeedInitializer;
@@ -49,11 +32,20 @@ import org.seedstack.shed.misc.PriorityUtils;
 import org.seedstack.shed.reflect.Classes;
 import org.seedstack.shed.text.TextTemplate;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+import java.util.*;
+
+import static com.google.common.base.Preconditions.checkState;
+import static org.seedstack.shed.misc.PriorityUtils.sortByPriority;
+
 /**
  * This class is the SeedStack framework entry point, which is used create and dispose kernels.
  * It handles global initialization and cleanup.
  */
 public class Seed {
+    private static final int EXIT_FAILURE = 1;
     private static final String WELCOME_MESSAGE = "\n" +
             " ____                _ ____  _             _    \n" +
             "/ ___|  ___  ___  __| / ___|| |_ __ _  ___| | __\n" +
@@ -118,7 +110,7 @@ public class Seed {
                 }
                 diagnosticManager.dumpDiagnosticReport(throwable);
                 translated.printStackTrace(System.err);
-            } catch(Throwable t) {
+            } catch (Throwable t) {
                 throwable.printStackTrace();
             }
         });
@@ -179,6 +171,50 @@ public class Seed {
 
     static void markLifecycleExceptionHandlerEnabled() {
         hasLifecycleExceptionHandler = true;
+    }
+
+    /**
+     * <p>
+     * Main SeedStack Java application entry point. It searches classes implementing {@link SeedLauncher} through the
+     * {@link ServiceLoader} mechanism. If no class or more than one class is found, it throws an exception. If exactly one
+     * class is found, it delegates the SeedStack application startup to its {@link SeedLauncher#launch(String[])} method.
+     * </p>
+     * <p>
+     * Exception handling and diagnostic during startup and shutdown is done directly in this class. This is materialized
+     * by the fact that {@link Seed#hasLifecycleExceptionHandler()} returns true when {@link SeedMain} is used.
+     * </p>
+     * <p>
+     * If an exception occurs during startup or shutdown, it is translated using {@link Seed#translateException(Exception)}
+     * and its stack trace is printed on the standard error output. During startup only a diagnostic report is also dumped.
+     * </p>
+     *
+     * @param args The launch arguments.
+     */
+    public static void launch(String[] args) {
+        try {
+            final SeedLauncher seedLauncher;
+            final String toolName = System.getProperty("seedstack.tool");
+            if (!Strings.isNullOrEmpty(toolName)) {
+                seedLauncher = Seed.getToolLauncher(toolName);
+            } else {
+                seedLauncher = Seed.getLauncher();
+            }
+
+            Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+                try {
+                    seedLauncher.shutdown();
+                    Seed.close();
+                } catch (Exception e) {
+                    handleException(e);
+                }
+            }, "shutdown"));
+            Seed.markLifecycleExceptionHandlerEnabled();
+
+            seedLauncher.launch(args);
+        } catch (Exception e) {
+            handleException(e);
+            System.exit(EXIT_FAILURE);
+        }
     }
 
     /**
@@ -290,7 +326,7 @@ public class Seed {
      * @return the {@link Kernel} instance.
      */
     public static Kernel createKernel(Object runtimeContext, KernelConfiguration kernelConfiguration,
-            boolean autoStart) {
+                                      boolean autoStart) {
         Seed instance = getInstance();
         return instance.kernelManager.createKernel(
                 SeedRuntime.builder()
@@ -441,6 +477,12 @@ public class Seed {
 
         // Remove default uncaught exception handler
         Thread.setDefaultUncaughtExceptionHandler(null);
+    }
+
+    private static void handleException(Exception e) {
+        BaseException translated = Seed.translateException(e);
+        Seed.diagnostic().dumpDiagnosticReport(translated);
+        translated.printStackTrace(System.err);
     }
 
     private static class Holder {

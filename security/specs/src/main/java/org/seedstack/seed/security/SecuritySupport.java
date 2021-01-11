@@ -7,10 +7,11 @@
  */
 package org.seedstack.seed.security;
 
-import java.util.Collection;
-import java.util.Set;
 import org.seedstack.seed.security.principals.PrincipalProvider;
 import org.seedstack.seed.security.principals.SimplePrincipalProvider;
+
+import java.util.Collection;
+import java.util.Set;
 
 /**
  * Support for all security concerns. Retrieve connected user principals, get/check roles/permissions...
@@ -238,6 +239,8 @@ public interface SecuritySupport {
      * Explicitly authenticates a subject with its authentication token.
      * <h3>Web Environment Warning</h3> In a Web application, this is typically handled by a security Web filter, so
      * calling this method should be avoided in such environments.
+     *
+     * @param authenticationToken The authentication token representing subject credentials.
      */
     void login(AuthenticationToken authenticationToken);
 
