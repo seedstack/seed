@@ -79,3 +79,15 @@ functions:
   availableTcpPort: $availableTcpPort('port1')
   availableUdpPort: $availableUdpPort('port2')
   randomUuid: $randomUuid()
+classArray:
+  singleClazz: org.seedstack.seed.core.fixtures.Dummy
+  clazz: 
+  - org.seedstack.seed.core.fixtures.Dummy
+  - org.seedstack.seed.core.fixtures.DummyService1
+  string: 
+  - org.seedstack.seed.core.fixtures.Dummy
+  - org.seedstack.seed.core.fixtures.DummyService1
+  list:  
+  - org.seedstack.seed.core.fixtures.Dummy
+  - org.seedstack.seed.core.fixtures.DummyService1
+  

@@ -11,8 +11,6 @@ install:
   - echo "<settings><servers><server><id>ossrh</id><username>\${env.SONATYPE_USER}</username><password>\${env.SONATYPE_PASSWORD}</password></server></servers></settings>" > ~/.m2/settings.xml
   - if [[ $TRAVIS_PULL_REQUEST = false ]] && [[ $TRAVIS_BRANCH = master || $TRAVIS_BRANCH = dev-* ]] || [[ $TRAVIS_TAG = v* ]]; then GOAL=deploy; else GOAL=install; fi
   - if [[ $TRAVIS_TAG = v* ]]; then ADDITIONAL_PROFILES=release; mvn -q -U org.seedstack:seedstack-maven-plugin:release; fi
-  - echo $ADDITIONAL_PROFILES
-  - echo $GOAL
 
 script: mvn -U -Pbuild-number,compatibility,javadoc,$ADDITIONAL_PROFILES $GOAL
 
