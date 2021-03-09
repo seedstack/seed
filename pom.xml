@@ -158,6 +158,7 @@
                             <licenseMerge>BSD|New BSD License</licenseMerge>
                             <licenseMerge>BSD|The New BSD License</licenseMerge>
                             <licenseMerge>BSD|The BSD License</licenseMerge>
+                            <licenseMerge>BSD|The BSD 3-Clause License</licenseMerge>
                             <licenseMerge>CDDL 1.1|CDDL or GPLv2 with exceptions</licenseMerge>
                             <licenseMerge>CDDL 1.1|Common Development and Distribution License</licenseMerge>
                             <licenseMerge>CDDL 1.1|CDDL + GPLv2 with classpath exception</licenseMerge>
