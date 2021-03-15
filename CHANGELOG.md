@@ -3,6 +3,7 @@
 * [chg] Move main entrypoint logic from `SeedMain.main()` to `Seed.launch()`, allowing custom main methods in addition to the built-in `SeedMain`. 
 * [chg] Upgrade Shiro to 1.7.1 (fixes CVE-2020-11989, CVE-2020-17510, CVE-2020-1957, CVE-2020-13933 and CVE-2019-12422).
 * [fix] Detection of color output under recent versions of IntelliJ.
+* [fix] Fix configuration evaluation (macros, functions, ...) in `classes` section (see https://github.com/seedstack/seed/issues/283).
 
 # Version 3.11.0 (2020-10-28)
 

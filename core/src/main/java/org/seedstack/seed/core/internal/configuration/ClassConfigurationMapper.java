@@ -7,20 +7,28 @@
  */
 package org.seedstack.seed.core.internal.configuration;
 
-import static org.seedstack.shed.reflect.Types.rawClassOf;
-
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-import java.util.HashMap;
-import java.util.Map;
+import org.seedstack.coffig.Coffig;
 import org.seedstack.coffig.TreeNode;
 import org.seedstack.coffig.spi.ConfigurationMapper;
 import org.seedstack.seed.ClassConfiguration;
 import org.seedstack.seed.SeedException;
 import org.seedstack.seed.core.internal.CoreErrorCode;
 
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.util.HashMap;
+import java.util.Map;
+
+import static org.seedstack.shed.reflect.Types.rawClassOf;
+
 public class ClassConfigurationMapper implements ConfigurationMapper {
+    private Coffig coffig;
+
+    public void initialize(Coffig coffig) {
+        this.coffig = coffig;
+    }
+
     @Override
     public boolean canHandle(Type type) {
         if (type instanceof ParameterizedType) {
@@ -40,7 +48,7 @@ public class ClassConfigurationMapper implements ConfigurationMapper {
             Map<String, String> result = new HashMap<>();
             treeNode.namedNodes()
                     .filter(namedNode -> isValueNode(namedNode.node()))
-                    .forEach(namedNode -> result.put(namedNode.name(), namedNode.node().value()));
+                    .forEach(namedNode -> result.put(namedNode.name(), (String) coffig.getMapper().map(namedNode.node(), String.class)));
             return ClassConfiguration.of(rawType, result);
         } else {
             throw SeedException.createNew(CoreErrorCode.INVALID_CLASS_CONFIGURATION)

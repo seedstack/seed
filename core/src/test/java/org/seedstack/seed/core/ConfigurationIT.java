@@ -10,7 +10,9 @@ package org.seedstack.seed.core;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.google.inject.Injector;
+
 import javax.inject.Inject;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.seedstack.coffig.Coffig;
@@ -134,10 +136,11 @@ public class ConfigurationIT {
     public void class_attributes_can_be_retrieved() {
         Application application = injector.getInstance(Application.class);
         ClassConfiguration<ConfigurationIT> configuration = application.getConfiguration(ConfigurationIT.class);
-        assertThat(configuration.keySet()).containsExactly("key1", "key2", "key3");
+        assertThat(configuration.keySet()).containsExactlyInAnyOrder("key1", "key2", "key3", "evalKey");
         assertThat(configuration.get("key1")).isEqualTo("value1");
         assertThat(configuration.get("key2")).isEqualTo("value2bis");
         assertThat(configuration.get("key3")).isEqualTo("value3");
+        assertThat(configuration.get("evalKey")).isEqualTo("VALUE");
     }
 
     @Test

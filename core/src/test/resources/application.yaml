@@ -19,6 +19,7 @@ classes:
           ConfigurationIT:
             key2: value2bis
             key3: value3
+            evalKey: ${env.ABDKSKFZOALKCHKHJ:'VALUE'}
 logging:
   level: INFO
   file:
