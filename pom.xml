@@ -1,6 +1,6 @@
 <!--
 
-    Copyright © 2013-2020, The SeedStack authors <http://seedstack.org>
+    Copyright © 2013-2021, The SeedStack authors <http://seedstack.org>
 
     This Source Code Form is subject to the terms of the Mozilla Public
     License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -14,7 +14,7 @@
     <parent>
         <groupId>org.seedstack.poms</groupId>
         <artifactId>parent-internal</artifactId>
-        <version>3.4.9</version>
+        <version>4.0.0-SNAPSHOT</version>
     </parent>
 
     <groupId>org.seedstack.seed</groupId>
@@ -29,7 +29,7 @@
         <coffig.version>3.1.6</coffig.version>
         <commons-cli.version>1.4</commons-cli.version>
         <guice.version>5.0.1</guice.version>
-        <guava.version>29.0-jre</guava.version>
+        <guava.version>30.1.1-jre</guava.version>
         <typetools.version>0.5.0</typetools.version>
         <shiro.version>1.7.1</shiro.version>
         <undertow.version>2.1.3.Final</undertow.version>
@@ -43,7 +43,6 @@
 
         <compatibility.version>3.1.0</compatibility.version>
 
-        <bintray.package>seed</bintray.package>
         <!-- TODO remove the limitation to TLSv1.2 below once built on JDK 12 -->
         <itArgLine>-Djdk.tls.client.protocols="TLSv1,TLSv1.1,TLSv1.2"</itArgLine>
     </properties>
@@ -238,49 +237,16 @@
         <tag>HEAD</tag>
     </scm>
 
-    <pluginRepositories>
-        <pluginRepository>
-            <snapshots>
+    <repositories>
+        <repository>
+            <id>oss.sonatype.org-snapshot</id>
+            <url>http://oss.sonatype.org/content/repositories/snapshots</url>
+            <releases>
                 <enabled>false</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
             </snapshots>
-            <id>bintray-jfrog-jfrog-jars</id>
-            <name>bintray-plugins</name>
-            <url>https://dl.bintray.com/jfrog/jfrog-jars</url>
-        </pluginRepository>
-    </pluginRepositories>
-
-    <profiles>
-        <profile>
-            <id>snapshots</id>
-            <repositories>
-                <repository>
-                    <snapshots>
-                        <enabled>true</enabled>
-                    </snapshots>
-                    <releases>
-                        <enabled>false</enabled>
-                    </releases>
-                    <id>ojo-libs-snapshot</id>
-                    <name>ojo-snapshots</name>
-                    <url>https://oss.jfrog.org/artifactory/libs-snapshot</url>
-                </repository>
-            </repositories>
-        </profile>
-        <profile>
-            <id>bintray</id>
-            <repositories>
-                <repository>
-                    <snapshots>
-                        <enabled>false</enabled>
-                    </snapshots>
-                    <releases>
-                        <enabled>true</enabled>
-                    </releases>
-                    <id>bintray</id>
-                    <name>bintray</name>
-                    <url>https://dl.bintray.com/seedstack/jars</url>
-                </repository>
-            </repositories>
-        </profile>
-    </profiles>
+        </repository>
+    </repositories>
 </project>

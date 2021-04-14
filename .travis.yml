@@ -8,12 +8,12 @@ cache:
   directories: $HOME/.m2/repository
 
 install:
-  - echo "<settings><servers><server><id>bintray</id><username>\${env.BINTRAY_USER}</username><password>\${env.BINTRAY_KEY}</password></server></servers></settings>" > ~/.m2/settings.xml
+  - echo "<settings><servers><server><id>ossrh</id><username>\${env.SONATYPE_USER}</username><password>\${env.SONATYPE_PASSWORD}</password></server></servers></settings>" > ~/.m2/settings.xml
   - if [[ $TRAVIS_PULL_REQUEST = false ]] && [[ $TRAVIS_BRANCH = master || $TRAVIS_BRANCH = dev-* ]] || [[ $TRAVIS_TAG = v* ]]; then GOAL=deploy; else GOAL=install; fi
-  - if [[ $TRAVIS_TAG = v* ]]; then ADDITIONAL_PROFILES=release; mvn -q -U org.seedstack:seedstack-maven-plugin:release; else ADDITIONAL_PROFILES=snapshots; fi
+  - if [[ $TRAVIS_TAG = v* ]]; then ADDITIONAL_PROFILES=release; mvn -q -U org.seedstack:seedstack-maven-plugin:release; fi
   - echo $ADDITIONAL_PROFILES
   - echo $GOAL
 
-script: mvn -U -Pbuild-number,compatibility,bintray,javadoc,$ADDITIONAL_PROFILES $GOAL
+script: mvn -U -Pbuild-number,compatibility,javadoc,$ADDITIONAL_PROFILES $GOAL
 
 after_success: mvn coveralls:report -DrepoToken=$COVERALLS_TOKEN
