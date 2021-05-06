@@ -7,6 +7,9 @@ jdk: openjdk11
 cache:
   directories: $HOME/.m2/repository
 
+before_install:
+  - gpg --fast-import gpg.asc
+
 install:
   - echo "<settings><servers><server><id>ossrh</id><username>\${env.SONATYPE_USER}</username><password>\${env.SONATYPE_PASSWORD}</password></server></servers></settings>" > ~/.m2/settings.xml
   - if [[ $TRAVIS_PULL_REQUEST = false ]] && [[ $TRAVIS_BRANCH = master || $TRAVIS_BRANCH = dev-* ]] || [[ $TRAVIS_TAG = v* ]]; then GOAL=deploy; else GOAL=install; fi
