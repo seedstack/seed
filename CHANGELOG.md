@@ -1,11 +1,14 @@
-# Version 3.12.0 (2021-01-31)
+# Version 3.12.0 (2021-05-06)
 
 * [new] Java 15 support
 * [new] The `check` tool analyzes and show discrepancies between configuration files (actual config) and configuration objects (expected config).
 * [chg] Move main entrypoint logic from `SeedMain.main()` to `Seed.launch()`, allowing custom main methods in addition to the built-in `SeedMain`. 
 * [chg] Upgrade Shiro to 1.7.1 (fixes CVE-2020-11989, CVE-2020-17510, CVE-2020-1957, CVE-2020-13933 and CVE-2019-12422).
 * [chg] Upgrade Guice to 5.0.1
-* [chg] Update pom parent to 4.0.0 (deploy/release directly to Sonatype).
+* [chg] Upgrade Jersey to 2.34
+* [chg] Upgrade Javassist to 3.27.0-GA
+* [chg] Upgrade Guava to 30.1.1-jre
+* [chg] Upgrade Coffig to 3.1.7
 * [fix] Detection of color output under recent versions of IntelliJ.
 * [fix] Fix configuration evaluation (macros, functions, ...) in `classes` section (see https://github.com/seedstack/seed/issues/283).
 

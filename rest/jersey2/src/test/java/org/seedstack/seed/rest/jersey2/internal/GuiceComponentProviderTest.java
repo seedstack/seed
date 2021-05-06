@@ -7,31 +7,27 @@
  */
 package org.seedstack.seed.rest.jersey2.internal;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.fail;
-
 import com.google.common.collect.Sets;
 import com.google.inject.Injector;
 import io.nuun.kernel.api.annotations.Ignore;
-import javax.servlet.ServletContext;
-import javax.ws.rs.Path;
-import javax.ws.rs.ext.Provider;
-import mockit.Deencapsulation;
-import mockit.Expectations;
-import mockit.Mock;
-import mockit.MockUp;
-import mockit.Mocked;
-import mockit.Tested;
-import mockit.Verifications;
+import mockit.*;
 import org.glassfish.hk2.api.DynamicConfiguration;
 import org.glassfish.hk2.api.Factory;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.utilities.binding.BindingBuilder;
 import org.glassfish.hk2.utilities.binding.ServiceBindingBuilder;
+import org.glassfish.jersey.model.ContractProvider;
 import org.junit.Test;
 import org.jvnet.hk2.guice.bridge.api.GuiceBridge;
 import org.jvnet.hk2.guice.bridge.api.GuiceIntoHK2Bridge;
 import org.seedstack.seed.SeedException;
+
+import javax.servlet.ServletContext;
+import javax.ws.rs.Path;
+import javax.ws.rs.ext.Provider;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.fail;
 
 public class GuiceComponentProviderTest {
     @Tested
@@ -135,7 +131,7 @@ public class GuiceComponentProviderTest {
 
     @Test
     public void testDoNotBindNonResourceClasses() {
-        boolean isBound = underTest.bind(String.class, null);
+        boolean isBound = underTest.bind(String.class, (ContractProvider) null);
         assertThat(isBound).isFalse();
     }
 
@@ -150,7 +146,7 @@ public class GuiceComponentProviderTest {
         class MyResource {
         }
 
-        assertThat(underTest.bind(MyResource.class, null)).isTrue();
+        assertThat(underTest.bind(MyResource.class, (ContractProvider) null)).isTrue();
     }
 
     @Test
