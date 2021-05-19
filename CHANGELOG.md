@@ -1,3 +1,7 @@
+# Version 3.12.1 (2021-05-19)
+
+* [fix] 
+
 # Version 3.12.0 (2021-05-06)
 
 * [new] Java 15 support

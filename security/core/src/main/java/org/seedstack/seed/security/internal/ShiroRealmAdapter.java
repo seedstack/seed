@@ -7,7 +7,13 @@
  */
 package org.seedstack.seed.security.internal;
 
-import org.apache.shiro.authc.*;
+import org.apache.shiro.authc.AuthenticationException;
+import org.apache.shiro.authc.AuthenticationInfo;
+import org.apache.shiro.authc.AuthenticationToken;
+import org.apache.shiro.authc.IncorrectCredentialsException;
+import org.apache.shiro.authc.SimpleAuthenticationInfo;
+import org.apache.shiro.authc.UnknownAccountException;
+import org.apache.shiro.authc.UsernamePasswordToken;
 import org.apache.shiro.authc.pam.UnsupportedTokenException;
 import org.apache.shiro.authz.AuthorizationInfo;
 import org.apache.shiro.realm.AuthorizingRealm;
@@ -173,11 +179,11 @@ class ShiroRealmAdapter extends AuthorizingRealm {
             return (org.seedstack.seed.security.AuthenticationToken) token;
         } else if (token instanceof UsernamePasswordToken) {
             UsernamePasswordToken shiroToken = (UsernamePasswordToken) token;
-            return new SeedUsernamePasswordToken(
+            return new org.seedstack.seed.security.UsernamePasswordToken(
                     shiroToken.getUsername(),
                     shiroToken.getPassword(),
-                    shiroToken.isRememberMe(),
-                    shiroToken.getHost()
+                    shiroToken.getHost(),
+                    shiroToken.isRememberMe()
             );
         } else if (token instanceof AuthenticationTokenWrapper) {
             AuthenticationTokenWrapper shiroToken = (AuthenticationTokenWrapper) token;

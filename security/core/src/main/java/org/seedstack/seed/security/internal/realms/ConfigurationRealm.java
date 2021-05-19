@@ -7,16 +7,28 @@
  */
 package org.seedstack.seed.security.internal.realms;
 
-import org.apache.shiro.authc.UsernamePasswordToken;
-import org.seedstack.seed.security.*;
-import org.seedstack.seed.security.internal.SeedUsernamePasswordToken;
+import org.seedstack.seed.security.AuthenticationException;
+import org.seedstack.seed.security.AuthenticationInfo;
+import org.seedstack.seed.security.AuthenticationToken;
+import org.seedstack.seed.security.IncorrectCredentialsException;
+import org.seedstack.seed.security.Realm;
+import org.seedstack.seed.security.RoleMapping;
+import org.seedstack.seed.security.RolePermissionResolver;
+import org.seedstack.seed.security.SecurityConfig;
+import org.seedstack.seed.security.UnknownAccountException;
+import org.seedstack.seed.security.UnsupportedTokenException;
+import org.seedstack.seed.security.UsernamePasswordToken;
 import org.seedstack.seed.security.principals.PrincipalProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import javax.inject.Named;
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * A realm that authenticate users and gives authorities using SeedStack configuration.
@@ -55,8 +67,8 @@ public class ConfigurationRealm implements Realm {
 
     @Override
     public AuthenticationInfo getAuthenticationInfo(AuthenticationToken token) throws AuthenticationException {
-        if (token instanceof SeedUsernamePasswordToken) {
-            UsernamePasswordToken userNamePasswordToken = (SeedUsernamePasswordToken) token;
+        if (token instanceof UsernamePasswordToken) {
+            UsernamePasswordToken userNamePasswordToken = (UsernamePasswordToken) token;
             ConfigurationUser user = findUser(userNamePasswordToken.getUsername());
             if (user == null) {
                 throw new UnknownAccountException("Unknown user " + userNamePasswordToken.getUsername());
@@ -82,7 +94,7 @@ public class ConfigurationRealm implements Realm {
 
     @Override
     public Class<? extends AuthenticationToken> supportedToken() {
-        return SeedUsernamePasswordToken.class;
+        return UsernamePasswordToken.class;
     }
 
     private ConfigurationUser findUser(String username) {

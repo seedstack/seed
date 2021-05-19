@@ -19,7 +19,7 @@
 
     <groupId>org.seedstack.seed</groupId>
     <artifactId>seed</artifactId>
-    <version>3.12.0-SNAPSHOT</version>
+    <version>3.12.1-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <properties>
@@ -213,7 +213,6 @@
                                 <exclude>org.seedstack.seed.security.SecurityConfig</exclude>
                                 <exclude>org.seedstack.seed.security.principals.SimplePrincipalProvider</exclude>
                                 <exclude>org.seedstack.seed.security.principals.X509CertificatePrincipalProvider</exclude>
-                                <exclude>org.seedstack.seed.security.UsernamePasswordToken</exclude>
                                 <exclude>org.seedstack.seed.rest.hal.Link</exclude>
                                 <exclude>org.seedstack.seed.undertow.UndertowConfig</exclude>
                                 <exclude>org.seedstack.seed.transaction.spi.TransactionMetadata</exclude>
