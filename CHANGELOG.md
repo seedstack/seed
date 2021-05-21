@@ -1,6 +1,6 @@
-# Version 3.12.1 (2021-05-19)
+# Version 3.12.1 (2021-05-21)
 
-* [fix] 
+* [fix] Class `UsernamePasswordToken` was incorrectly removed from `seed-security-specs`.
 
 # Version 3.12.0 (2021-05-06)
 
