@@ -9,6 +9,7 @@ package org.seedstack.seed.core.internal.configuration;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+import org.seedstack.coffig.Coffig;
 import org.seedstack.coffig.TreeNode;
 import org.seedstack.coffig.node.MapNode;
 import org.seedstack.coffig.node.NamedNode;
@@ -23,6 +24,12 @@ import java.util.Map;
 
 public class JsonConfigProcessor implements ConfigurationProcessor {
     private final ObjectMapper yamlMapper = new ObjectMapper(new YAMLFactory());
+    private Coffig coffig;
+
+    @Override
+    public void initialize(Coffig coffig) {
+        this.coffig = coffig;
+    }
 
     @Override
     public void process(MapNode configuration) {
@@ -39,11 +46,11 @@ public class JsonConfigProcessor implements ConfigurationProcessor {
 
         // Replace the value with the parsed JSON/YAML
         toParse.forEach((parent, list) -> list.forEach(key -> {
-            TreeNode toChange = parent.remove(key);
             String newKey = key.substring(0, key.length() - 5);
+            String rawValue = (String) coffig.getMapper().map(parent.remove(key), String.class);
 
             try {
-                parent.set(newKey, JacksonProvider.buildTreeFromString(yamlMapper, toChange.value()));
+                parent.set(newKey, JacksonProvider.buildTreeFromString(yamlMapper, rawValue));
             } catch (Exception e) {
                 parent.set(newKey, new ValueNode(TreeNode.formatNodeError(e)));
             }

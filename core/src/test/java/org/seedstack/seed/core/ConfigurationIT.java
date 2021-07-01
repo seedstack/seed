@@ -32,10 +32,12 @@ import org.seedstack.seed.core.fixtures.Dummy;
 import org.seedstack.seed.core.fixtures.DummyService1;
 import org.seedstack.seed.core.fixtures.Service;
 import org.seedstack.seed.core.fixtures.SomeEnum;
+import org.seedstack.seed.testing.SystemProperty;
 import org.seedstack.seed.testing.junit4.SeedITRunner;
 import some.other.pkg.ForeignClass;
 
 @RunWith(SeedITRunner.class)
+@SystemProperty(name = "testJsonProp", value = "{ \"key2\": \"val2\" }")
 public class ConfigurationIT {
     @Inject
     private Injector injector;
@@ -182,6 +184,7 @@ public class ConfigurationIT {
     public void json_expansion() {
         Coffig configuration = injector.getInstance(Application.class).getConfiguration();
         assertThat(configuration.get(String.class, "jsonVal.key1")).isEqualTo("val1");
+        assertThat(configuration.get(String.class, "jsonValThroughSysProp.key2")).isEqualTo("val2");
     }
 
     @Test

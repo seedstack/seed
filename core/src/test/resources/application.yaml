@@ -83,7 +83,7 @@ functions:
   availableUdpPort: $availableUdpPort('port2')
   randomUuid: $randomUuid()
 jsonVal|json: '{ "key1": "val1" }'
-
+jsonValThroughSysProp|json: ${sys.testJsonProp}
 arrayOfMapContainer:
   basicProperty: customId
   arrayOfMaps:
