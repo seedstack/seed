@@ -82,6 +82,8 @@ functions:
   availableTcpPort: $availableTcpPort('port1')
   availableUdpPort: $availableUdpPort('port2')
   randomUuid: $randomUuid()
+jsonVal|json: '{ "key1": "val1" }'
+
 arrayOfMapContainer:
   basicProperty: customId
   arrayOfMaps:

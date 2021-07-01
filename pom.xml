@@ -19,14 +19,14 @@
 
     <groupId>org.seedstack.seed</groupId>
     <artifactId>seed</artifactId>
-    <version>3.12.1-SNAPSHOT</version>
+    <version>3.13.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <properties>
         <nuun-kernel.version>1.0.M11</nuun-kernel.version>
         <javassist.version>3.27.0-GA</javassist.version>
         <shed.version>1.1.6</shed.version>
-        <coffig.version>3.1.7</coffig.version>
+        <coffig.version>3.1.8-SNAPSHOT</coffig.version>
         <commons-cli.version>1.4</commons-cli.version>
         <guice.version>5.0.1</guice.version>
         <guava.version>30.1.1-jre</guava.version>
