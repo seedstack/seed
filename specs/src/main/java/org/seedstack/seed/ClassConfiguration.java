@@ -7,6 +7,8 @@
  */
 package org.seedstack.seed;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
 import java.util.*;
 import java.util.function.BiConsumer;
 
@@ -112,6 +114,7 @@ public abstract class ClassConfiguration<T> {
      * @param key the key to retrieve the value of.
      * @return the split value or null.
      */
+    @SuppressFBWarnings(value = "PZLA_PREFER_ZERO_LENGTH_ARRAYS", justification = "Null value denotes absence of key which is a valid use case")
     public String[] getArray(String key) {
         String s = map.get(key);
         if (s == null) {

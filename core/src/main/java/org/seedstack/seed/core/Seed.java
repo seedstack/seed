@@ -10,6 +10,7 @@ package org.seedstack.seed.core;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.nuun.kernel.api.Kernel;
 import io.nuun.kernel.api.config.KernelConfiguration;
 import org.fusesource.jansi.Ansi;
@@ -191,6 +192,7 @@ public class Seed {
      *
      * @param args The launch arguments.
      */
+    @SuppressFBWarnings(value = "DM_EXIT", justification = "This is the entry point of the framework, to be used from main methods")
     public static void launch(String[] args) {
         try {
             final SeedLauncher seedLauncher;

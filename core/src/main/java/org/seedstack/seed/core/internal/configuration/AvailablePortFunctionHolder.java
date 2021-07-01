@@ -27,25 +27,21 @@ public class AvailablePortFunctionHolder implements ConfigFunctionHolder {
     @ConfigFunction
     int availableTcpPort(String name) {
         return TCP_PORTS.computeIfAbsent(name, n -> {
-            synchronized (TCP_PORTS) {
-                for (int i = PORT_RANGE_MIN; i <= PORT_RANGE_MAX; i++) {
-                    if (isTcpPortAvailable(i)) {
-                        return i;
-                    }
+            for (int i = PORT_RANGE_MIN; i <= PORT_RANGE_MAX; i++) {
+                if (isTcpPortAvailable(i)) {
+                    return i;
                 }
-                throw new IllegalStateException("Unable to find an available TCP port in range " + PORT_RANGE_MIN + "-" + PORT_RANGE_MAX);
             }
+            throw new IllegalStateException("Unable to find an available TCP port in range " + PORT_RANGE_MIN + "-" + PORT_RANGE_MAX);
         });
     }
 
     @ConfigFunction
     int availableUdpPort(String name) {
         return UDP_PORTS.computeIfAbsent(name, n -> {
-            synchronized (UDP_PORTS) {
-                for (int i = PORT_RANGE_MIN; i <= PORT_RANGE_MAX; i++) {
-                    if (isUdpPortAvailable(i)) {
-                        return i;
-                    }
+            for (int i = PORT_RANGE_MIN; i <= PORT_RANGE_MAX; i++) {
+                if (isUdpPortAvailable(i)) {
+                    return i;
                 }
             }
             throw new IllegalStateException("Unable to find an available UDP port in range " + PORT_RANGE_MIN + "-" + PORT_RANGE_MAX);

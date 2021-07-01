@@ -42,11 +42,19 @@ class CoreModule extends AbstractModule {
     }
 
     private <T> Matcher<T> createMatcherFromPredicate(Predicate<T> predicate) {
-        return new AbstractMatcher<T>() {
-            @Override
-            public boolean matches(T t) {
-                return predicate.test(t);
-            }
-        };
+        return new PredicateToMatcher<>(predicate);
+    }
+
+    private static class PredicateToMatcher<T> extends AbstractMatcher<T> {
+        private final Predicate<T> predicate;
+
+        public PredicateToMatcher(Predicate<T> predicate) {
+            this.predicate = predicate;
+        }
+
+        @Override
+        public boolean matches(T t) {
+            return predicate.test(t);
+        }
     }
 }
