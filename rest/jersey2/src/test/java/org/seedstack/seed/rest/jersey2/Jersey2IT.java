@@ -7,11 +7,7 @@
  */
 package org.seedstack.seed.rest.jersey2;
 
-import static io.restassured.RestAssured.expect;
-import static org.assertj.core.api.Assertions.assertThat;
-
 import io.restassured.response.Response;
-import javax.ws.rs.core.MediaType;
 import org.json.JSONException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -19,6 +15,11 @@ import org.seedstack.seed.Configuration;
 import org.seedstack.seed.testing.junit4.SeedITRunner;
 import org.seedstack.seed.undertow.LaunchWithUndertow;
 import org.skyscreamer.jsonassert.JSONAssert;
+
+import javax.ws.rs.core.MediaType;
+
+import static io.restassured.RestAssured.expect;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(SeedITRunner.class)
 @LaunchWithUndertow
@@ -78,5 +79,11 @@ public class Jersey2IT {
                 .post(baseUrl + "/stream")
                 .asString();
         assertThat(result).isEqualTo("Hello world!");
+    }
+
+    @Test
+    public void diagnostic() {
+        expect().statusCode(200).given()
+                .get(baseUrl + "/seedstack/diagnostic");
     }
 }

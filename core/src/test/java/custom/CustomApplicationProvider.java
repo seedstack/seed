@@ -9,6 +9,7 @@ package custom;
 
 import java.io.File;
 import java.util.Map;
+import java.util.Set;
 import javax.inject.Provider;
 import org.seedstack.coffig.Coffig;
 import org.seedstack.seed.Application;
@@ -47,6 +48,11 @@ public class CustomApplicationProvider implements Provider<Application> {
 
             @Override
             public Coffig getConfiguration() {
+                return null;
+            }
+
+            @Override
+            public Set<String> getConfigurationProfiles() {
                 return null;
             }
 

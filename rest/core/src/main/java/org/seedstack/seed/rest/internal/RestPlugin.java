@@ -15,16 +15,6 @@ import com.google.inject.AbstractModule;
 import io.nuun.kernel.api.plugin.InitState;
 import io.nuun.kernel.api.plugin.context.InitContext;
 import io.nuun.kernel.api.plugin.request.ClasspathScanRequest;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
-import java.util.function.Predicate;
-import javax.servlet.ServletContext;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Variant;
 import org.seedstack.seed.core.SeedRuntime;
 import org.seedstack.seed.core.internal.AbstractSeedPlugin;
 import org.seedstack.seed.core.internal.init.ValidationManager;
@@ -45,6 +35,17 @@ import org.seedstack.seed.spi.ConfigurationPriority;
 import org.seedstack.shed.reflect.Classes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.servlet.ServletContext;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Variant;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
+import java.util.function.Predicate;
 
 public class RestPlugin extends AbstractSeedPlugin implements RestProvider {
     private static final Logger LOGGER = LoggerFactory.getLogger(RestPlugin.class);
@@ -89,6 +90,7 @@ public class RestPlugin extends AbstractSeedPlugin implements RestProvider {
 
             configureExceptionMappers();
             configureStreamSupport();
+            configureDiagResource();
 
             initializeHypermedia(servletContext.getContextPath());
 
@@ -139,6 +141,15 @@ public class RestPlugin extends AbstractSeedPlugin implements RestProvider {
 
     private boolean isDynamicValidationSupported() {
         return ValidationManager.get().getValidationLevel().compareTo(ValidationManager.ValidationLevel.LEVEL_1_1) >= 0;
+    }
+
+    private void configureDiagResource() {
+        if (!restConfig.isDiagnosticResource()) {
+            resources.remove(DiagnosticResource.class);
+            LOGGER.debug("Diagnostic resource disabled");
+        } else {
+            LOGGER.info("Diagnostic resource accessible at {}/{}", restConfig.getPath(), "seedstack/diag");
+        }
     }
 
     private void configureStreamSupport() {

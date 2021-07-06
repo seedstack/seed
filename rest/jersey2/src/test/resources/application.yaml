@@ -21,5 +21,6 @@ rest:
   path<withPrefix>: /rest
   jsonHome: true
   jsonHome<withoutRootResource>: false
+  diagnosticResource: true
 
 textHome<withoutRootResource>: false

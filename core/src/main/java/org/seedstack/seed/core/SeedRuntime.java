@@ -8,15 +8,7 @@
 
 package org.seedstack.seed.core;
 
-import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
 import io.nuun.kernel.api.Plugin;
-import java.io.IOException;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.ServiceLoader;
-import java.util.Set;
 import org.seedstack.coffig.Coffig;
 import org.seedstack.coffig.provider.CompositeProvider;
 import org.seedstack.coffig.provider.InMemoryProvider;
@@ -26,9 +18,15 @@ import org.seedstack.seed.diagnostic.DiagnosticManager;
 import org.seedstack.seed.diagnostic.spi.DiagnosticInfoCollector;
 import org.seedstack.seed.spi.ConfigurationPriority;
 
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.ServiceLoader;
+import java.util.Set;
+
 public class SeedRuntime {
     private static final String SEED_PACKAGE_PREFIX = "org.seedstack.seed";
-    private static final YAMLMapper yamlMapper = new YAMLMapper();
     private final Object context;
     private final DiagnosticManager diagnosticManager;
     private final Coffig configuration;
@@ -45,7 +43,7 @@ public class SeedRuntime {
         this.configuration = configuration;
         this.seedVersion = seedVersion;
         this.businessVersion = businessVersion;
-        this.diagnosticManager.registerDiagnosticInfoCollector("seed", new RuntimeDiagnosticCollector());
+        this.diagnosticManager.registerDiagnosticInfoCollector("seedstack", new RuntimeDiagnosticCollector());
         this.prioritizedProvider = ((CompositeProvider) this.configuration.getProvider()).get(
                 PrioritizedProvider.class);
         this.inMemoryProvider = new InMemoryProvider();
@@ -168,11 +166,6 @@ public class SeedRuntime {
             result.put("businessVersion", businessVersion == null ? "UNKNOWN" : businessVersion);
             result.put("inconsistentPlugins", inconsistentPlugins);
             result.put("contextClass", context == null ? "NONE" : context.getClass().getName());
-            try {
-                result.put("configuration", yamlMapper.readValue(configuration.toString(), Map.class));
-            } catch (IOException | RuntimeException e) {
-                result.put("rawConfiguration", configuration.toString());
-            }
 
             return result;
         }

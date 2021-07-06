@@ -8,9 +8,12 @@
 package org.seedstack.seed.core.internal.configuration;
 
 import com.google.inject.util.Types;
+
 import java.io.File;
 import java.util.Collections;
 import java.util.Map;
+import java.util.Set;
+
 import org.seedstack.coffig.Coffig;
 import org.seedstack.coffig.node.ValueNode;
 import org.seedstack.seed.Application;
@@ -75,6 +78,11 @@ class ApplicationImpl implements Application {
     @Override
     public Coffig getConfiguration() {
         return coffig;
+    }
+
+    @Override
+    public Set<String> getConfigurationProfiles() {
+        return ProfileProcessor.activeProfiles();
     }
 
     @Override

@@ -24,6 +24,7 @@ public class RestConfig {
     private String baseRel = "";
     private String baseParam = "";
     private boolean jsonHome = false;
+    private boolean diagnosticResource = false;
     private Map<String, String> jerseyProperties = new HashMap<>();
     private Set<Class<?>> features = new HashSet<>();
     private ExceptionMappingConfig exceptionMapping = new ExceptionMappingConfig();
@@ -78,6 +79,15 @@ public class RestConfig {
 
     public RestConfig setJsonHome(boolean jsonHome) {
         this.jsonHome = jsonHome;
+        return this;
+    }
+
+    public boolean isDiagnosticResource() {
+        return diagnosticResource;
+    }
+
+    public RestConfig setDiagnosticResource(boolean diagnosticResource) {
+        this.diagnosticResource = diagnosticResource;
         return this;
     }
 
