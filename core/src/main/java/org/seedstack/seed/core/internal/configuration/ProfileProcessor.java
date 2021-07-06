@@ -8,22 +8,26 @@
 package org.seedstack.seed.core.internal.configuration;
 
 import com.google.common.base.Strings;
+import org.seedstack.coffig.TreeNode;
+import org.seedstack.coffig.node.MapNode;
+import org.seedstack.coffig.spi.ConfigurationProcessor;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import org.seedstack.coffig.TreeNode;
-import org.seedstack.coffig.node.MapNode;
-import org.seedstack.coffig.spi.ConfigurationProcessor;
 
 public class ProfileProcessor implements ConfigurationProcessor {
     private static final String SEEDSTACK_PROFILES_PROPERTY = "seedstack.profiles";
+    private static final String SEEDSTACK_PROFILES_ENV = "SEEDSTACK_PROFILES";
     private static Pattern keyWithProfilePattern = Pattern.compile("(.*)<([,\\s\\w]+)>");
     private static Predicate<String> notNullOrEmpty = ((Predicate<String>) Strings::isNullOrEmpty).negate();
 
@@ -67,6 +71,9 @@ public class ProfileProcessor implements ConfigurationProcessor {
     }
 
     static Set<String> activeProfiles() {
-        return parseProfiles(System.getProperty(SEEDSTACK_PROFILES_PROPERTY, ""));
+        Set<String> activeProfiles = new HashSet<>();
+        activeProfiles.addAll(parseProfiles(System.getProperty(SEEDSTACK_PROFILES_PROPERTY, "")));
+        activeProfiles.addAll(parseProfiles(Optional.ofNullable(System.getenv(SEEDSTACK_PROFILES_ENV)).orElse("")));
+        return activeProfiles;
     }
 }

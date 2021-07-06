@@ -3,6 +3,9 @@
 * [new] Support JSON and YAML expansion in configuration. Use a `myKey|json` or `myKey|yaml` as key syntax. The suffix
   will be removed and the value will be replaced by the parsed subtree. Useful for parsing JSON structures passed by
   cloud platforms.
+* [new] The `SEEDSTACK_PROFILES` environment variable can now be used to specify comma-separated configuration profiles
+  to enable. These profiles will be added to the profiles already defined in the `seedstack.profiles` system property if
+  any.
 
 # Version 3.12.1 (2021-05-21)
 
