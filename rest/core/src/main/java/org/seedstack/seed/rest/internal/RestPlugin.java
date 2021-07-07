@@ -148,7 +148,7 @@ public class RestPlugin extends AbstractSeedPlugin implements RestProvider {
             resources.remove(DiagnosticResource.class);
             LOGGER.debug("Diagnostic resource disabled");
         } else {
-            LOGGER.info("Diagnostic resource accessible at {}/{}", restConfig.getPath(), "seedstack/diag");
+            LOGGER.info("Diagnostic resource accessible at {}/{}", restConfig.getPath(), "seedstack/diagnostic");
         }
     }
 
