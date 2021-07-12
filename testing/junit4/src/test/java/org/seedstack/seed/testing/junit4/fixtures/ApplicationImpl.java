@@ -10,6 +10,8 @@ package org.seedstack.seed.testing.junit4.fixtures;
 import java.io.File;
 import java.util.Collections;
 import java.util.Map;
+import java.util.Set;
+
 import org.seedstack.coffig.Coffig;
 import org.seedstack.coffig.provider.InMemoryProvider;
 import org.seedstack.seed.Application;
@@ -63,6 +65,11 @@ class ApplicationImpl implements Application {
     @Override
     public Coffig getConfiguration() {
         return coffig;
+    }
+
+    @Override
+    public Set<String> getConfigurationProfiles() {
+        return null;
     }
 
     @Override

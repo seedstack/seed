@@ -9,6 +9,8 @@ package org.seedstack.seed;
 
 import java.io.File;
 import java.util.Map;
+import java.util.Set;
+
 import org.seedstack.coffig.Coffig;
 
 /**
@@ -62,6 +64,13 @@ public interface Application {
      * @return the {@link Coffig} object of the whole application configuration.
      */
     Coffig getConfiguration();
+
+    /**
+     * Get the active configuration profiles.
+     *
+     * @return the names of active configuration profiles.
+     */
+    Set<String> getConfigurationProfiles();
 
     /**
      * Get the configuration properties of the specified class.

@@ -7,17 +7,16 @@
  */
 package org.seedstack.seed.core.internal.configuration;
 
-import java.util.Locale;
 import org.seedstack.coffig.TreeNode;
 import org.seedstack.coffig.node.MapNode;
 import org.seedstack.coffig.node.NamedNode;
 import org.seedstack.coffig.spi.ConfigurationProcessor;
 
+import java.util.Locale;
+
 public class SecureConfigurationProcessor implements ConfigurationProcessor {
     @Override
     public void process(MapNode configuration) {
-        configuration.get("env").ifPresent(TreeNode::hide);
-        configuration.get("sys").ifPresent(TreeNode::hide);
         configuration.walk()
                 .filter(node -> node.type() == TreeNode.Type.MAP_NODE)
                 .forEach(node -> node.namedNodes()
@@ -28,6 +27,6 @@ public class SecureConfigurationProcessor implements ConfigurationProcessor {
 
     private boolean isPotentialPassword(NamedNode namedNode) {
         String key = namedNode.name().toUpperCase(Locale.ENGLISH);
-        return key.contains("PASSWORD") || key.contains("PASSWD") || key.contains("PWD");
+        return key.contains("PASSWORD") || key.contains("PASSWD") || key.contains("PWD") || key.contains("SECRET");
     }
 }

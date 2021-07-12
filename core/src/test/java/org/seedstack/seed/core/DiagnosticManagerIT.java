@@ -68,11 +68,10 @@ public class DiagnosticManagerIT {
 
         assertThat(diagnosticInfo).isNotNull();
 
-        Map<String, Object> seedInfo = (Map<String, Object>) diagnosticInfo.get("seed");
+        Map<String, Object> seedInfo = (Map<String, Object>) diagnosticInfo.get("seedstack");
         assertThat((String) (seedInfo.get("version"))).isNotEmpty();
         assertThat((Set<String>) (seedInfo.get("inconsistentPlugins"))).isNotNull();
         assertThat((String) (seedInfo.get("contextClass"))).isNotEmpty();
-        assertThat(seedInfo.get("configuration")).isNotNull();
     }
 
     @Test
@@ -104,7 +103,9 @@ public class DiagnosticManagerIT {
         assertThat(applicationInfo.get("id")).isNotNull();
         assertThat(applicationInfo.get("name")).isNotNull();
         assertThat(applicationInfo.get("version")).isNotNull();
-        assertThat(applicationInfo.get("storage-location")).isNull();
+        assertThat(applicationInfo.get("storage")).isNotNull(); // storage is automatically enabled during integration testing
+        assertThat(applicationInfo.get("configuration")).isNotNull();
+        assertThat(applicationInfo.get("configurationProfiles")).isNotNull();
     }
 
     @Test
