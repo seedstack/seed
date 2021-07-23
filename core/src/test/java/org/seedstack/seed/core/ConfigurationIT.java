@@ -188,6 +188,12 @@ public class ConfigurationIT {
     }
 
     @Test
+    public void mapped_toString() {
+        Coffig configuration = injector.getInstance(Application.class).getConfiguration();
+        assertThat(configuration.toMappedString()).doesNotContain("${");
+    }
+
+    @Test
     public void applicationInjection() {
         assertThat(application).isNotNull();
     }
