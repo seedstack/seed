@@ -7,25 +7,26 @@
  */
 package org.seedstack.seed.core.internal;
 
-import static org.seedstack.shed.misc.PriorityUtils.sortByPriority;
-
 import com.google.common.base.Strings;
 import com.google.inject.Module;
 import io.nuun.kernel.api.plugin.InitState;
 import io.nuun.kernel.api.plugin.context.InitContext;
 import io.nuun.kernel.api.plugin.request.ClasspathScanRequest;
+import org.seedstack.seed.SeedInterceptor;
+import org.seedstack.shed.misc.PriorityUtils;
+import org.seedstack.shed.reflect.Classes;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.inject.Provider;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
-import javax.inject.Provider;
-import org.seedstack.seed.SeedInterceptor;
-import org.seedstack.shed.misc.PriorityUtils;
-import org.seedstack.shed.reflect.Classes;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import static org.seedstack.shed.misc.PriorityUtils.sortByPriority;
 
 /**
  * Core plugin that configures base package roots and detects diagnostic collectors, dependency providers, Guice modules
@@ -120,6 +121,8 @@ public class CorePlugin extends AbstractSeedPlugin {
     @SuppressWarnings("unchecked")
     private void detectProviders(InitContext initContext) {
         initContext.scannedTypesByPredicate().get(ProvideResolver.INSTANCE)
+                .stream()
+                .filter(Provider.class::isAssignableFrom)
                 .forEach(candidate -> ProvideResolver.INSTANCE.apply(candidate).ifPresent(annotation -> {
                     if (annotation.override()) {
                         overridingBindings.add(new ProviderDefinition<>((Class<Provider<Object>>) candidate));

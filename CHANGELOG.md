@@ -1,3 +1,8 @@
+# Version 3.14.0 (2021-09-30)
+
+* [new] `@PostConstruct` support was extended to non-singletons. `@PreDestroy` is still limited to singletons per design
+  (only singletons instances are known and tracked by the lifecycle manager).
+
 # Version 3.13.0 (2021-07-31)
 
 * [new] Support JSON and YAML expansion in configuration. Use a `myKey|json` or `myKey|yaml` as key syntax. The suffix

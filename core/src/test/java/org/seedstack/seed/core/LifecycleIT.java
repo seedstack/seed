@@ -7,16 +7,9 @@
  */
 package org.seedstack.seed.core;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import com.google.inject.Injector;
-import com.google.inject.Module;
 import com.google.inject.name.Names;
 import io.nuun.kernel.api.Kernel;
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
-import javax.annotation.Priority;
-import javax.inject.Singleton;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -27,6 +20,13 @@ import org.seedstack.seed.LifecycleListener;
 import org.seedstack.seed.core.internal.transaction.TransactionalClassProxy;
 import org.seedstack.seed.core.internal.transaction.TransactionalProxy;
 
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
+import javax.annotation.Priority;
+import javax.inject.Singleton;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
 @Priority(5)
 public class LifecycleIT implements LifecycleListener {
     private static boolean startedWasCalled;
@@ -36,8 +36,10 @@ public class LifecycleIT implements LifecycleListener {
     private static boolean proxyClosedWasCalled;
     private static boolean classProxyClosedWasCalled;
     private static boolean preDestroyCalled;
+    private static boolean postConstructSingletonCalled;
     private static boolean postConstructCalled;
     private Kernel kernel;
+    private Injector childInjector;
 
     @BeforeClass
     public static void setUpClass() {
@@ -58,9 +60,10 @@ public class LifecycleIT implements LifecycleListener {
     @Before
     public void setUp() {
         kernel = Seed.createKernel();
-        kernel.objectGraph().as(Injector.class).createChildInjector((Module) binder -> {
+        childInjector = kernel.objectGraph().as(Injector.class).createChildInjector(binder -> {
             binder.bind(PreDestroyFixture.class);
             binder.bind(PostConstructFixture.class);
+            binder.bind(PostConstructSingletonFixture.class);
             binder.bind(AutoCloseableFixture.class);
             binder.bind(IgnoredAutoCloseableFixture.class);
             binder.bind(AutoCloseable.class)
@@ -75,7 +78,7 @@ public class LifecycleIT implements LifecycleListener {
         assertThat(stoppingWasCalled).isFalse();
         assertThat(closedWasCalled).isFalse();
         assertThat(ignoredClosedWasCalled).isFalse();
-        assertThat(postConstructCalled).isTrue();
+        assertThat(postConstructSingletonCalled).isTrue();
         assertThat(preDestroyCalled).isFalse();
     }
 
@@ -97,7 +100,12 @@ public class LifecycleIT implements LifecycleListener {
         assertThat(ignoredClosedWasCalled).isFalse();
         assertThat(proxyClosedWasCalled).isFalse();
         assertThat(classProxyClosedWasCalled).isFalse();
+        assertThat(postConstructSingletonCalled).isTrue();
+
+        assertThat(postConstructCalled).isFalse();
+        childInjector.getInstance(PostConstructFixture.class);
         assertThat(postConstructCalled).isTrue();
+
         assertThat(preDestroyCalled).isFalse();
     }
 
@@ -156,6 +164,13 @@ public class LifecycleIT implements LifecycleListener {
     }
 
     @Singleton
+    private static class PostConstructSingletonFixture {
+        @PostConstruct
+        public void postConstruct() {
+            postConstructSingletonCalled = true;
+        }
+    }
+
     private static class PostConstructFixture {
         @PostConstruct
         public void postConstruct() {

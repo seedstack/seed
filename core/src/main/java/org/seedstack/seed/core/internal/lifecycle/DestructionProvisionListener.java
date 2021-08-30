@@ -12,14 +12,16 @@ import static org.seedstack.shed.reflect.ReflectUtils.invoke;
 import static org.seedstack.shed.reflect.ReflectUtils.makeAccessible;
 
 import com.google.inject.spi.ProvisionListener;
+
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
+
 import org.seedstack.shed.reflect.Classes;
 
-class LifecycleProvisionListener implements ProvisionListener {
+class DestructionProvisionListener implements ProvisionListener {
     private final LifecycleManager lifecycleManager;
 
-    LifecycleProvisionListener(LifecycleManager lifecycleManager) {
+    DestructionProvisionListener(LifecycleManager lifecycleManager) {
         this.lifecycleManager = lifecycleManager;
     }
 
@@ -31,9 +33,6 @@ class LifecycleProvisionListener implements ProvisionListener {
                 .traversingSuperclasses()
                 .methods()
                 .forEach(m -> {
-                    if (elementAnnotatedWith(PostConstruct.class, true).test(m)) {
-                        invoke(makeAccessible(m), provision);
-                    }
                     if (elementAnnotatedWith(PreDestroy.class, true).test(m)) {
                         lifecycleManager.registerPreDestroy(provision, m);
                     }

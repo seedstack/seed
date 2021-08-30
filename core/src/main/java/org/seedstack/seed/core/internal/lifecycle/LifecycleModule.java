@@ -9,15 +9,16 @@ package org.seedstack.seed.core.internal.lifecycle;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.multibindings.Multibinder;
-import java.util.Set;
 import org.seedstack.seed.LifecycleListener;
+
+import java.util.Set;
 
 class LifecycleModule extends AbstractModule {
     private final Set<Class<? extends LifecycleListener>> lifecycleListenerClasses;
     private final LifecycleManager lifecycleManager;
 
     LifecycleModule(Set<Class<? extends LifecycleListener>> lifecycleListenerClasses,
-            LifecycleManager lifecycleManager) {
+                    LifecycleManager lifecycleManager) {
         this.lifecycleListenerClasses = lifecycleListenerClasses;
         this.lifecycleManager = lifecycleManager;
     }
@@ -31,7 +32,8 @@ class LifecycleModule extends AbstractModule {
             lifecycleListenerMultibinder.addBinding().to(lifecycleListenerClass);
         }
 
-        // Listen for singletons having lifecycle annotations or interfaces
-        bindListener(new LifecycleMatcher(), new LifecycleProvisionListener(lifecycleManager));
+        // Bind lifecycle provision listeners
+        bindListener(new ConstructionMatcher(), new ConstructionProvisionListener());
+        bindListener(new DestructionMatcher(), new DestructionProvisionListener(lifecycleManager));
     }
 }

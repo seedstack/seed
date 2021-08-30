@@ -7,25 +7,18 @@
  */
 package org.seedstack.seed.core;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.fail;
-
 import com.google.inject.ConfigurationException;
 import com.google.inject.CreationException;
 import com.google.inject.Injector;
 import com.google.inject.Module;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.reflect.Method;
-import java.util.function.Predicate;
-import javax.inject.Inject;
-import javax.inject.Named;
 import org.aopalliance.intercept.MethodInvocation;
+import org.assertj.core.util.Lists;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.seedstack.seed.Bind;
 import org.seedstack.seed.Logging;
 import org.seedstack.seed.Nullable;
+import org.seedstack.seed.Provide;
 import org.seedstack.seed.SeedException;
 import org.seedstack.seed.SeedInterceptor;
 import org.seedstack.seed.core.fixtures.BoundFromInterface;
@@ -48,6 +41,18 @@ import org.seedstack.seed.testing.junit4.SeedITRunner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import some.other.pkg.ForeignClass;
+
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.inject.Provider;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.reflect.Method;
+import java.util.List;
+import java.util.function.Predicate;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
 
 @RunWith(SeedITRunner.class)
 public class CoreIT {
@@ -143,6 +148,21 @@ public class CoreIT {
         assertThat(SomeSeedInterceptor.invokedTimes).isEqualTo(1);
     }
 
+    @Test
+    public void annotatedProviderIsWorking() {
+        HolderNominal instance = injector.getInstance(HolderNominal.class);
+        assertThat(instance.testValue).isEqualTo(Lists.newArrayList("test"));
+    }
+
+    @Provide
+    @Named("test")
+    private static class ValueProvider implements Provider<List<String>> {
+        @Override
+        public List<String> get() {
+            return Lists.newArrayList("test");
+        }
+    }
+
     @Bind
     private static class LoggerHolder {
         private static final Logger logger = LoggerFactory.getLogger(LoggerHolder.class);
@@ -203,6 +223,9 @@ public class CoreIT {
         @Inject
         @Dummy
         ProvidedInterface<Integer> providedFromInterfaceWithAnnotation;
+        @Inject
+        @Named("test")
+        List<String> testValue;
     }
 
     private static class HolderException {
