@@ -35,6 +35,7 @@ public class LifecycleIT implements LifecycleListener {
     private static boolean ignoredClosedWasCalled;
     private static boolean proxyClosedWasCalled;
     private static boolean classProxyClosedWasCalled;
+    private static boolean preDestroySingletonCalled;
     private static boolean preDestroyCalled;
     private static boolean postConstructSingletonCalled;
     private static boolean postConstructCalled;
@@ -54,7 +55,7 @@ public class LifecycleIT implements LifecycleListener {
         assertThat(stoppingWasCalled).isTrue();
         assertThat(closedWasCalled).isTrue();
         assertThat(ignoredClosedWasCalled).isFalse();
-        assertThat(preDestroyCalled).isTrue();
+        assertThat(preDestroySingletonCalled).isTrue();
     }
 
     @Before
@@ -62,8 +63,8 @@ public class LifecycleIT implements LifecycleListener {
         kernel = Seed.createKernel();
         childInjector = kernel.objectGraph().as(Injector.class).createChildInjector(binder -> {
             binder.bind(PreDestroyFixture.class);
-            binder.bind(PostConstructFixture.class);
-            binder.bind(PostConstructSingletonFixture.class);
+            binder.bind(StatelessFixture.class);
+            binder.bind(SingletonFixture.class);
             binder.bind(AutoCloseableFixture.class);
             binder.bind(IgnoredAutoCloseableFixture.class);
             binder.bind(AutoCloseable.class)
@@ -79,7 +80,7 @@ public class LifecycleIT implements LifecycleListener {
         assertThat(closedWasCalled).isFalse();
         assertThat(ignoredClosedWasCalled).isFalse();
         assertThat(postConstructSingletonCalled).isTrue();
-        assertThat(preDestroyCalled).isFalse();
+        assertThat(preDestroySingletonCalled).isFalse();
     }
 
     @After
@@ -88,7 +89,7 @@ public class LifecycleIT implements LifecycleListener {
         assertThat(stoppingWasCalled).isFalse();
         assertThat(closedWasCalled).isFalse();
         assertThat(ignoredClosedWasCalled).isFalse();
-        assertThat(preDestroyCalled).isFalse();
+        assertThat(preDestroySingletonCalled).isFalse();
         Seed.disposeKernel(kernel);
     }
 
@@ -103,10 +104,12 @@ public class LifecycleIT implements LifecycleListener {
         assertThat(postConstructSingletonCalled).isTrue();
 
         assertThat(postConstructCalled).isFalse();
-        childInjector.getInstance(PostConstructFixture.class);
-        assertThat(postConstructCalled).isTrue();
-
         assertThat(preDestroyCalled).isFalse();
+        childInjector.getInstance(StatelessFixture.class);
+        assertThat(postConstructCalled).isTrue();
+        assertThat(preDestroyCalled).isFalse();
+
+        assertThat(preDestroySingletonCalled).isFalse();
     }
 
     @Override
@@ -157,24 +160,30 @@ public class LifecycleIT implements LifecycleListener {
 
     @Singleton
     private static class PreDestroyFixture {
-        @PreDestroy
-        public void preDestroy() {
-            preDestroyCalled = true;
-        }
     }
 
     @Singleton
-    private static class PostConstructSingletonFixture {
+    private static class SingletonFixture {
         @PostConstruct
         public void postConstruct() {
             postConstructSingletonCalled = true;
         }
+
+        @PreDestroy
+        public void preDestroy() {
+            preDestroySingletonCalled = true;
+        }
     }
 
-    private static class PostConstructFixture {
+    private static class StatelessFixture {
         @PostConstruct
         public void postConstruct() {
             postConstructCalled = true;
+        }
+
+        @PreDestroy
+        public void preDestroy() {
+            preDestroyCalled = true;
         }
     }
 }

@@ -32,8 +32,7 @@ class LifecycleModule extends AbstractModule {
             lifecycleListenerMultibinder.addBinding().to(lifecycleListenerClass);
         }
 
-        // Bind lifecycle provision listeners
-        bindListener(new ConstructionMatcher(), new ConstructionProvisionListener());
-        bindListener(new DestructionMatcher(), new DestructionProvisionListener(lifecycleManager));
+        // Bind lifecycle provision listener
+        bindListener(new LifecycleMatcher(), new LifecycleProvisionListener(lifecycleManager));
     }
 }
