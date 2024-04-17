@@ -12,6 +12,7 @@ import com.fasterxml.jackson.jaxrs.base.JsonParseExceptionMapper;
 import com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider;
 import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 import com.google.inject.AbstractModule;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.nuun.kernel.api.plugin.InitState;
 import io.nuun.kernel.api.plugin.context.InitContext;
 import io.nuun.kernel.api.plugin.request.ClasspathScanRequest;
@@ -47,6 +48,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Predicate;
 
+@SuppressFBWarnings(value = "UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR", justification = "Fields init are following plugin lifecycle")
 public class RestPlugin extends AbstractSeedPlugin implements RestProvider {
     private static final Logger LOGGER = LoggerFactory.getLogger(RestPlugin.class);
     private final Map<Variant, Class<? extends RootResource>> rootResourcesByVariant = new HashMap<>();

@@ -38,6 +38,7 @@ import org.slf4j.LoggerFactory;
 /**
  * This plugin provides support for servlet-based Web applications.
  */
+@SuppressFBWarnings(value = "UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR", justification = "Fields init are following plugin lifecycle")
 public class WebPlugin extends AbstractSeedPlugin {
     private static final Logger LOGGER = LoggerFactory.getLogger(WebPlugin.class);
     private static final String WEB_INF_LIB = "/WEB-INF/lib";

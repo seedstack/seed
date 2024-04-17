@@ -8,6 +8,8 @@
 package org.seedstack.seed.web.websocket;
 
 import com.google.inject.Injector;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
 import javax.inject.Inject;
 import javax.websocket.server.ServerEndpointConfig;
 
@@ -22,6 +24,7 @@ public class BaseServerEndpointConfigurator extends ServerEndpointConfig.Configu
     /**
      * Creates the endpoint configurator.
      */
+    @SuppressFBWarnings(value = "MC_OVERRIDABLE_METHOD_CALL_IN_CONSTRUCTOR", justification = "False positive")
     public BaseServerEndpointConfigurator() {
         super();
         injector.injectMembers(this);

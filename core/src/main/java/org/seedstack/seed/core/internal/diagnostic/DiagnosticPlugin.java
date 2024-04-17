@@ -76,8 +76,10 @@ public class DiagnosticPlugin extends AbstractSeedPlugin {
 
     @Override
     public void start(Context context) {
-        for (Map.Entry<String, DiagnosticInfoCollector> entry : diagnosticInfoCollectors.entrySet()) {
-            diagnosticManager.registerDiagnosticInfoCollector(entry.getKey(), entry.getValue());
+        if (diagnosticInfoCollectors != null && diagnosticManager != null) {
+            for (Map.Entry<String, DiagnosticInfoCollector> entry : diagnosticInfoCollectors.entrySet()) {
+                diagnosticManager.registerDiagnosticInfoCollector(entry.getKey(), entry.getValue());
+            }
         }
     }
 }

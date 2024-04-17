@@ -11,6 +11,12 @@ import com.google.common.reflect.TypeToken;
 import com.google.inject.Key;
 import com.google.inject.TypeLiteral;
 import com.google.inject.util.Types;
+import org.seedstack.seed.SeedException;
+import org.seedstack.seed.core.internal.CoreErrorCode;
+import org.seedstack.shed.reflect.AnnotationPredicates;
+import org.seedstack.shed.reflect.Annotations;
+
+import javax.inject.Qualifier;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
@@ -21,11 +27,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import javax.inject.Qualifier;
-import org.seedstack.seed.SeedException;
-import org.seedstack.seed.core.internal.CoreErrorCode;
-import org.seedstack.shed.reflect.AnnotationPredicates;
-import org.seedstack.shed.reflect.Annotations;
 
 /**
  * Utilities for Guice bindings.
@@ -76,7 +77,7 @@ public final class BindingUtils {
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
     public static <T> Map<Key<T>, Class<? extends T>> resolveBindingDefinitions(Class<T> injecteeClass,
-            Class<? extends T> firstImplClass, Class<? extends T>... restImplClasses) {
+                                                                                Class<? extends T> firstImplClass, Class<? extends T>... restImplClasses) {
         Map<Key<T>, Class<? extends T>> typeLiterals = new HashMap<>();
         List<Class<? extends T>> subClasses = new ArrayList<>();
 
@@ -89,13 +90,7 @@ public final class BindingUtils {
 
         for (Class<? extends T> subClass : subClasses) {
             if (isBindable(subClass)) {
-                Type resolvedType = TypeToken.of(subClass).getSupertype((Class) injecteeClass).getType();
-                TypeLiteral<T> parentTypeLiteral;
-                if (resolvedType == null) {
-                    parentTypeLiteral = TypeLiteral.get(injecteeClass);
-                } else {
-                    parentTypeLiteral = (TypeLiteral<T>) TypeLiteral.get(resolvedType);
-                }
+                TypeLiteral<T> parentTypeLiteral = (TypeLiteral<T>) TypeLiteral.get(TypeToken.of(subClass).getSupertype(injecteeClass).getType());
 
                 Optional<Annotation> qualifier = Annotations.on(subClass)
                         .traversingSuperclasses()
@@ -127,7 +122,7 @@ public final class BindingUtils {
      */
     @SuppressWarnings("unchecked")
     public static <T> Map<Key<T>, Class<? extends T>> resolveBindingDefinitions(Class<T> injecteeClass,
-            Collection<Class<? extends T>> implClasses) {
+                                                                                Collection<Class<? extends T>> implClasses) {
         if (implClasses != null && !implClasses.isEmpty()) {
             return resolveBindingDefinitions(injecteeClass, null, implClasses.toArray(new Class[implClasses.size()]));
         }
@@ -157,7 +152,7 @@ public final class BindingUtils {
      */
     @SuppressWarnings("unchecked")
     public static <T> Key<T> resolveKey(Class<T> injecteeClass, Class<? extends T> genericImplClass,
-            Type... typeVariableClasses) {
+                                        Type... typeVariableClasses) {
         Optional<Annotation> qualifier = Annotations.on(genericImplClass)
                 .findAll()
                 .filter(AnnotationPredicates.annotationAnnotatedWith(Qualifier.class, false))

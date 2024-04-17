@@ -17,6 +17,11 @@ public class CliConfig {
         return defaultCommand;
     }
 
+    public CliConfig setDefaultCommand(String defaultCommand) {
+        this.defaultCommand = defaultCommand;
+        return this;
+    }
+
     public boolean hasDefaultCommand() {
         return defaultCommand != null && !defaultCommand.isEmpty();
     }

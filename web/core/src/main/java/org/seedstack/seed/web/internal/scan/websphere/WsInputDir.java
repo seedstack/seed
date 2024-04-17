@@ -86,7 +86,9 @@ class WsInputDir implements Vfs.Dir {
     @Override
     public void close() {
         try {
-            jarInputStream.close();
+            if (jarInputStream != null) {
+                jarInputStream.close();
+            }
         } catch (IOException e) {
             LOGGER.warn("Unable to close WAR at {}", url.toExternalForm(), e);
         }

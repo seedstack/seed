@@ -8,6 +8,7 @@
 package org.seedstack.seed.web.internal.diagnostic;
 
 import com.google.common.collect.Lists;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.nuun.kernel.api.plugin.InitState;
 import io.nuun.kernel.api.plugin.context.InitContext;
 import java.util.List;
@@ -24,6 +25,7 @@ import org.seedstack.seed.web.spi.WebProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@SuppressFBWarnings(value = "UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR", justification = "Fields init are following plugin lifecycle")
 public class WebDiagnosticPlugin extends AbstractSeedPlugin implements WebProvider {
     private static final Logger LOGGER = LoggerFactory.getLogger(WebDiagnosticPlugin.class);
     private DiagnosticManager diagnosticManager;
