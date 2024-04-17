@@ -1,5 +1,5 @@
 /*
- * Copyright © 2013-2021, The SeedStack authors <http://seedstack.org>
+ * Copyright © 2013-2024, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -15,6 +15,11 @@ public class CliConfig {
 
     public String getDefaultCommand() {
         return defaultCommand;
+    }
+
+    public CliConfig setDefaultCommand(String defaultCommand) {
+        this.defaultCommand = defaultCommand;
+        return this;
     }
 
     public boolean hasDefaultCommand() {

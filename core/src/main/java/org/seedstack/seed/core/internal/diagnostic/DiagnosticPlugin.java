@@ -1,5 +1,5 @@
 /*
- * Copyright © 2013-2021, The SeedStack authors <http://seedstack.org>
+ * Copyright © 2013-2024, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -76,8 +76,10 @@ public class DiagnosticPlugin extends AbstractSeedPlugin {
 
     @Override
     public void start(Context context) {
-        for (Map.Entry<String, DiagnosticInfoCollector> entry : diagnosticInfoCollectors.entrySet()) {
-            diagnosticManager.registerDiagnosticInfoCollector(entry.getKey(), entry.getValue());
+        if (diagnosticInfoCollectors != null && diagnosticManager != null) {
+            for (Map.Entry<String, DiagnosticInfoCollector> entry : diagnosticInfoCollectors.entrySet()) {
+                diagnosticManager.registerDiagnosticInfoCollector(entry.getKey(), entry.getValue());
+            }
         }
     }
 }

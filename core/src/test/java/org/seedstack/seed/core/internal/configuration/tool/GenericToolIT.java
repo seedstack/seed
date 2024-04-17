@@ -1,5 +1,5 @@
 /*
- * Copyright © 2013-2021, The SeedStack authors <http://seedstack.org>
+ * Copyright © 2013-2024, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -7,13 +7,16 @@
  */
 package org.seedstack.seed.core.internal.configuration.tool;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.seedstack.seed.SeedException;
 import org.seedstack.seed.core.internal.ToolLauncher;
 import org.seedstack.seed.core.internal.configuration.tool.fixtures.ExitException;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
+@Ignore("Cannot be tested like this after Java 17")
 public class GenericToolIT extends AbstractToolIT {
 
     @Test

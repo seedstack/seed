@@ -1,5 +1,5 @@
 /*
- * Copyright © 2013-2021, The SeedStack authors <http://seedstack.org>
+ * Copyright © 2013-2024, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -7,6 +7,7 @@
  */
 package org.seedstack.seed.security.internal;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.AuthenticationInfo;
 import org.apache.shiro.authc.AuthenticationToken;
@@ -34,6 +35,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
+@SuppressFBWarnings(value = "UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR", justification = "Field cannot be set in constructor due to injection")
 class ShiroRealmAdapter extends AuthorizingRealm {
     private static final Logger LOGGER = LoggerFactory.getLogger(ShiroRealmAdapter.class);
     private Realm realm;
@@ -45,8 +47,8 @@ class ShiroRealmAdapter extends AuthorizingRealm {
         return super.getAuthorizationInfo(principals);
     }
 
-    @SuppressWarnings("unchecked")
     @Override
+    @SuppressWarnings("unchecked")
     protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principals) {
         SeedAuthorizationInfo authzInfo = new SeedAuthorizationInfo();
         PrincipalProvider<?> idPrincipal = (PrincipalProvider<?>) principals.getPrimaryPrincipal();
