@@ -1,5 +1,5 @@
 /*
- * Copyright © 2013-2021, The SeedStack authors <http://seedstack.org>
+ * Copyright © 2013-2024, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -7,6 +7,7 @@
  */
 package org.seedstack.seed.core.internal.configuration.tool;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.seedstack.coffig.Config;
 import org.seedstack.seed.Configuration;
@@ -18,6 +19,7 @@ import java.util.Map;
 
 import static org.assertj.core.api.Assertions.*;
 
+@Ignore("Cannot be tested like this after Java 17")
 public class CheckToolIT extends AbstractToolIT {
 
     @Test
