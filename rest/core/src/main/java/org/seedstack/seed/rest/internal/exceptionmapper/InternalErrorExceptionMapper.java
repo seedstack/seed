@@ -8,7 +8,6 @@
 package org.seedstack.seed.rest.internal.exceptionmapper;
 
 import org.seedstack.seed.Application;
-import org.seedstack.seed.core.Seed;
 import org.seedstack.seed.rest.RestConfig;
 import org.seedstack.shed.exception.BaseException;
 import org.slf4j.Logger;
@@ -41,29 +40,28 @@ public class InternalErrorExceptionMapper implements ExceptionMapper<Exception> 
     @Override
     public Response toResponse(Exception exception) {
         String uuid = UUID.randomUUID().toString();
-        BaseException translatedException = Seed.translateException(exception);
-        LOGGER.error(buildServerMessage(uuid, translatedException), translatedException);
+        LOGGER.error(buildServerMessage(uuid, exception), exception);
         return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                .entity(buildUserMessage(uuid, translatedException))
+                .entity(buildUserMessage(uuid, exception))
                 .build();
     }
 
-    private String buildUserMessage(String uuid, BaseException baseException) {
+    private String buildUserMessage(String uuid, Exception exception) {
         StringBuilder sb = new StringBuilder(16384);
         sb.append("Internal server error [").append(uuid).append("]");
         if (exceptionMappingConfig.isDetailedUserMessage()) {
-            sb.append(": ").append(baseException.getDescription());
+            sb.append(": ").append(exception instanceof BaseException ? ((BaseException) exception).getDescription() : exception.getMessage());
         }
         return sb.toString();
     }
 
-    private String buildServerMessage(String uuid, BaseException baseException) {
+    private String buildServerMessage(String uuid, Exception exception) {
         StringBuilder sb = new StringBuilder(16384);
         sb.append("JAX-RS request error [").append(uuid).append("] on ").append(request.getRequestURI()).append("\n");
         if (exceptionMappingConfig.isDetailedLog()) {
-            sb.append(baseException.toString());
+            sb.append(exception.toString());
         } else {
-            sb.append(baseException.getMessage());
+            sb.append(exception.getMessage());
         }
         return sb.toString();
     }

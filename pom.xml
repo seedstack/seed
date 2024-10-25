@@ -19,7 +19,7 @@
 
     <groupId>org.seedstack.seed</groupId>
     <artifactId>seed</artifactId>
-    <version>3.15.0-SNAPSHOT</version>
+    <version>3.15.1-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <properties>
@@ -38,7 +38,11 @@
         <aopalliance.version>1.0</aopalliance.version>
         <glassfish-javax.el.version>3.0.0</glassfish-javax.el.version>
         <arquillian.version>1.4.0.Final</arquillian.version>
-        <tomcat.version>7.0.86</tomcat.version>
+        <tomcat.version>9.0.90</tomcat.version>
+        <javax.servlet.version>4.0.1</javax.servlet.version>
+        <javax.websocket-api.version>1.1</javax.websocket-api.version>
+        <rest-assured.version>5.4.0</rest-assured.version>
+        <arquillian-tomcat-embedded-9.version>1.1.0.Final</arquillian-tomcat-embedded-9.version>
 
         <compatibility.version>3.1.0</compatibility.version>
     </properties>

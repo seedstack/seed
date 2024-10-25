@@ -133,6 +133,14 @@ public class RestPlugin extends AbstractSeedPlugin implements RestProvider {
             LOGGER.debug("Default exception mapping is enabled");
         }
 
+        if (!restConfig.exceptionMapping().isJackson()) {
+            providers.remove(JsonMappingExceptionMapper.class);
+            providers.remove(JsonParseExceptionMapper.class);
+            LOGGER.debug("Jackson exception mapping is disabled");
+        } else {
+            LOGGER.debug("Jackson exception mapping is enabled");
+        }
+
         if (!isDynamicValidationSupported() || !restConfig.exceptionMapping().isValidation()) {
             providers.remove(ValidationExceptionMapper.class);
             LOGGER.debug("Validation exception mapping is disabled");

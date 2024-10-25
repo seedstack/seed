@@ -129,6 +129,7 @@ public class RestConfig {
         private boolean validation = true;
         private boolean detailedLog = true;
         private boolean detailedUserMessage = true;
+        private boolean jackson = true;
 
         public boolean isSecurity() {
             return security;
@@ -144,6 +145,10 @@ public class RestConfig {
 
         public boolean isDetailedLog() {
             return detailedLog;
+        }
+
+        public boolean isJackson() {
+            return jackson;
         }
 
         public boolean isDetailedUserMessage() {

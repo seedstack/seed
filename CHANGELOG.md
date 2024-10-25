@@ -1,16 +1,22 @@
-# Version 3.15.0 (2021-09-30)
+# Version 3.15.1 (2024-10-25)
 
-* [new] Java 21 support.
-* [new] Support for `jakarta.inject.*` while retaining `javax.inject.*` compatibility.
-* [nfo] Other `jakarta.*` packages are not supported yet.
-* [chg] Update javassist to 3.30.2-GA
-* [chg] Update guice to 6.0.0
-* [chg] Update guava to 33.1.0
-* [chg] Update typetools to 0.6.3
-* [chg] Update shiro to 1.13.0
-* [chg] Update Undertow to 2.2.31.Final
-* [chg] Update Jersey to 2.42
-* [chg] Update Hibernate Validator to 6.1.7.Final
+* **[new]** Allow to disable Jackson exception mappers as they may disclose technical info to REST clients. 
+  Set `rest.exceptionMapping.jackson` and `rest.exceptionMapping.detailedUserMessage` to `false`. The exception will
+  go through the default exception mapper, which logs them. To avoid this provide your own exception mapper.
+
+# Version 3.15.0 (2024-04-17)
+
+* **[new]** Java 21 support.
+* **[new]** Support for `jakarta.inject.*` while retaining `javax.inject.*` compatibility.
+* **[nfo]** Other `jakarta.*` packages are not supported yet.
+* **[chg]** Update javassist to 3.30.2-GA
+* **[chg]** Update guice to 6.0.0
+* **[chg]** Update guava to 33.1.0
+* **[chg]** Update typetools to 0.6.3
+* **[chg]** Update shiro to 1.13.0
+* **[chg]** Update Undertow to 2.2.31.Final
+* **[chg]** Update Jersey to 2.42
+* **[chg]** Update Hibernate Validator to 6.1.7.Final
 
 # Version 3.14.0 (2021-09-30)
 

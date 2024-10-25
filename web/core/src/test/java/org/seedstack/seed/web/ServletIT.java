@@ -107,7 +107,6 @@ public class ServletIT {
                 .statusCode(200)
                 .cookie("CUSTOM_SESSION_ID", RestAssuredMatchers.detailedCookie()
                         .maxAge(15)
-                        .comment("Custom")
                         .httpOnly(true)
                 )
                 .when()
